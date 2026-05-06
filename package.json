@@ -1,0 +1,14 @@
+{
+  "name": "umestno-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node dist/engine/test/runCalibration.js",
+    "calibration:json": "npm run build --silent && node dist/engine/test/printCalibrationCase.js",
+    "calibration:json:forced-open": "npm run build --silent && node dist/engine/test/printCalibrationCase.js forced-open-fallback",
+    "calibration:json:four-item-stress": "npm run build --silent && node dist/engine/test/printCalibrationCase.js four-item-stress"
+  },
+  "devDependencies": {}
+}
