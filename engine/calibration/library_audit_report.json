@@ -1,7 +1,387 @@
 {
-  "audit_timestamp": "2026-05-06T21:49:28.221Z",
+  "audit_timestamp": "2026-05-06T22:17:30.828Z",
   "source_file": "Internal Library ABCD_v0605.xlsx",
   "overall_pass": false,
+  "content_type_coverage": [
+    {
+      "content_type": "belts",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "roll",
+      "source_B_dims": {
+        "w": 8,
+        "d": 8,
+        "h": 5
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "boxers",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 12,
+        "d": 5,
+        "h": 10
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "bras",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 28,
+        "d": 4.5,
+        "h": 12
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "jeans",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_bulky",
+      "source_B_dims": {
+        "w": 25,
+        "d": 10,
+        "h": 12
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "jewelry_large",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 8,
+        "d": 8,
+        "h": 4
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "jewelry_small",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 3,
+        "d": 3,
+        "h": 2.5
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "leggings",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_thin",
+      "source_B_dims": {
+        "w": 18,
+        "d": 8,
+        "h": 10
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "longsleeves",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_thin",
+      "source_B_dims": {
+        "w": 20,
+        "d": 8,
+        "h": 10
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "nightgowns",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_medium",
+      "source_B_dims": {
+        "w": 20,
+        "d": 8,
+        "h": 10
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "pajamas",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_bulky",
+      "source_B_dims": {
+        "w": 22,
+        "d": 13,
+        "h": 12
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "panties",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 10,
+        "d": 3,
+        "h": 9
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "scarves",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "roll",
+      "source_B_dims": {
+        "w": 15,
+        "d": 5,
+        "h": 8
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "shorts",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_medium",
+      "source_B_dims": {
+        "w": 20,
+        "d": 8,
+        "h": 10
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "socks",
+      "runtime_alias": "socks_regular",
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "roll",
+      "source_B_dims": {
+        "w": 6,
+        "d": 6,
+        "h": 8
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "sport_tops",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 15,
+        "d": 4,
+        "h": 10
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "sweaters",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_bulky",
+      "source_B_dims": {
+        "w": 25,
+        "d": 15,
+        "h": 14
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "swimwear",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "flat",
+      "source_B_dims": {
+        "w": 15,
+        "d": 5,
+        "h": 8
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "thermals",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "open",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_bulky",
+      "source_B_dims": {
+        "w": 22,
+        "d": 13,
+        "h": 12
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "ties",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": false,
+      "present_in_runtime_B": false,
+      "source_B_primary_division": "cells",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "roll",
+      "source_B_dims": {
+        "w": 8,
+        "d": 8,
+        "h": 4
+      },
+      "runtime_supported": false,
+      "missing_from_runtime_reason": "absent from runtime volumeToCount; absent from runtime storageUnitProfile"
+    },
+    {
+      "content_type": "tights",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "open",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "roll",
+      "source_B_dims": {
+        "w": 10,
+        "d": 10,
+        "h": 8
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    },
+    {
+      "content_type": "tshirts",
+      "runtime_alias": null,
+      "present_in_source_A": true,
+      "present_in_source_B": true,
+      "present_in_runtime_A": true,
+      "present_in_runtime_B": true,
+      "source_B_primary_division": "slots",
+      "source_B_alternative_division": "open",
+      "source_B_storage_method": "folded_squares_thin",
+      "source_B_dims": {
+        "w": 20,
+        "d": 5,
+        "h": 10
+      },
+      "runtime_supported": true,
+      "missing_from_runtime_reason": null
+    }
+  ],
   "volume_to_count": {
     "source_rows": 63,
     "runtime_rows": 21,

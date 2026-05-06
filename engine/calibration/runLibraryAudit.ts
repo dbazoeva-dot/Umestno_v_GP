@@ -246,6 +246,72 @@ function auditZoneLayoutOptions(source: SourceOptionRow[]) {
   };
 }
 
+// ─── Check 4b: per-content-type coverage matrix ──────────────────────────────
+
+const RUNTIME_SUPPORTED_DIVISIONS = new Set(["cells", "slots", "open", "slots_multi_lane_auto"]);
+
+type ContentTypeCoverageRow = {
+  content_type: string;
+  runtime_alias: string | null;
+  present_in_source_A: boolean;
+  present_in_source_B: boolean;
+  present_in_runtime_A: boolean;
+  present_in_runtime_B: boolean;
+  source_B_primary_division: string | null;
+  source_B_alternative_division: string | null;
+  source_B_storage_method: string | null;
+  source_B_dims: { w: number | null; d: number | null; h: number | null } | null;
+  runtime_supported: boolean;
+  missing_from_runtime_reason: string | null;
+};
+
+function auditContentTypeCoverage(source: SourceSnapshot): ContentTypeCoverageRow[] {
+  const srcATypes = [...new Set(source.volume_to_count.map((r) => r.content_type))].sort();
+  const srcBMap = new Map(source.storage_unit_profile.map((r) => [r.content_type, r]));
+  const rtATypes = new Set(defaultLibraries.volumeToCount.map((r) => r.content_type));
+  const rtBTypes = new Set(defaultLibraries.storageUnitProfile.map((r) => r.content_type));
+
+  return srcATypes.map((ct) => {
+    const rtId = runtimeId(ct);
+    const alias = rtId !== ct ? rtId : null;
+    const inSrcA = true;
+    const inSrcB = srcBMap.has(ct);
+    const inRtA = rtATypes.has(rtId);
+    const inRtB = rtBTypes.has(rtId);
+    const srcB = srcBMap.get(ct) ?? null;
+    const primaryDiv = srcB?.primary_division ?? null;
+    const altDiv = srcB?.alternative_division ?? null;
+    const method = srcB?.storage_method ?? null;
+    const dims = srcB ? { w: srcB.unit_w_cm, d: srcB.unit_d_cm, h: srcB.unit_h_cm } : null;
+    const divSupported = primaryDiv ? RUNTIME_SUPPORTED_DIVISIONS.has(primaryDiv) : false;
+    const supported = inRtA && inRtB && divSupported;
+
+    let reason: string | null = null;
+    if (!supported) {
+      const parts: string[] = [];
+      if (!inRtA) parts.push("absent from runtime volumeToCount");
+      if (!inRtB) parts.push("absent from runtime storageUnitProfile");
+      if (inRtA && inRtB && !divSupported) parts.push(`primary_division="${primaryDiv}" not implemented`);
+      reason = parts.join("; ");
+    }
+
+    return {
+      content_type: ct,
+      runtime_alias: alias,
+      present_in_source_A: inSrcA,
+      present_in_source_B: inSrcB,
+      present_in_runtime_A: inRtA,
+      present_in_runtime_B: inRtB,
+      source_B_primary_division: primaryDiv,
+      source_B_alternative_division: altDiv,
+      source_B_storage_method: method,
+      source_B_dims: dims,
+      runtime_supported: supported,
+      missing_from_runtime_reason: reason,
+    };
+  });
+}
+
 // ─── Check 4: cross-table consistency ────────────────────────────────────────
 
 const IMPLEMENTED_CALCULATION_MODES = new Set([
@@ -313,6 +379,7 @@ function main() {
   const prof = auditStorageProfile(source.storage_unit_profile);
   const opts = auditZoneLayoutOptions(source.zone_layout_options);
   const cross = auditCrossTable(source);
+  const coverage = auditContentTypeCoverage(source);
 
   const overallPass = vol.pass && prof.pass && opts.pass && cross.pass;
 
@@ -321,6 +388,7 @@ function main() {
     source_file: source.source_file,
     overall_pass: overallPass,
 
+    content_type_coverage: coverage,
     volume_to_count: vol,
     storage_unit_profile: prof,
     zone_layout_options: opts,
