@@ -1,5 +1,6 @@
 import { buildBaseCalibrationCaseReport, buildForcedOpenFallbackCalibrationCaseReport, buildFourItemStressCalibrationCaseReport } from "../calibration/buildCalibrationCaseReport.js";
 import { runUmestnoEngine } from "../index.js";
+import { defaultLibraries } from "../libraries/defaultLibraries.js";
 function assert(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
 
 const baseReport = buildBaseCalibrationCaseReport();
@@ -23,18 +24,26 @@ assert(fourItemReport.production_validation_result.error_details.some((error) =>
 assert(fourItemReport.calibration_override.allow_max_items === 4, "four-item stress mode: should use allow_max_items = 4 override");
 assert(stress.validation_result.ok === true, "four-item stress mode: validation should pass with override");
 assert(stress.counted_items.length === 4 && stress.storage_requirements.length === 4 && stress.calculated_zones.length === 4, "four-item stress mode: no category should be dropped");
+const brasRequirement = stress.storage_requirements.find((requirement) => requirement.content_type === "bras");
+assert(brasRequirement?.can_split === false, "four-item stress mode: bras can_split should remain B/source spatial-split metadata, not internal lane metadata");
 assert(stress.final_fit_result.fit_status === "fit_all", "four-item stress mode: final status should become fit_all after 2D placement");
 assert(!stress.final_fit_result.placed_zones.some((zone) => zone.content_type === "bras" && zone.division_type === "open"), "four-item stress mode: bras must not be converted to open");
 const stressAdjustmentAttempts = (stress.adjustment_result?.adjustment_attempts ?? []) as Array<{ adjustment_type?: string; split_used?: boolean; lanes_needed?: number; items_per_lane?: number[]; split_lane_zone?: { zone_d_cm?: number } }>;
 const stressSplitAttempt = stressAdjustmentAttempts.find((attempt) => attempt.adjustment_type === "slots_multi_lane");
 assert(stress.initial_fit_result.failed_zones.some((zone) => zone.content_type === "bras" && zone.calculation_mode === "linear_depth" && zone.zone_d_cm === 50.5), "four-item stress mode: bras single row should fail by depth before split");
 assert(stress.adjustment_result?.adjustment_type === "slots_multi_lane", "four-item stress mode: should try slots_multi_lane before open fallback");
+assert(brasRequirement?.max_slot_lanes === 2 && brasRequirement?.slot_lane_gap_cm === 1 && brasRequirement?.split_strategy === "balance_by_depth", "four-item stress mode: bras multi-lane should be controlled by internal slot-module metadata");
 assert(stressSplitAttempt?.split_used === true && stressSplitAttempt?.lanes_needed === 2, "four-item stress mode: bras should split into 2 lanes");
 assert(Array.isArray(stressSplitAttempt?.items_per_lane) && stressSplitAttempt.items_per_lane.join(",") === "5,5", "four-item stress mode: bras lanes should balance as 5,5");
 assert(stressSplitAttempt?.split_lane_zone?.zone_d_cm === 25.5, "four-item stress mode: bras split depth should match 5 items, not 10");
 assert(stress.open_fallback_summary.open_fallback_used === false, "four-item stress mode: slot split should run before unrelated open fallback");
 assert(stress.final_fit_result.placed_zones.some((zone) => zone.content_type === "panties" && zone.division_type === "cells"), "four-item stress mode: panties should remain in cells after 2D placement");
 assert(stress.final_fit_result.placement_attempts?.every((attempt) => attempt.placed), "four-item stress mode: debug trace should show successful placement attempts");
+
+for (const profile of defaultLibraries.storageUnitProfile) {
+  const propagatedRequirements = [baseReport, forcedReport, stress].flatMap((report) => report.storage_requirements).filter((requirement) => requirement.content_type === profile.content_type);
+  assert(propagatedRequirements.every((requirement) => requirement.can_split === profile.can_split), `${profile.content_type}: can_split should be propagated unchanged from B/defaultLibraries`);
+}
 
 const maxItemsOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" }, { content_type: "panties", volume_level: "medium" }, { content_type: "tshirts", volume_level: "small" } ], priority: "convenient" });
 assert(maxItemsOutput.result === null, "max items case: result should be null");

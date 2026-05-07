@@ -5,7 +5,6 @@ export function calculateSlotsSplitZone(req: CalculatedZone, option: ZoneLayoutO
   const slotLaneGap = req.slot_lane_gap_cm ?? 1;
   const maxSlotLanes = req.max_slot_lanes ?? 1;
   const maxItemsPerLane = Math.floor((drawerSize.d_cm - 2 * req.fb_clear + gap) / (req.unit_d_cm + gap));
-  if (!req.can_split) return { ...originalSingleLaneZone, option_id: option.option_id, calculation_mode: "linear_depth_split", split_used: false, original_single_lane_zone: summarizeZone(originalSingleLaneZone), split_rejected_reason: "can_split is false" };
   if (maxItemsPerLane <= 0) return { ...originalSingleLaneZone, option_id: option.option_id, calculation_mode: "linear_depth_split", split_used: false, original_single_lane_zone: summarizeZone(originalSingleLaneZone), max_items_per_lane: maxItemsPerLane, slot_lane_gap_cm: slotLaneGap, split_rejected_reason: "available depth cannot fit one item per lane" };
   const lanesNeeded = Math.ceil(req.count / maxItemsPerLane);
   if (lanesNeeded > maxSlotLanes) return { ...originalSingleLaneZone, option_id: option.option_id, calculation_mode: "linear_depth_split", split_used: false, original_single_lane_zone: summarizeZone(originalSingleLaneZone), lanes_needed: lanesNeeded, max_items_per_lane: maxItemsPerLane, slot_lane_gap_cm: slotLaneGap, split_rejected_reason: "lanes_needed exceeds max_slot_lanes" };

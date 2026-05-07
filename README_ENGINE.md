@@ -82,6 +82,29 @@ python -m json.tool /tmp/four_item_stress.json >/dev/null
   - `bras_slots_multi_lane_auto` splits into 2 lanes `[5, 5]`, depth `25.5 cm`
   - `panties_cells_4x4` stays in cells and does not need open fallback
 
+
+## Split and module semantics
+
+`can_split` follows the source ABCD glossary meaning: **whether one `content_type` may be split into two separate parent assigned zones**. In other words, `can_split` is about future spatial split behavior, such as placing `socks` zone 1 in one drawer area and `socks` zone 2 elsewhere.
+
+`can_split` is copied from B / `storage_unit_profile` metadata and must not be redefined or inferred from runtime engine behavior. If B says `can_split = true`, spatial split is allowed for that `content_type` when spatial split logic is implemented; if B says `false`, it is not allowed. The MVP currently does **not** implement spatial splitting, so the default runtime behavior is still one contiguous parent assigned zone per `content_type`.
+
+Internal layout is a separate concept and must not be controlled by `can_split`. Internal layout behaviors are allowed by default in the MVP unless an option/profile explicitly limits them. They include repeated or parallel modules inside one contiguous parent zone, not spatial splitting into two parent zones.
+
+- a parent zone may contain one or more repeated modules;
+- each module is an instance of the same `option_id` from C / `zone_layout_options`;
+- repeated modules must remain adjacent/contiguous;
+- no other `content_type` may be placed between repeated modules;
+- the parent zone remains one assigned zone.
+
+Examples:
+
+- `bras` parent zone may use `slots_single_row × 2` as adjacent internal slot lanes, represented in the current MVP by `slots_multi_lane_auto` / `linear_depth_split`; this is valid internal module composition, **not** `can_split`.
+- `socks` parent zone may later use `cells_4x4 × 2` as adjacent repeated modules; this is still one socks zone, **not** `can_split`.
+- `open` packing calculates capacity inside one assigned box; this is internal packing, **not** `can_split`.
+
+Therefore, `can_split` must not control `slots_multi_lane_auto`, repeated cells grids, open packing, or any other internal module layout.
+
 ## Debug trace structure
 
 Debug trace includes, depending on validation/fit path:
