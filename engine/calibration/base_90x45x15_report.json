@@ -1,0 +1,4724 @@
+{
+  "validation_result": {
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "error_details": []
+  },
+  "counted_items": [
+    {
+      "content_type": "socks_regular",
+      "volume_level": "medium",
+      "count": 16,
+      "count_unit": "pairs"
+    },
+    {
+      "content_type": "bras",
+      "volume_level": "medium",
+      "count": 6,
+      "count_unit": "items"
+    },
+    {
+      "content_type": "panties",
+      "volume_level": "medium",
+      "count": 10,
+      "count_unit": "items"
+    }
+  ],
+  "storage_requirements": [
+    {
+      "content_type": "socks_regular",
+      "volume_level": "medium",
+      "count": 16,
+      "count_unit": "pairs",
+      "storage_method": "roll",
+      "primary_division": "cells",
+      "alternative_division": "open",
+      "preferred_rigidity": "soft",
+      "unit_w_cm": 6,
+      "unit_d_cm": 6,
+      "unit_h_cm": 7,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 8,
+      "can_rotate": true,
+      "can_split": true,
+      "open_fallback_allowed": true,
+      "open_fallback_rank": 2,
+      "open_storage_penalty": "medium",
+      "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+      "available_layout_options": [
+        {
+          "option_id": "cells_4x4",
+          "division_type": "cells",
+          "calculation_mode": "fixed_grid",
+          "count_min": 13,
+          "count_max": 16,
+          "cols": 4,
+          "rows": 4,
+          "capacity": 16
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ]
+    },
+    {
+      "content_type": "bras",
+      "volume_level": "medium",
+      "count": 6,
+      "count_unit": "items",
+      "storage_method": "delicate_stack",
+      "primary_division": "slots",
+      "alternative_division": "open",
+      "preferred_rigidity": "semi_rigid",
+      "unit_w_cm": 28,
+      "unit_d_cm": 4.5,
+      "unit_h_cm": 12,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0.5,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 6,
+      "can_rotate": false,
+      "can_split": true,
+      "max_slot_lanes": 2,
+      "slot_lane_gap_cm": 1,
+      "split_strategy": "balance_by_depth",
+      "notes": "Не сжимать чашки.",
+      "open_fallback_allowed": false,
+      "open_fallback_rank": 8,
+      "open_storage_penalty": "high",
+      "available_layout_options": [
+        {
+          "option_id": "slots_single_row",
+          "division_type": "slots",
+          "calculation_mode": "linear_depth",
+          "count_min": 1,
+          "count_max": 99
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ]
+    },
+    {
+      "content_type": "panties",
+      "volume_level": "medium",
+      "count": 10,
+      "count_unit": "items",
+      "storage_method": "folded_squares_thin",
+      "primary_division": "cells",
+      "alternative_division": "open",
+      "preferred_rigidity": "soft",
+      "unit_w_cm": 10,
+      "unit_d_cm": 3,
+      "unit_h_cm": 6,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 9,
+      "can_rotate": true,
+      "can_split": true,
+      "open_fallback_allowed": true,
+      "open_fallback_rank": 1,
+      "open_storage_penalty": "low",
+      "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+      "available_layout_options": [
+        {
+          "option_id": "cells_3x4",
+          "division_type": "cells",
+          "calculation_mode": "fixed_grid",
+          "count_min": 10,
+          "count_max": 12,
+          "cols": 3,
+          "rows": 4,
+          "capacity": 12
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ]
+    }
+  ],
+  "calculated_zones": [
+    {
+      "content_type": "socks_regular",
+      "volume_level": "medium",
+      "count": 16,
+      "count_unit": "pairs",
+      "storage_method": "roll",
+      "primary_division": "cells",
+      "alternative_division": "open",
+      "preferred_rigidity": "soft",
+      "unit_w_cm": 6,
+      "unit_d_cm": 6,
+      "unit_h_cm": 7,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 8,
+      "can_rotate": true,
+      "can_split": true,
+      "open_fallback_allowed": true,
+      "open_fallback_rank": 2,
+      "open_storage_penalty": "medium",
+      "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+      "available_layout_options": [
+        {
+          "option_id": "cells_4x4",
+          "division_type": "cells",
+          "calculation_mode": "fixed_grid",
+          "count_min": 13,
+          "count_max": 16,
+          "cols": 4,
+          "rows": 4,
+          "capacity": 16
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ],
+      "zone_id": "socks_regular_cells_4x4",
+      "original_division_type": "cells",
+      "division_type": "cells",
+      "option_id": "cells_4x4",
+      "calculation_mode": "fixed_grid",
+      "zone_w_cm": 25,
+      "zone_d_cm": 25,
+      "zone_h_cm": 8,
+      "capacity": 16,
+      "calculated_cols": 4,
+      "calculated_rows": 4
+    },
+    {
+      "content_type": "bras",
+      "volume_level": "medium",
+      "count": 6,
+      "count_unit": "items",
+      "storage_method": "delicate_stack",
+      "primary_division": "slots",
+      "alternative_division": "open",
+      "preferred_rigidity": "semi_rigid",
+      "unit_w_cm": 28,
+      "unit_d_cm": 4.5,
+      "unit_h_cm": 12,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0.5,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 6,
+      "can_rotate": false,
+      "can_split": true,
+      "max_slot_lanes": 2,
+      "slot_lane_gap_cm": 1,
+      "split_strategy": "balance_by_depth",
+      "notes": "Не сжимать чашки.",
+      "open_fallback_allowed": false,
+      "open_fallback_rank": 8,
+      "open_storage_penalty": "high",
+      "available_layout_options": [
+        {
+          "option_id": "slots_single_row",
+          "division_type": "slots",
+          "calculation_mode": "linear_depth",
+          "count_min": 1,
+          "count_max": 99
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ],
+      "zone_id": "bras_slots_single_row",
+      "original_division_type": "slots",
+      "division_type": "slots",
+      "option_id": "slots_single_row",
+      "calculation_mode": "linear_depth",
+      "zone_w_cm": 29,
+      "zone_d_cm": 30.5,
+      "zone_h_cm": 13,
+      "capacity": 6
+    },
+    {
+      "content_type": "panties",
+      "volume_level": "medium",
+      "count": 10,
+      "count_unit": "items",
+      "storage_method": "folded_squares_thin",
+      "primary_division": "cells",
+      "alternative_division": "open",
+      "preferred_rigidity": "soft",
+      "unit_w_cm": 10,
+      "unit_d_cm": 3,
+      "unit_h_cm": 6,
+      "needs_item_gap": true,
+      "item_gap": 0.5,
+      "item_gap_if_open": 0,
+      "side_clear": 0.5,
+      "fb_clear": 0.5,
+      "h_clear": 1,
+      "access_frequency": 9,
+      "can_rotate": true,
+      "can_split": true,
+      "open_fallback_allowed": true,
+      "open_fallback_rank": 1,
+      "open_storage_penalty": "low",
+      "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+      "available_layout_options": [
+        {
+          "option_id": "cells_3x4",
+          "division_type": "cells",
+          "calculation_mode": "fixed_grid",
+          "count_min": 10,
+          "count_max": 12,
+          "cols": 3,
+          "rows": 4,
+          "capacity": 12
+        },
+        {
+          "option_id": "open_single_section",
+          "division_type": "open",
+          "calculation_mode": "open_capacity_in_box",
+          "count_min": 1,
+          "count_max": 999
+        }
+      ],
+      "zone_id": "panties_cells_3x4",
+      "original_division_type": "cells",
+      "division_type": "cells",
+      "option_id": "cells_3x4",
+      "calculation_mode": "fixed_grid",
+      "zone_w_cm": 31,
+      "zone_d_cm": 13,
+      "zone_h_cm": 7,
+      "capacity": 12,
+      "calculated_cols": 3,
+      "calculated_rows": 4
+    }
+  ],
+  "initial_fit_result": {
+    "fit_status": "fit_all",
+    "placed_zones": [
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "bras_slots_single_row",
+        "original_division_type": "slots",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6,
+        "x_cm": 0,
+        "y_cm": 0,
+        "assigned_w_cm": 29,
+        "assigned_d_cm": 30.5,
+        "assigned_h_cm": 13
+      },
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "socks_regular_cells_4x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "calculated_cols": 4,
+        "calculated_rows": 4,
+        "x_cm": 29,
+        "y_cm": 0,
+        "assigned_w_cm": 25,
+        "assigned_d_cm": 25,
+        "assigned_h_cm": 8
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "panties_cells_3x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "calculated_cols": 3,
+        "calculated_rows": 4,
+        "x_cm": 54,
+        "y_cm": 0,
+        "assigned_w_cm": 31,
+        "assigned_d_cm": 13,
+        "assigned_h_cm": 7
+      }
+    ],
+    "unplaced_zones": [],
+    "failed_zones": [],
+    "best_attempt": {
+      "placed_count": 3
+    },
+    "missing_width_cm": 0,
+    "missing_depth_cm": 0,
+    "missing_height_cm": 0,
+    "used_width_cm": 85,
+    "used_depth_cm": 30.5,
+    "used_height_cm": 13,
+    "overflow_width_cm": 0,
+    "overflow_depth_cm": 0,
+    "overflow_height_cm": 0,
+    "free_rectangles": [
+      {
+        "x_cm": 85,
+        "y_cm": 0,
+        "w_cm": 5,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 36,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 31,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 13,
+        "w_cm": 5,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 61,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 56,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 25,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 36,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 31,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 25,
+        "w_cm": 5,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 90,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 85,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 54,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 29,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 61,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 56,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 25,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 36,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 31,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 30.5,
+        "w_cm": 5,
+        "d_cm": 14.5,
+        "h_cm": 15
+      }
+    ],
+    "available_box": {
+      "x_cm": 85,
+      "y_cm": 0,
+      "w_cm": 5,
+      "d_cm": 45,
+      "h_cm": 15
+    },
+    "fit_notes": [
+      "All calculated zones fit deterministic 2D free-rectangle placement before SKU matching."
+    ],
+    "placement_attempts": [
+      {
+        "content_type": "bras",
+        "zone_id": "bras_slots_single_row",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 0,
+          "y_cm": 0,
+          "w_cm": 90,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      },
+      {
+        "content_type": "socks_regular",
+        "zone_id": "socks_regular_cells_4x4",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 29,
+          "y_cm": 0,
+          "w_cm": 61,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      },
+      {
+        "content_type": "panties",
+        "zone_id": "panties_cells_3x4",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 54,
+          "y_cm": 0,
+          "w_cm": 36,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      }
+    ]
+  },
+  "adjustment_result": null,
+  "final_fit_result": {
+    "fit_status": "fit_all",
+    "placed_zones": [
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "bras_slots_single_row",
+        "original_division_type": "slots",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6,
+        "x_cm": 0,
+        "y_cm": 0,
+        "assigned_w_cm": 29,
+        "assigned_d_cm": 30.5,
+        "assigned_h_cm": 13
+      },
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "socks_regular_cells_4x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "calculated_cols": 4,
+        "calculated_rows": 4,
+        "x_cm": 29,
+        "y_cm": 0,
+        "assigned_w_cm": 25,
+        "assigned_d_cm": 25,
+        "assigned_h_cm": 8
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "panties_cells_3x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "calculated_cols": 3,
+        "calculated_rows": 4,
+        "x_cm": 54,
+        "y_cm": 0,
+        "assigned_w_cm": 31,
+        "assigned_d_cm": 13,
+        "assigned_h_cm": 7
+      }
+    ],
+    "unplaced_zones": [],
+    "failed_zones": [],
+    "best_attempt": {
+      "placed_count": 3
+    },
+    "missing_width_cm": 0,
+    "missing_depth_cm": 0,
+    "missing_height_cm": 0,
+    "used_width_cm": 85,
+    "used_depth_cm": 30.5,
+    "used_height_cm": 13,
+    "overflow_width_cm": 0,
+    "overflow_depth_cm": 0,
+    "overflow_height_cm": 0,
+    "free_rectangles": [
+      {
+        "x_cm": 85,
+        "y_cm": 0,
+        "w_cm": 5,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 36,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 31,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 13,
+        "w_cm": 5,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 61,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 56,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 25,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 36,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 31,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 25,
+        "w_cm": 5,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 90,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 85,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 54,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 29,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 61,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 56,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 25,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 36,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 31,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 30.5,
+        "w_cm": 5,
+        "d_cm": 14.5,
+        "h_cm": 15
+      }
+    ],
+    "available_box": {
+      "x_cm": 85,
+      "y_cm": 0,
+      "w_cm": 5,
+      "d_cm": 45,
+      "h_cm": 15
+    },
+    "fit_notes": [
+      "All calculated zones fit deterministic 2D free-rectangle placement before SKU matching."
+    ],
+    "placement_attempts": [
+      {
+        "content_type": "bras",
+        "zone_id": "bras_slots_single_row",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 0,
+          "y_cm": 0,
+          "w_cm": 90,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      },
+      {
+        "content_type": "socks_regular",
+        "zone_id": "socks_regular_cells_4x4",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 29,
+          "y_cm": 0,
+          "w_cm": 61,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      },
+      {
+        "content_type": "panties",
+        "zone_id": "panties_cells_3x4",
+        "placed": true,
+        "selected_rect": {
+          "x_cm": 54,
+          "y_cm": 0,
+          "w_cm": 36,
+          "d_cm": 45,
+          "h_cm": 15
+        }
+      }
+    ]
+  },
+  "assigned_zones": [
+    {
+      "zone_id": "bras_slots_single_row",
+      "content_type": "bras",
+      "division_type": "slots",
+      "x_cm": 0,
+      "y_cm": 0,
+      "assigned_w_cm": 29,
+      "assigned_d_cm": 30.5,
+      "assigned_h_cm": 13
+    },
+    {
+      "zone_id": "socks_regular_cells_4x4",
+      "content_type": "socks_regular",
+      "division_type": "cells",
+      "x_cm": 29,
+      "y_cm": 0,
+      "assigned_w_cm": 25,
+      "assigned_d_cm": 25,
+      "assigned_h_cm": 8
+    },
+    {
+      "zone_id": "panties_cells_3x4",
+      "content_type": "panties",
+      "division_type": "cells",
+      "x_cm": 54,
+      "y_cm": 0,
+      "assigned_w_cm": 31,
+      "assigned_d_cm": 13,
+      "assigned_h_cm": 7
+    }
+  ],
+  "scheme_payload": {
+    "scheme_id": "scheme_90x45_base_calibration",
+    "fit_status": "fit_all",
+    "selected_calculated_zones": [
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "socks_regular_cells_4x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "calculated_cols": 4,
+        "calculated_rows": 4
+      },
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "bras_slots_single_row",
+        "original_division_type": "slots",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "panties_cells_3x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "calculated_cols": 3,
+        "calculated_rows": 4
+      }
+    ],
+    "assigned_zones": [
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "bras_slots_single_row",
+        "original_division_type": "slots",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6,
+        "x_cm": 0,
+        "y_cm": 0,
+        "assigned_w_cm": 29,
+        "assigned_d_cm": 30.5,
+        "assigned_h_cm": 13
+      },
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "socks_regular_cells_4x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "calculated_cols": 4,
+        "calculated_rows": 4,
+        "x_cm": 29,
+        "y_cm": 0,
+        "assigned_w_cm": 25,
+        "assigned_d_cm": 25,
+        "assigned_h_cm": 8
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "panties_cells_3x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "calculated_cols": 3,
+        "calculated_rows": 4,
+        "x_cm": 54,
+        "y_cm": 0,
+        "assigned_w_cm": 31,
+        "assigned_d_cm": 13,
+        "assigned_h_cm": 7
+      }
+    ],
+    "layout_plan": {
+      "layout_id": "convenient_90x45_rule_v1",
+      "selected_zones": [
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6
+        },
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4
+        }
+      ],
+      "placement_order": [
+        "bras",
+        "socks_regular",
+        "panties"
+      ],
+      "rules_applied": [
+        "cells_grouped",
+        "bras_not_compressed",
+        "frequent_items_front",
+        "soft_zones_absorb_reserve"
+      ],
+      "reserve_policy": "reserve_to_edge_or_open_zone"
+    },
+    "reserve_zones": [
+      {
+        "x_cm": 85,
+        "y_cm": 0,
+        "w_cm": 5,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 36,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 13,
+        "w_cm": 31,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 13,
+        "w_cm": 5,
+        "d_cm": 32,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 61,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 56,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 25,
+        "w_cm": 25,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 36,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 25,
+        "w_cm": 31,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 25,
+        "w_cm": 5,
+        "d_cm": 20,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 90,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 85,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 54,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 0,
+        "y_cm": 30.5,
+        "w_cm": 29,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 61,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 56,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 29,
+        "y_cm": 30.5,
+        "w_cm": 25,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 36,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 54,
+        "y_cm": 30.5,
+        "w_cm": 31,
+        "d_cm": 14.5,
+        "h_cm": 15
+      },
+      {
+        "x_cm": 85,
+        "y_cm": 30.5,
+        "w_cm": 5,
+        "d_cm": 14.5,
+        "h_cm": 15
+      }
+    ],
+    "warnings": []
+  },
+  "debug_trace": {
+    "input": {
+      "drawerSize": {
+        "w_cm": 90,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      "storage_category": "underwear",
+      "items": [
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium"
+        },
+        {
+          "content_type": "bras",
+          "volume_level": "medium"
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium"
+        }
+      ],
+      "priority": "convenient",
+      "colorPreference": "not_important",
+      "space_type": "drawer",
+      "max_items": 3,
+      "unit_system": "cm",
+      "flow_variant": "A"
+    },
+    "validation_result": {
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "error_details": []
+    },
+    "counted_items": [
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs"
+      },
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items"
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items"
+      }
+    ],
+    "storage_requirements": [
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ]
+      },
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ]
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ]
+      }
+    ],
+    "generated_calculated_zones": [
+      {
+        "content_type": "socks_regular",
+        "volume_level": "medium",
+        "count": 16,
+        "count_unit": "pairs",
+        "storage_method": "roll",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 6,
+        "unit_d_cm": 6,
+        "unit_h_cm": 7,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 8,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 2,
+        "open_storage_penalty": "medium",
+        "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_4x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 13,
+            "count_max": 16,
+            "cols": 4,
+            "rows": 4,
+            "capacity": 16
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "socks_regular_cells_4x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "calculated_cols": 4,
+        "calculated_rows": 4
+      },
+      {
+        "content_type": "bras",
+        "volume_level": "medium",
+        "count": 6,
+        "count_unit": "items",
+        "storage_method": "delicate_stack",
+        "primary_division": "slots",
+        "alternative_division": "open",
+        "preferred_rigidity": "semi_rigid",
+        "unit_w_cm": 28,
+        "unit_d_cm": 4.5,
+        "unit_h_cm": 12,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0.5,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 6,
+        "can_rotate": false,
+        "can_split": true,
+        "max_slot_lanes": 2,
+        "slot_lane_gap_cm": 1,
+        "split_strategy": "balance_by_depth",
+        "notes": "Не сжимать чашки.",
+        "open_fallback_allowed": false,
+        "open_fallback_rank": 8,
+        "open_storage_penalty": "high",
+        "available_layout_options": [
+          {
+            "option_id": "slots_single_row",
+            "division_type": "slots",
+            "calculation_mode": "linear_depth",
+            "count_min": 1,
+            "count_max": 99
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "bras_slots_single_row",
+        "original_division_type": "slots",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6
+      },
+      {
+        "content_type": "panties",
+        "volume_level": "medium",
+        "count": 10,
+        "count_unit": "items",
+        "storage_method": "folded_squares_thin",
+        "primary_division": "cells",
+        "alternative_division": "open",
+        "preferred_rigidity": "soft",
+        "unit_w_cm": 10,
+        "unit_d_cm": 3,
+        "unit_h_cm": 6,
+        "needs_item_gap": true,
+        "item_gap": 0.5,
+        "item_gap_if_open": 0,
+        "side_clear": 0.5,
+        "fb_clear": 0.5,
+        "h_clear": 1,
+        "access_frequency": 9,
+        "can_rotate": true,
+        "can_split": true,
+        "open_fallback_allowed": true,
+        "open_fallback_rank": 1,
+        "open_storage_penalty": "low",
+        "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+        "available_layout_options": [
+          {
+            "option_id": "cells_3x4",
+            "division_type": "cells",
+            "calculation_mode": "fixed_grid",
+            "count_min": 10,
+            "count_max": 12,
+            "cols": 3,
+            "rows": 4,
+            "capacity": 12
+          },
+          {
+            "option_id": "open_single_section",
+            "division_type": "open",
+            "calculation_mode": "open_capacity_in_box",
+            "count_min": 1,
+            "count_max": 999
+          }
+        ],
+        "zone_id": "panties_cells_3x4",
+        "original_division_type": "cells",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "calculated_cols": 3,
+        "calculated_rows": 4
+      }
+    ],
+    "selected_layout_plan": {
+      "layout_id": "convenient_90x45_rule_v1",
+      "selected_zones": [
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6
+        },
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4
+        }
+      ],
+      "placement_order": [
+        "bras",
+        "socks_regular",
+        "panties"
+      ],
+      "rules_applied": [
+        "cells_grouped",
+        "bras_not_compressed",
+        "frequent_items_front",
+        "soft_zones_absorb_reserve"
+      ],
+      "reserve_policy": "reserve_to_edge_or_open_zone"
+    },
+    "initial_fit_result": {
+      "fit_status": "fit_all",
+      "placed_zones": [
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6,
+          "x_cm": 0,
+          "y_cm": 0,
+          "assigned_w_cm": 29,
+          "assigned_d_cm": 30.5,
+          "assigned_h_cm": 13
+        },
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4,
+          "x_cm": 29,
+          "y_cm": 0,
+          "assigned_w_cm": 25,
+          "assigned_d_cm": 25,
+          "assigned_h_cm": 8
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4,
+          "x_cm": 54,
+          "y_cm": 0,
+          "assigned_w_cm": 31,
+          "assigned_d_cm": 13,
+          "assigned_h_cm": 7
+        }
+      ],
+      "unplaced_zones": [],
+      "failed_zones": [],
+      "best_attempt": {
+        "placed_count": 3
+      },
+      "missing_width_cm": 0,
+      "missing_depth_cm": 0,
+      "missing_height_cm": 0,
+      "used_width_cm": 85,
+      "used_depth_cm": 30.5,
+      "used_height_cm": 13,
+      "overflow_width_cm": 0,
+      "overflow_depth_cm": 0,
+      "overflow_height_cm": 0,
+      "free_rectangles": [
+        {
+          "x_cm": 85,
+          "y_cm": 0,
+          "w_cm": 5,
+          "d_cm": 45,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 36,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 31,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 13,
+          "w_cm": 5,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 61,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 56,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 25,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 36,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 31,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 25,
+          "w_cm": 5,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 90,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 85,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 54,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 29,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 61,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 56,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 25,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 36,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 31,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 30.5,
+          "w_cm": 5,
+          "d_cm": 14.5,
+          "h_cm": 15
+        }
+      ],
+      "available_box": {
+        "x_cm": 85,
+        "y_cm": 0,
+        "w_cm": 5,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      "fit_notes": [
+        "All calculated zones fit deterministic 2D free-rectangle placement before SKU matching."
+      ],
+      "placement_attempts": [
+        {
+          "content_type": "bras",
+          "zone_id": "bras_slots_single_row",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 0,
+            "y_cm": 0,
+            "w_cm": 90,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        },
+        {
+          "content_type": "socks_regular",
+          "zone_id": "socks_regular_cells_4x4",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 29,
+            "y_cm": 0,
+            "w_cm": 61,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        },
+        {
+          "content_type": "panties",
+          "zone_id": "panties_cells_3x4",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 54,
+            "y_cm": 0,
+            "w_cm": 36,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        }
+      ]
+    },
+    "adjustment_result": null,
+    "final_fit_result": {
+      "fit_status": "fit_all",
+      "placed_zones": [
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6,
+          "x_cm": 0,
+          "y_cm": 0,
+          "assigned_w_cm": 29,
+          "assigned_d_cm": 30.5,
+          "assigned_h_cm": 13
+        },
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4,
+          "x_cm": 29,
+          "y_cm": 0,
+          "assigned_w_cm": 25,
+          "assigned_d_cm": 25,
+          "assigned_h_cm": 8
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4,
+          "x_cm": 54,
+          "y_cm": 0,
+          "assigned_w_cm": 31,
+          "assigned_d_cm": 13,
+          "assigned_h_cm": 7
+        }
+      ],
+      "unplaced_zones": [],
+      "failed_zones": [],
+      "best_attempt": {
+        "placed_count": 3
+      },
+      "missing_width_cm": 0,
+      "missing_depth_cm": 0,
+      "missing_height_cm": 0,
+      "used_width_cm": 85,
+      "used_depth_cm": 30.5,
+      "used_height_cm": 13,
+      "overflow_width_cm": 0,
+      "overflow_depth_cm": 0,
+      "overflow_height_cm": 0,
+      "free_rectangles": [
+        {
+          "x_cm": 85,
+          "y_cm": 0,
+          "w_cm": 5,
+          "d_cm": 45,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 36,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 31,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 13,
+          "w_cm": 5,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 61,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 56,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 25,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 36,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 31,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 25,
+          "w_cm": 5,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 90,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 85,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 54,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 29,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 61,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 56,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 25,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 36,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 31,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 30.5,
+          "w_cm": 5,
+          "d_cm": 14.5,
+          "h_cm": 15
+        }
+      ],
+      "available_box": {
+        "x_cm": 85,
+        "y_cm": 0,
+        "w_cm": 5,
+        "d_cm": 45,
+        "h_cm": 15
+      },
+      "fit_notes": [
+        "All calculated zones fit deterministic 2D free-rectangle placement before SKU matching."
+      ],
+      "placement_attempts": [
+        {
+          "content_type": "bras",
+          "zone_id": "bras_slots_single_row",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 0,
+            "y_cm": 0,
+            "w_cm": 90,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        },
+        {
+          "content_type": "socks_regular",
+          "zone_id": "socks_regular_cells_4x4",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 29,
+            "y_cm": 0,
+            "w_cm": 61,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        },
+        {
+          "content_type": "panties",
+          "zone_id": "panties_cells_3x4",
+          "placed": true,
+          "selected_rect": {
+            "x_cm": 54,
+            "y_cm": 0,
+            "w_cm": 36,
+            "d_cm": 45,
+            "h_cm": 15
+          }
+        }
+      ]
+    },
+    "assigned_zones": [
+      {
+        "zone_id": "bras_slots_single_row",
+        "content_type": "bras",
+        "division_type": "slots",
+        "x_cm": 0,
+        "y_cm": 0,
+        "assigned_w_cm": 29,
+        "assigned_d_cm": 30.5,
+        "assigned_h_cm": 13
+      },
+      {
+        "zone_id": "socks_regular_cells_4x4",
+        "content_type": "socks_regular",
+        "division_type": "cells",
+        "x_cm": 29,
+        "y_cm": 0,
+        "assigned_w_cm": 25,
+        "assigned_d_cm": 25,
+        "assigned_h_cm": 8
+      },
+      {
+        "zone_id": "panties_cells_3x4",
+        "content_type": "panties",
+        "division_type": "cells",
+        "x_cm": 54,
+        "y_cm": 0,
+        "assigned_w_cm": 31,
+        "assigned_d_cm": 13,
+        "assigned_h_cm": 7
+      }
+    ],
+    "scheme_payload": {
+      "scheme_id": "scheme_90x45_base_calibration",
+      "fit_status": "fit_all",
+      "selected_calculated_zones": [
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4
+        },
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4
+        }
+      ],
+      "assigned_zones": [
+        {
+          "content_type": "bras",
+          "volume_level": "medium",
+          "count": 6,
+          "count_unit": "items",
+          "storage_method": "delicate_stack",
+          "primary_division": "slots",
+          "alternative_division": "open",
+          "preferred_rigidity": "semi_rigid",
+          "unit_w_cm": 28,
+          "unit_d_cm": 4.5,
+          "unit_h_cm": 12,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0.5,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 6,
+          "can_rotate": false,
+          "can_split": true,
+          "max_slot_lanes": 2,
+          "slot_lane_gap_cm": 1,
+          "split_strategy": "balance_by_depth",
+          "notes": "Не сжимать чашки.",
+          "open_fallback_allowed": false,
+          "open_fallback_rank": 8,
+          "open_storage_penalty": "high",
+          "available_layout_options": [
+            {
+              "option_id": "slots_single_row",
+              "division_type": "slots",
+              "calculation_mode": "linear_depth",
+              "count_min": 1,
+              "count_max": 99
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "bras_slots_single_row",
+          "original_division_type": "slots",
+          "division_type": "slots",
+          "option_id": "slots_single_row",
+          "calculation_mode": "linear_depth",
+          "zone_w_cm": 29,
+          "zone_d_cm": 30.5,
+          "zone_h_cm": 13,
+          "capacity": 6,
+          "x_cm": 0,
+          "y_cm": 0,
+          "assigned_w_cm": 29,
+          "assigned_d_cm": 30.5,
+          "assigned_h_cm": 13
+        },
+        {
+          "content_type": "socks_regular",
+          "volume_level": "medium",
+          "count": 16,
+          "count_unit": "pairs",
+          "storage_method": "roll",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 6,
+          "unit_d_cm": 6,
+          "unit_h_cm": 7,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 8,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 2,
+          "open_storage_penalty": "medium",
+          "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_4x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 13,
+              "count_max": 16,
+              "cols": 4,
+              "rows": 4,
+              "capacity": 16
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "socks_regular_cells_4x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_4x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 25,
+          "zone_d_cm": 25,
+          "zone_h_cm": 8,
+          "capacity": 16,
+          "calculated_cols": 4,
+          "calculated_rows": 4,
+          "x_cm": 29,
+          "y_cm": 0,
+          "assigned_w_cm": 25,
+          "assigned_d_cm": 25,
+          "assigned_h_cm": 8
+        },
+        {
+          "content_type": "panties",
+          "volume_level": "medium",
+          "count": 10,
+          "count_unit": "items",
+          "storage_method": "folded_squares_thin",
+          "primary_division": "cells",
+          "alternative_division": "open",
+          "preferred_rigidity": "soft",
+          "unit_w_cm": 10,
+          "unit_d_cm": 3,
+          "unit_h_cm": 6,
+          "needs_item_gap": true,
+          "item_gap": 0.5,
+          "item_gap_if_open": 0,
+          "side_clear": 0.5,
+          "fb_clear": 0.5,
+          "h_clear": 1,
+          "access_frequency": 9,
+          "can_rotate": true,
+          "can_split": true,
+          "open_fallback_allowed": true,
+          "open_fallback_rank": 1,
+          "open_storage_penalty": "low",
+          "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+          "available_layout_options": [
+            {
+              "option_id": "cells_3x4",
+              "division_type": "cells",
+              "calculation_mode": "fixed_grid",
+              "count_min": 10,
+              "count_max": 12,
+              "cols": 3,
+              "rows": 4,
+              "capacity": 12
+            },
+            {
+              "option_id": "open_single_section",
+              "division_type": "open",
+              "calculation_mode": "open_capacity_in_box",
+              "count_min": 1,
+              "count_max": 999
+            }
+          ],
+          "zone_id": "panties_cells_3x4",
+          "original_division_type": "cells",
+          "division_type": "cells",
+          "option_id": "cells_3x4",
+          "calculation_mode": "fixed_grid",
+          "zone_w_cm": 31,
+          "zone_d_cm": 13,
+          "zone_h_cm": 7,
+          "capacity": 12,
+          "calculated_cols": 3,
+          "calculated_rows": 4,
+          "x_cm": 54,
+          "y_cm": 0,
+          "assigned_w_cm": 31,
+          "assigned_d_cm": 13,
+          "assigned_h_cm": 7
+        }
+      ],
+      "layout_plan": {
+        "layout_id": "convenient_90x45_rule_v1",
+        "selected_zones": [
+          {
+            "content_type": "bras",
+            "volume_level": "medium",
+            "count": 6,
+            "count_unit": "items",
+            "storage_method": "delicate_stack",
+            "primary_division": "slots",
+            "alternative_division": "open",
+            "preferred_rigidity": "semi_rigid",
+            "unit_w_cm": 28,
+            "unit_d_cm": 4.5,
+            "unit_h_cm": 12,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0.5,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 6,
+            "can_rotate": false,
+            "can_split": true,
+            "max_slot_lanes": 2,
+            "slot_lane_gap_cm": 1,
+            "split_strategy": "balance_by_depth",
+            "notes": "Не сжимать чашки.",
+            "open_fallback_allowed": false,
+            "open_fallback_rank": 8,
+            "open_storage_penalty": "high",
+            "available_layout_options": [
+              {
+                "option_id": "slots_single_row",
+                "division_type": "slots",
+                "calculation_mode": "linear_depth",
+                "count_min": 1,
+                "count_max": 99
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "bras_slots_single_row",
+            "original_division_type": "slots",
+            "division_type": "slots",
+            "option_id": "slots_single_row",
+            "calculation_mode": "linear_depth",
+            "zone_w_cm": 29,
+            "zone_d_cm": 30.5,
+            "zone_h_cm": 13,
+            "capacity": 6
+          },
+          {
+            "content_type": "socks_regular",
+            "volume_level": "medium",
+            "count": 16,
+            "count_unit": "pairs",
+            "storage_method": "roll",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 6,
+            "unit_d_cm": 6,
+            "unit_h_cm": 7,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 8,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 2,
+            "open_storage_penalty": "medium",
+            "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_4x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 13,
+                "count_max": 16,
+                "cols": 4,
+                "rows": 4,
+                "capacity": 16
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "socks_regular_cells_4x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_4x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 25,
+            "zone_d_cm": 25,
+            "zone_h_cm": 8,
+            "capacity": 16,
+            "calculated_cols": 4,
+            "calculated_rows": 4
+          },
+          {
+            "content_type": "panties",
+            "volume_level": "medium",
+            "count": 10,
+            "count_unit": "items",
+            "storage_method": "folded_squares_thin",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 10,
+            "unit_d_cm": 3,
+            "unit_h_cm": 6,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 9,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 1,
+            "open_storage_penalty": "low",
+            "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_3x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 10,
+                "count_max": 12,
+                "cols": 3,
+                "rows": 4,
+                "capacity": 12
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "panties_cells_3x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_3x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 31,
+            "zone_d_cm": 13,
+            "zone_h_cm": 7,
+            "capacity": 12,
+            "calculated_cols": 3,
+            "calculated_rows": 4
+          }
+        ],
+        "placement_order": [
+          "bras",
+          "socks_regular",
+          "panties"
+        ],
+        "rules_applied": [
+          "cells_grouped",
+          "bras_not_compressed",
+          "frequent_items_front",
+          "soft_zones_absorb_reserve"
+        ],
+        "reserve_policy": "reserve_to_edge_or_open_zone"
+      },
+      "reserve_zones": [
+        {
+          "x_cm": 85,
+          "y_cm": 0,
+          "w_cm": 5,
+          "d_cm": 45,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 36,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 13,
+          "w_cm": 31,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 13,
+          "w_cm": 5,
+          "d_cm": 32,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 61,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 56,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 25,
+          "w_cm": 25,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 36,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 25,
+          "w_cm": 31,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 25,
+          "w_cm": 5,
+          "d_cm": 20,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 90,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 85,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 54,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 0,
+          "y_cm": 30.5,
+          "w_cm": 29,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 61,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 56,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 29,
+          "y_cm": 30.5,
+          "w_cm": 25,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 36,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 54,
+          "y_cm": 30.5,
+          "w_cm": 31,
+          "d_cm": 14.5,
+          "h_cm": 15
+        },
+        {
+          "x_cm": 85,
+          "y_cm": 30.5,
+          "w_cm": 5,
+          "d_cm": 14.5,
+          "h_cm": 15
+        }
+      ],
+      "warnings": []
+    },
+    "sku_matching_result": [
+      {
+        "zone_id": "socks_regular_cells_4x4",
+        "content_type": "socks_regular",
+        "match_status": "no_match",
+        "candidates": []
+      },
+      {
+        "zone_id": "bras_slots_single_row",
+        "content_type": "bras",
+        "match_status": "no_match",
+        "candidates": []
+      },
+      {
+        "zone_id": "panties_cells_3x4",
+        "content_type": "panties",
+        "match_status": "no_match",
+        "candidates": []
+      }
+    ],
+    "sku_fit_result": {
+      "sku_fit_status": "no_sku_matches",
+      "matched_skus_final": [],
+      "failed_skus": [],
+      "missing_width_cm": 0,
+      "missing_depth_cm": 0,
+      "missing_height_cm": 0,
+      "alternative_sku_candidates": [],
+      "needs_adjustment": false,
+      "scheme_fit_status": "fit_all"
+    },
+    "final_result_payload": {
+      "scheme": {
+        "scheme_id": "scheme_90x45_base_calibration",
+        "fit_status": "fit_all",
+        "selected_calculated_zones": [
+          {
+            "content_type": "socks_regular",
+            "volume_level": "medium",
+            "count": 16,
+            "count_unit": "pairs",
+            "storage_method": "roll",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 6,
+            "unit_d_cm": 6,
+            "unit_h_cm": 7,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 8,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 2,
+            "open_storage_penalty": "medium",
+            "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_4x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 13,
+                "count_max": 16,
+                "cols": 4,
+                "rows": 4,
+                "capacity": 16
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "socks_regular_cells_4x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_4x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 25,
+            "zone_d_cm": 25,
+            "zone_h_cm": 8,
+            "capacity": 16,
+            "calculated_cols": 4,
+            "calculated_rows": 4
+          },
+          {
+            "content_type": "bras",
+            "volume_level": "medium",
+            "count": 6,
+            "count_unit": "items",
+            "storage_method": "delicate_stack",
+            "primary_division": "slots",
+            "alternative_division": "open",
+            "preferred_rigidity": "semi_rigid",
+            "unit_w_cm": 28,
+            "unit_d_cm": 4.5,
+            "unit_h_cm": 12,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0.5,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 6,
+            "can_rotate": false,
+            "can_split": true,
+            "max_slot_lanes": 2,
+            "slot_lane_gap_cm": 1,
+            "split_strategy": "balance_by_depth",
+            "notes": "Не сжимать чашки.",
+            "open_fallback_allowed": false,
+            "open_fallback_rank": 8,
+            "open_storage_penalty": "high",
+            "available_layout_options": [
+              {
+                "option_id": "slots_single_row",
+                "division_type": "slots",
+                "calculation_mode": "linear_depth",
+                "count_min": 1,
+                "count_max": 99
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "bras_slots_single_row",
+            "original_division_type": "slots",
+            "division_type": "slots",
+            "option_id": "slots_single_row",
+            "calculation_mode": "linear_depth",
+            "zone_w_cm": 29,
+            "zone_d_cm": 30.5,
+            "zone_h_cm": 13,
+            "capacity": 6
+          },
+          {
+            "content_type": "panties",
+            "volume_level": "medium",
+            "count": 10,
+            "count_unit": "items",
+            "storage_method": "folded_squares_thin",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 10,
+            "unit_d_cm": 3,
+            "unit_h_cm": 6,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 9,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 1,
+            "open_storage_penalty": "low",
+            "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_3x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 10,
+                "count_max": 12,
+                "cols": 3,
+                "rows": 4,
+                "capacity": 12
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "panties_cells_3x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_3x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 31,
+            "zone_d_cm": 13,
+            "zone_h_cm": 7,
+            "capacity": 12,
+            "calculated_cols": 3,
+            "calculated_rows": 4
+          }
+        ],
+        "assigned_zones": [
+          {
+            "content_type": "bras",
+            "volume_level": "medium",
+            "count": 6,
+            "count_unit": "items",
+            "storage_method": "delicate_stack",
+            "primary_division": "slots",
+            "alternative_division": "open",
+            "preferred_rigidity": "semi_rigid",
+            "unit_w_cm": 28,
+            "unit_d_cm": 4.5,
+            "unit_h_cm": 12,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0.5,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 6,
+            "can_rotate": false,
+            "can_split": true,
+            "max_slot_lanes": 2,
+            "slot_lane_gap_cm": 1,
+            "split_strategy": "balance_by_depth",
+            "notes": "Не сжимать чашки.",
+            "open_fallback_allowed": false,
+            "open_fallback_rank": 8,
+            "open_storage_penalty": "high",
+            "available_layout_options": [
+              {
+                "option_id": "slots_single_row",
+                "division_type": "slots",
+                "calculation_mode": "linear_depth",
+                "count_min": 1,
+                "count_max": 99
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "bras_slots_single_row",
+            "original_division_type": "slots",
+            "division_type": "slots",
+            "option_id": "slots_single_row",
+            "calculation_mode": "linear_depth",
+            "zone_w_cm": 29,
+            "zone_d_cm": 30.5,
+            "zone_h_cm": 13,
+            "capacity": 6,
+            "x_cm": 0,
+            "y_cm": 0,
+            "assigned_w_cm": 29,
+            "assigned_d_cm": 30.5,
+            "assigned_h_cm": 13
+          },
+          {
+            "content_type": "socks_regular",
+            "volume_level": "medium",
+            "count": 16,
+            "count_unit": "pairs",
+            "storage_method": "roll",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 6,
+            "unit_d_cm": 6,
+            "unit_h_cm": 7,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 8,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 2,
+            "open_storage_penalty": "medium",
+            "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_4x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 13,
+                "count_max": 16,
+                "cols": 4,
+                "rows": 4,
+                "capacity": 16
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "socks_regular_cells_4x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_4x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 25,
+            "zone_d_cm": 25,
+            "zone_h_cm": 8,
+            "capacity": 16,
+            "calculated_cols": 4,
+            "calculated_rows": 4,
+            "x_cm": 29,
+            "y_cm": 0,
+            "assigned_w_cm": 25,
+            "assigned_d_cm": 25,
+            "assigned_h_cm": 8
+          },
+          {
+            "content_type": "panties",
+            "volume_level": "medium",
+            "count": 10,
+            "count_unit": "items",
+            "storage_method": "folded_squares_thin",
+            "primary_division": "cells",
+            "alternative_division": "open",
+            "preferred_rigidity": "soft",
+            "unit_w_cm": 10,
+            "unit_d_cm": 3,
+            "unit_h_cm": 6,
+            "needs_item_gap": true,
+            "item_gap": 0.5,
+            "item_gap_if_open": 0,
+            "side_clear": 0.5,
+            "fb_clear": 0.5,
+            "h_clear": 1,
+            "access_frequency": 9,
+            "can_rotate": true,
+            "can_split": true,
+            "open_fallback_allowed": true,
+            "open_fallback_rank": 1,
+            "open_storage_penalty": "low",
+            "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+            "available_layout_options": [
+              {
+                "option_id": "cells_3x4",
+                "division_type": "cells",
+                "calculation_mode": "fixed_grid",
+                "count_min": 10,
+                "count_max": 12,
+                "cols": 3,
+                "rows": 4,
+                "capacity": 12
+              },
+              {
+                "option_id": "open_single_section",
+                "division_type": "open",
+                "calculation_mode": "open_capacity_in_box",
+                "count_min": 1,
+                "count_max": 999
+              }
+            ],
+            "zone_id": "panties_cells_3x4",
+            "original_division_type": "cells",
+            "division_type": "cells",
+            "option_id": "cells_3x4",
+            "calculation_mode": "fixed_grid",
+            "zone_w_cm": 31,
+            "zone_d_cm": 13,
+            "zone_h_cm": 7,
+            "capacity": 12,
+            "calculated_cols": 3,
+            "calculated_rows": 4,
+            "x_cm": 54,
+            "y_cm": 0,
+            "assigned_w_cm": 31,
+            "assigned_d_cm": 13,
+            "assigned_h_cm": 7
+          }
+        ],
+        "layout_plan": {
+          "layout_id": "convenient_90x45_rule_v1",
+          "selected_zones": [
+            {
+              "content_type": "bras",
+              "volume_level": "medium",
+              "count": 6,
+              "count_unit": "items",
+              "storage_method": "delicate_stack",
+              "primary_division": "slots",
+              "alternative_division": "open",
+              "preferred_rigidity": "semi_rigid",
+              "unit_w_cm": 28,
+              "unit_d_cm": 4.5,
+              "unit_h_cm": 12,
+              "needs_item_gap": true,
+              "item_gap": 0.5,
+              "item_gap_if_open": 0.5,
+              "side_clear": 0.5,
+              "fb_clear": 0.5,
+              "h_clear": 1,
+              "access_frequency": 6,
+              "can_rotate": false,
+              "can_split": true,
+              "max_slot_lanes": 2,
+              "slot_lane_gap_cm": 1,
+              "split_strategy": "balance_by_depth",
+              "notes": "Не сжимать чашки.",
+              "open_fallback_allowed": false,
+              "open_fallback_rank": 8,
+              "open_storage_penalty": "high",
+              "available_layout_options": [
+                {
+                  "option_id": "slots_single_row",
+                  "division_type": "slots",
+                  "calculation_mode": "linear_depth",
+                  "count_min": 1,
+                  "count_max": 99
+                },
+                {
+                  "option_id": "open_single_section",
+                  "division_type": "open",
+                  "calculation_mode": "open_capacity_in_box",
+                  "count_min": 1,
+                  "count_max": 999
+                }
+              ],
+              "zone_id": "bras_slots_single_row",
+              "original_division_type": "slots",
+              "division_type": "slots",
+              "option_id": "slots_single_row",
+              "calculation_mode": "linear_depth",
+              "zone_w_cm": 29,
+              "zone_d_cm": 30.5,
+              "zone_h_cm": 13,
+              "capacity": 6
+            },
+            {
+              "content_type": "socks_regular",
+              "volume_level": "medium",
+              "count": 16,
+              "count_unit": "pairs",
+              "storage_method": "roll",
+              "primary_division": "cells",
+              "alternative_division": "open",
+              "preferred_rigidity": "soft",
+              "unit_w_cm": 6,
+              "unit_d_cm": 6,
+              "unit_h_cm": 7,
+              "needs_item_gap": true,
+              "item_gap": 0.5,
+              "item_gap_if_open": 0,
+              "side_clear": 0.5,
+              "fb_clear": 0.5,
+              "h_clear": 1,
+              "access_frequency": 8,
+              "can_rotate": true,
+              "can_split": true,
+              "open_fallback_allowed": true,
+              "open_fallback_rank": 2,
+              "open_storage_penalty": "medium",
+              "open_fallback_notes": "Можно хранить роллами в открытой секции, но ячейки лучше удерживают пары.",
+              "available_layout_options": [
+                {
+                  "option_id": "cells_4x4",
+                  "division_type": "cells",
+                  "calculation_mode": "fixed_grid",
+                  "count_min": 13,
+                  "count_max": 16,
+                  "cols": 4,
+                  "rows": 4,
+                  "capacity": 16
+                },
+                {
+                  "option_id": "open_single_section",
+                  "division_type": "open",
+                  "calculation_mode": "open_capacity_in_box",
+                  "count_min": 1,
+                  "count_max": 999
+                }
+              ],
+              "zone_id": "socks_regular_cells_4x4",
+              "original_division_type": "cells",
+              "division_type": "cells",
+              "option_id": "cells_4x4",
+              "calculation_mode": "fixed_grid",
+              "zone_w_cm": 25,
+              "zone_d_cm": 25,
+              "zone_h_cm": 8,
+              "capacity": 16,
+              "calculated_cols": 4,
+              "calculated_rows": 4
+            },
+            {
+              "content_type": "panties",
+              "volume_level": "medium",
+              "count": 10,
+              "count_unit": "items",
+              "storage_method": "folded_squares_thin",
+              "primary_division": "cells",
+              "alternative_division": "open",
+              "preferred_rigidity": "soft",
+              "unit_w_cm": 10,
+              "unit_d_cm": 3,
+              "unit_h_cm": 6,
+              "needs_item_gap": true,
+              "item_gap": 0.5,
+              "item_gap_if_open": 0,
+              "side_clear": 0.5,
+              "fb_clear": 0.5,
+              "h_clear": 1,
+              "access_frequency": 9,
+              "can_rotate": true,
+              "can_split": true,
+              "open_fallback_allowed": true,
+              "open_fallback_rank": 1,
+              "open_storage_penalty": "low",
+              "open_fallback_notes": "Можно сложить прямоугольниками и поставить в 2–3 ряда в открытой секции.",
+              "available_layout_options": [
+                {
+                  "option_id": "cells_3x4",
+                  "division_type": "cells",
+                  "calculation_mode": "fixed_grid",
+                  "count_min": 10,
+                  "count_max": 12,
+                  "cols": 3,
+                  "rows": 4,
+                  "capacity": 12
+                },
+                {
+                  "option_id": "open_single_section",
+                  "division_type": "open",
+                  "calculation_mode": "open_capacity_in_box",
+                  "count_min": 1,
+                  "count_max": 999
+                }
+              ],
+              "zone_id": "panties_cells_3x4",
+              "original_division_type": "cells",
+              "division_type": "cells",
+              "option_id": "cells_3x4",
+              "calculation_mode": "fixed_grid",
+              "zone_w_cm": 31,
+              "zone_d_cm": 13,
+              "zone_h_cm": 7,
+              "capacity": 12,
+              "calculated_cols": 3,
+              "calculated_rows": 4
+            }
+          ],
+          "placement_order": [
+            "bras",
+            "socks_regular",
+            "panties"
+          ],
+          "rules_applied": [
+            "cells_grouped",
+            "bras_not_compressed",
+            "frequent_items_front",
+            "soft_zones_absorb_reserve"
+          ],
+          "reserve_policy": "reserve_to_edge_or_open_zone"
+        },
+        "reserve_zones": [
+          {
+            "x_cm": 85,
+            "y_cm": 0,
+            "w_cm": 5,
+            "d_cm": 45,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 13,
+            "w_cm": 36,
+            "d_cm": 32,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 13,
+            "w_cm": 31,
+            "d_cm": 32,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 85,
+            "y_cm": 13,
+            "w_cm": 5,
+            "d_cm": 32,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 25,
+            "w_cm": 61,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 25,
+            "w_cm": 56,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 25,
+            "w_cm": 25,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 25,
+            "w_cm": 36,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 25,
+            "w_cm": 31,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 85,
+            "y_cm": 25,
+            "w_cm": 5,
+            "d_cm": 20,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 0,
+            "y_cm": 30.5,
+            "w_cm": 90,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 0,
+            "y_cm": 30.5,
+            "w_cm": 85,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 0,
+            "y_cm": 30.5,
+            "w_cm": 54,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 0,
+            "y_cm": 30.5,
+            "w_cm": 29,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 30.5,
+            "w_cm": 61,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 30.5,
+            "w_cm": 56,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 29,
+            "y_cm": 30.5,
+            "w_cm": 25,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 30.5,
+            "w_cm": 36,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 54,
+            "y_cm": 30.5,
+            "w_cm": 31,
+            "d_cm": 14.5,
+            "h_cm": 15
+          },
+          {
+            "x_cm": 85,
+            "y_cm": 30.5,
+            "w_cm": 5,
+            "d_cm": 14.5,
+            "h_cm": 15
+          }
+        ],
+        "warnings": []
+      },
+      "what_to_store_where": [
+        {
+          "content_type": "bras",
+          "zone_id": "bras_slots_single_row",
+          "division_type": "slots",
+          "instruction": "Хранить в ряд, не сжимая форму."
+        },
+        {
+          "content_type": "socks_regular",
+          "zone_id": "socks_regular_cells_4x4",
+          "division_type": "cells",
+          "instruction": "Одна единица в одной ячейке."
+        },
+        {
+          "content_type": "panties",
+          "zone_id": "panties_cells_3x4",
+          "division_type": "cells",
+          "instruction": "Одна единица в одной ячейке."
+        }
+      ],
+      "why_this_layout": [
+        "cells_grouped",
+        "bras_not_compressed",
+        "frequent_items_front",
+        "soft_zones_absorb_reserve"
+      ],
+      "products": [
+        {
+          "zone_id": "socks_regular_cells_4x4",
+          "content_type": "socks_regular",
+          "match_status": "no_match",
+          "candidates": []
+        },
+        {
+          "zone_id": "bras_slots_single_row",
+          "content_type": "bras",
+          "match_status": "no_match",
+          "candidates": []
+        },
+        {
+          "zone_id": "panties_cells_3x4",
+          "content_type": "panties",
+          "match_status": "no_match",
+          "candidates": []
+        }
+      ],
+      "sku_fit": {
+        "sku_fit_status": "no_sku_matches",
+        "matched_skus_final": [],
+        "failed_skus": [],
+        "missing_width_cm": 0,
+        "missing_depth_cm": 0,
+        "missing_height_cm": 0,
+        "alternative_sku_candidates": [],
+        "needs_adjustment": false,
+        "scheme_fit_status": "fit_all"
+      },
+      "warnings": []
+    }
+  },
+  "separate_summary": {
+    "final_fit_status": "fit_all",
+    "selected_zones": [
+      {
+        "zone_id": "bras_slots_single_row",
+        "content_type": "bras",
+        "division_type": "slots",
+        "option_id": "slots_single_row",
+        "calculation_mode": "linear_depth",
+        "zone_w_cm": 29,
+        "zone_d_cm": 30.5,
+        "zone_h_cm": 13,
+        "capacity": 6,
+        "required_count": 6
+      },
+      {
+        "zone_id": "socks_regular_cells_4x4",
+        "content_type": "socks_regular",
+        "division_type": "cells",
+        "option_id": "cells_4x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 25,
+        "zone_d_cm": 25,
+        "zone_h_cm": 8,
+        "capacity": 16,
+        "required_count": 16
+      },
+      {
+        "zone_id": "panties_cells_3x4",
+        "content_type": "panties",
+        "division_type": "cells",
+        "option_id": "cells_3x4",
+        "calculation_mode": "fixed_grid",
+        "zone_w_cm": 31,
+        "zone_d_cm": 13,
+        "zone_h_cm": 7,
+        "capacity": 12,
+        "required_count": 10
+      }
+    ],
+    "assigned_zones": [
+      {
+        "zone_id": "bras_slots_single_row",
+        "content_type": "bras",
+        "division_type": "slots",
+        "x_cm": 0,
+        "y_cm": 0,
+        "assigned_w_cm": 29,
+        "assigned_d_cm": 30.5,
+        "assigned_h_cm": 13
+      },
+      {
+        "zone_id": "socks_regular_cells_4x4",
+        "content_type": "socks_regular",
+        "division_type": "cells",
+        "x_cm": 29,
+        "y_cm": 0,
+        "assigned_w_cm": 25,
+        "assigned_d_cm": 25,
+        "assigned_h_cm": 8
+      },
+      {
+        "zone_id": "panties_cells_3x4",
+        "content_type": "panties",
+        "division_type": "cells",
+        "x_cm": 54,
+        "y_cm": 0,
+        "assigned_w_cm": 31,
+        "assigned_d_cm": 13,
+        "assigned_h_cm": 7
+      }
+    ],
+    "open_fallback_used": false,
+    "selected_open_fallback_category": null,
+    "available_box_used_for_open_fallback": null,
+    "open_capacity": null,
+    "required_count": null
+  },
+  "open_fallback_summary": {
+    "final_fit_status": "fit_all",
+    "open_fallback_used": false,
+    "selected_open_fallback_category": null,
+    "available_box_used_for_open_fallback": null,
+    "open_capacity": null,
+    "required_count": null,
+    "converted_open_categories": []
+  }
+}
