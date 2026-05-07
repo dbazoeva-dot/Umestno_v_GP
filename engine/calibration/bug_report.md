@@ -11,13 +11,37 @@ Date: 2026-05-06
 
 ## 1. Library Coverage Gap (Critical)
 
-**14 content types exist in source ABCD xlsx but are absent from runtime:**
+All 21 content types are **present in both source A and source B** (xlsx). The problem is that only 7 of them exist in the runtime `defaultLibraries.ts`.
 
-Underwear: `bra_wired`, `bra_soft`, `bra_sport`, `thongs`, `socks_sport`, `socks_knee_high`, `stockings`
-Clothing: `shorts`, `leggings`, `homewear`, `sports_tops`, `nightgowns`
-Accessories: `belts`, `scarves`, `sweaters` (accessories group entirely absent)
+The source uses `socks`; runtime uses the alias `socks_regular` — treated as matched.
 
-**Impact:** Scenarios 4 and 6 return `VALIDATION_FAILED` for `belts`, `scarves`, `sweaters` — these content types are not registered in `allowedByCategory` nor in any ABCD table. The engine correctly rejects them, but the runtime library is structurally incomplete.
+| content_type | src_A | src_B | runtime_A | runtime_B | primary_div | dims (w×d×h cm) | runtime_supported |
+|---|---|---|---|---|---|---|---|
+| belts | ✓ | ✓ | ✗ | ✗ | cells | 8×8×5 | **NO** |
+| boxers | ✓ | ✓ | ✓ | ✓ | cells | 12×5×10 | YES |
+| bras | ✓ | ✓ | ✓ | ✓ | slots | 28×4.5×12 | YES |
+| jeans | ✓ | ✓ | ✓ | ✓ | slots | 25×10×12 | YES |
+| jewelry_large | ✓ | ✓ | ✗ | ✗ | cells | 8×8×4 | **NO** |
+| jewelry_small | ✓ | ✓ | ✗ | ✗ | cells | 3×3×2.5 | **NO** |
+| leggings | ✓ | ✓ | ✗ | ✗ | slots | 18×8×10 | **NO** |
+| longsleeves | ✓ | ✓ | ✗ | ✗ | slots | 20×8×10 | **NO** |
+| nightgowns | ✓ | ✓ | ✗ | ✗ | slots | 20×8×10 | **NO** |
+| pajamas | ✓ | ✓ | ✗ | ✗ | slots | 22×13×12 | **NO** |
+| panties | ✓ | ✓ | ✓ | ✓ | cells | 10×3×9 | YES |
+| scarves | ✓ | ✓ | ✗ | ✗ | cells | 15×5×8 | **NO** |
+| shorts | ✓ | ✓ | ✗ | ✗ | slots | 20×8×10 | **NO** |
+| socks (→socks_regular) | ✓ | ✓ | ✓ | ✓ | cells | 6×6×8 | YES |
+| sport_tops | ✓ | ✓ | ✗ | ✗ | cells | 15×4×10 | **NO** |
+| sweaters | ✓ | ✓ | ✗ | ✗ | slots | 25×15×14 | **NO** |
+| swimwear | ✓ | ✓ | ✗ | ✗ | cells | 15×5×8 | **NO** |
+| thermals | ✓ | ✓ | ✗ | ✗ | open | 22×13×12 | **NO** |
+| ties | ✓ | ✓ | ✗ | ✗ | cells | 8×8×4 | **NO** |
+| tights | ✓ | ✓ | ✓ | ✓ | open | 10×10×8 | YES |
+| tshirts | ✓ | ✓ | ✓ | ✓ | slots | 20×5×10 | YES |
+
+**14 content types are absent from runtime A and B** — present in source but not implemented in `defaultLibraries.ts`. The engine has no volume counts, no storage profiles, and no zone options for them.
+
+**Impact:** Scenarios 4 and 6 return `VALIDATION_FAILED` for `belts`, `scarves`, `sweaters` — they exist in source A+B but are missing from runtime A+B and also absent from `allowedByCategory` in `validateInput.ts`. The engine correctly rejects them given current runtime state, but this reflects an incomplete port from the source library.
 
 ---
 
