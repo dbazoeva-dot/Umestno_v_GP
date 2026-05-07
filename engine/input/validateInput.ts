@@ -1,8 +1,12 @@
 import type { NormalizedInput, ValidationErrorDetail, ValidationResult } from "../types.js";
+const underwearContentTypes = ["socks_regular", "panties", "boxers", "sport_tops", "bras", "tights", "thermals", "pajamas", "nightgowns"];
+const softClothesContentTypes = ["tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts"];
+const accessoriesContentTypes = ["belts", "jewelry_large", "jewelry_small", "scarves", "ties", "swimwear"];
 const allowedByCategory: Record<string, string[]> = {
-  underwear: ["socks_regular", "panties", "boxers", "bras", "sports_tops", "tights"],
-  soft_clothes: ["tshirts", "homewear", "nightgowns", "jeans", "leggings", "shorts"],
-  mixed: ["socks_regular", "panties", "boxers", "bras", "sports_tops", "tights", "tshirts", "homewear", "nightgowns", "jeans", "leggings", "shorts"]
+  underwear: underwearContentTypes,
+  soft_clothes: softClothesContentTypes,
+  accessories: accessoriesContentTypes,
+  mixed: [...underwearContentTypes, ...softClothesContentTypes, ...accessoriesContentTypes]
 };
 export function validateInput(input: NormalizedInput): ValidationResult {
   const errors: string[] = []; const warnings: string[] = []; const error_details: ValidationErrorDetail[] = [];
@@ -16,7 +20,11 @@ export function validateInput(input: NormalizedInput): ValidationResult {
     errors.push("max_items is 3");
     error_details.push({ reason: "max_items_exceeded", max_items: input.max_items, received_items: input.items.length });
   }
+
+  const seenContentTypes = new Set<string>();
   input.items.forEach((item, index) => {
+    if (seenContentTypes.has(item.content_type)) errors.push(`${item.content_type} is duplicated; one content_type should produce one parent zone`);
+    seenContentTypes.add(item.content_type);
     if (!item.volume_level) errors.push(`item_${index + 1} volume_level is required when content_type is selected`);
     if (!allowedByCategory[input.storage_category]?.includes(item.content_type)) errors.push(`${item.content_type} is not allowed for ${input.storage_category}`);
     if (item.volume_level && !["small", "medium", "large"].includes(item.volume_level)) errors.push(`${item.content_type} has unsupported volume_level`);

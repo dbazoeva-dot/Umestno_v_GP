@@ -3,6 +3,27 @@ import { runUmestnoEngine } from "../index.js";
 import { defaultLibraries } from "../libraries/defaultLibraries.js";
 function assert(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
 
+
+const sourceToRuntimeContentType: Record<string, string> = { socks: "socks_regular" };
+const excelContentTypes = [
+  "socks", "panties", "boxers", "sport_tops", "bras", "tights", "thermals", "pajamas", "nightgowns",
+  "tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts",
+  "belts", "jewelry_large", "jewelry_small", "scarves", "ties", "swimwear"
+];
+const runtimeCountTypes = new Set(defaultLibraries.volumeToCount.map((row) => row.content_type));
+const runtimeProfileTypes = new Set(defaultLibraries.storageUnitProfile.map((row) => row.content_type));
+for (const sourceContentType of excelContentTypes) {
+  const runtimeContentType = sourceToRuntimeContentType[sourceContentType] ?? sourceContentType;
+  assert(runtimeCountTypes.has(runtimeContentType), `${sourceContentType}: Excel A content type should map to runtime volume_to_count ${runtimeContentType}`);
+  assert(runtimeProfileTypes.has(runtimeContentType), `${sourceContentType}: Excel B content type should map to runtime storage_unit_profile ${runtimeContentType}`);
+}
+assert(!runtimeCountTypes.has("socks"), "socks: source Excel id should not be a separate runtime volume_to_count type");
+assert(!runtimeProfileTypes.has("socks"), "socks: source Excel id should not be a separate runtime storage_unit_profile type");
+const jewelrySmallProfile = defaultLibraries.storageUnitProfile.find((profile) => profile.content_type === "jewelry_small");
+assert(jewelrySmallProfile?.can_split === true, "jewelry_small: can_split should preserve B spatial-split metadata = true");
+const socksRegularProfile = defaultLibraries.storageUnitProfile.find((profile) => profile.content_type === "socks_regular");
+assert(Boolean(socksRegularProfile), "source socks should map to canonical runtime socks_regular");
+
 const baseReport = buildBaseCalibrationCaseReport();
 assert(baseReport.final_fit_result.fit_status === "fit_all", "base case should return fit_all");
 assert(baseReport.calculated_zones.some((zone) => zone.content_type === "socks_regular" && zone.option_id === "cells_4x4"), "base case: socks should use calibrated cells_4x4");
@@ -48,4 +69,11 @@ for (const profile of defaultLibraries.storageUnitProfile) {
 const maxItemsOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" }, { content_type: "panties", volume_level: "medium" }, { content_type: "tshirts", volume_level: "small" } ], priority: "convenient" });
 assert(maxItemsOutput.result === null, "max items case: result should be null");
 assert(maxItemsOutput.scheme_payload === null, "max items case: scheme_payload should be null");
-console.log("ok 3 calibration case(s), 1 validation case");
+
+const socksAliasOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks", volume_level: "medium" } ], priority: "convenient" });
+const socksAliasDebug = socksAliasOutput.debug as { input: { items: Array<{ content_type: string }> }; counted_items: Array<{ content_type: string }> };
+assert(socksAliasDebug.input.items[0]?.content_type === "socks_regular", "source socks input should normalize to canonical runtime socks_regular");
+assert(socksAliasDebug.counted_items[0]?.content_type === "socks_regular", "source socks should count through canonical socks_regular, not a separate socks type");
+const duplicateSocksAliasOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks", volume_level: "small" }, { content_type: "socks_regular", volume_level: "small" } ], priority: "convenient" });
+assert(duplicateSocksAliasOutput.result === null, "socks and socks_regular together should be rejected after alias normalization instead of producing two zones");
+console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit");

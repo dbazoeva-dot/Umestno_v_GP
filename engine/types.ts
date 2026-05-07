@@ -1,10 +1,11 @@
-export type StorageCategory = "underwear" | "soft_clothes" | "mixed";
+export type StorageCategory = "underwear" | "soft_clothes" | "accessories" | "mixed";
 export type VolumeLevel = "small" | "medium" | "large";
 export type Priority = "convenient" | "capacity" | "budget";
 export type DivisionType = "cells" | "slots" | "open" | "dividers";
 export type CalculationMode = "fixed_grid" | "linear_depth" | "linear_depth_split" | "open_capacity_in_box" | "dividers_grid";
 export type FitStatus = "fit_all" | "fit_partial" | "fit_none" | "fit_all_after_adjustment";
 export type Penalty = "low" | "medium" | "high";
+export type AccessFrequency = "low" | "medium" | "high";
 
 export interface DrawerSize { w_cm: number; d_cm: number; h_cm: number }
 export interface UserItemInput { content_type: string; volume_level?: VolumeLevel }
@@ -25,7 +26,7 @@ export interface ValidationResult { ok: boolean; errors: string[]; warnings: str
 export interface CountedItem { content_type: string; volume_level: VolumeLevel; count: number; count_unit: string }
 export interface VolumeToCountRow extends CountedItem {}
 export interface StorageUnitProfileRow {
-  content_type: string; storage_category: StorageCategory | "mixed"; storage_method: string; primary_division: DivisionType; alternative_division?: DivisionType; preferred_rigidity: string; unit_w_cm: number; unit_d_cm: number; unit_h_cm: number; needs_item_gap: boolean; item_gap?: number; item_gap_if_open?: number; side_clear: number; fb_clear: number; h_clear: number; access_frequency: number; can_rotate: boolean;
+  content_type: string; storage_category: StorageCategory | "mixed"; storage_method: string; primary_division: DivisionType; alternative_division?: DivisionType; preferred_rigidity: string; unit_w_cm: number; unit_d_cm: number; unit_h_cm: number; needs_item_gap: boolean; item_gap?: number; item_gap_if_open?: number; side_clear: number; fb_clear: number; h_clear: number; access_frequency: number | AccessFrequency; can_rotate: boolean;
   /** Source ABCD glossary: "Можно ли разделить вещь на две зоны". This is spatial split into separate parent assigned zones, not internal module composition. */
   can_split: boolean;
   notes?: string; open_fallback_allowed: boolean; open_fallback_rank: number; open_storage_penalty: Penalty; open_fallback_notes?: string;
