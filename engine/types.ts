@@ -6,6 +6,7 @@ export type CalculationMode = "fixed_grid" | "linear_depth" | "linear_depth_spli
 export type FitStatus = "fit_all" | "fit_partial" | "fit_none" | "fit_all_after_adjustment";
 export type Penalty = "low" | "medium" | "high";
 export type AccessFrequency = "low" | "medium" | "high";
+export type SoftHeightWarningCode = "deformation_risk" | "compressed_storage";
 
 export interface DrawerSize { w_cm: number; d_cm: number; h_cm: number }
 export interface UserItemInput { content_type: string; volume_level?: VolumeLevel }
@@ -27,6 +28,8 @@ export interface CountedItem { content_type: string; volume_level: VolumeLevel; 
 export interface VolumeToCountRow extends CountedItem {}
 export interface StorageUnitProfileRow {
   content_type: string; storage_category: StorageCategory | "mixed"; storage_method: string; primary_division: DivisionType; alternative_division?: DivisionType; preferred_rigidity: string; unit_w_cm: number; unit_d_cm: number; unit_h_cm: number; needs_item_gap: boolean; item_gap?: number; item_gap_if_open?: number; side_clear: number; fb_clear: number; h_clear: number; access_frequency: number | AccessFrequency; can_rotate: boolean;
+  /** Content-fit height allowance only. SKU/product height fit remains strict and must not be relaxed by this flag. */
+  soft_height_warning_allowed?: boolean; max_soft_height_overflow_cm?: number; soft_height_warning_code?: SoftHeightWarningCode;
   /** Source ABCD glossary: "Можно ли разделить вещь на две зоны". This is spatial split into separate parent assigned zones, not internal module composition. */
   can_split: boolean;
   notes?: string; open_fallback_allowed: boolean; open_fallback_rank: number; open_storage_penalty: Penalty; open_fallback_notes?: string;
@@ -47,7 +50,8 @@ export interface CalculatedZone extends Omit<StorageRequirement,"available_layou
   split_used?: boolean;
   /** Number of adjacent internal slot modules/lanes inside one parent zone. */
   lanes_needed?: number; items_per_lane?: number[]; max_items_per_lane?: number; slot_lane_gap_cm?: number; original_single_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_rejected_reason?: string }
-export interface PlacedZone extends CalculatedZone { x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number }
+export interface PlacedZone extends CalculatedZone { x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number; soft_height_warning?: SoftHeightWarning }
+export interface SoftHeightWarning { content_type: string; zone_id: string; warning_code: SoftHeightWarningCode; message: string; available_h_cm: number; drawer_h_cm: number; needed_h_cm: number; zone_h_cm: number; overflow_h_cm: number; max_allowed_overflow_h_cm: number }
 export interface LayoutPlan { layout_id: string; selected_zones: CalculatedZone[]; placement_order: string[]; rules_applied: string[]; reserve_policy: string }
-export interface FitResult { fit_status: FitStatus; placed_zones: PlacedZone[]; unplaced_zones: CalculatedZone[]; failed_zones: CalculatedZone[]; best_attempt: { placed_count: number }; failed_dimension?: "width"|"depth"|"height"; missing_width_cm: number; missing_depth_cm: number; missing_height_cm: number; used_width_cm: number; used_depth_cm: number; used_height_cm: number; overflow_width_cm: number; overflow_depth_cm: number; overflow_height_cm: number; free_rectangles: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }[]; available_box?: { w_cm:number;d_cm:number;h_cm:number;x_cm:number;y_cm:number }; fit_notes: string[]; placement_attempts?: Array<{ content_type: string; zone_id: string; placed: boolean; selected_rect?: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }; rejected_rectangles?: Array<{ x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number; reason: string }> }> }
-export interface SchemePayload { scheme_id: string; fit_status: FitStatus; selected_calculated_zones: CalculatedZone[]; assigned_zones: PlacedZone[]; layout_plan: LayoutPlan; reserve_zones: FitResult["free_rectangles"]; warnings: string[]; adjustment_note?: string }
+export interface FitResult { fit_status: FitStatus; placed_zones: PlacedZone[]; unplaced_zones: CalculatedZone[]; failed_zones: CalculatedZone[]; best_attempt: { placed_count: number }; failed_dimension?: "width"|"depth"|"height"; missing_width_cm: number; missing_depth_cm: number; missing_height_cm: number; used_width_cm: number; used_depth_cm: number; used_height_cm: number; overflow_width_cm: number; overflow_depth_cm: number; overflow_height_cm: number; free_rectangles: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }[]; available_box?: { w_cm:number;d_cm:number;h_cm:number;x_cm:number;y_cm:number }; fit_notes: string[]; content_warnings: SoftHeightWarning[]; placement_attempts?: Array<{ content_type: string; zone_id: string; placed: boolean; selected_rect?: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }; soft_height_warning?: SoftHeightWarning; rejected_rectangles?: Array<{ x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number; reason: string }> }> }
+export interface SchemePayload { scheme_id: string; fit_status: FitStatus; selected_calculated_zones: CalculatedZone[]; assigned_zones: PlacedZone[]; layout_plan: LayoutPlan; reserve_zones: FitResult["free_rectangles"]; warnings: string[]; content_warnings: SoftHeightWarning[]; adjustment_note?: string }
