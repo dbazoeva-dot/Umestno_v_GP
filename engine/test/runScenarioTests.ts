@@ -120,6 +120,17 @@ function printScenarioResult(
   if (adjAttempts) console.log(`Итераций коррекции:  ${adjAttempts}`);
   if (adjNote) console.log(`Примечание:          ${adjNote}`);
 
+  // content_warnings (soft height warnings)
+  type SoftWarn = { content_type: string; warning_code: string; overflow_h_cm: number; available_h_cm: number; zone_h_cm: number; message: string };
+  const contentWarnings = (sp as { content_warnings?: SoftWarn[] }).content_warnings ?? [];
+  if (contentWarnings.length) {
+    console.log(`\nHeight warnings (${contentWarnings.length}):`);
+    for (const w of contentWarnings) {
+      console.log(`  ⚠ ${w.content_type} [${w.warning_code}]: нужно ${w.zone_h_cm} см, доступно ${w.available_h_cm} см, overflow +${w.overflow_h_cm.toFixed(1)} см`);
+      console.log(`    → ${w.message}`);
+    }
+  }
+
   // Rules applied
   const rulesApplied = (sp.layout_plan as { rules_applied?: string[] }).rules_applied ?? [];
   console.log(`D-правила в layout_plan: ${rulesApplied.join(", ")}`);
@@ -241,15 +252,12 @@ printScenarioResult(
   }
 );
 
-// ─── СЦЕНАРИЙ 4 — одежда + аксессуары (belts, scarves отсутствуют в runtime) ─
-// Движок должен вернуть validation error — belts/scarves не в allowedByCategory
-hr(
-  "СЦЕНАРИЙ 4: Одежда + аксессуары 90×45×15\n" +
-  "Ящик: 90×45×15 см\n" +
-  "ПРИМЕЧАНИЕ: belts и scarves отсутствуют в runtime-библиотеке (не в allowedByCategory)."
-);
-{
-  const out4 = runUmestnoEngine({
+// ─── СЦЕНАРИЙ 4 — одежда + аксессуары ───────────────────────────────────────
+printScenarioResult(
+  4,
+  "Одежда + аксессуары: tshirts medium + belts small + scarves small",
+  "90×45×15 см",
+  {
     drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15,
     storage_category: "mixed",
     items: [
@@ -258,14 +266,8 @@ hr(
       { content_type: "scarves",  volume_level: "small" },
     ],
     priority: "convenient",
-  });
-  const v4 = out4.debug?.["validation_result"] as { ok: boolean; errors: string[] } | undefined;
-  console.log(`fit_status: ${out4.result ? out4.scheme_payload?.fit_status : "VALIDATION_FAILED"}`);
-  if (v4 && !v4.ok) console.log(`errors: ${v4.errors.join(" | ")}`);
-  console.log(`→ БАГИ/ОГРАНИЧЕНИЯ: belts, scarves не зарегистрированы в runtime A+B.`);
-  console.log(`  Сценарий не может быть выполнен без расширения defaultLibraries.`);
-  console.log(`  Аудит подтверждает: обоих типов нет в missing_content_types отчёта.`);
-}
+  }
+);
 
 // ─── СЦЕНАРИЙ 5 — низкий ящик, проверка height fallback для бюстгальтеров ────
 printScenarioResult(
@@ -281,14 +283,12 @@ printScenarioResult(
   }
 );
 
-// ─── СЦЕНАРИЙ 6 — стресс-тест (sweaters отсутствует в runtime) ───────────────
-hr(
-  "СЦЕНАРИЙ 6: Стресс-тест 60×40×12\n" +
-  "Ящик: 60×40×12 см\n" +
-  "ПРИМЕЧАНИЕ: sweaters отсутствует в runtime-библиотеке."
-);
-{
-  const out6 = runUmestnoEngine({
+// ─── СЦЕНАРИЙ 6 — стресс-тест: jeans + sweaters + socks_regular ─────────────
+printScenarioResult(
+  6,
+  "Стресс-тест: jeans large + sweaters medium + socks_regular large",
+  "60×40×12 см",
+  {
     drawer_width_cm: 60, drawer_depth_cm: 40, drawer_height_cm: 12,
     storage_category: "mixed",
     items: [
@@ -297,26 +297,8 @@ hr(
       { content_type: "socks_regular", volume_level: "large" },
     ],
     priority: "capacity",
-  });
-  const v6 = out6.debug?.["validation_result"] as { ok: boolean; errors: string[] } | undefined;
-  console.log(`fit_status: ${out6.result ? out6.scheme_payload?.fit_status : "VALIDATION_FAILED"}`);
-  if (v6 && !v6.ok) console.log(`errors: ${v6.errors.join(" | ")}`);
-
-  // Run partial scenario: jeans large + socks_regular large (without sweaters)
-  console.log(`\nЧастичный тест без sweaters (jeans large + socks_regular large):`);
-  printScenarioResult(
-    6,
-    "Стресс-тест (частично): jeans large slots + socks_regular large cells",
-    "60×40×12 см",
-    {
-      drawer_width_cm: 60, drawer_depth_cm: 40, drawer_height_cm: 12,
-      storage_category: "mixed",
-      item_1_content_type: "jeans",         item_1_volume_level: "large",
-      item_2_content_type: "socks_regular", item_2_volume_level: "large",
-      priority: "capacity",
-    }
-  );
-}
+  }
+);
 
 // ─── СЦЕНАРИЙ 7 — всё underwear ───────────────────────────────────────────────
 printScenarioResult(
@@ -340,14 +322,13 @@ console.log("═".repeat(70));
 console.log("Сц  Статус              Примечание");
 console.log("──  ──────────────────  ─────────────────────────────────────────");
 const summary = [
-  ["1", "ожидаем fit_all/partial", "tshirts+panties+socks_regular (mixed)"],
-  ["2", "ожидаем fit_all",         "большой ящик, 3 underwear"],
-  ["3", "ожидаем fit_all",         "узкий ящик, can_rotate не реализован"],
-  ["4", "VALIDATION_FAILED",       "belts/scarves отсутствуют в A+B"],
-  ["5", "ожидаем fit_partial",     "bras не влезает по высоте, fallback blocked"],
-  ["6", "VALIDATION_FAILED",       "sweaters отсутствует в A+B"],
-  ["6*","ожидаем fit_partial",     "частичный тест: jeans+socks_regular"],
-  ["7", "ожидаем fit_all",         "100×50 ящик, все underwear"],
+  ["1", "ожидаем fit_all",     "tshirts+panties+socks_regular (mixed)"],
+  ["2", "ожидаем fit_all",     "большой ящик, 3 underwear"],
+  ["3", "ожидаем fit_all",     "узкий ящик"],
+  ["4", "ожидаем fit_all",     "tshirts+belts+scarves (mixed)"],
+  ["5", "ожидаем fit_partial или fit_all+height_warning", "bras h=13 > drawer h=10, soft_height_warning_allowed"],
+  ["6", "ожидаем fit_partial или fit_none", "jeans+sweaters+socks_regular, ящик 60×40×12"],
+  ["7", "ожидаем fit_all",     "100×50 ящик, все underwear"],
 ];
 for (const [n, s, note] of summary) {
   console.log(`${n.padEnd(4)}${s.padEnd(20)}  ${note}`);
