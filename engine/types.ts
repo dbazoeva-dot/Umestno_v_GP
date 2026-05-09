@@ -7,6 +7,11 @@ export type FitStatus = "fit_all" | "fit_partial" | "fit_none" | "fit_all_after_
 export type Penalty = "low" | "medium" | "high";
 export type AccessFrequency = "low" | "medium" | "high";
 export type SoftHeightWarningCode = "deformation_risk" | "compressed_storage";
+export type RuleEvaluationStatus = "pass" | "violation" | "not_applicable" | "report" | "opportunity";
+export type RuleEnforcement = "post_placement_enforced" | "post_placement_report_only" | "definition_only";
+
+export interface RuleDefinition { rule_id: string; title: string; category: "placement" | "reserve" | "content_safety" | "fallback"; intent: string; enforcement: RuleEnforcement }
+export interface LayoutRuleEvaluation { rule_id: string; title: string; status: RuleEvaluationStatus; enforcement: RuleEnforcement; message: string; details?: Record<string, unknown> }
 
 export interface DrawerSize { w_cm: number; d_cm: number; h_cm: number }
 export interface UserItemInput { content_type: string; volume_level?: VolumeLevel }
@@ -41,9 +46,9 @@ export interface StorageUnitProfileRow {
   split_strategy?: "balance_by_depth";
 }
 export interface ZoneLayoutOptionRow { option_id: string; division_type: DivisionType; storage_method_filter?: string; calculation_mode: CalculationMode; count_min?: number; count_max?: number; cols?: number; rows?: number; capacity?: number; notes?: string }
-export interface LayoutRules { rule_ids: string[]; reserve_policy: string }
+export interface LayoutRules { rule_ids: string[]; reserve_policy: string; definitions?: RuleDefinition[] }
 export interface SkuCatalogRow { sku_id: string; division_type: DivisionType; rigidity: string; width_cm: number; depth_cm: number; height_cm: number; capacity_units: number; color_group?: string; availability_status: string; product_title: string; product_url?: string }
-export interface Libraries { volumeToCount: VolumeToCountRow[]; storageUnitProfile: StorageUnitProfileRow[]; zoneLayoutOptions: ZoneLayoutOptionRow[]; layoutRules: LayoutRules; skuCatalog: SkuCatalogRow[] }
+export interface Libraries { volumeToCount: VolumeToCountRow[]; storageUnitProfile: StorageUnitProfileRow[]; zoneLayoutOptions: ZoneLayoutOptionRow[]; layoutRules: LayoutRules; ruleDefinitions: RuleDefinition[]; skuCatalog: SkuCatalogRow[] }
 export interface StorageRequirement extends CountedItem, Omit<StorageUnitProfileRow,"content_type"|"storage_category"> { available_layout_options: ZoneLayoutOptionRow[] }
 export interface CalculatedZone extends Omit<StorageRequirement,"available_layout_options"> { zone_id: string; original_division_type: DivisionType; division_type: DivisionType; option_id: string; calculation_mode: CalculationMode; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number; calculated_cols?: number; calculated_rows?: number; original_failed_division?: DivisionType; original_failed_option_id?: string; assigned_box_w_cm?: number; assigned_box_d_cm?: number; assigned_box_h_cm?: number; open_capacity?: number; reserve_capacity?: number; height_ok?: boolean; why_open_fallback?: string;
   /** Internal repeated-module composition inside one parent zone, not can_split. */
@@ -52,6 +57,6 @@ export interface CalculatedZone extends Omit<StorageRequirement,"available_layou
   lanes_needed?: number; items_per_lane?: number[]; max_items_per_lane?: number; slot_lane_gap_cm?: number; original_single_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_rejected_reason?: string }
 export interface PlacedZone extends CalculatedZone { x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number; soft_height_warning?: SoftHeightWarning }
 export interface SoftHeightWarning { content_type: string; zone_id: string; warning_code: SoftHeightWarningCode; message: string; available_h_cm: number; drawer_h_cm: number; needed_h_cm: number; zone_h_cm: number; overflow_h_cm: number; max_allowed_overflow_h_cm: number }
-export interface LayoutPlan { layout_id: string; selected_zones: CalculatedZone[]; placement_order: string[]; rules_applied: string[]; reserve_policy: string }
+export interface LayoutPlan { layout_id: string; selected_zones: CalculatedZone[]; placement_order: string[]; /** Attached rule labels from the layout profile only; not proof that a rule was enforced. See layout_rule_evaluations for post-placement results. */ rules_applied: string[]; reserve_policy: string }
 export interface FitResult { fit_status: FitStatus; placed_zones: PlacedZone[]; unplaced_zones: CalculatedZone[]; failed_zones: CalculatedZone[]; best_attempt: { placed_count: number }; failed_dimension?: "width"|"depth"|"height"; missing_width_cm: number; missing_depth_cm: number; missing_height_cm: number; used_width_cm: number; used_depth_cm: number; used_height_cm: number; overflow_width_cm: number; overflow_depth_cm: number; overflow_height_cm: number; free_rectangles: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }[]; available_box?: { w_cm:number;d_cm:number;h_cm:number;x_cm:number;y_cm:number }; fit_notes: string[]; content_warnings: SoftHeightWarning[]; placement_attempts?: Array<{ content_type: string; zone_id: string; placed: boolean; selected_rect?: { x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number }; soft_height_warning?: SoftHeightWarning; rejected_rectangles?: Array<{ x_cm:number;y_cm:number;w_cm:number;d_cm:number;h_cm:number; reason: string }> }> }
-export interface SchemePayload { scheme_id: string; fit_status: FitStatus; selected_calculated_zones: CalculatedZone[]; assigned_zones: PlacedZone[]; layout_plan: LayoutPlan; reserve_zones: FitResult["free_rectangles"]; warnings: string[]; content_warnings: SoftHeightWarning[]; adjustment_note?: string }
+export interface SchemePayload { scheme_id: string; fit_status: FitStatus; selected_calculated_zones: CalculatedZone[]; assigned_zones: PlacedZone[]; layout_plan: LayoutPlan; reserve_zones: FitResult["free_rectangles"]; warnings: string[]; content_warnings: SoftHeightWarning[]; layout_rule_evaluations: LayoutRuleEvaluation[]; adjustment_note?: string }

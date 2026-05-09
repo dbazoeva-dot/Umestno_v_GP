@@ -7,6 +7,7 @@ import { buildStorageRequirements } from "./requirements/buildStorageRequirement
 import { generateCalculatedZones } from "./zones/generateCalculatedZones.js";
 import { buildLayoutPlan } from "./layout/buildLayoutPlan.js";
 import { runFitCheck } from "./fit/runFitCheck.js";
+import { evaluatePlacementRules } from "./rules/evaluatePlacementRules.js";
 import { runAdjustmentLoop } from "./adjustment/runAdjustmentLoop.js";
 import { buildSchemePayload } from "./scheme/buildSchemePayload.js";
 import { matchSkus } from "./sku/matchSkus.js";
@@ -30,11 +31,14 @@ export function runUmestnoEngine(input: UserInput, libraries: Libraries = defaul
   }
   const finalCalculatedZones = adjustedLayout?.calculatedZones ?? calculatedZones;
   const finalLayoutPlan = adjustedLayout?.layoutPlan ?? layoutPlan;
-  const schemePayload = buildSchemePayload({ input: normalizedInput, countedItems, storageRequirements, calculatedZones: finalCalculatedZones, layoutPlan: finalLayoutPlan, fitResult, adjustment: adjustedLayout, validation });
+  const layoutRuleEvaluations = evaluatePlacementRules({ drawerSize: normalizedInput.drawerSize, fitResult, definitions: libraries.ruleDefinitions });
+  const schemePayload = buildSchemePayload({ input: normalizedInput, countedItems, storageRequirements, calculatedZones: finalCalculatedZones, layoutPlan: finalLayoutPlan, fitResult, adjustment: adjustedLayout, validation, layoutRuleEvaluations });
   const skuMatches = matchSkus({ schemePayload, skuCatalog: libraries.skuCatalog, colorPreference: normalizedInput.colorPreference });
   const skuFitResult = runSkuFitCheck({ schemePayload, skuMatches, drawerSize: normalizedInput.drawerSize });
   const finalResult = buildFinalResultPayload({ schemePayload, skuMatches, skuFitResult });
-  const debugTrace = buildDebugTrace({ input: normalizedInput, validation_result: validation, counted_items: countedItems, storage_requirements: storageRequirements, generated_calculated_zones: calculatedZones, selected_layout_plan: layoutPlan, fit_result: fitResult, adjustment_result: adjustedLayout, adjustment_attempts: adjustedLayout?.adjustment_attempts ?? [], scheme_payload: schemePayload, sku_matching_result: skuMatches, sku_fit_result: skuFitResult, final_result_payload: finalResult });
+  const debugTrace = buildDebugTrace({ input: normalizedInput, validation_result: validation, counted_items: countedItems, storage_requirements: storageRequirements, generated_calculated_zones: calculatedZones, selected_layout_plan: layoutPlan, fit_result: fitResult, adjustment_result: adjustedLayout, adjustment_attempts: adjustedLayout?.adjustment_attempts ?? [], layout_rule_evaluations: layoutRuleEvaluations, scheme_payload: schemePayload, sku_matching_result: skuMatches, sku_fit_result: skuFitResult, final_result_payload: finalResult });
   return { result: finalResult, scheme_payload: schemePayload, debug: debugTrace };
 }
 export * from "./types.js";
+export { ruleDefinitions } from "./rules/ruleDefinitions.js";
+export { evaluatePlacementRules } from "./rules/evaluatePlacementRules.js";
