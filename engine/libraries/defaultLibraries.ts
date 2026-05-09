@@ -1,3 +1,4 @@
+import { ruleDefinitions } from "../rules/ruleDefinitions.js";
 import type { Libraries } from "../types.js";
 
 export const defaultLibraries: Libraries = {
@@ -102,6 +103,7 @@ export const defaultLibraries: Libraries = {
     { option_id: "slots_multi_lane_auto", division_type: "slots", calculation_mode: "linear_depth_split", count_min: 7, count_max: 20, notes: "Split slot-stored items into multiple parallel lanes when one lane exceeds drawer depth." },
     { option_id: "open_single_section", division_type: "open", calculation_mode: "open_capacity_in_box", count_min: 1, count_max: 999 }
   ],
-  layoutRules: { rule_ids: ["cells_grouped", "bras_not_compressed", "frequent_items_front", "soft_zones_absorb_reserve"], reserve_policy: "reserve_to_edge_or_open_zone" },
+  layoutRules: { rule_ids: ["D01", "D02", "D03", "D04", "D04b", "D05", "D06"], reserve_policy: "reserve_to_edge_or_open_zone", definitions: ruleDefinitions },
+  ruleDefinitions,
   skuCatalog: []
 };

@@ -3,6 +3,10 @@ import { runUmestnoEngine } from "../index.js";
 import { defaultLibraries } from "../libraries/defaultLibraries.js";
 function assert(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
 
+function findRuleEvaluation(evaluations: Array<{ rule_id: string; status: string; enforcement?: string }>, ruleId: string) {
+  return evaluations.find((evaluation) => evaluation.rule_id === ruleId);
+}
+
 
 const sourceToRuntimeContentType: Record<string, string> = { socks: "socks_regular" };
 const excelContentTypes = [
@@ -37,6 +41,15 @@ assert(forcedSummary.final_fit_status === "fit_all", "forced case: final fit sta
 assert(forcedSummary.open_fallback_used === false, "forced case: open fallback should not be used when cells fit in 2D free rectangles");
 assert(forcedReport.final_fit_result.placed_zones.some((zone) => zone.content_type === "panties" && zone.division_type === "cells" && zone.y_cm > 0), "forced case: panties cells should be placed in remaining depth rectangle");
 assert(forcedReport.final_fit_result.placement_attempts?.every((attempt) => attempt.placed), "forced case: debug placement attempts should show every zone placed");
+assert(Array.isArray(forcedReport.layout_rule_evaluations), "scenario 2 rules: report should expose layout_rule_evaluations");
+assert(Array.isArray(forcedReport.scheme_payload.layout_rule_evaluations), "scenario 2 rules: scheme payload should expose layout_rule_evaluations");
+assert(Array.isArray(forcedReport.debug_trace.layout_rule_evaluations), "scenario 2 rules: debug trace should expose layout_rule_evaluations");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "ZONE_INTEGRITY")?.status === "pass", "scenario 2 rules: zone integrity should pass after placement");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D01")?.status === "pass", "scenario 2 rules: D01 should evaluate semantic storage-category adjacency, not division adjacency");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D02")?.status === "violation", "scenario 2 rules: D02 should flag socks between bras and panties without changing placement");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D03")?.status === "report", "scenario 2 rules: D03 compactness should be reporting only");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D04")?.status === "report", "scenario 2 rules: D04 reserve edge check should be reporting only");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D04b")?.status === "opportunity", "scenario 2 rules: D04b should report depth-reserve absorption opportunity only");
 
 const fourItemReport = buildFourItemStressCalibrationCaseReport();
 const stress = fourItemReport.calibration_stress_result;
@@ -60,6 +73,10 @@ assert(stressSplitAttempt?.split_lane_zone?.zone_d_cm === 25.5, "four-item stres
 assert(stress.open_fallback_summary.open_fallback_used === false, "four-item stress mode: slot split should run before unrelated open fallback");
 assert(stress.final_fit_result.placed_zones.some((zone) => zone.content_type === "panties" && zone.division_type === "cells"), "four-item stress mode: panties should remain in cells after 2D placement");
 assert(stress.final_fit_result.placement_attempts?.every((attempt) => attempt.placed), "four-item stress mode: debug trace should show successful placement attempts");
+assert(Array.isArray(stress.layout_rule_evaluations), "scenario 4 rules: stress report should expose layout_rule_evaluations");
+assert(findRuleEvaluation(stress.layout_rule_evaluations, "ZONE_INTEGRITY")?.status === "pass", "scenario 4 rules: zone integrity should pass after slot split placement");
+assert(findRuleEvaluation(stress.layout_rule_evaluations, "D04b")?.status === "opportunity", "scenario 4 rules: D04b should report reserve absorption opportunity without mutating placed zones");
+assert(stress.final_fit_result.placed_zones.some((zone) => zone.content_type === "bras" && zone.assigned_d_cm === 25.5 && zone.capacity === 10), "scenario 4 rules: D04b reporting must not mutate bras assigned depth or capacity");
 
 for (const profile of defaultLibraries.storageUnitProfile) {
   const propagatedRequirements = [baseReport, forcedReport, stress].flatMap((report) => report.storage_requirements).filter((requirement) => requirement.content_type === profile.content_type);
@@ -128,10 +145,17 @@ assert(!scenario6Debug.adjustment_attempts.some((attempt) => attempt.content_typ
 
 const scenario7Output = runUmestnoEngine({ drawer_width_cm: 100, drawer_depth_cm: 50, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "large" }, { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
 const scenario7Result = scenario7Output.result as { content_warnings: Array<{ content_type: string }> };
-const scenario7Debug = scenario7Output.debug as { fit_result: { fit_status: string }; adjustment_result?: { adjustment_type?: string; splitZone?: { option_id?: string } } | null; scheme_payload: { selected_calculated_zones: Array<{ content_type: string; division_type: string; option_id: string }> } };
+const scenario7Debug = scenario7Output.debug as { fit_result: { fit_status: string }; adjustment_result?: { adjustment_type?: string; splitZone?: { option_id?: string } } | null; layout_rule_evaluations: Array<{ rule_id: string; status: string; enforcement?: string }>; scheme_payload: { layout_rule_evaluations: Array<{ rule_id: string; status: string; enforcement?: string }>; selected_calculated_zones: Array<{ content_type: string; division_type: string; option_id: string }> } };
 assert(scenario7Debug.fit_result.fit_status === "fit_all", "scenario 7 guard: final status should remain fit_all");
 assert(scenario7Debug.adjustment_result?.adjustment_type === "slots_multi_lane", "scenario 7 guard: bras slots_multi_lane_auto should still run");
 assert(scenario7Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "bras" && zone.division_type === "slots" && zone.option_id === "slots_multi_lane_auto"), "scenario 7 guard: bras should use slots_multi_lane_auto");
 assert(!scenario7Result.content_warnings.some((warning) => warning.content_type === "bras"), "scenario 7 guard: no soft height warning should be emitted when height already fits");
+
+assert(Array.isArray(scenario7Debug.layout_rule_evaluations), "scenario 7 rules: debug trace should expose layout_rule_evaluations");
+assert(Array.isArray(scenario7Debug.scheme_payload.layout_rule_evaluations), "scenario 7 rules: scheme payload should expose layout_rule_evaluations");
+assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "ZONE_INTEGRITY")?.status === "pass", "scenario 7 rules: zone integrity should pass after adjustment placement");
+assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "D02")?.status === "violation", "scenario 7 rules: D02 should evaluate post-placement socks/bras/panties ordering without changing placement");
+assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "D04b")?.status === "opportunity", "scenario 7 rules: D04b should report depth reserve opportunity only");
+assert(scenario7Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "bras" && zone.division_type === "slots" && zone.option_id === "slots_multi_lane_auto"), "scenario 7 rules: evaluator must not change bras placement option");
 
 console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios");
