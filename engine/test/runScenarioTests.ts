@@ -131,12 +131,16 @@ function printScenarioResult(
     }
   }
 
-  // Rules applied
-  const rulesApplied = (sp.layout_plan as { rules_applied?: string[] }).rules_applied ?? [];
-  console.log(`D-правила в layout_plan: ${rulesApplied.join(", ")}`);
-
-  // Positional D-rule checks
-  checkDRules(placed, input);
+  // Rule evaluations from engine
+  type RuleEval = { rule_id: string; title: string; enforcement: string; status: string; message: string; details?: unknown };
+  const ruleEvals = (sp as { layout_rule_evaluations?: RuleEval[] }).layout_rule_evaluations ?? [];
+  if (ruleEvals.length) {
+    console.log(`\nD-правила (движок):`);
+    for (const r of ruleEvals) {
+      const icon = r.status === "pass" ? "✓" : r.status === "violation" ? "✗" : r.status === "not_applicable" ? "–" : "·";
+      console.log(`  ${icon} ${r.rule_id} [${r.enforcement}]: ${r.message}`);
+    }
+  }
 
   // SKU
   const skus = (output.result as { sku_matches?: unknown[] } | null)?.sku_matches ?? [];
