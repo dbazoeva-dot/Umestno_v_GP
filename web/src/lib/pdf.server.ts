@@ -1,5 +1,6 @@
 // Server-only: PDF generation via Puppeteer
 import type { PlacedZone, SoftHeightWarning } from "@engine/types.js";
+import { buildSchemeSvgString, BRAND } from "@/lib/schemeSvg";
 
 export interface PdfData {
   variant: "A" | "B";
@@ -11,36 +12,15 @@ export interface PdfData {
 }
 
 function buildSvgVisualization(zones: PlacedZone[], drawerW: number, drawerD: number): string {
-  const scale = 4; // px per cm
-  const padding = 16;
-  const svgW = drawerW * scale + padding * 2;
-  const svgH = drawerD * scale + padding * 2;
-
-  const ZONE_COLORS: Record<string, string> = {
-    underwear: "#dbeafe",
-    soft_clothes: "#dcfce7",
-    accessories: "#fef9c3",
-    mixed: "#f3e8ff",
-  };
-
-  const zoneRects = zones.map((z) => {
-    const x = padding + z.x_cm * scale;
-    const y = padding + z.y_cm * scale;
-    const w = z.assigned_w_cm * scale;
-    const h = z.assigned_d_cm * scale;
-    const fill = ZONE_COLORS[z.storage_category as string] ?? "#f1f5f9";
-    const label = z.content_type.replace(/_/g, " ");
-    return `
-      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#64748b" stroke-width="1" rx="2"/>
-      <text x="${x + w / 2}" y="${y + h / 2 - 4}" text-anchor="middle" font-size="8" fill="#1e293b">${label}</text>
-      <text x="${x + w / 2}" y="${y + h / 2 + 8}" text-anchor="middle" font-size="7" fill="#475569">${z.zone_id}</text>`;
-  }).join("");
-
-  return `<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${svgW}" height="${svgH}" fill="#f8fafc"/>
-    <rect x="${padding}" y="${padding}" width="${drawerW * scale}" height="${drawerD * scale}" fill="white" stroke="#334155" stroke-width="2"/>
-    ${zoneRects}
-  </svg>`;
+  const zoneData = zones.map((z) => ({
+    zone_id: z.zone_id,
+    content_type: z.content_type,
+    x_cm: z.x_cm,
+    y_cm: z.y_cm,
+    assigned_w_cm: z.assigned_w_cm,
+    assigned_d_cm: z.assigned_d_cm,
+  }));
+  return buildSchemeSvgString(zoneData, { w_cm: drawerW, d_cm: drawerD });
 }
 
 function buildHtml(data: PdfData): string {
@@ -69,17 +49,18 @@ function buildHtml(data: PdfData): string {
 <head>
 <meta charset="UTF-8"/>
 <style>
-  body { font-family: Arial, sans-serif; font-size: 12px; color: #1e293b; padding: 32px; }
-  h1 { font-size: 20px; margin-bottom: 4px; }
-  .subtitle { color: #64748b; margin-bottom: 24px; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: ${BRAND.text}; padding: 32px; background: ${BRAND.cream}; }
+  h1 { font-size: 22px; margin-bottom: 4px; color: ${BRAND.text}; }
+  .subtitle { color: ${BRAND.textLight}; margin-bottom: 24px; font-size: 11px; }
   .section { margin-bottom: 24px; }
-  h2 { font-size: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 12px; }
+  h2 { font-size: 13px; border-bottom: 2px solid ${BRAND.accent}; padding-bottom: 4px; margin-bottom: 12px; color: ${BRAND.text}; }
   table { width: 100%; border-collapse: collapse; }
-  th { background: #f1f5f9; text-align: left; padding: 6px 8px; font-size: 11px; }
-  td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  th { background: ${BRAND.frameInner}; text-align: left; padding: 6px 8px; font-size: 10px; color: ${BRAND.textLight}; }
+  td { padding: 6px 8px; border-bottom: 1px solid ${BRAND.frameInner}; vertical-align: top; }
   ul { margin: 0; padding-left: 20px; }
   li { margin-bottom: 4px; }
   .svg-wrap { text-align: center; margin-bottom: 8px; }
+  .footer { color: ${BRAND.textLight}; font-size: 9px; margin-top: 32px; border-top: 1px solid ${BRAND.frameInner}; padding-top: 8px; }
 </style>
 </head>
 <body>
@@ -110,7 +91,7 @@ ${warningItems ? `<div class="section">
   <ul>${warningItems}</ul>
 </div>` : ""}
 
-<p style="color:#94a3b8;font-size:10px;margin-top:32px;">Сгенерировано сервисом Уместно</p>
+<p class="footer">Сгенерировано сервисом Уместно</p>
 </body>
 </html>`;
 }
