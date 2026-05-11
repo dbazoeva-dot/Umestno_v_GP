@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Уместно — превью схемы</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; background: #F7F4EF; color: #2E2E2E; padding: 32px 24px; }
+  h1 { font-size: 22px; font-weight: normal; margin-bottom: 4px; }
+  .subtitle { color: #6B5E52; font-size: 13px; margin-bottom: 28px; }
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 960px; }
+  @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+  .left {}
+  .dims { margin-top: 20px; }
+  .dims h3 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #6B5E52; text-transform: uppercase; letter-spacing: .04em; }
+  .dim-item { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .right { display: flex; flex-direction: column; gap: 24px; }
+  .card { background: white; border-radius: 12px; padding: 18px 20px; }
+  .card h3 { font-size: 14px; margin-bottom: 12px; }
+  .list-item { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 8px; }
+  .num { background: #D08A72; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; font-family: Arial,sans-serif; }
+  .fold-item { display: flex; gap: 10px; font-size: 13px; margin-bottom: 8px; line-height: 1.4; }
+  .fold-icon { color: #6B5E52; flex-shrink: 0; }
+  .why-item { display: flex; gap: 10px; font-size: 13px; margin-bottom: 8px; }
+  .check { color: undefined; font-weight: bold; flex-shrink: 0; }
+  .warn { background: #FEF3EC; border-left: 3px solid #D08A72; padding: 10px 14px; border-radius: 6px; font-size: 12px; line-height: 1.5; }
+  /* hover on zones */
+  .zone { cursor: default; }
+  .zone:hover .zone-rect { stroke: #D08A72 !important; stroke-width: 2 !important; }
+</style>
+</head>
+<body>
+<h1>Ваш результат: схема ящика</h1>
+<p class="subtitle">Превью — данные из реального расчёта движка</p>
+<div class="layout">
+  <div class="left">
+    <svg id="scheme" viewBox="0 0 508 298" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;height:auto">
+    <rect x="0" y="0" width="508" height="298" fill="#C4A882" rx="10"/>
+    <rect x="10" y="10" width="488" height="278" fill="#E8DCCF" rx="8"/>
+    <rect x="14" y="14" width="480" height="270" fill="#F5EFE6" rx="4"/>
+    <g class="zone" data-id="bras_slots_single_row">
+      <rect x="15.5" y="15.5" width="171" height="90"
+        fill="#E9E1D6" stroke="#C8B0A0" stroke-width="1" rx="6" class="zone-rect"/>
+      <text x="101" y="52.7" text-anchor="middle"
+        font-family="Georgia,serif" font-size="10" fill="#6B5E52">Блок 1</text>
+      <text x="101" y="70.9" text-anchor="middle"
+        font-family="Georgia,serif" font-size="13" font-weight="600" fill="#2E2E2E">— Бюстгальтеры</text>
+    </g><g class="zone" data-id="socks_regular_cells_3x3">
+      <rect x="189.5" y="15.5" width="111" height="111"
+        fill="#A6B49B" stroke="#8A9E8E" stroke-width="1" rx="6" class="zone-rect"/>
+      <text x="245" y="63.2" text-anchor="middle"
+        font-family="Georgia,serif" font-size="10" fill="#6B5E52">Блок 2</text>
+      <text x="245" y="81.4" text-anchor="middle"
+        font-family="Georgia,serif" font-size="13" font-weight="600" fill="#2E2E2E">— Носки</text>
+    </g><g class="zone" data-id="panties_cells_3x4">
+      <rect x="303.5" y="15.5" width="183" height="75"
+        fill="#C8B9AC" stroke="#A89990" stroke-width="1" rx="6" class="zone-rect"/>
+      <text x="395" y="45.2" text-anchor="middle"
+        font-family="Georgia,serif" font-size="10" fill="#6B5E52">Блок 3</text>
+      <text x="395" y="63.4" text-anchor="middle"
+        font-family="Georgia,serif" font-size="13" font-weight="600" fill="#2E2E2E">— Трусы</text>
+    </g>
+  </svg>
+    <div class="dims">
+      <h3>Размеры блоков</h3>
+      
+    <div class="dim-item">
+      <span class="dot" style="background:#E9E1D6;border:1px solid #C8B0A0"></span>
+      <span>Блок 1 — 29 × 15.5 × 13 см</span>
+    </div>
+    <div class="dim-item">
+      <span class="dot" style="background:#A6B49B;border:1px solid #8A9E8E"></span>
+      <span>Блок 2 — 19 × 19 × 8 см</span>
+    </div>
+    <div class="dim-item">
+      <span class="dot" style="background:#C8B9AC;border:1px solid #A89990"></span>
+      <span>Блок 3 — 31 × 13 × 7 см</span>
+    </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="card">
+      <h3>Что где хранить</h3>
+      
+    <div class="list-item">
+      <span class="num">1</span>
+      <span>Блок 1 — Бюстгальтеры</span>
+    </div>
+    <div class="list-item">
+      <span class="num">2</span>
+      <span>Блок 2 — Носки</span>
+    </div>
+    <div class="list-item">
+      <span class="num">3</span>
+      <span>Блок 3 — Трусы</span>
+    </div>
+    </div>
+    <div class="card">
+      <h3>Как сложить вещи</h3>
+      
+    <div class="fold-item">
+      <span class="fold-icon">○</span>
+      <span><b>Бюстгальтеры</b> — Хранить в ряд, не сжимая форму.</span>
+    </div>
+    <div class="fold-item">
+      <span class="fold-icon">○</span>
+      <span><b>Носки</b> — Одна единица в одной ячейке.</span>
+    </div>
+    <div class="fold-item">
+      <span class="fold-icon">○</span>
+      <span><b>Трусы</b> — Одна единица в одной ячейке.</span>
+    </div>
+    </div>
+    <div class="card">
+      <h3>Почему схема подходит</h3>
+      <div class="why-item"><span class="check">✓</span><span>Собрана под размеры 80 × 45 × 15 см</span></div><div class="why-item"><span class="check">✓</span><span>Учитывает выбранные вещи</span></div><div class="why-item"><span class="check">✓</span><span>Приоритет — удобно</span></div><div class="why-item"><span class="check">✓</span><span>All assigned zones are inside the drawer and do not overlap.</span></div><div class="why-item"><span class="check">✓</span><span>Semantic storage-category groups are contiguous after placement.</span></div>
+    </div>
+    
+  </div>
+</div>
+</body>
+</html>
