@@ -12,7 +12,7 @@ export function calculateSlotsSplitZone(req: CalculatedZone, option: ZoneLayoutO
   const remainder = req.count % lanesNeeded;
   const itemsPerLane = Array.from({ length: lanesNeeded }, (_, index) => baseItemsPerLane + (index < remainder ? 1 : 0));
   const maxItemsInDeepestLane = Math.max(...itemsPerLane);
-  const zoneW = lanesNeeded * req.unit_w_cm + (lanesNeeded - 1) * slotLaneGap + 2 * req.side_clear;
+  const zoneW = lanesNeeded * (req.unit_w_cm + 2 * req.side_clear) + (lanesNeeded - 1) * slotLaneGap;
   const zoneD = maxItemsInDeepestLane * req.unit_d_cm + Math.max(0, maxItemsInDeepestLane - 1) * gap + 2 * req.fb_clear;
   const zoneH = req.unit_h_cm + req.h_clear;
   const splitZoneSummary = { zone_id: `${req.content_type}_${option.option_id}`, zone_w_cm: zoneW, zone_d_cm: zoneD, zone_h_cm: zoneH, capacity: req.count };
