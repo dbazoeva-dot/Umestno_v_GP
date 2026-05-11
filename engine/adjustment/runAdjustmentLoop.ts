@@ -39,7 +39,7 @@ export function runAdjustmentLoop({ fitResult, calculatedZones, layoutPlan, draw
       adjustment_attempts.push({ ...rejected, accepted: false }); rejected_fallback_candidates.push(rejected); continue;
     }
     const adjusted = applyOpenFallback({ candidate, availableBox, openResult, layoutPlan, calculatedZones });
-    const newFit = runFitCheck({ layoutPlan: adjusted.layoutPlan, calculatedZones: adjusted.calculatedZones, drawerSize });
+    const newFit = runFitCheck({ layoutPlan: adjusted.layoutPlan, calculatedZones: adjusted.calculatedZones, drawerSize, enableDepthStackCandidates: false });
     const acceptance = evaluateOpenFallbackAcceptance({ originalFit: fitResult, adjustedFit: newFit, candidate });
     const attempt = { original_failed_zones: originalFailureSummary.failed_zones, original_failed_dimension: originalFailureSummary.failed_dimension, selected_adjustment_candidate: candidate.content_type, selected_adjustment_zone_id: candidate.zone_id, adjusted_zone_was_failed: originalFailedZoneIds.has(candidate.zone_id), new_division_type: "open", available_box: availableBox, open_capacity: openResult.capacity, required_count: candidate.count, reserve_capacity: openResult.reserveCapacity, height_ok: openResult.heightOk, final_failed_zones_after_fallback: summarizeFailedState(newFit).failed_zones, final_failed_dimension_after_fallback: newFit.failed_dimension ?? null, did_failed_zone_improve: acceptance.did_failed_zone_improve, did_failed_dimension_improve: acceptance.did_failed_dimension_improve, did_placed_count_improve: acceptance.did_placed_count_improve, rejected_fallback_candidates, accepted: acceptance.accepted, reason_rejected: acceptance.accepted ? undefined : acceptance.reason_rejected };
     adjustment_attempts.push(attempt);
@@ -61,7 +61,7 @@ function trySlotSplitBeforeOpenFallback({ fitResult, calculatedZones, layoutPlan
     const replace = (zone: CalculatedZone) => zone.zone_id === failedZone.zone_id ? splitZone : zone;
     const nextCalculatedZones = calculatedZones.map(replace);
     const nextLayoutPlan = { ...layoutPlan, selected_zones: layoutPlan.selected_zones.map(replace), placement_order: layoutPlan.selected_zones.map(replace).map((zone) => zone.content_type) };
-    const nextFit = runFitCheck({ layoutPlan: nextLayoutPlan, calculatedZones: nextCalculatedZones, drawerSize });
+    const nextFit = runFitCheck({ layoutPlan: nextLayoutPlan, calculatedZones: nextCalculatedZones, drawerSize, enableDepthStackCandidates: false });
     const accepted = splitZone.zone_d_cm < failedZone.zone_d_cm && nextFit.fit_status !== "fit_none";
     attempts.push({ content_type: failedZone.content_type, adjustment_type: "slots_multi_lane", split_used: true, lanes_needed: splitZone.lanes_needed, items_per_lane: splitZone.items_per_lane, max_items_per_lane: splitZone.max_items_per_lane, slot_lane_gap_cm: splitZone.slot_lane_gap_cm, original_single_lane_zone: splitZone.original_single_lane_zone, split_lane_zone: splitZone.split_lane_zone, final_failed_dimension_after_split: nextFit.failed_dimension, accepted });
     if (accepted) return { accepted: true, attempts, adjusted: { calculatedZones: nextCalculatedZones, layoutPlan: nextLayoutPlan, splitZone, adjustment_type: "slots_multi_lane", fit_after_adjustment: nextFit, adjustment_attempts: attempts } };
