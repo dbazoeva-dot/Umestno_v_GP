@@ -2,7 +2,8 @@
 
 export interface ZoneData {
   zone_id: string;
-  content_type: string;
+  type?: "content" | "reserve";
+  content_type?: string;
   x_cm: number;
   y_cm: number;
   assigned_w_cm: number;
@@ -68,26 +69,31 @@ export function buildSchemeViewBox(drawer: DrawerSize) {
 }
 
 export interface ZoneRenderData extends ZoneData {
-  index: number;   // 1-based block number
+  index: number;        // 1-based, content zones only
+  isReserve: boolean;
   fillColor: string;
   strokeColor: string;
   labelRu: string;
-  // pixel positions
   px: number;
   py: number;
   pw: number;
   ph: number;
 }
 
+let _contentIndex = 0;
 export function computeZoneRenders(zones: ZoneData[]): ZoneRenderData[] {
-  return zones.map((z, i) => {
+  _contentIndex = 0;
+  return zones.map((z) => {
+    const isReserve = z.type === "reserve";
     const half = ZONE_GAP / 2;
+    if (!isReserve) _contentIndex++;
     return {
       ...z,
-      index: i + 1,
-      fillColor: ZONE_FILLS[i % ZONE_FILLS.length],
-      strokeColor: ZONE_STROKES[i % ZONE_STROKES.length],
-      labelRu: CONTENT_TYPE_RU[z.content_type] ?? z.content_type,
+      index: isReserve ? 0 : _contentIndex,
+      isReserve,
+      fillColor: isReserve ? "transparent" : ZONE_FILLS[(_contentIndex - 1) % ZONE_FILLS.length],
+      strokeColor: isReserve ? BRAND.frame : ZONE_STROKES[(_contentIndex - 1) % ZONE_STROKES.length],
+      labelRu: isReserve ? "Свободно" : (CONTENT_TYPE_RU[z.content_type ?? ""] ?? z.content_type ?? ""),
       px: FRAME_PAD + z.x_cm * SCALE + half,
       py: FRAME_PAD + z.y_cm * SCALE + half,
       pw: z.assigned_w_cm * SCALE - ZONE_GAP,
@@ -96,43 +102,49 @@ export function computeZoneRenders(zones: ZoneData[]): ZoneRenderData[] {
   });
 }
 
+function renderZoneEl(z: ZoneRenderData): string {
+  const cx = z.px + z.pw / 2;
+  const cy = z.py + z.ph / 2;
+
+  if (z.isReserve) {
+    const fs = Math.max(7, Math.min(11, z.ph * 0.14));
+    return `
+    <rect x="${z.px}" y="${z.py}" width="${z.pw}" height="${z.ph}"
+      fill="#F5EFE6" fill-opacity="0.5"
+      stroke="${BRAND.frame}" stroke-width="1.5" stroke-dasharray="5,4"
+      rx="${ZONE_RADIUS}" ry="${ZONE_RADIUS}"/>
+    <text x="${cx}" y="${cy + fs * 0.4}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${fs}"
+      fill="${BRAND.frame}" opacity="0.7" letter-spacing="0.05em">Свободно</text>`;
+  }
+
+  const blockFs = Math.max(7, Math.min(10, z.ph * 0.15));
+  const nameFs  = Math.max(8, Math.min(13, z.ph * 0.22));
+  return `
+    <rect x="${z.px}" y="${z.py}" width="${z.pw}" height="${z.ph}"
+      fill="${z.fillColor}" stroke="${z.strokeColor}" stroke-width="1"
+      rx="${ZONE_RADIUS}" ry="${ZONE_RADIUS}"/>
+    <text x="${cx}" y="${cy - nameFs * 0.55}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${blockFs}" fill="${BRAND.textLight}">Блок ${z.index}.</text>
+    <text x="${cx}" y="${cy + nameFs * 0.8}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${nameFs}" font-weight="700"
+      fill="${BRAND.text}">${z.labelRu}</text>`;
+}
+
 // Pure SVG string — used in PDF and as dangerouslySetInnerHTML fallback
 export function buildSchemeSvgString(zones: ZoneData[], drawer: DrawerSize): string {
   const { innerW, innerH, totalW, totalH } = buildSchemeViewBox(drawer);
   const zoneRenders = computeZoneRenders(zones);
 
-  const frameRect = `<rect x="0" y="0" width="${totalW}" height="${totalH}"
-    fill="${BRAND.frame}" rx="${FRAME_RADIUS}" ry="${FRAME_RADIUS}"/>`;
-
-  const innerRect = `<rect x="${FRAME_PAD - 4}" y="${FRAME_PAD - 4}"
-    width="${innerW + 8}" height="${innerH + 8}"
-    fill="${BRAND.frameInner}" rx="${FRAME_RADIUS - 2}" ry="${FRAME_RADIUS - 2}"/>`;
-
-  const bgRect = `<rect x="${FRAME_PAD}" y="${FRAME_PAD}"
-    width="${innerW}" height="${innerH}"
-    fill="${BRAND.drawerBg}" rx="4" ry="4"/>`;
-
-  const zoneEls = zoneRenders.map((z) => {
-    const cx = z.px + z.pw / 2;
-    const cy = z.py + z.ph / 2;
-    const blockLine = `Блок ${z.index}`;
-    const nameLine = `— ${z.labelRu}`;
-    // Adjust font sizes for small zones
-    const blockFs = Math.max(7, Math.min(10, z.ph * 0.18));
-    const nameFs = Math.max(8, Math.min(13, z.ph * 0.22));
-    return `
-    <rect x="${z.px}" y="${z.py}" width="${z.pw}" height="${z.ph}"
-      fill="${z.fillColor}" stroke="${z.strokeColor}" stroke-width="1" rx="${ZONE_RADIUS}" ry="${ZONE_RADIUS}"/>
-    <text x="${cx}" y="${cy - nameFs * 0.6}" text-anchor="middle"
-      font-family="Arial, sans-serif" font-size="${blockFs}" fill="${BRAND.textLight}">${blockLine}</text>
-    <text x="${cx}" y="${cy + nameFs * 0.8}" text-anchor="middle"
-      font-family="Arial, sans-serif" font-size="${nameFs}" font-weight="600" fill="${BRAND.text}">${nameLine}</text>`;
-  }).join("");
-
   return `<svg viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">
-  ${frameRect}
-  ${innerRect}
-  ${bgRect}
-  ${zoneEls}
+  <rect x="0" y="0" width="${totalW}" height="${totalH}"
+    fill="${BRAND.frame}" rx="${FRAME_RADIUS}" ry="${FRAME_RADIUS}"/>
+  <rect x="${FRAME_PAD - 4}" y="${FRAME_PAD - 4}"
+    width="${innerW + 8}" height="${innerH + 8}"
+    fill="${BRAND.frameInner}" rx="${FRAME_RADIUS - 2}" ry="${FRAME_RADIUS - 2}"/>
+  <rect x="${FRAME_PAD}" y="${FRAME_PAD}"
+    width="${innerW}" height="${innerH}"
+    fill="${BRAND.drawerBg}" rx="4" ry="4"/>
+  ${zoneRenders.map(renderZoneEl).join("")}
 </svg>`;
 }

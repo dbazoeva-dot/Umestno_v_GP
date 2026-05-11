@@ -54,8 +54,34 @@ export default function DrawerSchemeRenderer({ zones, drawer, className }: Props
         const isHovered = hoveredId === z.zone_id;
         const cx = z.px + z.pw / 2;
         const cy = z.py + z.ph / 2;
-        const blockFs = Math.max(7, Math.min(10, z.ph * 0.18));
-        const nameFs = Math.max(8, Math.min(13, z.ph * 0.22));
+
+        if (z.isReserve) {
+          const fs = Math.max(7, Math.min(11, z.ph * 0.14));
+          return (
+            <g key={z.zone_id}>
+              <rect
+                x={z.px} y={z.py} width={z.pw} height={z.ph}
+                fill="#F5EFE6" fillOpacity={0.5}
+                stroke={BRAND.frame} strokeWidth={1.5}
+                strokeDasharray="5,4"
+                rx={ZONE_RADIUS} ry={ZONE_RADIUS}
+              />
+              <text
+                x={cx} y={cy + fs * 0.4}
+                textAnchor="middle"
+                fontFamily="Manrope, Arial, sans-serif"
+                fontSize={fs} fill={BRAND.frame} opacity={0.65}
+                letterSpacing="0.05em"
+                pointerEvents="none"
+              >
+                Свободно
+              </text>
+            </g>
+          );
+        }
+
+        const blockFs = Math.max(7, Math.min(10, z.ph * 0.15));
+        const nameFs  = Math.max(8, Math.min(13, z.ph * 0.22));
         const half = ZONE_GAP / 2;
 
         return (
@@ -77,25 +103,23 @@ export default function DrawerSchemeRenderer({ zones, drawer, className }: Props
               style={{ transition: "all 0.15s ease" }}
             />
             <text
-              x={cx} y={cy - nameFs * 0.6}
+              x={cx} y={cy - nameFs * 0.55}
               textAnchor="middle"
-              fontFamily="Arial, sans-serif"
-              fontSize={blockFs}
-              fill={BRAND.textLight}
+              fontFamily="Manrope, Arial, sans-serif"
+              fontSize={blockFs} fill={BRAND.textLight}
               pointerEvents="none"
             >
-              Блок {z.index}
+              Блок {z.index}.
             </text>
             <text
               x={cx} y={cy + nameFs * 0.8}
               textAnchor="middle"
-              fontFamily="Arial, sans-serif"
-              fontSize={nameFs}
-              fontWeight="600"
+              fontFamily="Manrope, Arial, sans-serif"
+              fontSize={nameFs} fontWeight="700"
               fill={BRAND.text}
               pointerEvents="none"
             >
-              — {z.labelRu}
+              {z.labelRu}
             </text>
           </g>
         );

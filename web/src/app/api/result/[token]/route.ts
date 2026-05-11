@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryOne } from "@/lib/db";
+import { buildSchemeZones } from "@/lib/schemeZones";
 import type { PlacedZone, SoftHeightWarning } from "@engine/types.js";
+
+interface FreeRect { x_cm: number; y_cm: number; w_cm: number; d_cm: number; h_cm?: number }
 
 interface OrderRow {
   status: string;
@@ -21,6 +24,7 @@ interface OrderRow {
       products: unknown;
     };
     scheme_payload: {
+      reserve_zones: FreeRect[];
       layout_rule_evaluations: unknown[];
     };
   };
@@ -45,47 +49,28 @@ export async function GET(
     [token]
   );
 
-  if (!row) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  if (row.status !== "paid") {
-    return NextResponse.json({ error: "Payment required" }, { status: 402 });
-  }
+  if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (row.status !== "paid") return NextResponse.json({ error: "Payment required" }, { status: 402 });
 
-  const { result } = row.result_full;
+  const { result, scheme_payload } = row.result_full;
   const showDimensions = row.variant === "A";
+  const { drawer_width_cm: dw, drawer_depth_cm: dd, drawer_height_cm: dh } = row.input;
 
-  const zones = result.scheme.assigned_zones.map((z) => ({
-    zone_id: z.zone_id,
-    content_type: z.content_type,
-    division_type: z.division_type,
-    storage_method: z.storage_method,
-    capacity: z.capacity,
-    x_cm: z.x_cm,
-    y_cm: z.y_cm,
-    assigned_w_cm: z.assigned_w_cm,
-    assigned_d_cm: z.assigned_d_cm,
-    assigned_h_cm: z.assigned_h_cm,
-    ...(showDimensions && {
-      zone_w_cm: z.zone_w_cm,
-      zone_d_cm: z.zone_d_cm,
-      zone_h_cm: z.zone_h_cm,
-    }),
-    soft_height_warning: z.soft_height_warning,
-  }));
+  const scheme_zones = buildSchemeZones(
+    result.scheme.assigned_zones,
+    scheme_payload.reserve_zones ?? [],
+    dw,
+    dd,
+    showDimensions
+  );
 
   return NextResponse.json({
     variant: row.variant,
-    drawer: {
-      w_cm: row.input.drawer_width_cm,
-      d_cm: row.input.drawer_depth_cm,
-      h_cm: row.input.drawer_height_cm,
-    },
-    zones,
+    drawer: { w_cm: dw, d_cm: dd, h_cm: dh },
+    scheme_zones,
     what_to_store_where: result.what_to_store_where,
     warnings: result.scheme.warnings,
     content_warnings: result.scheme.content_warnings,
     products: result.products,
-    layout_rule_evaluations: row.result_full.scheme_payload.layout_rule_evaluations,
   });
 }

@@ -11,12 +11,36 @@ const input = {
   ],
 };
 
-const { result } = runUmestnoEngine(input);
+const { result, scheme_payload } = runUmestnoEngine(input);
 if (!result) { console.error("Engine error"); process.exit(1); }
 
-const zones     = result.scheme.assigned_zones;
-const whatWhere = result.what_to_store_where;
-const warnings  = [...result.scheme.warnings, ...result.scheme.content_warnings.map(w => w.message)];
+const assignedZones = result.scheme.assigned_zones;
+const whatWhere     = result.what_to_store_where;
+const warnings      = [...result.scheme.warnings, ...result.scheme.content_warnings.map(w => w.message)];
+
+// Build scheme_zones: content + reserve (mirrors schemeZones.ts logic)
+function selectBestReserveRect(rects, drawerW, drawerD) {
+  const minArea = drawerW * drawerD * 0.06;
+  return rects
+    .filter(r => r.w_cm * r.d_cm >= minArea)
+    .sort((a, b) => b.w_cm * b.d_cm - a.w_cm * a.d_cm)[0] ?? null;
+}
+
+const contentZones = assignedZones.map(z => ({
+  zone_id: z.zone_id, type: "content", content_type: z.content_type,
+  x_cm: z.x_cm, y_cm: z.y_cm, assigned_w_cm: z.assigned_w_cm, assigned_d_cm: z.assigned_d_cm,
+  zone_w_cm: z.zone_w_cm, zone_d_cm: z.zone_d_cm, zone_h_cm: z.zone_h_cm,
+}));
+
+const bestReserve = selectBestReserveRect(scheme_payload.reserve_zones ?? [], input.drawer_width_cm, input.drawer_depth_cm);
+const reserveZones = bestReserve ? [{
+  zone_id: "reserve_0", type: "reserve", content_type: null,
+  x_cm: bestReserve.x_cm, y_cm: bestReserve.y_cm,
+  assigned_w_cm: bestReserve.w_cm, assigned_d_cm: bestReserve.d_cm,
+}] : [];
+
+const scheme_zones = [...contentZones, ...reserveZones];
+const zones = assignedZones; // keep for dimensions list
 
 // ── Palette ────────────────────────────────────────────────────────────────
 const C = {
@@ -116,46 +140,54 @@ function buildSvg(zones, wCm, dCm) {
     </filter>
   </defs>`;
 
-  const zoneEls = zones.map((z, i) => {
-    const pi  = i % ZONES_PALETTE.length;
-    const pal = ZONES_PALETTE[pi];
-    const px  = FP + z.x_cm * SC + half;
-    const py  = FP + z.y_cm * SC + half;
-    const pw  = z.assigned_w_cm * SC - ZG;
-    const ph  = z.assigned_d_cm * SC - ZG;
-    const cx  = px + pw / 2;
-    const cy  = py + ph / 2;
+  let contentCount = 0;
+  const zoneEls = scheme_zones.map((z, i) => {
+    const px = FP + z.x_cm * SC + half;
+    const py = FP + z.y_cm * SC + half;
+    const pw = z.assigned_w_cm * SC - ZG;
+    const ph = z.assigned_d_cm * SC - ZG;
+    const cx = px + pw / 2;
+    const cy = py + ph / 2;
 
-    // Font sizes — responsive to zone height
+    // Reserve zone: dashed outline, "Свободно" label
+    if (z.type === "reserve") {
+      const fs = Math.max(7, Math.min(12, ph * 0.13));
+      return `
+    <!-- Reserve zone -->
+    <rect x="${px}" y="${py}" width="${pw}" height="${ph}"
+      fill="#F5EFE6" fill-opacity="0.45"
+      stroke="#BFA07A" stroke-width="1.5" stroke-dasharray="6,4" rx="${ZR}"/>
+    <text x="${cx}" y="${cy + fs*0.4}" text-anchor="middle"
+      font-family="Manrope,'Helvetica Neue',sans-serif"
+      font-size="${fs}" fill="#BFA07A" opacity="0.7" letter-spacing="0.07em">Свободно</text>`;
+    }
+
+    // Content zone
+    contentCount++;
+    const pi  = (contentCount - 1) % ZONES_PALETTE.length;
+    const pal = ZONES_PALETTE[pi];
     const numFs  = Math.max(7.5, Math.min(10.5, ph * 0.14));
     const nameFs = Math.max(9,   Math.min(15,   ph * 0.22));
-
-    // Vertical label positions
-    const numY  = cy - nameFs * 0.5;
-    const nameY = cy + nameFs * 0.85;
-
-    const label = CONTENT_RU[z.content_type] ?? z.content_type;
+    const numY   = cy - nameFs * 0.5;
+    const nameY  = cy + nameFs * 0.85;
+    const label  = CONTENT_RU[z.content_type] ?? z.content_type;
 
     return `
-    <!-- Zone ${i+1}: ${label} -->
+    <!-- Zone ${contentCount}: ${label} -->
     <g filter="url(#zshadow)">
       <rect x="${px}" y="${py}" width="${pw}" height="${ph}"
-        fill="url(#zg${pi})" rx="${ZR}" ry="${ZR}"/>
+        fill="url(#zg${pi})" rx="${ZR}"/>
     </g>
-    <!-- Linen texture overlay -->
     <rect x="${px}" y="${py}" width="${pw}" height="${ph}"
-      fill="url(#zg${pi})" rx="${ZR}" ry="${ZR}" filter="url(#linen)" opacity="0.9"/>
-    <!-- Soft top-edge highlight -->
+      fill="url(#zg${pi})" rx="${ZR}" filter="url(#linen)" opacity="0.9"/>
     <rect x="${px+2}" y="${py+2}" width="${pw-4}" height="${Math.min(ph*0.28, 16)}"
-      fill="white" rx="${ZR-2}" ry="${ZR-2}" opacity="0.18"/>
-    <!-- Labels -->
+      fill="white" rx="${ZR-2}" opacity="0.18"/>
     <text x="${cx}" y="${numY}"
-      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-family="Manrope,'Helvetica Neue',sans-serif"
       font-size="${numFs}" font-weight="500" letter-spacing="0.06em"
-      text-anchor="middle" fill="${pal.label}" opacity="0.7"
-      style="text-transform:uppercase">БЛ ${i+1}</text>
+      text-anchor="middle" fill="${pal.label}" opacity="0.65">Блок ${contentCount}.</text>
     <text x="${cx}" y="${nameY}"
-      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-family="Manrope,'Helvetica Neue',sans-serif"
       font-size="${nameFs}" font-weight="700"
       text-anchor="middle" fill="${pal.label}">${label}</text>`;
   }).join("");
