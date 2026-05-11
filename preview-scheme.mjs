@@ -2,12 +2,13 @@ import { runUmestnoEngine } from "./dist/engine/index.js";
 import fs from "fs";
 
 const input = {
-  drawer_width_cm: 80, drawer_depth_cm: 45, drawer_height_cm: 15,
+  drawer_width_cm: 120, drawer_depth_cm: 50, drawer_height_cm: 30,
   storage_category: "underwear", priority: "convenient",
   items: [
-    { content_type: "panties",       volume_level: "medium" },
-    { content_type: "socks_regular", volume_level: "small"  },
-    { content_type: "bras",          volume_level: "small"  },
+    { content_type: "socks_regular", volume_level: "large"  },
+    { content_type: "panties",       volume_level: "large"  },
+    { content_type: "bras",          volume_level: "large"  },
+    { content_type: "tights",        volume_level: "medium" },
   ],
 };
 
