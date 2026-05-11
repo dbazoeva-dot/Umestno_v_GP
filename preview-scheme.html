@@ -4,115 +4,169 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Уместно — схема хранения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    font-family: 'Manrope', sans-serif;
     background: #F7F4EF;
-    color: #2E2E2E;
-    padding: 44px 28px;
-    max-width: 1040px;
+    color: #2C2520;
+    padding: 48px 32px;
+    max-width: 1080px;
     margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
   }
 
+  /* ── Header ── */
   .page-title {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 28px;
-    font-weight: normal;
-    margin-bottom: 6px;
-    letter-spacing: -0.01em;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: #2C2520;
   }
   .page-sub {
-    color: #7A6A5A;
     font-size: 14px;
-    margin-bottom: 32px;
+    color: #9C8C80;
+    margin-bottom: 36px;
+    font-weight: 400;
   }
 
+  /* ── Info cards ── */
   .info-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 36px;
   }
-  @media (max-width: 680px) { .info-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 720px) { .info-row { grid-template-columns: 1fr 1fr; } }
+
   .info-card {
     background: #FFFFFF;
-    border-radius: 12px;
-    padding: 16px 18px;
-    border: 1px solid #E5DDD4;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px solid #E8E0D6;
+    box-shadow: 0 1px 4px rgba(90,58,26,0.06);
   }
   .info-label {
     font-size: 10px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .08em;
-    color: #7A6A5A;
-    margin-bottom: 7px;
+    letter-spacing: 0.09em;
+    color: #9C8C80;
+    margin-bottom: 8px;
   }
   .info-value {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: #2E2E2E;
+    color: #2C2520;
     line-height: 1.35;
   }
 
+  /* ── Main layout ── */
   .layout {
     display: grid;
-    grid-template-columns: 55% 1fr;
-    gap: 32px;
+    grid-template-columns: 58% 1fr;
+    gap: 28px;
     align-items: start;
   }
-  @media (max-width: 680px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
 
-  .dims { margin-top: 18px; }
+  /* ── Left ── */
+  .scheme-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid #E8E0D6;
+    box-shadow: 0 2px 12px rgba(90,58,26,0.07);
+  }
+  .scheme-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #9C8C80;
+    margin-bottom: 20px;
+  }
+  .dims { margin-top: 22px; }
   .dims-title {
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .08em;
-    color: #7A6A5A;
-    margin-bottom: 10px;
+    letter-spacing: 0.09em;
+    color: #9C8C80;
+    margin-bottom: 12px;
   }
-  .dim-item { display:flex; align-items:center; gap:9px; font-size:13px; margin-bottom:7px; color:#2E2E2E; }
-  .dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  .dim-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500;
+    color: #6B5C4E;
+    margin-bottom: 8px;
+  }
+  .dim-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
 
+  /* ── Right ── */
   .right { display:flex; flex-direction:column; gap:14px; }
 
   .card {
     background: #FFFFFF;
-    border-radius: 14px;
-    padding: 20px 22px;
-    border: 1px solid #E5DDD4;
+    border-radius: 16px;
+    padding: 22px 24px;
+    border: 1px solid #E8E0D6;
+    box-shadow: 0 1px 6px rgba(90,58,26,0.06);
   }
   .card-title {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2C2520;
     margin-bottom: 16px;
     letter-spacing: -0.01em;
   }
 
-  .list-item { display:flex; align-items:center; gap:11px; font-size:13px; margin-bottom:10px; }
-  .num {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
-    flex-shrink: 0;
+  /* What & where */
+  .list-item {
+    display:flex; align-items:center; gap:12px;
+    font-size:13px; font-weight:500;
+    color:#6B5C4E;
+    margin-bottom: 11px;
+  }
+  .zone-dot {
+    width:26px; height:26px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+    flex-shrink:0; color:#2C2520;
   }
 
-  .fold-item { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
-  .fold-icon { font-size:20px; flex-shrink:0; line-height:1; margin-top:1px; }
-  .fold-hint { font-size:12px; color:#7A6A5A; margin-top:2px; display:block; }
+  /* Folding */
+  .fold-item {
+    display:flex; gap:14px; margin-bottom:14px; align-items:flex-start;
+  }
+  .fold-icon { font-size:22px; flex-shrink:0; line-height:1; margin-top:1px; }
+  .fold-name { font-size:13px; font-weight:600; color:#2C2520; margin-bottom:3px; }
+  .fold-hint { font-size:12px; color:#9C8C80; line-height:1.45; }
 
-  .why-item { display:flex; gap:10px; font-size:13px; margin-bottom:9px; line-height:1.4; }
-  .check { color:#A6B49B; font-weight:700; flex-shrink:0; }
+  /* Why */
+  .why-item {
+    display:flex; gap:10px;
+    font-size:13px; font-weight:500;
+    color:#6B5C4E;
+    margin-bottom:10px; line-height:1.45;
+  }
+  .check { color:#8FA885; font-weight:700; flex-shrink:0; font-size:14px; }
 
+  /* Warning */
   .warn {
-    background: #FEF3EC;
-    border-left: 3px solid #D08A72;
-    padding: 14px 18px;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1.6;
+    background: #FDF0EA;
+    border-left: 3px solid #C97B5E;
+    padding:14px 18px;
+    border-radius:12px;
+    font-size:13px;
+    color:#6B5C4E;
+    line-height:1.6;
   }
 </style>
 </head>
@@ -126,7 +180,7 @@
     <div class="info-value">Выдвижной ящик</div>
   </div><div class="info-card">
     <div class="info-label">Размеры</div>
-    <div class="info-value">Ш&nbsp;80 × Г&nbsp;45 × В&nbsp;15&nbsp;см</div>
+    <div class="info-value">Ш 80 × Г 45 × В 15 см</div>
   </div><div class="info-card">
     <div class="info-label">Вы выбрали хранить</div>
     <div class="info-value">Трусы, Носки, Бюстгальтеры</div>
@@ -137,87 +191,179 @@
 
 <div class="layout">
   <div class="left">
-    <svg viewBox="0 0 592 347" xmlns="http://www.w3.org/2000/svg"
-    style="width:100%;max-width:580px;height:auto;display:block;border-radius:14px;
-           box-shadow:0 4px 24px rgba(0,0,0,0.10)">
+    <div class="scheme-card">
+      <div class="scheme-title">Схема ящика — вид сверху</div>
+      <svg viewBox="0 0 644 381.5" xmlns="http://www.w3.org/2000/svg"
+    style="width:100%;height:auto;display:block;border-radius:18px;
+           box-shadow:0 8px 40px rgba(90,58,26,0.18)">
     <defs>
-    <filter id="zshadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000018"/>
+    <!-- Per-zone gradients (top-light → base for soft puff feel) -->
+    
+    <linearGradient id="zg0" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F5F0E8" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#E8DECE" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#E8DECE" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="zg1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#AEC2A4" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#8FA885" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#8FA885" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="zg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#D4C8BA" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#BEB0A0" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#BEB0A0" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="zg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#E0D4C4" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#CEC0AE" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#CEC0AE" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="zg4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#C2D0BE" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#A8BAA4" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#A8BAA4" stop-opacity="0.88"/>
+    </linearGradient>
+    <linearGradient id="zg5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#EAE0D4" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#D8CCBE" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#D8CCBE" stop-opacity="0.88"/>
+    </linearGradient>
+
+    <!-- Drawer background gradient -->
+    <linearGradient id="drawerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F2EBE0"/>
+      <stop offset="100%" stop-color="#E4DAC8"/>
+    </linearGradient>
+
+    <!-- Frame gradient -->
+    <linearGradient id="frameGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#C9A476"/>
+      <stop offset="100%" stop-color="#A8824E"/>
+    </linearGradient>
+
+    <!-- Linen fabric texture (very subtle noise overlay) -->
+    <filter id="linen" x="0%" y="0%" width="100%" height="100%"
+            color-interpolation-filters="linearRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75 0.35"
+        numOctaves="4" seed="7" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.88  0 0 0 0.055 0"
+        in="noise" result="warmNoise"/>
+      <feBlend mode="soft-light" in="SourceGraphic" in2="warmNoise"/>
     </filter>
-    <linearGradient id="drawerbg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#F5EDE0"/>
-      <stop offset="100%" stop-color="#EAE0D0"/>
-    </linearGradient>
-    <linearGradient id="framebg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#CDB08A"/>
-      <stop offset="100%" stop-color="#B8976A"/>
-    </linearGradient>
+
+    <!-- Soft zone shadow -->
+    <filter id="zshadow" x="-8%" y="-8%" width="116%" height="124%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#8B6B4A" flood-opacity="0.18"/>
+    </filter>
+
+    <!-- Frame inner shadow (depth) -->
+    <filter id="frameDepth" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#5A3A1A" flood-opacity="0.22"/>
+    </filter>
   </defs>
-    <rect x="0" y="0" width="592" height="347" fill="url(#framebg)" rx="14"/>
-    <rect x="11" y="11" width="570" height="325"
-      fill="#E2D4C0" rx="11"/>
-    <rect x="16" y="16" width="560" height="315"
-      fill="url(#drawerbg)" rx="5"/>
+    <!-- Outer frame -->
+    <rect x="0" y="0" width="644" height="381.5"
+      fill="url(#frameGrad)" rx="18" ry="18" filter="url(#frameDepth)"/>
+    <!-- Frame inner bevel -->
+    <rect x="15" y="15" width="614" height="351.5"
+      fill="#DDD0BE" rx="14" ry="14"/>
+    <!-- Drawer surface -->
+    <rect x="22" y="22" width="600" height="337.5"
+      fill="url(#drawerGrad)" rx="6" ry="6" filter="url(#linen)"/>
+    
+    <!-- Zone 1: Бюстгальтеры -->
     <g filter="url(#zshadow)">
-      <rect x="18" y="18" width="199" height="104.5"
-        fill="#EDE5D8" stroke="#C8A898"
-        stroke-width="1" rx="8"/>
+      <rect x="24.5" y="24.5" width="212.5" height="111.25"
+        fill="url(#zg0)" rx="14" ry="14"/>
     </g>
-    <text x="117.5" y="62.55" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="11"
-      letter-spacing="0.04em" fill="#7A6A5A">Блок 1.</text>
-    <text x="117.5" y="80.75" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="14"
-      font-weight="700" fill="#2E2E2E">Бюстгальтеры</text><g filter="url(#zshadow)">
-      <rect x="221" y="18" width="129" height="129"
-        fill="#A6B49B" stroke="#7A9980"
-        stroke-width="1" rx="8"/>
+    <!-- Linen texture overlay -->
+    <rect x="24.5" y="24.5" width="212.5" height="111.25"
+      fill="url(#zg0)" rx="14" ry="14" filter="url(#linen)" opacity="0.9"/>
+    <!-- Soft top-edge highlight -->
+    <rect x="26.5" y="26.5" width="208.5" height="16"
+      fill="white" rx="12" ry="12" opacity="0.18"/>
+    <!-- Labels -->
+    <text x="130.75" y="72.625"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="10.5" font-weight="500" letter-spacing="0.06em"
+      text-anchor="middle" fill="#4A3C30" opacity="0.7"
+      style="text-transform:uppercase">БЛ 1</text>
+    <text x="130.75" y="92.875"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="15" font-weight="700"
+      text-anchor="middle" fill="#4A3C30">Бюстгальтеры</text>
+    <!-- Zone 2: Носки -->
+    <g filter="url(#zshadow)">
+      <rect x="242" y="24.5" width="137.5" height="137.5"
+        fill="url(#zg1)" rx="14" ry="14"/>
     </g>
-    <text x="285.5" y="74.8" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="11"
-      letter-spacing="0.04em" fill="#7A6A5A">Блок 2.</text>
-    <text x="285.5" y="93" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="14"
-      font-weight="700" fill="#2E2E2E">Носки</text><g filter="url(#zshadow)">
-      <rect x="354" y="18" width="213" height="87"
-        fill="#C8B9AC" stroke="#A89080"
-        stroke-width="1" rx="8"/>
+    <!-- Linen texture overlay -->
+    <rect x="242" y="24.5" width="137.5" height="137.5"
+      fill="url(#zg1)" rx="14" ry="14" filter="url(#linen)" opacity="0.9"/>
+    <!-- Soft top-edge highlight -->
+    <rect x="244" y="26.5" width="133.5" height="16"
+      fill="white" rx="12" ry="12" opacity="0.18"/>
+    <!-- Labels -->
+    <text x="310.75" y="85.75"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="10.5" font-weight="500" letter-spacing="0.06em"
+      text-anchor="middle" fill="#2A4030" opacity="0.7"
+      style="text-transform:uppercase">БЛ 2</text>
+    <text x="310.75" y="106"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="15" font-weight="700"
+      text-anchor="middle" fill="#2A4030">Носки</text>
+    <!-- Zone 3: Трусы -->
+    <g filter="url(#zshadow)">
+      <rect x="384.5" y="24.5" width="227.5" height="92.5"
+        fill="url(#zg2)" rx="14" ry="14"/>
     </g>
-    <text x="460.5" y="53.8" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="11"
-      letter-spacing="0.04em" fill="#7A6A5A">Блок 3.</text>
-    <text x="460.5" y="72" text-anchor="middle"
-      font-family="'Helvetica Neue',Arial,sans-serif" font-size="14"
-      font-weight="700" fill="#2E2E2E">Трусы</text>
+    <!-- Linen texture overlay -->
+    <rect x="384.5" y="24.5" width="227.5" height="92.5"
+      fill="url(#zg2)" rx="14" ry="14" filter="url(#linen)" opacity="0.9"/>
+    <!-- Soft top-edge highlight -->
+    <rect x="386.5" y="26.5" width="223.5" height="16"
+      fill="white" rx="12" ry="12" opacity="0.18"/>
+    <!-- Labels -->
+    <text x="498.25" y="63.25"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="10.5" font-weight="500" letter-spacing="0.06em"
+      text-anchor="middle" fill="#3C3028" opacity="0.7"
+      style="text-transform:uppercase">БЛ 3</text>
+    <text x="498.25" y="83.5"
+      font-family="Manrope, 'Helvetica Neue', Arial, sans-serif"
+      font-size="15" font-weight="700"
+      text-anchor="middle" fill="#3C3028">Трусы</text>
   </svg>
-    <div class="dims">
-      <div class="dims-title">Размеры блоков</div>
-      <div class="dim-item">
-    <span class="dot" style="background:#EDE5D8;border:1.5px solid #C8A898"></span>
-    <span>Блок 1 — 29 × 15.5 × 13 см</span>
-  </div><div class="dim-item">
-    <span class="dot" style="background:#A6B49B;border:1.5px solid #7A9980"></span>
-    <span>Блок 2 — 19 × 19 × 8 см</span>
-  </div><div class="dim-item">
-    <span class="dot" style="background:#C8B9AC;border:1.5px solid #A89080"></span>
-    <span>Блок 3 — 31 × 13 × 7 см</span>
-  </div>
+      <div class="dims">
+        <div class="dims-title">Размеры блоков</div>
+        <div class="dim-item">
+      <span class="dim-dot" style="background:#E8DECE;border:1.5px solid #C8B8A4"></span>
+      <span>Блок 1 — 29 × 15.5 × 13 см</span>
+    </div><div class="dim-item">
+      <span class="dim-dot" style="background:#8FA885;border:1.5px solid #6E8A72"></span>
+      <span>Блок 2 — 19 × 19 × 8 см</span>
+    </div><div class="dim-item">
+      <span class="dim-dot" style="background:#BEB0A0;border:1.5px solid #9E9080"></span>
+      <span>Блок 3 — 31 × 13 × 7 см</span>
+    </div>
+      </div>
     </div>
   </div>
+
   <div class="right">
     <div class="card">
       <div class="card-title">Что и где хранить</div>
-      
-    <div class="list-item">
-      <span class="num" style="background:#EDE5D8;border:1.5px solid #C8A898;color:#2E2E2E">1</span>
+      <div class="list-item">
+      <span class="zone-dot" style="background:#E8DECE;border:1.5px solid #C8B8A4">1</span>
       <span>Блок 1 — Бюстгальтеры</span>
-    </div>
-    <div class="list-item">
-      <span class="num" style="background:#A6B49B;border:1.5px solid #7A9980;color:#2E2E2E">2</span>
+    </div><div class="list-item">
+      <span class="zone-dot" style="background:#8FA885;border:1.5px solid #6E8A72">2</span>
       <span>Блок 2 — Носки</span>
-    </div>
-    <div class="list-item">
-      <span class="num" style="background:#C8B9AC;border:1.5px solid #A89080;color:#2E2E2E">3</span>
+    </div><div class="list-item">
+      <span class="zone-dot" style="background:#BEB0A0;border:1.5px solid #9E9080">3</span>
       <span>Блок 3 — Трусы</span>
     </div>
     </div>
@@ -225,18 +371,31 @@
       <div class="card-title">Как сложить вещи</div>
       <div class="fold-item">
       <span class="fold-icon">👙</span>
-      <div><b>Бюстгальтеры</b><br><span class="fold-hint">Хранить в ряд, не сжимая форму.</span></div>
+      <div>
+        <div class="fold-name">Бюстгальтеры</div>
+        <div class="fold-hint">Хранить в ряд, не сжимая форму.</div>
+      </div>
     </div><div class="fold-item">
       <span class="fold-icon">🧦</span>
-      <div><b>Носки</b><br><span class="fold-hint">Одна единица в одной ячейке.</span></div>
+      <div>
+        <div class="fold-name">Носки</div>
+        <div class="fold-hint">Одна единица в одной ячейке.</div>
+      </div>
     </div><div class="fold-item">
       <span class="fold-icon">🩲</span>
-      <div><b>Трусы</b><br><span class="fold-hint">Одна единица в одной ячейке.</span></div>
+      <div>
+        <div class="fold-name">Трусы</div>
+        <div class="fold-hint">Одна единица в одной ячейке.</div>
+      </div>
     </div>
     </div>
     <div class="card">
       <div class="card-title">Почему схема подходит</div>
-      <div class="why-item"><span class="check">✓</span><span>Подобрана точно под ваши размеры: 80 × 45 × 15 см</span></div><div class="why-item"><span class="check">✓</span><span>Учитывает все выбранные типы вещей</span></div><div class="why-item"><span class="check">✓</span><span>Оптимизирована под приоритет «Удобно»</span></div><div class="why-item"><span class="check">✓</span><span>Все блоки входят в ящик без перекрытий</span></div>
+      
+    <div class="why-item"><span class="check">✓</span><span>Подобрана под ваши размеры: 80 × 45 × 15 см</span></div>
+    <div class="why-item"><span class="check">✓</span><span>Учитывает все выбранные типы вещей</span></div>
+    <div class="why-item"><span class="check">✓</span><span>Оптимизирована под приоритет «Удобно»</span></div>
+    <div class="why-item"><span class="check">✓</span><span>Все блоки входят без перекрытий</span></div>
     </div>
     
   </div>
