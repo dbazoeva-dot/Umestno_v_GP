@@ -39,14 +39,14 @@ assert(forcedReport.initial_fit_result.fit_status === "fit_all", "forced case: d
 assert(forcedReport.adjustment_result === null, "forced case: adjustment should not be needed after 2D placement");
 assert(forcedSummary.final_fit_status === "fit_all", "forced case: final fit status should be fit_all");
 assert(forcedSummary.open_fallback_used === false, "forced case: open fallback should not be used when cells fit in 2D free rectangles");
-assert(forcedReport.final_fit_result.placed_zones.some((zone) => zone.content_type === "panties" && zone.division_type === "cells" && zone.y_cm > 0), "forced case: panties cells should be placed in remaining depth rectangle");
+assert(forcedReport.final_fit_result.placed_zones.some((zone) => zone.content_type === "socks_regular" && zone.division_type === "cells" && zone.y_cm > 0), "forced case: depth-stack placement should place an underwear cells zone in remaining depth rectangle");
 assert(forcedReport.final_fit_result.placement_attempts?.every((attempt) => attempt.placed), "forced case: debug placement attempts should show every zone placed");
 assert(Array.isArray(forcedReport.layout_rule_evaluations), "scenario 2 rules: report should expose layout_rule_evaluations");
 assert(Array.isArray(forcedReport.scheme_payload.layout_rule_evaluations), "scenario 2 rules: scheme payload should expose layout_rule_evaluations");
 assert(Array.isArray(forcedReport.debug_trace.layout_rule_evaluations), "scenario 2 rules: debug trace should expose layout_rule_evaluations");
 assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "ZONE_INTEGRITY")?.status === "pass", "scenario 2 rules: zone integrity should pass after placement");
 assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D01")?.status === "pass", "scenario 2 rules: D01 should evaluate semantic storage-category adjacency, not division adjacency");
-assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D02")?.status === "violation", "scenario 2 rules: D02 should flag socks between bras and panties without changing placement");
+assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D02")?.status === "pass", "scenario 2 rules: depth-stack scoring should avoid placing socks between bras and panties when a better fit_all candidate exists");
 assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D03")?.status === "report", "scenario 2 rules: D03 compactness should be reporting only");
 assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D04")?.status === "report", "scenario 2 rules: D04 reserve edge check should be reporting only");
 assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D04b")?.status === "opportunity", "scenario 2 rules: D04b should report depth-reserve absorption opportunity only");
@@ -93,6 +93,34 @@ assert(socksAliasDebug.input.items[0]?.content_type === "socks_regular", "source
 assert(socksAliasDebug.counted_items[0]?.content_type === "socks_regular", "source socks should count through canonical socks_regular, not a separate socks type");
 const duplicateSocksAliasOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks", volume_level: "small" }, { content_type: "socks_regular", volume_level: "small" } ], priority: "convenient" });
 assert(duplicateSocksAliasOutput.result === null, "socks and socks_regular together should be rejected after alias normalization instead of producing two zones");
+
+
+const p1Output = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "small" }, { content_type: "bras", volume_level: "small" } ], priority: "convenient" });
+const p1Debug = p1Output.debug as { fit_result: { fit_status: string; used_depth_cm: number; fit_notes: string[]; placed_zones: Array<{ content_type: string; x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; zone_w_cm: number; zone_d_cm: number }> }; layout_rule_evaluations: Array<{ rule_id: string; status: string }>; scheme_payload: { selected_calculated_zones: Array<{ content_type: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number }> } };
+assert(p1Debug.fit_result.fit_status === "fit_all", "P1 depth-stack: should remain fit_all");
+assert(p1Debug.fit_result.used_depth_cm > 19, "P1 depth-stack: should improve beyond the old thin one-row 19cm depth");
+assert(p1Debug.fit_result.fit_notes.some((note) => note.includes("Selected depth-stack primary fit candidate")), "P1 depth-stack: should select a generated depth-stack candidate");
+assert(p1Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "panties" && zone.zone_w_cm === 31 && zone.zone_d_cm === 13 && zone.zone_h_cm === 7), "P1 depth-stack: panties calculated size should remain unchanged");
+assert(p1Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "socks_regular" && zone.zone_w_cm === 19 && zone.zone_d_cm === 19 && zone.zone_h_cm === 8), "P1 depth-stack: socks calculated size should remain unchanged");
+assert(p1Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "bras" && zone.zone_w_cm === 29 && zone.zone_d_cm === 15.5 && zone.zone_h_cm === 13), "P1 depth-stack: bras calculated size should remain unchanged");
+assert(findRuleEvaluation(p1Debug.layout_rule_evaluations, "D02")?.status === "pass", "P1 depth-stack: socks should not remain between bras and panties");
+
+const p2Output = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "medium" }, { content_type: "bras", volume_level: "small" } ], priority: "convenient" });
+const p2Debug = p2Output.debug as { fit_result: { fit_status: string; used_depth_cm: number; fit_notes: string[] }; scheme_payload: { assigned_zones: Array<{ content_type: string; x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number }>; selected_calculated_zones: Array<{ content_type: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number }> } };
+assert(p2Debug.fit_result.fit_status === "fit_all", "P2 depth-stack: should remain fit_all");
+assert(p2Debug.fit_result.used_depth_cm > 15.5, "P2 depth-stack: should improve beyond the old thin one-row 15.5cm depth");
+assert(p2Debug.fit_result.fit_notes.some((note) => note.includes("Selected depth-stack primary fit candidate")), "P2 depth-stack: should stack bras and panties along depth");
+assert(p2Debug.scheme_payload.assigned_zones.some((zone) => zone.content_type === "bras" && zone.y_cm > 0), "P2 depth-stack: bras should be stacked behind another underwear zone");
+assert(p2Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "panties" && zone.zone_w_cm === 31 && zone.zone_d_cm === 13 && zone.zone_h_cm === 7), "P2 depth-stack: panties calculated size should remain unchanged");
+assert(p2Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "bras" && zone.zone_w_cm === 29 && zone.zone_d_cm === 15.5 && zone.zone_h_cm === 13), "P2 depth-stack: bras calculated size should remain unchanged");
+
+const p3Output = runUmestnoEngine({ drawer_width_cm: 50, drawer_depth_cm: 40, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "small" }, { content_type: "bras", volume_level: "small" } ], priority: "convenient" });
+const p3Debug = p3Output.debug as { fit_result: { fit_status: string; used_depth_cm: number; fit_notes: string[] }; layout_rule_evaluations: Array<{ rule_id: string; status: string }>; scheme_payload: { assigned_zones: Array<{ content_type: string; x_cm: number; y_cm: number }>; selected_calculated_zones: Array<{ content_type: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number }> } };
+assert(p3Debug.fit_result.fit_status === "fit_all", "P3 depth-stack: should remain fit_all");
+assert(p3Debug.fit_result.used_depth_cm >= 28.5, "P3 depth-stack: should preserve meaningful depth use in the narrow drawer");
+assert(p3Debug.scheme_payload.assigned_zones.some((zone) => zone.y_cm > 0), "P3 depth-stack: should keep at least one zone in a deeper row");
+assert(findRuleEvaluation(p3Debug.layout_rule_evaluations, "D05")?.status === "pass", "P3 depth-stack: scoring should improve high-frequency front ordering when possible");
+assert(p3Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "socks_regular" && zone.zone_w_cm === 19 && zone.zone_d_cm === 19 && zone.zone_h_cm === 8), "P3 depth-stack: socks calculated size should remain unchanged");
 
 const scenario5Output = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 40, drawer_height_cm: 10, storage_category: "underwear", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" } ], priority: "convenient" });
 const scenario5Result = scenario5Output.result as { content_warnings: Array<{ content_type: string; warning_code: string; zone_h_cm: number; drawer_h_cm: number; overflow_h_cm: number; max_allowed_overflow_h_cm: number }> };
@@ -154,7 +182,7 @@ assert(!scenario7Result.content_warnings.some((warning) => warning.content_type 
 assert(Array.isArray(scenario7Debug.layout_rule_evaluations), "scenario 7 rules: debug trace should expose layout_rule_evaluations");
 assert(Array.isArray(scenario7Debug.scheme_payload.layout_rule_evaluations), "scenario 7 rules: scheme payload should expose layout_rule_evaluations");
 assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "ZONE_INTEGRITY")?.status === "pass", "scenario 7 rules: zone integrity should pass after adjustment placement");
-assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "D02")?.status === "violation", "scenario 7 rules: D02 should evaluate post-placement socks/bras/panties ordering without changing placement");
+assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "D02")?.status === "violation", "scenario 7 rules: D02 should evaluate post-placement socks/bras/panties ordering without changing adjustment placement");
 assert(findRuleEvaluation(scenario7Debug.layout_rule_evaluations, "D04b")?.status === "opportunity", "scenario 7 rules: D04b should report depth reserve opportunity only");
 assert(scenario7Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "bras" && zone.division_type === "slots" && zone.option_id === "slots_multi_lane_auto"), "scenario 7 rules: evaluator must not change bras placement option");
 
