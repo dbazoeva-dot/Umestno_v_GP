@@ -1,4 +1,4 @@
-import { buildBaseCalibrationCaseReport, buildForcedOpenFallbackCalibrationCaseReport, buildFourItemStressCalibrationCaseReport } from "../calibration/buildCalibrationCaseReport.js";
+import { buildBaseCalibrationCaseReport, buildCalibrationCaseReport, buildForcedOpenFallbackCalibrationCaseReport, buildFourItemStressCalibrationCaseReport } from "../calibration/buildCalibrationCaseReport.js";
 import { runUmestnoEngine } from "../index.js";
 import { defaultLibraries } from "../libraries/defaultLibraries.js";
 function assert(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
@@ -121,6 +121,17 @@ assert(p3Debug.fit_result.used_depth_cm >= 28.5, "P3 depth-stack: should preserv
 assert(p3Debug.scheme_payload.assigned_zones.some((zone) => zone.y_cm > 0), "P3 depth-stack: should keep at least one zone in a deeper row");
 assert(findRuleEvaluation(p3Debug.layout_rule_evaluations, "D05")?.status === "pass", "P3 depth-stack: scoring should improve high-frequency front ordering when possible");
 assert(p3Debug.scheme_payload.selected_calculated_zones.some((zone) => zone.content_type === "socks_regular" && zone.zone_w_cm === 19 && zone.zone_d_cm === 19 && zone.zone_h_cm === 8), "P3 depth-stack: socks calculated size should remain unchanged");
+
+const p4Report = buildCalibrationCaseReport({ input: { drawer_width_cm: 120, drawer_depth_cm: 50, drawer_height_cm: 30, storage_category: "underwear", priority: "convenient", items: [ { content_type: "socks_regular", volume_level: "large" }, { content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "large" }, { content_type: "tights", volume_level: "medium" } ] }, schemeId: "scheme_120x50_p4_column_alignment", maxItemsOverride: 4 });
+assert(p4Report.final_fit_result.fit_status === "fit_all", "P4 column alignment: should be fit_all");
+const p4Panties = p4Report.final_fit_result.placed_zones.find((zone) => zone.content_type === "panties");
+const p4Bras = p4Report.final_fit_result.placed_zones.find((zone) => zone.content_type === "bras");
+assert(p4Bras !== undefined, "P4 column alignment: bras should be placed");
+assert(p4Panties !== undefined, "P4 column alignment: panties should be placed");
+assert(p4Panties!.x_cm === p4Bras!.x_cm, "P4 column alignment: panties and bras should share the same column (same x_cm)");
+assert(p4Panties!.assigned_w_cm === p4Bras!.assigned_w_cm, "P4 column alignment: panties assigned_w_cm should be widened to match bras column width");
+assert(p4Panties!.assigned_w_cm > p4Panties!.zone_w_cm, "P4 column alignment: panties assigned_w_cm should be widened beyond its original zone_w_cm");
+assert(p4Panties!.assigned_w_cm === 58, "P4 column alignment: panties assigned_w_cm should be 58 (matching bras column width) after column normalization");
 
 const scenario5Output = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 40, drawer_height_cm: 10, storage_category: "underwear", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" } ], priority: "convenient" });
 const scenario5Result = scenario5Output.result as { content_warnings: Array<{ content_type: string; warning_code: string; zone_h_cm: number; drawer_h_cm: number; overflow_h_cm: number; max_allowed_overflow_h_cm: number }> };
