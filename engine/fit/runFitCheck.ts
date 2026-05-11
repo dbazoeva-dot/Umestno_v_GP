@@ -2,6 +2,7 @@ import type { CalculatedZone, FitResult, LayoutPlan, PlacedZone, DrawerSize, Sof
 import { classifyFitStatus } from "./classifyFitStatus.js";
 import { findFreeRectangles } from "./findFreeRectangles.js";
 import { chooseDepthStackFitCandidate } from "./generateDepthStackCandidates.js";
+import { alignColumns } from "./alignColumns.js";
 export function runFitCheck({ layoutPlan, drawerSize, enableDepthStackCandidates = true }: { layoutPlan: LayoutPlan; calculatedZones: CalculatedZone[]; drawerSize: DrawerSize; enableDepthStackCandidates?: boolean }): FitResult {
   const placed_zones: PlacedZone[] = []; const unplaced_zones: CalculatedZone[] = [];
   const content_warnings: SoftHeightWarning[] = [];
@@ -36,7 +37,10 @@ export function runFitCheck({ layoutPlan, drawerSize, enableDepthStackCandidates
   const fit_notes = unplaced_zones.length ? ["Some zones did not fit in deterministic 2D free-rectangle placement."] : ["All calculated zones fit deterministic 2D free-rectangle placement before SKU matching."];
   if (content_warnings.length) fit_notes.push("Some content zones were accepted with configured soft height warnings; SKU/product height fit remains strict.");
   const fitResult: FitResult = { fit_status: classifyFitStatus(placed_zones.length, layoutPlan.selected_zones.length), placed_zones, unplaced_zones, failed_zones: unplaced_zones, best_attempt: { placed_count: placed_zones.length }, failed_dimension, missing_width_cm: missingW, missing_depth_cm: missingD, missing_height_cm: missingH, used_width_cm, used_depth_cm, used_height_cm, overflow_width_cm: missingW, overflow_depth_cm: missingD, overflow_height_cm: missingH, free_rectangles, available_box: free_rectangles[0] ? { ...free_rectangles[0] } : undefined, fit_notes, content_warnings, placement_attempts };
-  return enableDepthStackCandidates ? chooseDepthStackFitCandidate({ drawerSize, currentFit: fitResult }) ?? fitResult : fitResult;
+  const candidateFit = enableDepthStackCandidates ? chooseDepthStackFitCandidate({ drawerSize, currentFit: fitResult }) ?? fitResult : fitResult;
+  const alignedZones = alignColumns(candidateFit.placed_zones);
+  if (alignedZones === candidateFit.placed_zones) return candidateFit;
+  return { ...candidateFit, placed_zones: alignedZones, free_rectangles: findFreeRectangles(drawerSize, alignedZones) };
 }
 function choosePlacementRectangle({ freeRectangles, zoneW, zoneD, zoneH, zone }: { freeRectangles: ReturnType<typeof findFreeRectangles>; zoneW: number; zoneD: number; zoneH: number; zone: CalculatedZone }) { return freeRectangles.map((rect) => ({ rect, softHeightWarning: buildSoftHeightWarning(rect, zoneW, zoneD, zoneH, zone) })).filter((candidate) => rejectReason(candidate.rect, zoneW, zoneD, zoneH, zone) === "fits" || candidate.softHeightWarning).sort((a, b) => a.rect.y_cm - b.rect.y_cm || a.rect.x_cm - b.rect.x_cm || Number(Boolean(a.softHeightWarning)) - Number(Boolean(b.softHeightWarning)) || leftoverArea(a.rect, zoneW, zoneD) - leftoverArea(b.rect, zoneW, zoneD) || b.rect.w_cm * b.rect.d_cm - a.rect.w_cm * a.rect.d_cm || b.rect.h_cm - a.rect.h_cm)[0]; }
 function rejectReason(rect: { w_cm: number; d_cm: number; h_cm: number }, zoneW: number, zoneD: number, zoneH: number, zone: CalculatedZone) { if (zoneW > rect.w_cm) return "width"; if (zoneD > rect.d_cm) return "depth"; if (zoneH > rect.h_cm) return buildSoftHeightWarning(rect, zoneW, zoneD, zoneH, zone) ? "soft_height_warning" : "height"; return "fits"; }
