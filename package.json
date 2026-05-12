@@ -10,7 +10,8 @@
     "calibration:json:forced-open": "npm run build --silent && node dist/engine/test/printCalibrationCase.js forced-open-fallback",
     "calibration:json:four-item-stress": "npm run build --silent && node dist/engine/test/printCalibrationCase.js four-item-stress",
     "visualize:scenarios": "npm run build --silent && node dist/engine/tools/renderScenarioHtml.js",
-    "viz": "npm run build --silent && node dist/engine/tools/visualizeResults.js"
+    "viz": "npm run build --silent && node dist/engine/tools/visualizeResults.js",
+    "dev": "npm run build --silent && node engine/tools/devServer.mjs"
   },
   "devDependencies": {}
 }
