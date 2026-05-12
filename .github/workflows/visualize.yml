@@ -1,0 +1,75 @@
+name: Visualize engine result
+
+on:
+  workflow_dispatch:
+    inputs:
+      width:
+        description: "Ширина ящика, см"
+        required: true
+        default: "80"
+      depth:
+        description: "Глубина ящика, см"
+        required: true
+        default: "45"
+      height:
+        description: "Высота ящика, см"
+        required: true
+        default: "15"
+      category:
+        description: "Категория хранения"
+        required: true
+        default: "underwear"
+        type: choice
+        options:
+          - underwear
+          - soft_clothes
+          - accessories
+          - mixed
+      priority:
+        description: "Приоритет"
+        required: true
+        default: "convenient"
+        type: choice
+        options:
+          - convenient
+          - capacity
+          - budget
+      items:
+        description: "Вещи через запятую: тип:объём — например panties:medium,bras:small,socks_regular:large"
+        required: true
+        default: "panties:medium,bras:small,socks_regular:large"
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build engine
+        run: npm run build --silent
+
+      - name: Generate SVG
+        run: |
+          node dist/engine/tools/generateSvgResult.js \
+            --w=${{ github.event.inputs.width }} \
+            --d=${{ github.event.inputs.depth }} \
+            --h=${{ github.event.inputs.height }} \
+            --cat=${{ github.event.inputs.category }} \
+            --pri=${{ github.event.inputs.priority }} \
+            --items="${{ github.event.inputs.items }}" \
+            --out=viz/result.svg
+
+      - name: Commit result
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add viz/result.svg
+          git diff --staged --quiet || git commit -m "viz: ${{ github.event.inputs.items }} — ${{ github.event.inputs.width }}x${{ github.event.inputs.depth }}x${{ github.event.inputs.height }} (${{ github.event.inputs.category }}, ${{ github.event.inputs.priority }})"
+          git push

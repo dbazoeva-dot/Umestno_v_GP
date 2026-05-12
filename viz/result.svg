@@ -1,0 +1,80 @@
+<svg viewBox="0 0 620.0 461.0" xmlns="http://www.w3.org/2000/svg"
+    style="font-family: Inter, system-ui, sans-serif; background: #f8fafc;">
+  <defs>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse">
+      <path d="M-1 7L7-1M0 8L8 0" stroke="#94a3b8" stroke-width="1" opacity="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- header -->
+  <text x="42.0" y="18" font-size="13" font-weight="700" fill="#1e293b">panties medium  +  bras small  +  socks_regular large</text>
+  <text x="42.0" y="34" font-size="11" fill="#475467">ящик 80×45×15 cm · underwear · convenient</text>
+  <text x="602.0" y="18" font-size="12" font-weight="700" fill="#16a34a" text-anchor="end">fit_all</text>
+  <text x="602.0" y="34" font-size="10" fill="#94a3b8" text-anchor="end">2026-05-12 09:51 UTC</text>
+
+  <!-- axis labels -->
+  <text x="322.0" y="48.0"
+    text-anchor="middle" font-size="10" fill="#94a3b8">дальняя стенка</text>
+  <text x="322.0" y="385.0"
+    text-anchor="middle" font-size="10" fill="#94a3b8">ближний край</text>
+  <text x="322.0" y="395.0"
+    text-anchor="middle" font-size="10" fill="#64748b">ширина 80 cm →</text>
+  <text x="8" y="213.5"
+    transform="rotate(-90 8 213.5)"
+    text-anchor="middle" font-size="10" fill="#64748b">глубина 45 cm</text>
+
+  <!-- drawer -->
+  <rect x="42" y="56" width="560.0" height="315.0"
+    fill="#fff" stroke="#334155" stroke-width="2" rx="2"/>
+  <rect x="462.0" y="56.0" width="140.0" height="315.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="462.0" y="56.0" width="140.0" height="224.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="42.0" y="56.0" width="203.0" height="206.5"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="462.0" y="56.0" width="140.0" height="206.5"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="42.0" y="56.0" width="560.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="42.0" y="56.0" width="420.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="42.0" y="56.0" width="203.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="245.0" y="56.0" width="357.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="245.0" y="56.0" width="217.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><rect x="462.0" y="56.0" width="140.0" height="7.0"
+      fill="url(#hatch)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/>
+  <g>
+      <rect x="42.0" y="262.5" width="203.0" height="108.5"
+        fill="#ddd6fe" stroke="#6d28d9" stroke-width="1.5" rx="3"/>
+      
+      <text x="143.5" y="311.8"
+        text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">bras</text>
+      <text x="143.5" y="325.8"
+        text-anchor="middle" font-size="9" fill="#475467">29×15.5 · cap 3</text>
+      <text x="46.0" y="273.5" font-size="8" fill="#64748b">1</text>
+    </g><g>
+      <rect x="245.0" y="280.0" width="217.0" height="91.0"
+        fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1.5" rx="3"/>
+      
+      <text x="353.5" y="320.5"
+        text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">panties</text>
+      <text x="353.5" y="334.5"
+        text-anchor="middle" font-size="9" fill="#475467">31×13 · cap 12</text>
+      <text x="249.0" y="291.0" font-size="8" fill="#64748b">2</text>
+    </g><g>
+      <rect x="245.0" y="63.0" width="217.0" height="217.0"
+        fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1.5" rx="3"/>
+      
+      <text x="353.5" y="166.5"
+        text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">socks_regular</text>
+      <text x="353.5" y="180.5"
+        text-anchor="middle" font-size="9" fill="#475467">31×31 · cap 25</text>
+      <text x="249.0" y="74.0" font-size="8" fill="#64748b">3</text>
+    </g>
+
+  <!-- legend -->
+  <g>
+      <rect x="42.0" y="390.0" width="10" height="10" rx="2" fill="#ddd6fe" stroke="#6d28d9" stroke-width="1"/>
+      <text x="56.0" y="399.0" font-size="10" fill="#1e293b">1 bras — slots · 29×15.5×13 cm · cap 3</text>
+    </g><g>
+      <rect x="322.0" y="390.0" width="10" height="10" rx="2" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1"/>
+      <text x="336.0" y="399.0" font-size="10" fill="#1e293b">2 panties — cells · 31×13×7 cm · cap 12</text>
+    </g><g>
+      <rect x="42.0" y="406.0" width="10" height="10" rx="2" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1"/>
+      <text x="56.0" y="415.0" font-size="10" fill="#1e293b">3 socks_regular — cells · 31×31×8 cm · cap 25</text>
+    </g>
+</svg>
