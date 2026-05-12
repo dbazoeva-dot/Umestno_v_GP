@@ -45,7 +45,9 @@ function evaluateD02(zones: PlacedZone[], definitionById: Map<string, RuleDefini
   const bras = zones.find((zone) => zone.content_type === "bras");
   const panties = zones.find((zone) => zone.content_type === "panties");
   if (!socks || !bras || !panties) return evaluation("D02", definitionById, { status: "not_applicable", message: "Socks, bras, and panties are not all present.", details: { has_socks: Boolean(socks), has_bras: Boolean(bras), has_panties: Boolean(panties) } });
-  const socksBetween = centerBetween(socks, bras, panties, "x") || centerBetween(socks, bras, panties, "y");
+  const socksBetween =
+    (centerBetween(socks, bras, panties, "x") && ySpansOverlap(socks, bras) && ySpansOverlap(socks, panties)) ||
+    (centerBetween(socks, bras, panties, "y") && xSpansOverlap(socks, bras) && xSpansOverlap(socks, panties));
   return evaluation("D02", definitionById, { status: socksBetween ? "violation" : "pass", message: socksBetween ? "Socks are geometrically between bras and panties after placement." : "Socks are not between bras and panties after placement.", details: { socks_center: center(socks), bras_center: center(bras), panties_center: center(panties) } });
 }
 
@@ -106,6 +108,7 @@ function centerBetween(target: PlacedZone, a: PlacedZone, b: PlacedZone, axis: "
 function touchesDrawerEdge(rect: FreeRectangle, drawerSize: DrawerSize) { return nearlyEqual(rect.x_cm, 0) || nearlyEqual(rect.y_cm, 0) || nearlyEqual(rect.x_cm + rect.w_cm, drawerSize.w_cm) || nearlyEqual(rect.y_cm + rect.d_cm, drawerSize.d_cm); }
 function sameWidthSpan(zone: PlacedZone, rect: FreeRectangle) { return nearlyEqual(zone.x_cm, rect.x_cm) && nearlyEqual(zone.assigned_w_cm, rect.w_cm); }
 function xSpansOverlap(a: PlacedZone, b: PlacedZone) { return rangesOverlap(a.x_cm, a.x_cm + a.assigned_w_cm, b.x_cm, b.x_cm + b.assigned_w_cm); }
+function ySpansOverlap(a: PlacedZone, b: PlacedZone) { return rangesOverlap(a.y_cm, a.y_cm + a.assigned_d_cm, b.y_cm, b.y_cm + b.assigned_d_cm); }
 function rangesOverlap(a1: number, a2: number, b1: number, b2: number) { return a1 < b2 && a2 > b1; }
 function nearlyEqual(a: number, b: number) { return Math.abs(a - b) < 0.0001; }
 function accessScore(value: number | string) { return typeof value === "number" ? value : ({ high: 9, medium: 6, low: 3 }[value] ?? 0); }
