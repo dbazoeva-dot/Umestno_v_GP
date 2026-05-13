@@ -1,0 +1,148 @@
+// Shared SVG generation logic — used by DrawerSchemeRenderer (React) and pdf.server.ts
+
+export interface ZoneData {
+  zone_id: string;
+  type?: "content" | "reserve";
+  content_type?: string;
+  x_cm: number;
+  y_cm: number;
+  assigned_w_cm: number;
+  assigned_d_cm: number;
+}
+
+export interface DrawerSize {
+  w_cm: number;
+  d_cm: number;
+}
+
+const CONTENT_TYPE_RU: Record<string, string> = {
+  socks_regular: "Носки",
+  panties: "Трусы",
+  boxers: "Боксёры",
+  bras: "Бюстгальтеры",
+  tights: "Колготки",
+  tshirts: "Майки",
+  jeans: "Джинсы",
+  sport_tops: "Спорт-топы",
+  thermals: "Термобельё",
+  pajamas: "Пижамы",
+  nightgowns: "Ночные рубашки",
+  longsleeves: "Лонгсливы",
+  sweaters: "Свитеры",
+  leggings: "Леггинсы",
+  shorts: "Шорты",
+  belts: "Ремни",
+  jewelry_large: "Украшения",
+  jewelry_small: "Бижутерия",
+  scarves: "Шарфы",
+  ties: "Галстуки",
+  swimwear: "Купальники",
+};
+
+const ZONE_FILLS = ["#E9E1D6", "#A6B49B", "#C8B9AC", "#D4BFB0", "#B5C0AF", "#DDD0C4"];
+const ZONE_STROKES = ["#C8B0A0", "#8A9E8E", "#A89990", "#B5A090", "#98A894", "#BCA898"];
+
+export const BRAND = {
+  frame: "#C4A882",
+  frameInner: "#E8DCCF",
+  drawerBg: "#F5EFE6",
+  text: "#2E2E2E",
+  textLight: "#6B5E52",
+  accent: "#D08A72",
+  sage: "#A6B49B",
+  cream: "#F7F4EF",
+};
+
+const SCALE = 6;
+const FRAME_PAD = 14;
+export const ZONE_GAP = 3;
+const ZONE_RADIUS = 6;
+const FRAME_RADIUS = 10;
+
+export function buildSchemeViewBox(drawer: DrawerSize) {
+  const innerW = drawer.w_cm * SCALE;
+  const innerH = drawer.d_cm * SCALE;
+  const totalW = innerW + FRAME_PAD * 2;
+  const totalH = innerH + FRAME_PAD * 2;
+  return { innerW, innerH, totalW, totalH };
+}
+
+export interface ZoneRenderData extends ZoneData {
+  index: number;
+  isReserve: boolean;
+  fillColor: string;
+  strokeColor: string;
+  labelRu: string;
+  px: number;
+  py: number;
+  pw: number;
+  ph: number;
+}
+
+let _contentIndex = 0;
+export function computeZoneRenders(zones: ZoneData[]): ZoneRenderData[] {
+  _contentIndex = 0;
+  return zones.map((z) => {
+    const isReserve = z.type === "reserve";
+    const half = ZONE_GAP / 2;
+    if (!isReserve) _contentIndex++;
+    return {
+      ...z,
+      index: isReserve ? 0 : _contentIndex,
+      isReserve,
+      fillColor: isReserve ? "transparent" : ZONE_FILLS[(_contentIndex - 1) % ZONE_FILLS.length],
+      strokeColor: isReserve ? BRAND.frame : ZONE_STROKES[(_contentIndex - 1) % ZONE_STROKES.length],
+      labelRu: isReserve ? "Свободно" : (CONTENT_TYPE_RU[z.content_type ?? ""] ?? z.content_type ?? ""),
+      px: FRAME_PAD + z.x_cm * SCALE + half,
+      py: FRAME_PAD + z.y_cm * SCALE + half,
+      pw: z.assigned_w_cm * SCALE - ZONE_GAP,
+      ph: z.assigned_d_cm * SCALE - ZONE_GAP,
+    };
+  });
+}
+
+function renderZoneEl(z: ZoneRenderData): string {
+  const cx = z.px + z.pw / 2;
+  const cy = z.py + z.ph / 2;
+
+  if (z.isReserve) {
+    const fs = Math.max(7, Math.min(11, z.ph * 0.14));
+    return `
+    <rect x="${z.px}" y="${z.py}" width="${z.pw}" height="${z.ph}"
+      fill="#F5EFE6" fill-opacity="0.5"
+      stroke="${BRAND.frame}" stroke-width="1.5" stroke-dasharray="5,4"
+      rx="${ZONE_RADIUS}" ry="${ZONE_RADIUS}"/>
+    <text x="${cx}" y="${cy + fs * 0.4}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${fs}"
+      fill="${BRAND.frame}" opacity="0.7" letter-spacing="0.05em">Свободно</text>`;
+  }
+
+  const blockFs = Math.max(7, Math.min(10, z.ph * 0.15));
+  const nameFs  = Math.max(8, Math.min(13, z.ph * 0.22));
+  return `
+    <rect x="${z.px}" y="${z.py}" width="${z.pw}" height="${z.ph}"
+      fill="${z.fillColor}" stroke="${z.strokeColor}" stroke-width="1"
+      rx="${ZONE_RADIUS}" ry="${ZONE_RADIUS}"/>
+    <text x="${cx}" y="${cy - nameFs * 0.55}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${blockFs}" fill="${BRAND.textLight}">Блок ${z.index}.</text>
+    <text x="${cx}" y="${cy + nameFs * 0.8}" text-anchor="middle"
+      font-family="Arial, sans-serif" font-size="${nameFs}" font-weight="700"
+      fill="${BRAND.text}">${z.labelRu}</text>`;
+}
+
+export function buildSchemeSvgString(zones: ZoneData[], drawer: DrawerSize): string {
+  const { innerW, innerH, totalW, totalH } = buildSchemeViewBox(drawer);
+  const zoneRenders = computeZoneRenders(zones);
+
+  return `<svg viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="${totalW}" height="${totalH}"
+    fill="${BRAND.frame}" rx="${FRAME_RADIUS}" ry="${FRAME_RADIUS}"/>
+  <rect x="${FRAME_PAD - 4}" y="${FRAME_PAD - 4}"
+    width="${innerW + 8}" height="${innerH + 8}"
+    fill="${BRAND.frameInner}" rx="${FRAME_RADIUS - 2}" ry="${FRAME_RADIUS - 2}"/>
+  <rect x="${FRAME_PAD}" y="${FRAME_PAD}"
+    width="${innerW}" height="${innerH}"
+    fill="${BRAND.drawerBg}" rx="4" ry="4"/>
+  ${zoneRenders.map(renderZoneEl).join("")}
+</svg>`;
+}
