@@ -96,3 +96,20 @@ CREATE TABLE sku_import_logs (
 ALTER TABLE configurations
   ADD CONSTRAINT fk_sku_catalog_version
   FOREIGN KEY (sku_catalog_version_id) REFERENCES sku_catalog_versions(id);
+
+-- ─── Click tracking ──────────────────────────────────────────────────────────
+
+CREATE TABLE sku_clicks (
+  id                BIGSERIAL   PRIMARY KEY,
+  clicked_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  sku_id            TEXT        NOT NULL,
+  configuration_id  UUID        REFERENCES configurations(id),
+  source_platform   TEXT,                   -- wildberries | ozon | yamarket | etc.
+  affiliate_url     TEXT,
+  session_id        TEXT,                   -- anonymous UUID from cookie "sid"
+  user_agent        TEXT
+);
+
+CREATE INDEX ON sku_clicks (sku_id);
+CREATE INDEX ON sku_clicks (clicked_at);
+CREATE INDEX ON sku_clicks (session_id);
