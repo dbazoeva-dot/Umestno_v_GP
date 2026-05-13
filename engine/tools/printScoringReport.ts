@@ -266,11 +266,11 @@ function printReport(title: string, input: UserInput, skipValidation = false) {
   // inputs
   console.log(`\nDRAWER:  ${d.w_cm} × ${d.d_cm} × ${d.h_cm} cm  (W × D × H)`);
   console.log(`\nZONES:`);
-  console.log(`  ${"content_type".padEnd(16)} ${"volume".padEnd(8)} ${"W×D×H".padEnd(18)} ${"div".padEnd(8)} freq  option_id`);
-  console.log(`  ${hr.slice(0, 68)}`);
+  console.log(`  ${"content_type".padEnd(16)} ${"volume".padEnd(8)} ${"count".padEnd(8)} ${"W×D×H".padEnd(18)} ${"div".padEnd(8)} freq  option_id`);
+  console.log(`  ${hr.slice(0, 76)}`);
   for (const z of zones) {
     const vol = items.find((i) => i.content_type === z.content_type || (i.content_type === "socks" && z.content_type === "socks_regular"))?.volume_level ?? "?";
-    console.log(`  ${z.content_type.padEnd(16)} ${vol.padEnd(8)} ${`${z.zone_w_cm}×${z.zone_d_cm}×${z.zone_h_cm}`.padEnd(18)} ${z.division_type.padEnd(8)} ${String(z.access_frequency).padEnd(6)}${z.option_id}`);
+    console.log(`  ${z.content_type.padEnd(16)} ${vol.padEnd(8)} ${`${z.count} ${z.count_unit}`.padEnd(8)} ${`${z.zone_w_cm}×${z.zone_d_cm}×${z.zone_h_cm}`.padEnd(18)} ${z.division_type.padEnd(8)} ${String(z.access_frequency).padEnd(6)}${z.option_id}`);
   }
 
   // fit summary
