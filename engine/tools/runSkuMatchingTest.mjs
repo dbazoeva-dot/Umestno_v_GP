@@ -69,12 +69,24 @@ const scenarios = [
   },
 ];
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function pad(v, n) { return String(v ?? "—").padEnd(n); }
+function rpad(v, n) { return String(v ?? "—").padStart(n); }
+
+function gridLabel(z) {
+  if (z.calculated_cols != null && z.calculated_rows != null)
+    return `${z.calculated_cols}×${z.calculated_rows}`;
+  if (z.lanes_needed != null) return `lanes=${z.lanes_needed}`;
+  return "—";
+}
+
 // ─── Run ─────────────────────────────────────────────────────────────────────
 
 for (const scenario of scenarios) {
-  console.log(`\n${"═".repeat(68)}`);
+  console.log(`\n${"═".repeat(80)}`);
   console.log(`▶ ${scenario.name}`);
-  console.log("═".repeat(68));
+  console.log("═".repeat(80));
 
   const output = runUmestnoEngine(scenario.input, { ...defaultLibraries, skuCatalog: catalog });
 
@@ -83,37 +95,85 @@ for (const scenario of scenarios) {
     continue;
   }
 
-  const products = output.result.products ?? [];
-  const skuFit = output.result.sku_fit;
-  const matched = products.filter(p => p.match_status === "exact").length;
+  const calcZones  = output.scheme_payload?.selected_calculated_zones ?? [];
+  const placedZones = output.scheme_payload?.assigned_zones ?? [];
+  const products   = output.result.products ?? [];
+  const skuFit     = output.result.sku_fit;
+  const matched    = products.filter(p => p.match_status === "exact").length;
 
-  console.log(`\nsku_fit_status: ${skuFit?.sku_fit_status ?? "—"}`);
-  console.log(`Зон: ${products.length}  |  совпадений: ${matched}/${products.length}\n`);
+  console.log(`\nsku_fit_status: ${skuFit?.sku_fit_status ?? "—"}   зон: ${products.length}   совпадений: ${matched}/${products.length}`);
 
+  // ── Zone table header
+  console.log(`\n${"─".repeat(80)}`);
+  console.log(
+    pad("zone_id", 32) +
+    pad("type", 7) +
+    rpad("grid", 6) +
+    rpad("cnt", 5) +
+    "  " +
+    pad("calc W×D×H", 16) +
+    pad("assigned W×D×H", 16)
+  );
+  console.log("─".repeat(80));
+
+  for (const z of calcZones) {
+    const pl = placedZones.find(p => p.zone_id === z.zone_id);
+    const calcDims  = `${z.zone_w_cm}×${z.zone_d_cm}×${z.zone_h_cm}`;
+    const asgDims   = pl ? `${pl.assigned_w_cm}×${pl.assigned_d_cm}×${pl.assigned_h_cm}` : "—";
+    console.log(
+      pad(z.zone_id, 32) +
+      pad(z.division_type, 7) +
+      rpad(gridLabel(z), 6) +
+      rpad(z.count, 5) +
+      "  " +
+      pad(calcDims, 16) +
+      asgDims
+    );
+  }
+
+  // ── SKU match per zone
+  console.log(`\n${"─".repeat(80)}`);
   for (const zone of products) {
-    const icon = zone.match_status === "exact" ? "✓" : "✗";
-    const zoneInfo = output.scheme_payload?.selected_calculated_zones?.find(z => z.zone_id === zone.zone_id);
-    const dims = zoneInfo ? `zone ${zoneInfo.zone_w_cm}×${zoneInfo.zone_d_cm}×${zoneInfo.zone_h_cm}` : "";
+    const icon     = zone.match_status === "exact" ? "✓" : "✗";
+    const zoneInfo = calcZones.find(z => z.zone_id === zone.zone_id);
 
-    console.log(`  ${icon} ${zone.zone_id}  (${zone.content_type})  ${dims}`);
+    console.log(`\n  ${icon} ${zone.zone_id}  (${zone.content_type})  type=${zoneInfo?.division_type ?? "?"}  grid=${gridLabel(zoneInfo ?? {})}  count=${zoneInfo?.count ?? "?"}`);
 
     if (zone.candidates.length > 0) {
       zone.candidates.slice(0, 3).forEach(c => {
-        const price = c.price_rub != null ? `  ${c.price_rub}₽` : "";
-        const cap = c.capacity_units != null ? `cap=${c.capacity_units}` : "cap=∞(open)";
-        console.log(`      ${c.sku_id}  ${c.width_cm}×${c.depth_cm}×${c.height_cm}  ${cap}  ${c.color_group ?? "—"}${price}`);
-        console.log(`        ${c.product_title.slice(0, 64)}`);
+        const price = c.price_rub != null ? `${c.price_rub}₽` : "—";
+        const cap   = c.capacity_units != null ? `cap=${c.capacity_units}` : "cap=∞";
+        console.log(`      ${pad(c.sku_id, 14)} ${rpad(c.width_cm, 5)}×${c.depth_cm}×${c.height_cm}  ${pad(cap, 10)} ${pad(c.rigidity, 12)} ${pad(c.color_group, 14)} ${price}`);
+        console.log(`        ${c.product_title.slice(0, 70)}`);
       });
-      if (zone.candidates.length > 3) console.log(`      … ещё ${zone.candidates.length - 3} кандидата(ов)`);
+      if (zone.candidates.length > 3)
+        console.log(`      … ещё ${zone.candidates.length - 3} кандидата(ов)`);
     } else {
-      // Diagnose why no match
-      const dt = zoneInfo?.division_type;
-      const count = zoneInfo?.count ?? "?";
-      const byType = catalog.filter(s => s.division_type === dt);
-      const byTypeCap = byType.filter(s => s.capacity_units === null || s.capacity_units >= Number(count));
-      const byTypeDims = byTypeCap.filter(s => s.width_cm <= (zoneInfo?.zone_w_cm ?? 0) && s.depth_cm <= (zoneInfo?.zone_d_cm ?? 0) && s.height_cm <= (zoneInfo?.zone_h_cm ?? 0));
-      console.log(`      нет кандидатов. type=${dt}, count=${count}`);
-      console.log(`        по типу: ${byType.length}  → после capacity: ${byTypeCap.length}  → после размеров: ${byTypeDims.length}`);
+      const dt       = zoneInfo?.division_type;
+      const count    = zoneInfo?.count ?? 0;
+      const zw = zoneInfo?.zone_w_cm ?? 0, zd = zoneInfo?.zone_d_cm ?? 0, zh = zoneInfo?.zone_h_cm ?? 0;
+      const byType   = catalog.filter(s => s.division_type === dt);
+      const byCap    = byType.filter(s => s.capacity_units == null || s.capacity_units >= count);
+      const byDims   = byCap.filter(s => s.width_cm <= zw && s.depth_cm <= zd && s.height_cm <= zh);
+
+      console.log(`      нет кандидатов`);
+      console.log(`        по типу: ${byType.length}  → cap≥${count}: ${byCap.length}  → dims≤${zw}×${zd}×${zh}: ${byDims.length}`);
+
+      // Show closest misses by dimension
+      if (byDims.length === 0 && byCap.length > 0) {
+        const closest = byCap
+          .map(s => ({ s, miss: Math.max(s.width_cm - zw, 0) + Math.max(s.depth_cm - zd, 0) + Math.max(s.height_cm - zh, 0) }))
+          .sort((a, b) => a.miss - b.miss)
+          .slice(0, 3);
+        console.log(`        ближайшие по размерам:`);
+        for (const { s, miss } of closest) {
+          const fails = [];
+          if (s.width_cm  > zw) fails.push(`W+${(s.width_cm  - zw).toFixed(1)}`);
+          if (s.depth_cm  > zd) fails.push(`D+${(s.depth_cm  - zd).toFixed(1)}`);
+          if (s.height_cm > zh) fails.push(`H+${(s.height_cm - zh).toFixed(1)}`);
+          console.log(`          ${pad(s.sku_id, 14)} ${s.width_cm}×${s.depth_cm}×${s.height_cm}  cap=${s.capacity_units ?? "∞"}  ↯ ${fails.join(", ")}`);
+        }
+      }
     }
   }
 }
