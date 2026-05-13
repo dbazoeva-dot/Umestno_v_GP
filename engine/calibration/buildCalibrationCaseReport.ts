@@ -45,8 +45,7 @@ export function buildCalibrationCaseReport({ input, schemeId, maxItemsOverride }
 export function buildBaseCalibrationCaseReport(input: UserInput = baseCalibrationInput) { return buildCalibrationCaseReport({ input, schemeId: "scheme_90x45_base_calibration" }); }
 export function buildForcedOpenFallbackCalibrationCaseReport(input: UserInput = forcedOpenFallbackCalibrationInput) { return buildCalibrationCaseReport({ input, schemeId: "scheme_75x45_forced_open_fallback" }); }
 export function buildFourItemStressCalibrationCaseReport(input: UserInput = fourItemStressCalibrationInput) {
-  const productionNormalizedInput = normalizeInput(input);
-  const productionValidationResult = validateInput(productionNormalizedInput);
-  return { production_validation_result: productionValidationResult, calibration_override: { allow_max_items: 4 }, calibration_stress_result: buildCalibrationCaseReport({ input, schemeId: "scheme_120x40_four_item_stress", maxItemsOverride: 4 }) };
+  const productionValidationResult = validateInput(normalizeInput(input));
+  return { production_validation_result: productionValidationResult, calibration_stress_result: buildCalibrationCaseReport({ input, schemeId: "scheme_120x40_four_item_stress" }) };
 }
 function toAssignedZoneSummary(zone: { zone_id: string; content_type: string; division_type: string; x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number }) { return { zone_id: zone.zone_id, content_type: zone.content_type, division_type: zone.division_type, x_cm: zone.x_cm, y_cm: zone.y_cm, assigned_w_cm: zone.assigned_w_cm, assigned_d_cm: zone.assigned_d_cm, assigned_h_cm: zone.assigned_h_cm }; }

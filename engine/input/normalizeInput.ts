@@ -10,5 +10,5 @@ export function normalizeInput(input: UserInput, options: { maxItems?: number } 
     input.item_4_content_type ? { content_type: input.item_4_content_type, volume_level: input.item_4_volume_level } : undefined
   ];
   const items = rawItems.filter((item): item is UserItemInput => Boolean(item?.content_type)).map((item) => ({ ...item, content_type: normalizeContentType(item.content_type) }));
-  return { drawerSize: { w_cm: input.drawer_width_cm, d_cm: input.drawer_depth_cm, h_cm: input.drawer_height_cm }, storage_category: input.storage_category, items, priority: priorityMap[input.priority] ?? "convenient", colorPreference: input.color_preference ?? "not_important", space_type: "drawer", max_items: options.maxItems ?? 3, unit_system: "cm", flow_variant: "A" };
+  return { drawerSize: { w_cm: input.drawer_width_cm, d_cm: input.drawer_depth_cm, h_cm: input.drawer_height_cm }, storage_category: input.storage_category, items, priority: priorityMap[input.priority] ?? "convenient", colorPreference: input.color_preference ?? "not_important", space_type: "drawer", max_items: options.maxItems ?? 4, unit_system: "cm", flow_variant: "A" };
 }

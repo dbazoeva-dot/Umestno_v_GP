@@ -1,6 +1,6 @@
 import type { NormalizedInput, ValidationErrorDetail, ValidationResult } from "../types.js";
 const underwearContentTypes = ["socks_regular", "panties", "boxers", "sport_tops", "bras", "tights", "thermals", "pajamas", "nightgowns"];
-const softClothesContentTypes = ["tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts"];
+const softClothesContentTypes = ["tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts", "pajamas"];
 const accessoriesContentTypes = ["belts", "jewelry_large", "jewelry_small", "scarves", "ties", "swimwear"];
 const allowedByCategory: Record<string, string[]> = {
   underwear: underwearContentTypes,
@@ -17,7 +17,7 @@ export function validateInput(input: NormalizedInput): ValidationResult {
   if (h_cm < 5 || h_cm > 35) warnings.push("drawer_height_cm is outside MVP sanity range 5–35");
   if (!allowedByCategory[input.storage_category]) errors.push("unsupported storage_category");
   if (input.items.length > input.max_items) {
-    errors.push("max_items is 3");
+    errors.push("max_items is 4");
     error_details.push({ reason: "max_items_exceeded", max_items: input.max_items, received_items: input.items.length });
   }
 
