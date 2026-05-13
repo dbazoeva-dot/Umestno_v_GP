@@ -53,10 +53,8 @@ assert(findRuleEvaluation(forcedReport.layout_rule_evaluations, "D04b")?.status 
 
 const fourItemReport = buildFourItemStressCalibrationCaseReport();
 const stress = fourItemReport.calibration_stress_result;
-assert(fourItemReport.production_validation_result.ok === false, "four-item production mode: validation should fail");
-assert(fourItemReport.production_validation_result.error_details.some((error) => error.reason === "max_items_exceeded" && error.max_items === 3 && error.received_items === 4), "four-item production mode: should reject because max_items is 3 and received_items is 4");
-assert(fourItemReport.calibration_override.allow_max_items === 4, "four-item stress mode: should use allow_max_items = 4 override");
-assert(stress.validation_result.ok === true, "four-item stress mode: validation should pass with override");
+assert(fourItemReport.production_validation_result.ok === true, "four-item production mode: validation should pass with max_items=4");
+assert(stress.validation_result.ok === true, "four-item stress mode: validation should pass with max_items=4");
 assert(stress.counted_items.length === 4 && stress.storage_requirements.length === 4 && stress.calculated_zones.length === 4, "four-item stress mode: no category should be dropped");
 const brasRequirement = stress.storage_requirements.find((requirement) => requirement.content_type === "bras");
 assert(brasRequirement?.can_split === false, "four-item stress mode: bras can_split should remain B/source spatial-split metadata, not internal lane metadata");
@@ -83,9 +81,9 @@ for (const profile of defaultLibraries.storageUnitProfile) {
   assert(propagatedRequirements.every((requirement) => requirement.can_split === profile.can_split), `${profile.content_type}: can_split should be propagated unchanged from B/defaultLibraries`);
 }
 
-const maxItemsOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" }, { content_type: "panties", volume_level: "medium" }, { content_type: "tshirts", volume_level: "small" } ], priority: "convenient" });
-assert(maxItemsOutput.result === null, "max items case: result should be null");
-assert(maxItemsOutput.scheme_payload === null, "max items case: scheme_payload should be null");
+const maxItemsOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" }, { content_type: "panties", volume_level: "medium" }, { content_type: "tshirts", volume_level: "small" }, { content_type: "longsleeves", volume_level: "small" } ], priority: "convenient" });
+assert(maxItemsOutput.result === null, "max items case: result should be null when items exceed max_items=4");
+assert(maxItemsOutput.scheme_payload === null, "max items case: scheme_payload should be null when items exceed max_items=4");
 
 const socksAliasOutput = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks", volume_level: "medium" } ], priority: "convenient" });
 const socksAliasDebug = socksAliasOutput.debug as { input: { items: Array<{ content_type: string }> }; counted_items: Array<{ content_type: string }> };
