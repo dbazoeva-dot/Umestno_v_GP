@@ -48,16 +48,24 @@ console.log(`  open с null capacity: ${catalog.filter(s => s.division_type === 
 
 const scenarios = [
   {
-    name: "90×45×15 — носки / бюстгальтеры / трусы",
-    input: { drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", item_1_content_type: "socks_regular", item_1_volume_level: "medium", item_2_content_type: "bras", item_2_volume_level: "medium", item_3_content_type: "panties", item_3_volume_level: "medium", priority: "convenient", color_preference: "not_important" },
+    name: "R1  80×45×15  mixed  panties M + tshirts S + socks_regular L",
+    input: { drawer_width_cm: 80, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [{ content_type: "panties", volume_level: "medium" }, { content_type: "tshirts", volume_level: "small" }, { content_type: "socks_regular", volume_level: "large" }], priority: "convenient", color_preference: "not_important" },
   },
   {
-    name: "120×40×20 — 4 вещи (panties/bras/socks/tights large)",
-    input: { drawer_width_cm: 120, drawer_depth_cm: 40, drawer_height_cm: 20, storage_category: "underwear", items: [{ content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "large" }, { content_type: "socks_regular", volume_level: "large" }, { content_type: "tights", volume_level: "medium" }], priority: "convenient", color_preference: "not_important" },
+    name: "R2  120×50×20  underwear  socks_regular L + panties L + bras M + tights M",
+    input: { drawer_width_cm: 120, drawer_depth_cm: 50, drawer_height_cm: 20, storage_category: "underwear", items: [{ content_type: "socks_regular", volume_level: "large" }, { content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "medium" }, { content_type: "tights", volume_level: "medium" }], priority: "convenient", color_preference: "not_important" },
   },
   {
-    name: "75×45×15 — open fallback",
-    input: { drawer_width_cm: 75, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", item_1_content_type: "bras", item_1_volume_level: "medium", item_2_content_type: "socks_regular", item_2_volume_level: "medium", item_3_content_type: "panties", item_3_volume_level: "medium", priority: "convenient", color_preference: "not_important" },
+    name: "R3  45×80×12  underwear  socks_regular M + tights S",
+    input: { drawer_width_cm: 45, drawer_depth_cm: 80, drawer_height_cm: 12, storage_category: "underwear", items: [{ content_type: "socks_regular", volume_level: "medium" }, { content_type: "tights", volume_level: "small" }], priority: "convenient", color_preference: "not_important" },
+  },
+  {
+    name: "R4  90×45×15  mixed  tshirts M + belts S + scarves S",
+    input: { drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "mixed", items: [{ content_type: "tshirts", volume_level: "medium" }, { content_type: "belts", volume_level: "small" }, { content_type: "scarves", volume_level: "small" }], priority: "convenient", color_preference: "not_important" },
+  },
+  {
+    name: "R5  80×40×10  underwear  bras M + socks_regular M",
+    input: { drawer_width_cm: 80, drawer_depth_cm: 40, drawer_height_cm: 10, storage_category: "underwear", items: [{ content_type: "bras", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "medium" }], priority: "convenient", color_preference: "not_important" },
   },
 ];
 
