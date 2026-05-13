@@ -16,20 +16,21 @@ export function scorePlacementCandidate(fitResult: FitResult, drawerSize: Drawer
   const no_compressed_storage = fitResult.content_warnings.some((w) => w.warning_code === "compressed_storage") ? 0 : 1;
   const d05_cells = cellsAdjacentScore(zones);
 
-  const zone_efficiency = zones.length === 0 ? 1 : zones.reduce((sum, z) => sum + (z.count / Math.max(z.capacity, 1)), 0) / zones.length;
-
-  return (
+  const layout_score =
     no_deformation_risk * 180 +
     d08_access * 200 +
     d06_pos * 150 +
     d01 * 130 +
-    zone_efficiency * 100 +
     d05_cells * 100 +
     depth_util * 80 +
     d03 * 70 +
     no_compressed_storage * 60 +
-    d04 * 60
-  );
+    d04 * 60;
+
+  // zone_efficiency: right-sized grid tiebreaker only; max contribution < 5 so it never
+  // overrides a real layout quality difference.
+  const zone_efficiency = zones.length === 0 ? 1 : zones.reduce((sum, z) => sum + (z.count / Math.max(z.capacity, 1)), 0) / zones.length;
+  return layout_score + zone_efficiency * 4.9;
 }
 
 function dimensionScore(evals: LayoutRuleEvaluation[], ruleId: string): number {
