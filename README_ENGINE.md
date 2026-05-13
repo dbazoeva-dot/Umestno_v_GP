@@ -134,6 +134,38 @@ Fit results include deterministic placement debug via `placement_attempts` and `
 - Libraries are hardcoded in TypeScript; Excel loading is not connected at runtime.
 - The placement engine is deterministic and rule-based, not a global optimizer/solver.
 
+## Open calibration decisions
+
+### R4: tshirts/medium 0.5 cm depth overflow in 45 cm drawer
+
+`tshirts/medium` (10 items) generates a slots zone with `zone_d_cm = 45.5 cm`. In a 90×45 drawer this
+exceeds the available depth by 0.5 cm and produces `no_fit`. Decide before library finalisation:
+
+- **Option A (tolerance pass):** round slot-zone depth down to the nearest 0.5 cm when overflow ≤ 1 cm.
+  Risk: silently under-allocates depth, may cause items to protrude.
+- **Option B (library fix):** reduce the `unit_d_cm` or `fb_clear` for tshirts in `storageUnitProfile`
+  so 10 items fit inside 45 cm.
+- **Option C (keep strict):** current behaviour is correct; a 90×45 drawer genuinely cannot fit 10 tshirts
+  in slots layout. Document as a known hard limit.
+
+Until resolved, 90×45 with tshirts/medium returns `result: null` + `no_fit_message`.
+
+### D04b: aggressive depth absorption in deep drawers
+
+`normalizePlacement` (D04b step) extends `assigned_d_cm` to absorb any adjacent same-width free rectangle.
+In very deep drawers — e.g. R3 (45×80) — this extends zones from their natural depth (25–9 cm) to the
+full 80 cm. `assigned_d_cm` is the geometry target used by SKU matching (`runSkuFitCheck`).
+
+Review before SKU matching is finalised:
+
+- A SKU selected for a zone with `assigned_d_cm = 80 cm` must physically fit that depth, or SKU
+  selection must cap the target at `zone_d_cm` (the calculated storage depth) rather than the
+  absorbed assigned depth.
+- Suggested invariant: SKU depth fit uses `min(assigned_d_cm, drawer_d_cm)` and must not reject a
+  SKU solely because `assigned_d_cm` grew beyond the zone's natural size via D04b.
+- If SKU matching targets the original `zone_d_cm` instead of `assigned_d_cm`, D04b remains purely
+  cosmetic/visual and no change is needed.
+
 ## Codex workflow rule
 
 After every completed iteration:
