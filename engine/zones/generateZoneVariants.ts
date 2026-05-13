@@ -47,5 +47,12 @@ function buildCandidates(req: StorageRequirement, zoneLayoutOptions: ZoneLayoutO
     }
   }
 
+  if (req.can_rotate && req.primary_division === "slots") {
+    for (const zone of variants.filter((v) => v.calculation_mode === "linear_depth")) {
+      if (zone.zone_w_cm === zone.zone_d_cm) continue;
+      variants.push({ ...zone, zone_id: `${zone.zone_id}_rotated`, option_id: `${zone.option_id}_rotated`, zone_w_cm: zone.zone_d_cm, zone_d_cm: zone.zone_w_cm, variant_transform: "rotate_90" });
+    }
+  }
+
   return variants;
 }
