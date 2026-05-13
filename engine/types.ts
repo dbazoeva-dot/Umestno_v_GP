@@ -54,7 +54,9 @@ export interface CalculatedZone extends Omit<StorageRequirement,"available_layou
   /** Internal repeated-module composition inside one parent zone, not can_split. */
   split_used?: boolean;
   /** Number of adjacent internal slot modules/lanes inside one parent zone. */
-  lanes_needed?: number; items_per_lane?: number[]; max_items_per_lane?: number; slot_lane_gap_cm?: number; original_single_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_rejected_reason?: string }
+  lanes_needed?: number; items_per_lane?: number[]; max_items_per_lane?: number; slot_lane_gap_cm?: number; original_single_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_lane_zone?: { zone_id: string; zone_w_cm: number; zone_d_cm: number; zone_h_cm: number; capacity: number }; split_rejected_reason?: string
+  /** Applied when the zone is generated with its width and depth axes swapped relative to the canonical storage orientation. */
+  variant_transform?: "rotate_90" }
 export interface PlacedZone extends CalculatedZone { x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number; soft_height_warning?: SoftHeightWarning }
 export interface SoftHeightWarning { content_type: string; zone_id: string; warning_code: SoftHeightWarningCode; message: string; available_h_cm: number; drawer_h_cm: number; needed_h_cm: number; zone_h_cm: number; overflow_h_cm: number; max_allowed_overflow_h_cm: number }
 export interface LayoutPlan { layout_id: string; selected_zones: CalculatedZone[]; placement_order: string[]; /** Attached rule labels from the layout profile only; not proof that a rule was enforced. See layout_rule_evaluations for post-placement results. */ rules_applied: string[]; reserve_policy: string }
