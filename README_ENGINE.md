@@ -166,6 +166,40 @@ Review before SKU matching is finalised:
 - If SKU matching targets the original `zone_d_cm` instead of `assigned_d_cm`, D04b remains purely
   cosmetic/visual and no change is needed.
 
+## Backlog
+
+### BL-01: SKU sets / bundle organizers
+
+**Status:** open — do not add sets to SKU catalog yet; design format first.
+
+**Problem:** Some products are sold as a set of N identical (or compatible) organizers in one package.
+Example: a set of 4 soft boxes that together tile a full drawer.
+Such a set can cover an entire `assigned_zone` where no single organizer would fit, and it has its own price and product page.
+
+**Questions to resolve before implementation:**
+
+1. **Catalog representation** — one row per set or one row per piece?
+   - Option A: one row for the set, with `set_count` (e.g. 4) and `piece_w/d/h` fields.
+     `width_cm` / `depth_cm` = dimensions of one piece; `capacity_units` = total capacity of all pieces.
+   - Option B: one row per piece (same as individual SKU) + a `set_sku_id` foreign key linking pieces that are sold together.
+   - Option C: a separate `sku_sets` table/sheet with `set_id`, `piece_sku_id`, `piece_count`.
+
+2. **Matching logic** — how does `matchSkus` handle sets?
+   - A single piece may not cover the `assigned_zone` footprint, but `piece_count` pieces side-by-side do.
+   - Matching must check: `piece_w * piece_count ≈ assigned_w` OR `piece_d * piece_count ≈ assigned_d`.
+   - Combined `capacity_units` (piece capacity × count) must meet `zone.count`.
+
+3. **Pricing** — set price is the unit of purchase; individual piece price is irrelevant.
+
+4. **Mixed-type sets** — a set may contain pieces of different `division_type` (e.g. 2 cells + 1 open tray).
+   These need to be matched to multiple zones simultaneously, not one zone.
+
+5. **UX representation** — result payload must communicate "buy this set of 4" clearly, not list 4 identical lines.
+
+**Suggested next step:** once individual SKU catalog is complete, add a `sku_sets` sheet to `E_SKU_catalog` with columns:
+`set_id | set_title | product_url | price_rub | piece_sku_id | piece_count | set_notes`
+and extend `matchSkus` to try set candidates after single-piece candidates fail.
+
 ## Codex workflow rule
 
 After every completed iteration:
