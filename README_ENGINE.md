@@ -200,6 +200,32 @@ Such a set can cover an entire `assigned_zone` where no single organizer would f
 `set_id | set_title | product_url | price_rub | piece_sku_id | piece_count | set_notes`
 and extend `matchSkus` to try set candidates after single-piece candidates fail.
 
+### BL-02: Drawer dividers as universal organizer replacement
+
+**Status:** open — dividers are in the SKU catalog (`division_type = "dividers"`) but matching logic is not implemented.
+
+**Problem:** Loose dividers (разделители для ящиков) are fundamentally different from cells/slots organizers:
+- They have no fixed internal cell size — the user positions them freely
+- A set of N dividers can create any grid configuration inside the assigned zone
+- They can technically substitute any `division_type` (cells, slots, open) if the resulting cell size fits the items
+- Example: 10 dividers in a 90×45 drawer → user creates 4×4 sock cells, 1×7 bra slots, etc.
+
+**Why this is hard:**
+- No `cell_width_cm` / `cell_depth_cm` on the SKU — size is emergent from placement
+- Match condition is: "can this divider set create the required grid in `assigned_w × assigned_d`?"
+  - Check: `divider_length ≈ assigned_w` OR `divider_length ≈ assigned_d`
+  - Check: `divider_count ≥ (cols + rows - 2)` for a cols×rows grid
+- Dividers are agnostic to `preferred_rigidity` — rigidity comes from the material of the divider itself
+- A divider set may cover multiple zones simultaneously (one purchase, whole drawer)
+
+**What needs to be designed:**
+1. Additional SKU fields for dividers: `divider_length_cm`, `divider_height_cm`, `divider_count_in_set`
+2. Matching logic: given zone grid (`calculated_cols`, `calculated_rows`), check if divider set can create it
+3. How to combine divider recommendations across multiple zones in the same drawer
+4. UX: dividers require user effort to configure — communicate this clearly vs pre-built organizers
+
+**Suggested next step:** After individual organizer matching is live, add divider matching as a parallel candidate with lower default ranking (higher effort for user). Only surface dividers when no pre-built organizer fits.
+
 ## Codex workflow rule
 
 After every completed iteration:
