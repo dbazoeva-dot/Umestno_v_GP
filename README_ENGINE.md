@@ -166,6 +166,85 @@ Review before SKU matching is finalised:
 - If SKU matching targets the original `zone_d_cm` instead of `assigned_d_cm`, D04b remains purely
   cosmetic/visual and no change is needed.
 
+## Backlog
+
+### BL-01: SKU sets / bundle organizers
+
+**Status:** open — do not add sets to SKU catalog yet; design format first.
+
+**Problem:** Some products are sold as a set of N identical (or compatible) organizers in one package.
+Example: a set of 4 soft boxes that together tile a full drawer.
+Such a set can cover an entire `assigned_zone` where no single organizer would fit, and it has its own price and product page.
+
+**Questions to resolve before implementation:**
+
+1. **Catalog representation** — one row per set or one row per piece?
+   - Option A: one row for the set, with `set_count` (e.g. 4) and `piece_w/d/h` fields.
+     `width_cm` / `depth_cm` = dimensions of one piece; `capacity_units` = total capacity of all pieces.
+   - Option B: one row per piece (same as individual SKU) + a `set_sku_id` foreign key linking pieces that are sold together.
+   - Option C: a separate `sku_sets` table/sheet with `set_id`, `piece_sku_id`, `piece_count`.
+
+2. **Matching logic** — how does `matchSkus` handle sets?
+   - A single piece may not cover the `assigned_zone` footprint, but `piece_count` pieces side-by-side do.
+   - Matching must check: `piece_w * piece_count ≈ assigned_w` OR `piece_d * piece_count ≈ assigned_d`.
+   - Combined `capacity_units` (piece capacity × count) must meet `zone.count`.
+
+3. **Pricing** — set price is the unit of purchase; individual piece price is irrelevant.
+
+4. **Mixed-type sets** — a set may contain pieces of different `division_type` (e.g. 2 cells + 1 open tray).
+   These need to be matched to multiple zones simultaneously, not one zone.
+
+5. **UX representation** — result payload must communicate "buy this set of 4" clearly, not list 4 identical lines.
+
+**Suggested next step:** once individual SKU catalog is complete, add a `sku_sets` sheet to `E_SKU_catalog` with columns:
+`set_id | set_title | product_url | price_rub | piece_sku_id | piece_count | set_notes`
+and extend `matchSkus` to try set candidates after single-piece candidates fail.
+
+### BL-02: Drawer dividers as universal organizer replacement
+
+**Status:** open — dividers are in the SKU catalog (`division_type = "dividers"`) but matching logic is not implemented.
+
+**Problem:** Loose dividers (разделители для ящиков) are fundamentally different from cells/slots organizers:
+- They have no fixed internal cell size — the user positions them freely
+- A set of N dividers can create any grid configuration inside the assigned zone
+- They can technically substitute any `division_type` (cells, slots, open) if the resulting cell size fits the items
+- Example: 10 dividers in a 90×45 drawer → user creates 4×4 sock cells, 1×7 bra slots, etc.
+
+**Why this is hard:**
+- No `cell_width_cm` / `cell_depth_cm` on the SKU — size is emergent from placement
+- Match condition is: "can this divider set create the required grid in `assigned_w × assigned_d`?"
+  - Check: `divider_length ≈ assigned_w` OR `divider_length ≈ assigned_d`
+  - Check: `divider_count ≥ (cols + rows - 2)` for a cols×rows grid
+- Dividers are agnostic to `preferred_rigidity` — rigidity comes from the material of the divider itself
+- A divider set may cover multiple zones simultaneously (one purchase, whole drawer)
+
+**What needs to be designed:**
+1. Additional SKU fields for dividers: `divider_length_cm`, `divider_height_cm`, `divider_count_in_set`
+2. Matching logic: given zone grid (`calculated_cols`, `calculated_rows`), check if divider set can create it
+3. How to combine divider recommendations across multiple zones in the same drawer
+4. UX: dividers require user effort to configure — communicate this clearly vs pre-built organizers
+
+**Suggested next step:** After individual organizer matching is live, add divider matching as a parallel candidate with lower default ranking (higher effort for user). Only surface dividers when no pre-built organizer fits.
+
+### BL-03: Jewelry organizer matching — separate mechanics
+
+**Status:** open — current matching logic (cell_w ≈ unit_w, cell_d ≥ unit_d) is too simple for jewelry.
+
+**Problem:** Jewelry organizers have significantly more complex structure than standard cells/slots:
+- Multi-tier trays (several layers stacked, different cell sizes per layer)
+- Mixed cell sizes in one organizer (ring slots + bracelet compartments + chain hooks)
+- Items like rings, earrings, chains, bracelets have very different storage needs even within `jewelry_small` / `jewelry_large`
+- Anti-tangle and anti-scratch requirements affect rigidity matching differently
+- Lid presence (`has_lid`) matters for jewelry in a way it doesn't for clothing
+
+**What needs to be designed:**
+1. Whether to split `jewelry_small` / `jewelry_large` into more granular content types
+2. How to match multi-tier / mixed-cell organizers (single SKU covers multiple sub-types)
+3. Whether `has_lid` becomes a hard filter or ranking signal for jewelry zones
+4. Separate penalty logic for open fallback (currently `open_fallback_allowed=false` for large jewelry)
+
+**Suggested next step:** design after individual organizer matching is live for clothing/underwear.
+
 ## Codex workflow rule
 
 After every completed iteration:
