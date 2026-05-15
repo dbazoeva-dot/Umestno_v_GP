@@ -151,7 +151,7 @@ assert(brasOverThresholdDebug.fit_result.failed_dimension === "height", "bras ov
 assert(brasOverThresholdDebug.fit_result.failed_zones.some((zone) => zone.content_type === "bras"), "bras over threshold: bras should remain failed");
 assert(!brasOverThresholdDebug.adjustment_attempts.some((attempt) => attempt.content_type === "socks_regular" || attempt.selected_adjustment_candidate === "socks_regular"), "bras over threshold: unrelated socks fallback should not be attempted");
 
-const tshirtsSoftOutput = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 40, drawer_height_cm: 10, storage_category: "soft_clothes", items: [ { content_type: "tshirts", volume_level: "small" } ], priority: "convenient" });
+const tshirtsSoftOutput = runUmestnoEngine({ drawer_width_cm: 80, drawer_depth_cm: 40, drawer_height_cm: 14, storage_category: "soft_clothes", items: [ { content_type: "tshirts", volume_level: "small" } ], priority: "convenient" });
 const tshirtsSoftResult = tshirtsSoftOutput.result as { content_warnings: Array<{ content_type: string; warning_code: string; overflow_h_cm: number }> };
 const tshirtsSoftDebug = tshirtsSoftOutput.debug as { fit_result: { fit_status: string }; adjustment_result?: { adjustment_type?: string } | null; scheme_payload: { assigned_zones: Array<{ content_type: string; division_type: string; option_id: string; soft_height_warning?: unknown }> } };
 assert(tshirtsSoftDebug.fit_result.fit_status === "fit_all", "tshirts soft height: should fit with warning");
