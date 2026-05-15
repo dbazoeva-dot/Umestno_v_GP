@@ -226,6 +226,25 @@ and extend `matchSkus` to try set candidates after single-piece candidates fail.
 
 **Suggested next step:** After individual organizer matching is live, add divider matching as a parallel candidate with lower default ranking (higher effort for user). Only surface dividers when no pre-built organizer fits.
 
+### BL-03: Jewelry organizer matching — separate mechanics
+
+**Status:** open — current matching logic (cell_w ≈ unit_w, cell_d ≥ unit_d) is too simple for jewelry.
+
+**Problem:** Jewelry organizers have significantly more complex structure than standard cells/slots:
+- Multi-tier trays (several layers stacked, different cell sizes per layer)
+- Mixed cell sizes in one organizer (ring slots + bracelet compartments + chain hooks)
+- Items like rings, earrings, chains, bracelets have very different storage needs even within `jewelry_small` / `jewelry_large`
+- Anti-tangle and anti-scratch requirements affect rigidity matching differently
+- Lid presence (`has_lid`) matters for jewelry in a way it doesn't for clothing
+
+**What needs to be designed:**
+1. Whether to split `jewelry_small` / `jewelry_large` into more granular content types
+2. How to match multi-tier / mixed-cell organizers (single SKU covers multiple sub-types)
+3. Whether `has_lid` becomes a hard filter or ranking signal for jewelry zones
+4. Separate penalty logic for open fallback (currently `open_fallback_allowed=false` for large jewelry)
+
+**Suggested next step:** design after individual organizer matching is live for clothing/underwear.
+
 ## Codex workflow rule
 
 After every completed iteration:
