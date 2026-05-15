@@ -83,7 +83,7 @@ export default function Home() {
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
-  const [category, setCategory] = useState<StorageCategory>("underwear");
+  const [category] = useState<StorageCategory>("soft_clothes");
   const [items, setItems] = useState<Item[]>([{ content_type: "", volume_level: "medium" }]);
   const [priority, setPriority] = useState("convenient");
   const [loading, setLoading] = useState(false);
@@ -148,12 +148,19 @@ export default function Home() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
         <section>
-          <h2 className="font-semibold mb-2">Размеры ящика (см)</h2>
+          <h2 className="font-semibold mb-2">1. Где хранить</h2>
+          <span className="inline-block px-3 py-1 rounded border text-sm bg-black text-white">
+            Выдвижной ящик
+          </span>
+        </section>
+
+        <section>
+          <h2 className="font-semibold mb-2">2. Размеры ящика (см)</h2>
           <div className="flex gap-3">
             {[
-              { label: "Ширина", val: width, set: setWidth },
-              { label: "Глубина", val: depth, set: setDepth },
-              { label: "Высота", val: height, set: setHeight },
+              { label: "Ширина (Ш)", val: width, set: setWidth },
+              { label: "Глубина (Г)", val: depth, set: setDepth },
+              { label: "Высота (В)", val: height, set: setHeight },
             ].map(({ label, val, set }) => (
               <label key={label} className="flex flex-col gap-1 flex-1 text-sm">
                 {label}
@@ -168,22 +175,14 @@ export default function Home() {
         </section>
 
         <section>
-          <h2 className="font-semibold mb-2">Категория хранения</h2>
-          <div className="flex gap-2 flex-wrap">
-            {(Object.keys(CATEGORY_LABELS) as StorageCategory[]).map(cat => (
-              <button
-                key={cat} type="button"
-                onClick={() => { setCategory(cat); setItems([{ content_type: "", volume_level: "medium" }]); }}
-                className={`px-3 py-1 rounded border text-sm ${category === cat ? "bg-black text-white" : "bg-white"}`}
-              >
-                {CATEGORY_LABELS[cat]}
-              </button>
-            ))}
-          </div>
+          <h2 className="font-semibold mb-2">3. Тип вещей</h2>
+          <span className="inline-block px-3 py-1 rounded border text-sm bg-black text-white">
+            Одежда
+          </span>
         </section>
 
         <section>
-          <h2 className="font-semibold mb-2">Что хранить (до 4 видов)</h2>
+          <h2 className="font-semibold mb-2">4. Что хранить (до 4 видов)</h2>
           <div className="flex flex-col gap-2">
             {items.map((item, i) => (
               <div key={i} className="flex gap-2 items-center">
