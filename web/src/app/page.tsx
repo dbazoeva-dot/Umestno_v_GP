@@ -45,11 +45,6 @@ function volumeOptions(contentType: string) {
   ];
 }
 
-const PRIORITY_LABELS = [
-  { value: "convenient", label: "Удобно" },
-  { value: "capacity",   label: "Вместительно" },
-  { value: "budget",     label: "Бюджетно" },
-];
 
 interface Item {
   content_type: string;
@@ -197,7 +192,11 @@ export default function Home() {
         <section>
           <h2 className="font-semibold mb-2">5. Приоритет</h2>
           <div className="flex gap-2">
-            {PRIORITY_LABELS.map(p => (
+            {[
+              { value: "convenient", label: "Удобно" },
+              { value: "capacity",   label: "Вместительно" },
+              { value: "budget",     label: "Бюджетно" },
+            ].map(p => (
               <button
                 key={p.value} type="button"
                 onClick={() => setPriority(p.value)}
