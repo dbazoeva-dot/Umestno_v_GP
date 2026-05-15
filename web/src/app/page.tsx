@@ -1,77 +1,54 @@
 "use client";
 import { useState } from "react";
-import type { StorageCategory, VolumeLevel } from "@engine/types.js";
+import type { VolumeLevel } from "@engine/types.js";
 
-const CONTENT_TYPES: Record<StorageCategory, { value: string; label: string }[]> = {
-  underwear: [
-    { value: "socks_regular", label: "Носки" },
-    { value: "panties", label: "Трусы (женские)" },
-    { value: "boxers", label: "Трусы (мужские)" },
-    { value: "bras", label: "Бюстгалтеры" },
-    { value: "tights", label: "Колготки / чулки" },
-  ],
-  soft_clothes: [
-    { value: "tshirts", label: "Футболки" },
-    { value: "longsleeves", label: "Лонгсливы" },
-    { value: "sweaters", label: "Свитеры / худи" },
-    { value: "jeans", label: "Джинсы / брюки" },
-    { value: "shorts", label: "Шорты" },
-    { value: "leggings", label: "Леггинсы" },
-    { value: "sport_tops", label: "Спортивные топы" },
-    { value: "swimwear", label: "Купальники" },
-    { value: "thermals", label: "Термобельё" },
-    { value: "pajamas", label: "Пижамы" },
-    { value: "nightgowns", label: "Ночные рубашки" },
-  ],
-  accessories: [
-    { value: "belts", label: "Ремни" },
-    { value: "scarves", label: "Шарфы / платки" },
-    { value: "ties", label: "Галстуки" },
-    { value: "jewelry_large", label: "Украшения крупные" },
-    { value: "jewelry_small", label: "Украшения мелкие" },
-  ],
-  mixed: [
-    { value: "socks_regular", label: "Носки" },
-    { value: "panties", label: "Трусы (женские)" },
-    { value: "boxers", label: "Трусы (мужские)" },
-    { value: "bras", label: "Бюстгалтеры" },
-    { value: "tights", label: "Колготки / чулки" },
-    { value: "tshirts", label: "Футболки" },
-    { value: "longsleeves", label: "Лонгсливы" },
-    { value: "sweaters", label: "Свитеры / худи" },
-    { value: "jeans", label: "Джинсы / брюки" },
-    { value: "shorts", label: "Шорты" },
-    { value: "leggings", label: "Леггинсы" },
-    { value: "sport_tops", label: "Спортивные топы" },
-    { value: "swimwear", label: "Купальники" },
-    { value: "thermals", label: "Термобельё" },
-    { value: "pajamas", label: "Пижамы" },
-    { value: "nightgowns", label: "Ночные рубашки" },
-    { value: "belts", label: "Ремни" },
-    { value: "scarves", label: "Шарфы / платки" },
-    { value: "ties", label: "Галстуки" },
-    { value: "jewelry_large", label: "Украшения крупные" },
-    { value: "jewelry_small", label: "Украшения мелкие" },
-  ],
+const CONTENT_TYPES = [
+  { value: "tshirts",     label: "Футболки" },
+  { value: "longsleeves", label: "Лонгсливы" },
+  { value: "sweaters",    label: "Свитеры / худи" },
+  { value: "jeans",       label: "Джинсы / брюки" },
+  { value: "shorts",      label: "Шорты" },
+  { value: "leggings",    label: "Леггинсы" },
+  { value: "sport_tops",  label: "Спортивные топы" },
+  { value: "swimwear",    label: "Купальники" },
+  { value: "thermals",    label: "Термобельё" },
+  { value: "pajamas",     label: "Пижамы" },
+  { value: "nightgowns",  label: "Ночные рубашки" },
+];
+
+// counts from Library A (volumeToCount)
+const VOLUME_COUNTS: Record<string, [number, number, number]> = {
+  tshirts:     [5,  10, 15],
+  longsleeves: [3,  6,  10],
+  sweaters:    [2,  4,  7],
+  jeans:       [2,  4,  6],
+  shorts:      [3,  5,  8],
+  leggings:    [3,  6,  10],
+  sport_tops:  [4,  6,  10],
+  swimwear:    [2,  4,  7],
+  thermals:    [2,  4,  6],
+  pajamas:     [2,  4,  6],
+  nightgowns:  [2,  4,  6],
 };
 
-const VOLUME_LABELS: Record<VolumeLevel, string> = {
-  small: "Мало",
-  medium: "Средне",
-  large: "Много",
-};
-
-const CATEGORY_LABELS: Record<StorageCategory, string> = {
-  underwear: "Нижнее бельё",
-  soft_clothes: "Одежда",
-  accessories: "Аксессуары",
-  mixed: "Смешанное",
-};
+function volumeOptions(contentType: string) {
+  const c = VOLUME_COUNTS[contentType];
+  if (!c) return [
+    { value: "small",  label: "Мало" },
+    { value: "medium", label: "Средне" },
+    { value: "large",  label: "Много" },
+  ];
+  return [
+    { value: "small",  label: `Мало (до ${c[0]})` },
+    { value: "medium", label: `Средне (до ${c[1]})` },
+    { value: "large",  label: `Много (до ${c[2]})` },
+  ];
+}
 
 const PRIORITY_LABELS = [
   { value: "convenient", label: "Удобно" },
-  { value: "capacity", label: "Вместительно" },
-  { value: "budget", label: "Бюджетно" },
+  { value: "capacity",   label: "Вместительно" },
+  { value: "budget",     label: "Бюджетно" },
 ];
 
 interface Item {
@@ -83,14 +60,11 @@ export default function Home() {
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
-  const [category] = useState<StorageCategory>("soft_clothes");
   const [items, setItems] = useState<Item[]>([{ content_type: "", volume_level: "medium" }]);
   const [priority, setPriority] = useState("convenient");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ configuration_id: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const availableTypes = CONTENT_TYPES[category];
 
   function addItem() {
     if (items.length < 4) setItems([...items, { content_type: "", volume_level: "medium" }]);
@@ -114,7 +88,7 @@ export default function Home() {
       drawer_width_cm: Number(width),
       drawer_depth_cm: Number(depth),
       drawer_height_cm: Number(height),
-      storage_category: category,
+      storage_category: "soft_clothes",
       priority,
     };
 
@@ -158,9 +132,9 @@ export default function Home() {
           <h2 className="font-semibold mb-2">2. Размеры ящика (см)</h2>
           <div className="flex gap-3">
             {[
-              { label: "Ширина (Ш)", val: width, set: setWidth },
-              { label: "Глубина (Г)", val: depth, set: setDepth },
-              { label: "Высота (В)", val: height, set: setHeight },
+              { label: "Ш", val: width, set: setWidth },
+              { label: "Г", val: depth, set: setDepth },
+              { label: "В", val: height, set: setHeight },
             ].map(({ label, val, set }) => (
               <label key={label} className="flex flex-col gap-1 flex-1 text-sm">
                 {label}
@@ -182,7 +156,7 @@ export default function Home() {
         </section>
 
         <section>
-          <h2 className="font-semibold mb-2">4. Что хранить (до 4 видов)</h2>
+          <h2 className="font-semibold mb-2">4. Что будете хранить (до 4 видов)</h2>
           <div className="flex flex-col gap-2">
             {items.map((item, i) => (
               <div key={i} className="flex gap-2 items-center">
@@ -192,18 +166,19 @@ export default function Home() {
                   onChange={e => updateItem(i, "content_type", e.target.value)}
                   className="border rounded px-2 py-1 flex-1 text-sm"
                 >
-                  <option value="">— выберите —</option>
-                  {availableTypes.map(t => (
+                  <option value="">— вещь —</option>
+                  {CONTENT_TYPES.map(t => (
                     <option key={t.value} value={t.value}>{t.label}</option>
                   ))}
                 </select>
                 <select
                   value={item.volume_level}
                   onChange={e => updateItem(i, "volume_level", e.target.value as VolumeLevel)}
-                  className="border rounded px-2 py-1 text-sm"
+                  disabled={!item.content_type}
+                  className="border rounded px-2 py-1 text-sm disabled:opacity-40"
                 >
-                  {(Object.entries(VOLUME_LABELS) as [VolumeLevel, string][]).map(([v, l]) => (
-                    <option key={v} value={v}>{l}</option>
+                  {volumeOptions(item.content_type).map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
                 {items.length > 1 && (
@@ -220,7 +195,7 @@ export default function Home() {
         </section>
 
         <section>
-          <h2 className="font-semibold mb-2">Приоритет</h2>
+          <h2 className="font-semibold mb-2">5. Приоритет</h2>
           <div className="flex gap-2">
             {PRIORITY_LABELS.map(p => (
               <button
