@@ -1,4 +1,5 @@
 import { ruleDefinitions } from "../rules/ruleDefinitions.js";
+import { skuCatalogData } from "./skuCatalogData.js";
 import type { Libraries } from "../types.js";
 
 export const defaultLibraries: Libraries = {
@@ -105,5 +106,5 @@ export const defaultLibraries: Libraries = {
   ],
   layoutRules: { rule_ids: ["D01", "D02", "D03", "D04", "D04b", "D05", "D06"], reserve_policy: "reserve_to_edge_or_open_zone", definitions: ruleDefinitions },
   ruleDefinitions,
-  skuCatalog: []
+  skuCatalog: skuCatalogData
 };
