@@ -130,10 +130,11 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
 /* ── configurator (/configure, /no-fit) mobile fixes ───── */
 /* The global .u-container leaves ~40px outer margin + 40px inner padding
    on mobile (from --container: calc(100vw - 80px) + --gutter: 40px), which
-   squeezed the calc form card and let the big heading overflow the viewport.
-   Widen the container for the calc pages and let long words wrap. */
+   wasted horizontal space site-wide and squeezed the calc form card so the
+   big heading overflowed. Widen the container on every page for mobile and
+   let long calc headings wrap. */
 @media (max-width: 768px){
-  .u-calc .u-container{
+  .u-container{
     max-width: 100%;
     padding-left: clamp(14px, 4vw, 24px);
     padding-right: clamp(14px, 4vw, 24px);
