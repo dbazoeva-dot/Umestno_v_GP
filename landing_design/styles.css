@@ -1008,7 +1008,7 @@ a{ color: inherit; text-decoration: none; }
 }
 .u-config2__compat-note{
   display: flex; align-items: center; gap: 8px;
-  margin-top: 14px;
+  margin-top: auto;
   padding: 10px 14px;
   background: rgba(125,140,114,0.08);
   border-radius: var(--r-sm);

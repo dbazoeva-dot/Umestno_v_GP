@@ -367,6 +367,8 @@ body{ overflow-x: hidden; }
   .u-config2__schema img{ object-position: left center; }
   /* recommended products: two rows of two */
   .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  /* keep a normal gap before the note when stacked (no column to fill) */
+  .u-config2__compat-note{ margin-top: 14px; }
 }
 
 /* on mobile the CTA is moved (via JS) out of the form to sit after the
