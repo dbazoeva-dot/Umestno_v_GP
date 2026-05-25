@@ -140,6 +140,31 @@
     render();
   }
 
+  /* ── Steps timeline: fill the rail + light up nodes on scroll ── */
+  var stepsTrack = document.querySelector('.u-steps--4');
+  if (stepsTrack) {
+    var stepCards = Array.prototype.slice.call(stepsTrack.querySelectorAll('.u-step-card'));
+    var railInset = 24;   /* matches ::before/::after top/bottom inset */
+    var updateSteps = function () {
+      var rect = stepsTrack.getBoundingClientRect();
+      var anchor = window.innerHeight * 0.55;   /* progress reaches here */
+      var fill = anchor - (rect.top + railInset);
+      var maxFill = rect.height - railInset * 2;
+      fill = Math.max(0, Math.min(maxFill, fill));
+      stepsTrack.style.setProperty('--steps-progress', fill + 'px');
+      stepCards.forEach(function (c) {
+        var node = c.querySelector('.u-step-card__num');
+        var nr = node.getBoundingClientRect();
+        c.classList.toggle('is-reached', (nr.top + nr.height / 2) <= anchor);
+      });
+    };
+    updateSteps();
+    window.addEventListener('scroll', function () {
+      window.requestAnimationFrame(updateSteps);
+    }, { passive: true });
+    window.addEventListener('resize', updateSteps);
+  }
+
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },

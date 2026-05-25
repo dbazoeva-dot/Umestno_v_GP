@@ -230,56 +230,93 @@ body{ overflow-x: hidden; }
   .u-pain h3{ font-size: var(--fs-xl); padding-top: 2px; }   /* 24px vs 34px head */
   .u-pain p{ font-size: var(--fs-md); }
 
-  /* ── Steps: plain vertical cards (number + title, description) ── */
+  /* ── Steps: vertical timeline with a scroll progress line ──
+     No cards/background. A left rail fills as you scroll; each
+     step's number sits on the rail as a node (JetBrains Mono). */
   .u-steps--4{
     display: block;
     grid-template-columns: none;
     gap: 0;
-    padding-top: 4px;
+    position: relative;
+    padding: 6px 0 0;
     overflow: visible;
   }
+  /* the rail (unfilled) */
+  .u-steps--4::before{
+    content: "";
+    position: absolute;
+    left: 17px; top: 24px; bottom: 24px;
+    width: 2px;
+    background: var(--u-line-2);
+    border-radius: 2px;
+  }
+  /* the rail (filled by scroll progress) */
+  .u-steps--4::after{
+    content: "";
+    position: absolute;
+    left: 17px; top: 24px;
+    width: 2px;
+    height: var(--steps-progress, 0px);
+    background: var(--u-accent);
+    border-radius: 2px;
+    transition: height .12s linear;
+  }
   .u-step-card{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid var(--u-line) !important;
-    border-radius: 16px;
-    background: var(--u-card);
-    padding: 20px !important;
-    margin: 0 0 14px 0 !important;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    column-gap: 18px;
+    align-items: start;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 0 32px 0 !important;
+    margin: 0 !important;
+    position: relative;
   }
+  .u-step-card:last-child{ padding-bottom: 6px !important; }
   .u-step-card::after{ display: none !important; }
-  .u-step-card__head{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-  }
+  .u-step-card__head{ display: contents; }
+  /* number node on the rail */
   .u-step-card .u-step-card__num{
-    width: 40px; height: 40px;
+    grid-column: 1; grid-row: 1;
+    width: 36px; height: 36px;
     margin: 0;
     border-radius: 50%;
-    background: var(--u-warm);
-    color: var(--u-accent);
-    font-size: var(--fs-md);
-    font-weight: 600;
+    background: var(--u-bg);
+    border: 1.5px solid var(--u-line);
+    color: var(--u-ink-3);
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-weight: 500;
     line-height: 1;
+    letter-spacing: 0;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+    z-index: 1;
+    transition: background-color .3s ease, border-color .3s ease, color .3s ease;
   }
-  .u-step-card:nth-child(3) .u-step-card__num{
-    background: rgba(125,140,114,0.16);
-    color: var(--u-sage-d);
+  /* node turns solid once the progress line reaches it */
+  .u-step-card.is-reached .u-step-card__num{
+    background: var(--u-accent);
+    border-color: var(--u-accent);
+    color: #fff;
+  }
+  .u-step-card:nth-child(3).is-reached .u-step-card__num{
+    background: var(--u-sage-d);
+    border-color: var(--u-sage-d);
   }
   .u-step-card h4{
-    min-height: 0;
+    grid-column: 2; grid-row: 1;
+    min-height: 36px;
+    display: flex; align-items: center;
     margin: 0;
-    display: block;
     font-size: var(--fs-xl);
   }
   .u-step-card__rule{ display: none; }
   .u-step-card p{
-    margin: 0;
+    grid-column: 2; grid-row: 2;
+    margin: 6px 0 0;
     font-size: var(--fs-md);
     line-height: var(--lh-base);
   }
