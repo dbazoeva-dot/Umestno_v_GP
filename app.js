@@ -237,6 +237,14 @@
       });
     };
 
+    // between them: a pulse travels down the mobile connector rail
+    var divider = c2.querySelector('.u-config2__divider');
+    var flowPlayed = false;
+    var playFlow = function () {
+      if (flowPlayed) return; flowPlayed = true;
+      if (divider) divider.classList.add('is-flowing');
+    };
+
     var observe = function (target, cb) {
       if (!target) { cb(); return; }
       var io = new IntersectionObserver(function (entries) {
@@ -245,6 +253,7 @@
       io.observe(target);
     };
     observe(sizesWrap, playCount);
+    observe(divider, playFlow);
     observe(resultEl, playReveal);
   }
 

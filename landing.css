@@ -414,3 +414,44 @@ body{ overflow-x: hidden; }
 /* size fields glow softly while the values count up */
 .u-config2__sz.is-filling,
 .u-config2__sz.is-filling:focus-within{ border-color: var(--u-accent); }
+
+/* ════════════════════════════════════════════════════════════
+   Mobile connector — the link between part I (input) and part II
+   (result). On phones the divider becomes a short vertical rail;
+   when scrolled into view a pulse travels down it (input → result).
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 900px){
+  .u-config2__divider{
+    height: 56px;
+    background: transparent;
+    position: relative;
+  }
+  .u-config2__divider::before{          /* the rail */
+    content: "";
+    position: absolute;
+    left: 50%; top: 6px; bottom: 6px;
+    width: 2px; margin-left: -1px;
+    background: var(--u-line-2);
+    border-radius: 2px;
+  }
+  .u-config2__divider::after{           /* travelling pulse */
+    content: "";
+    position: absolute;
+    left: 50%; top: 6px;
+    width: 11px; height: 11px;
+    margin-left: -5.5px;
+    border-radius: 50%;
+    background: var(--u-accent);
+    box-shadow: 0 0 0 4px rgba(208,138,114,.16);
+    opacity: 0;
+  }
+  .u-config2__divider.is-flowing::after{
+    animation: c2-flow 1.05s cubic-bezier(.45,0,.3,1) forwards;
+  }
+}
+@keyframes c2-flow{
+  0%   { opacity: 0; top: 6px; }
+  14%  { opacity: 1; }
+  86%  { opacity: 1; }
+  100% { opacity: 0; top: calc(100% - 6px); }
+}
