@@ -257,6 +257,19 @@
     observe(resultEl, playReveal);
   }
 
+  /* ── Result checklist: reveal rows + checks on scroll (mobile) ── */
+  var rcards = document.querySelector('.u-result-cards');
+  if (rcards && !reduceMotion && 'IntersectionObserver' in window &&
+      window.matchMedia('(max-width: 768px)').matches) {
+    rcards.classList.add('reveal-armed');
+    var rio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in'); rio.unobserve(en.target); }
+      });
+    }, { threshold: 0.35 });
+    rcards.querySelectorAll('.u-result-card').forEach(function (c) { rio.observe(c); });
+  }
+
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },

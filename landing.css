@@ -55,6 +55,9 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   margin-top: 16px;
 }
 
+/* result checklist check icon — mobile only */
+.u-result-card__check{ display: none; }
+
 /* ── ≤768px mobile layer ───────────────────────────────── */
 @media (max-width: 768px){
   /* header: swap inline nav + CTA for the burger */
@@ -80,29 +83,47 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-step-card:last-child{ border-bottom: 0; padding-bottom: 0 !important; }
   .u-step-card h4{ min-height: 0; }
 
-  /* result cards → bento: 1 wide / 2 / 1 wide, mirroring the tray scheme */
-  .u-result-cards{ grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  /* result cards → checklist of what you get, revealed on scroll */
+  .u-result-cards{ display: block; border: 0; }
   .u-result-cards .u-result-card{
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    column-gap: 14px;
+    row-gap: 4px;
+    align-items: start;
     grid-column: auto !important;
     grid-row: auto !important;
     min-height: 0;
-    padding: 24px 20px;
+    padding: 18px 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--u-line) !important;
+    background: transparent !important;
   }
-  .u-result-cards .u-result-card:nth-child(1),
-  .u-result-cards .u-result-card:nth-child(4){ grid-column: 1 / -1 !important; }
-  .u-result-cards .u-result-card:nth-child(2){ grid-column: 1 !important; }
-  .u-result-cards .u-result-card:nth-child(3){ grid-column: 2 !important; }
-  /* consistent heading sizes; the featured card a touch larger */
-  .u-result-cards .u-result-card h5{ font-size: var(--fs-xl); }
-  .u-result-cards .u-result-card:nth-child(1) h5{ font-size: var(--fs-2xl); }
-  /* «Схема хранения» — featured sage card with milky text */
-  .u-result-cards .u-result-card:nth-child(1){
-    background: var(--u-sage-d);
-    border-color: transparent !important;
-    padding: 28px 22px;
+  .u-result-cards .u-result-card:last-child{ border-bottom: 0 !important; }
+  .u-result-card__check{
+    display: block;
+    grid-column: 1; grid-row: 1;
+    width: 24px; height: 24px;
+    margin-top: 1px;
+    color: var(--u-sage-d);
   }
-  .u-result-cards .u-result-card:nth-child(1) h5{ color: var(--u-bg); }
-  .u-result-cards .u-result-card:nth-child(1) p{ color: rgba(255,253,249,.84); }
+  .u-result-card__check svg{ width: 100%; height: 100%; display: block; }
+  .u-result-cards .u-result-card h5{ grid-column: 2; grid-row: 1; font-size: var(--fs-xl); }
+  .u-result-cards .u-result-card p{ grid-column: 2; grid-row: 2; font-size: var(--fs-sm); }
+
+  /* scroll reveal (JS-armed): each row + its check appear in turn */
+  .u-result-cards.reveal-armed .u-result-card{
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .u-result-cards.reveal-armed .u-result-card.is-in{ opacity: 1; transform: none; }
+  .u-result-cards.reveal-armed .u-result-card__check{
+    opacity: 0; transform: scale(.3);
+    transition: transform .45s cubic-bezier(.2,1.4,.4,1) .1s, opacity .3s ease .1s;
+  }
+  .u-result-cards.reveal-armed .u-result-card.is-in .u-result-card__check{
+    opacity: 1; transform: scale(1);
+  }
 
   .u-footer__grid{ grid-template-columns: 1fr 1fr; gap: 28px; }
   .u-footer__brand{ grid-column: 1 / -1; }
