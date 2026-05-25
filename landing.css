@@ -322,3 +322,52 @@ body{ overflow-x: hidden; }
     line-height: var(--lh-base);
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   «Как это работает» (config2) — mobile rework.
+   Desktop keeps two side-by-side columns with a detached I/II
+   header row. When the columns stack, that header row detaches
+   the «II» label from the result, so on mobile we hide it and
+   give each part its own inline heading, move the CTA to the end
+   (after the result), enlarge the scheme and use a 2×2 product
+   grid. ════════════════════════════════════════════════════════ */
+.u-config2__part{ display: none; }
+
+@media (max-width: 900px){
+  /* the detached top I/II row → per-part inline headings */
+  .u-config2__colheads{ display: none; }
+  .u-config2__part{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--f-display);
+    font-weight: 500;
+    font-size: var(--fs-xl);
+    color: var(--u-ink);
+    line-height: 1.1;
+    margin: 0 0 6px;
+  }
+  .u-config2__part-num{
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-2xl);
+    line-height: 1;
+    color: var(--u-accent);
+  }
+  .u-config2__part--ii{ color: var(--u-sage-d); }
+  .u-config2__part--ii .u-config2__part-num{ color: var(--u-sage-d); }
+}
+
+@media (max-width: 768px){
+  .u-config2__form,
+  .u-config2__result{ padding: 22px 18px 24px; gap: 20px; }
+  /* bigger render scheme (interim: favour the tray until a
+     dedicated, less-elongated mobile image is added) */
+  .u-config2__schema{ aspect-ratio: 3 / 2; }
+  .u-config2__schema img{ object-position: left center; }
+  /* recommended products: two rows of two */
+  .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  /* CTA footer spans full width */
+  .u-config2__cta-area{ padding: 22px 18px 26px; }
+  .u-config2__cta-btn{ width: 100%; }
+}
