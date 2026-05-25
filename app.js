@@ -140,27 +140,16 @@
     render();
   }
 
-  /* ── Steps accordion (mobile: tap a spine to open) ───── */
-  var stepsTrack = document.querySelector('.u-steps--4');
-  if (stepsTrack) {
-    var stepCards = Array.prototype.slice.call(stepsTrack.querySelectorAll('.u-step-card'));
-    var openStep = function (card) {
-      stepCards.forEach(function (c) {
-        var on = c === card;
-        c.classList.toggle('is-open', on);
-        c.setAttribute('aria-expanded', on ? 'true' : 'false');
-      });
+  /* ── Steps section overlap: pin its heading right under the
+     problem-section heading (title under title) ────────────── */
+  var problemHead = document.querySelector('section[data-screen-label="02 Проблема"] .u-sec-head');
+  var stepsHead = document.querySelector('#steps .u-sec-head');
+  if (problemHead && stepsHead) {
+    var setStepsHeadTop = function () {
+      stepsHead.style.setProperty('--steps-head-top', (72 + problemHead.offsetHeight) + 'px');
     };
-    stepCards.forEach(function (card, i) {
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-      if (i === 0) card.classList.add('is-open');
-      card.setAttribute('aria-expanded', i === 0 ? 'true' : 'false');
-      card.addEventListener('click', function () { openStep(card); });
-      card.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStep(card); }
-      });
-    });
+    setStepsHeadTop();
+    window.addEventListener('resize', setStepsHeadTop);
   }
 
   /* ── FAQ accordion ───────────────────────────────────── */
