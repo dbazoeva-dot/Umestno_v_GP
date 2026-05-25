@@ -80,17 +80,29 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-step-card:last-child{ border-bottom: 0; padding-bottom: 0 !important; }
   .u-step-card h4{ min-height: 0; }
 
-  .u-result-cards{ grid-template-columns: 1fr; }
-  .u-result-cards .u-result-card,
-  .u-result-cards .u-result-card:nth-child(1),
-  .u-result-cards .u-result-card:nth-child(2),
-  .u-result-cards .u-result-card:nth-child(3),
-  .u-result-cards .u-result-card:nth-child(4){
-    grid-column: 1 / -1 !important;
+  /* result cards → bento: 1 wide / 2 / 1 wide, mirroring the tray scheme */
+  .u-result-cards{ grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  .u-result-cards .u-result-card{
+    grid-column: auto !important;
     grid-row: auto !important;
     min-height: 0;
-    padding: 28px 24px;
+    padding: 24px 20px;
   }
+  .u-result-cards .u-result-card:nth-child(1),
+  .u-result-cards .u-result-card:nth-child(4){ grid-column: 1 / -1 !important; }
+  .u-result-cards .u-result-card:nth-child(2){ grid-column: 1 !important; }
+  .u-result-cards .u-result-card:nth-child(3){ grid-column: 2 !important; }
+  /* consistent heading sizes; the featured card a touch larger */
+  .u-result-cards .u-result-card h5{ font-size: var(--fs-xl); }
+  .u-result-cards .u-result-card:nth-child(1) h5{ font-size: var(--fs-2xl); }
+  /* «Схема хранения» — featured sage card with milky text */
+  .u-result-cards .u-result-card:nth-child(1){
+    background: var(--u-sage-d);
+    border-color: transparent !important;
+    padding: 28px 22px;
+  }
+  .u-result-cards .u-result-card:nth-child(1) h5{ color: var(--u-bg); }
+  .u-result-cards .u-result-card:nth-child(1) p{ color: rgba(255,253,249,.84); }
 
   .u-footer__grid{ grid-template-columns: 1fr 1fr; gap: 28px; }
   .u-footer__brand{ grid-column: 1 / -1; }
