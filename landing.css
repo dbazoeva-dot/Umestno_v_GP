@@ -500,11 +500,9 @@ body{ overflow-x: hidden; }
     color: var(--u-ink-2);
   }
   .u-logic-essay p:last-child{ margin-bottom: 0; }
-  /* raised initial opening each principle — its baseline sits on the
-     first line's bottom. Override the desktop first-child drop-cap too
-     (its selector is more specific, so it must be matched here). */
-  .u-logic-essay p::first-letter,
-  .u-logic-essay > p:first-child::first-letter{
+  /* principles open with a small raised initial (baseline on the
+     first line's bottom) */
+  .u-logic-essay p::first-letter{
     float: none;
     font-family: var(--f-display);
     font-weight: 400;
@@ -514,18 +512,25 @@ body{ overflow-x: hidden; }
     padding: 0;
     margin: 0 5px 0 0;
   }
+  /* the opening principle keeps a big article-style drop-cap
+     (override the more-specific desktop first-child rule here) */
+  .u-logic-essay > p:first-child::first-letter{
+    float: left;
+    font-size: 3.4em;
+    line-height: 0.78;
+    padding: 6px 12px 0 0;
+    margin: 0;
+  }
   .u-logic-essay__lead{
     display: inline;
     font-weight: var(--fw-card);
     color: var(--u-ink);
   }
-  /* grey example → its own block, set off by a thin light rule */
+  /* grey example → just a new muted line tucked under the body */
   .u-logic-essay__sub{
     display: block;
     clear: left;
-    margin-top: 16px;
-    padding-left: 18px;
-    border-left: 1px solid var(--u-line);
+    margin-top: 5px;
     color: var(--u-ink-3);
     font-size: var(--fs-sm);
     line-height: 1.65;
