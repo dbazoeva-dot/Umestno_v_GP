@@ -188,3 +188,88 @@ body{ overflow-x: hidden; }
 @media (max-width: 480px){
   .u-calc__step-marker{ font-size: var(--fs-xl); }
 }
+
+/* ════════════════════════════════════════════════════════════
+   MOBILE EDITORIAL LAYER — the landing is mobile-first in usage,
+   so ≤768px gets a purpose-built layout instead of a squeezed
+   desktop. Three areas: hero breathing room, problem-card
+   hierarchy, and a real vertical stepper for the 4 steps.
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 768px){
+  /* ── Hero: give it air ──────────────────────────────────── */
+  .u-hero__mag-shell{
+    gap: 30px;
+    padding-top: 16px;
+    padding-bottom: clamp(44px, 12vw, 64px);
+  }
+  /* the giant editorial title overwhelms a phone at 64px+;
+     bring it down and open the leading so it breathes */
+  .u-hero h1.u-hero__mag-title{
+    font-size: clamp(40px, 12.5vw, 58px);
+    line-height: 1.0;
+  }
+  .u-hero__mag-banner{ display: flex; flex-direction: column; gap: 26px; }
+  .u-hero__mag-meta{ row-gap: 24px; margin-top: 4px; }
+  .u-hero__mag-meta-list li{ padding: 13px 0; }
+  .u-hero__mag-photo{ margin-top: 6px; min-height: 0; }
+  .u-hero__mag-foot{ padding-top: 12px; }
+
+  /* ── Problem cards: clear hierarchy under the section title ─ */
+  .u-pain{
+    grid-template-columns: 48px 1fr !important;
+    column-gap: 18px;
+    row-gap: 10px;
+    padding: 30px 0 !important;
+  }
+  .u-pain__icon{ width: 44px; height: 44px; margin-left: 0; }
+  .u-pain h3{ font-size: var(--fs-xl); padding-top: 2px; }   /* 24px vs 34px head */
+  .u-pain p{ font-size: var(--fs-md); }
+
+  /* ── Steps: a real vertical stepper, not a stack of cards ── */
+  .u-steps--4{ grid-template-columns: 1fr; gap: 0; }
+  .u-step-card{
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: 18px;
+    row-gap: 6px;
+    align-items: start;
+    border: 0 !important;
+    padding: 0 0 30px 0 !important;
+    position: relative;
+  }
+  .u-step-card:last-child{ padding-bottom: 0 !important; }
+  /* number → soft circular badge */
+  .u-step-card .u-step-card__num{
+    grid-column: 1; grid-row: 1;
+    width: 40px; height: 40px;
+    margin: 0;
+    border-radius: 50%;
+    background: var(--u-warm);
+    color: var(--u-accent);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .u-step-card:nth-child(3) .u-step-card__num{
+    background: rgba(125,140,114,0.16);
+    color: var(--u-sage-d);
+  }
+  .u-step-card h4{
+    grid-column: 2; grid-row: 1;
+    min-height: 40px;
+    display: flex; align-items: center;
+    font-size: var(--fs-xl);
+  }
+  .u-step-card__rule{ display: none; }
+  .u-step-card p{ grid-column: 2; grid-row: 2; }
+  /* connecting spine between consecutive badges */
+  .u-step-card:not(:last-child)::after{
+    content: "";
+    position: absolute;
+    left: 19px; top: 46px; bottom: 6px;
+    width: 2px;
+    background: var(--u-line);
+  }
+}
