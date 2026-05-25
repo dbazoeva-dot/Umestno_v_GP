@@ -491,7 +491,6 @@ body{ overflow-x: hidden; }
    ════════════════════════════════════════════════════════════ */
 @media (max-width: 768px){
   .u-logic-essay{
-    counter-reset: u-principle;
     font-size: var(--fs-md);
     line-height: 1.6;
     margin: 4px 0 36px;
@@ -517,16 +516,6 @@ body{ overflow-x: hidden; }
     font-size: var(--fs-xl);
     line-height: var(--lh-snug);
     color: var(--u-ink);
-  }
-  .u-logic-essay__lead::before{
-    counter-increment: u-principle;
-    content: counter(u-principle, decimal-leading-zero);
-    display: block;
-    margin-bottom: 8px;
-    font-family: var(--f-mono);
-    font-size: var(--fs-2xs);
-    letter-spacing: var(--tr-widest);
-    color: var(--u-accent);
   }
   .u-logic-essay__sub{
     display: block;
