@@ -127,6 +127,18 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-review-slide__compare{ grid-template-columns: 1fr; }
 }
 
+/* Form controls must be allowed to shrink inside grid/flex tracks.
+   By default a text input keeps its intrinsic width (~size attr), and with
+   min-width:auto on the grid/flex item it refuses to shrink — two size
+   inputs then overflow a narrow viewport and stretch the whole page. */
+.u-calc__sz{ min-width: 0; }
+.u-calc__sz input,
+.u-calc__select-wrap select,
+.u-apology__email input{ width: 100%; min-width: 0; }
+.u-calc__item-row{ min-width: 0; }
+/* safety net against any residual horizontal overflow on the calc pages */
+.u-calc{ overflow-x: clip; }
+
 /* ── configurator (/configure, /no-fit) mobile fixes ───── */
 /* The global .u-container leaves ~40px outer margin + 40px inner padding
    on mobile (from --container: calc(100vw - 80px) + --gutter: 40px), which
