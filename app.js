@@ -165,6 +165,25 @@
     window.addEventListener('resize', updateSteps);
   }
 
+  /* ── config2 CTA: in the form on desktop, a footer on mobile ── */
+  var cfg = document.querySelector('.u-config2');
+  var cfgForm = document.querySelector('.u-config2__form');
+  var cfgCta = document.querySelector('.u-config2__cta-area');
+  if (cfg && cfgForm && cfgCta) {
+    var cfgMq = window.matchMedia('(max-width: 900px)');
+    var placeCta = function () {
+      if (cfgMq.matches) {
+        if (cfgCta.parentNode !== cfg) cfg.appendChild(cfgCta);
+        cfgCta.classList.add('is-footer');
+      } else {
+        if (cfgCta.parentNode !== cfgForm) cfgForm.appendChild(cfgCta);
+        cfgCta.classList.remove('is-footer');
+      }
+    };
+    placeCta();
+    cfgMq.addEventListener('change', placeCta);
+  }
+
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },

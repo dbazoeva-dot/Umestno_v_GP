@@ -367,7 +367,20 @@ body{ overflow-x: hidden; }
   .u-config2__schema img{ object-position: left center; }
   /* recommended products: two rows of two */
   .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  /* CTA footer spans full width */
-  .u-config2__cta-area{ padding: 22px 18px 26px; }
-  .u-config2__cta-btn{ width: 100%; }
+}
+
+/* on mobile the CTA is moved (via JS) out of the form to sit after the
+   result as a full-width card footer; desktop keeps it inside the form */
+.u-config2__cta-area.is-footer{
+  margin-top: 0;
+  align-items: center;
+  padding: 22px 18px 26px;
+  border-top: 1px solid var(--u-line);
+  background: var(--u-card);
+}
+.u-config2__cta-area.is-footer .u-config2__cta-btn{
+  font-size: var(--fs-sm);
+  padding: 15px 18px;
+  white-space: normal;
+  text-align: center;
 }
