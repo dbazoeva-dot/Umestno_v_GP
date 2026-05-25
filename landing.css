@@ -361,10 +361,8 @@ body{ overflow-x: hidden; }
 @media (max-width: 768px){
   .u-config2__form,
   .u-config2__result{ padding: 22px 18px 24px; gap: 20px; }
-  /* taller render scheme (interim: favour the tray until a
-     dedicated, less-elongated mobile image is added) */
-  .u-config2__schema{ aspect-ratio: 4 / 3; }
-  .u-config2__schema img{ object-position: left center; }
+  /* dedicated portrait (3:4) mobile scheme image fills exactly */
+  .u-config2__schema{ aspect-ratio: 3 / 4; }
   /* recommended products: two rows of two, smaller titles */
   .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .u-config2__pr-n{ font-size: 13px; }
