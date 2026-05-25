@@ -195,6 +195,9 @@ body{ overflow-x: hidden; }
    desktop. Three areas: hero breathing room, problem-card
    hierarchy, and a real vertical stepper for the 4 steps.
    ════════════════════════════════════════════════════════════ */
+/* swipe dots exist only for the mobile steps carousel */
+.u-steps-dots{ display: none; }
+
 @media (max-width: 768px){
   /* ── Hero: give it air ──────────────────────────────────── */
   .u-hero__mag-shell{
@@ -225,22 +228,40 @@ body{ overflow-x: hidden; }
   .u-pain h3{ font-size: var(--fs-xl); padding-top: 2px; }   /* 24px vs 34px head */
   .u-pain p{ font-size: var(--fs-md); }
 
-  /* ── Steps: a real vertical stepper, not a stack of cards ── */
-  .u-steps--4{ grid-template-columns: 1fr; gap: 0; }
+  /* ── Steps: horizontal swipe carousel — saves vertical height
+     so users reach «Как это работает» much sooner ──────────── */
+  .u-steps--4{
+    display: flex;
+    grid-template-columns: none;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-top: 8px;
+    /* bleed to the screen edges, then re-pad so the first card
+       lines up with the section content */
+    margin-left: calc(-1 * clamp(14px, 4vw, 24px));
+    margin-right: calc(-1 * clamp(14px, 4vw, 24px));
+    padding-left: clamp(14px, 4vw, 24px);
+    padding-right: clamp(14px, 4vw, 24px);
+    scroll-padding-left: clamp(14px, 4vw, 24px);
+  }
+  .u-steps--4::-webkit-scrollbar{ display: none; }
   .u-step-card{
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    column-gap: 18px;
-    row-gap: 6px;
-    align-items: start;
-    border: 0 !important;
-    padding: 0 0 30px 0 !important;
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+    display: flex; flex-direction: column;
+    gap: 12px;
+    border: 1px solid var(--u-line) !important;
+    border-radius: 16px;
+    background: var(--u-card);
+    padding: 22px 22px 24px !important;
     position: relative;
   }
-  .u-step-card:last-child{ padding-bottom: 0 !important; }
+  .u-step-card::after{ display: none !important; }
   /* number → soft circular badge */
   .u-step-card .u-step-card__num{
-    grid-column: 1; grid-row: 1;
     width: 40px; height: 40px;
     margin: 0;
     border-radius: 50%;
@@ -250,26 +271,32 @@ body{ overflow-x: hidden; }
     font-weight: 600;
     line-height: 1;
     display: flex; align-items: center; justify-content: center;
-    z-index: 1;
   }
   .u-step-card:nth-child(3) .u-step-card__num{
     background: rgba(125,140,114,0.16);
     color: var(--u-sage-d);
   }
   .u-step-card h4{
-    grid-column: 2; grid-row: 1;
-    min-height: 40px;
-    display: flex; align-items: center;
+    min-height: 0;
+    display: block;
     font-size: var(--fs-xl);
   }
   .u-step-card__rule{ display: none; }
-  .u-step-card p{ grid-column: 2; grid-row: 2; }
-  /* connecting spine between consecutive badges */
-  .u-step-card:not(:last-child)::after{
-    content: "";
-    position: absolute;
-    left: 19px; top: 46px; bottom: 6px;
-    width: 2px;
-    background: var(--u-line);
+
+  /* swipe indicator dots */
+  .u-steps-dots{
+    display: flex; justify-content: center; gap: 8px;
+    margin-top: 22px;
+  }
+  .u-steps-dots button{
+    width: 7px; height: 7px;
+    padding: 0; border: 0; border-radius: 50%;
+    background: var(--u-line-2);
+    cursor: pointer;
+    transition: width .25s ease, background-color .25s ease, border-radius .25s ease;
+  }
+  .u-steps-dots button[aria-current="true"]{
+    width: 22px; border-radius: 4px;
+    background: var(--u-accent);
   }
 }

@@ -140,6 +140,40 @@
     render();
   }
 
+  /* ── Steps carousel dots (mobile swipe) ──────────────── */
+  var stepsTrack = document.querySelector('.u-steps--4');
+  var stepsDots = document.querySelector('[data-steps-dots]');
+  if (stepsTrack && stepsDots) {
+    var stepCards = Array.prototype.slice.call(stepsTrack.querySelectorAll('.u-step-card'));
+    var trackPad = function () { return parseFloat(getComputedStyle(stepsTrack).paddingLeft) || 0; };
+    stepCards.forEach(function (card, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Шаг ' + (i + 1));
+      if (i === 0) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', function () {
+        stepsTrack.scrollTo({ left: card.offsetLeft - trackPad(), behavior: 'smooth' });
+      });
+      stepsDots.appendChild(b);
+    });
+    var stepDotEls = stepsDots.querySelectorAll('button');
+    var syncStepDots = function () {
+      var pad = trackPad();
+      var best = 0, bestDist = Infinity;
+      stepCards.forEach(function (c, i) {
+        var dist = Math.abs((c.offsetLeft - pad) - stepsTrack.scrollLeft);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      });
+      stepDotEls.forEach(function (d, i) {
+        if (i === best) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+      });
+    };
+    stepsTrack.addEventListener('scroll', function () {
+      window.requestAnimationFrame(syncStepDots);
+    }, { passive: true });
+  }
+
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },
