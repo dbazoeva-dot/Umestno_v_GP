@@ -1042,7 +1042,7 @@ a{ color: inherit; text-decoration: none; }
 .u-config2__pr-info{ display: flex; flex-direction: column; gap: 2px; padding: 0 2px; }
 .u-config2__pr-b{
   font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-widest);
-  color: var(--u-accent); font-weight: 600; text-transform: uppercase;
+  color: var(--u-sage-d); font-weight: 500; text-transform: uppercase;
 }
 .u-config2__pr-n{
   font-size: var(--fs-xs); font-weight: 600; line-height: 1.22;
