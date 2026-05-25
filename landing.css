@@ -1,0 +1,128 @@
+/* ── Уместно — production layer on top of styles.css ─────────────
+   Adds the mobile burger menu and a consolidated ≤768px responsive
+   layer (single column, full-width CTAs, card stacking, swipe reviews).
+   The fluid system (clamp/fr/vw) from styles.css is preserved. */
+
+/* ── Burger button (hidden on desktop) ─────────────────── */
+.u-burger{
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px; height: 44px;
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.u-burger span{
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--u-ink);
+  border-radius: 2px;
+  transition: transform .25s ease, opacity .2s ease;
+}
+body.u-nav-open .u-burger span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+body.u-nav-open .u-burger span:nth-child(2){ opacity: 0; }
+body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Mobile nav panel ──────────────────────────────────── */
+.u-mobile-nav{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px clamp(20px, 4vw, 56px) 24px;
+  background: rgba(255,253,249,.98);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--u-line);
+}
+.u-mobile-nav[hidden]{ display: none; }
+.u-mobile-nav a{
+  font-family: var(--f-sans);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--u-ink-2);
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--u-line);
+}
+.u-mobile-nav a:hover{ color: var(--u-ink); }
+.u-mobile-nav .u-btn{
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* ── ≤768px mobile layer ───────────────────────────────── */
+@media (max-width: 768px){
+  /* header: swap inline nav + CTA for the burger */
+  .u-nav{ display: none !important; }
+  .u-header__cta{ display: none !important; }
+  .u-burger{ display: inline-flex; }
+
+  /* full-width primary CTAs */
+  main .u-btn--lg,
+  main .u-btn--accent,
+  main .u-btn--sage{
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* single-column stacks */
+  .u-steps--4{ grid-template-columns: 1fr; gap: 36px; }
+  .u-step-card{
+    border-right: 0;
+    border-bottom: 1px solid var(--u-line);
+    padding: 0 0 28px 0 !important;
+  }
+  .u-step-card:last-child{ border-bottom: 0; padding-bottom: 0 !important; }
+  .u-step-card h4{ min-height: 0; }
+
+  .u-result-cards{ grid-template-columns: 1fr; }
+  .u-result-cards .u-result-card,
+  .u-result-cards .u-result-card:nth-child(1),
+  .u-result-cards .u-result-card:nth-child(2),
+  .u-result-cards .u-result-card:nth-child(3),
+  .u-result-cards .u-result-card:nth-child(4){
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+    min-height: 0;
+    padding: 28px 24px;
+  }
+
+  .u-footer__grid{ grid-template-columns: 1fr 1fr; gap: 28px; }
+  .u-footer__brand{ grid-column: 1 / -1; }
+  .u-footer__bottom{ flex-direction: column; gap: 8px; align-items: flex-start; }
+
+  /* hero magazine — keep the photo from getting too tall */
+  .u-hero__mag-photo{ aspect-ratio: 4/3; min-height: 0; }
+  .u-hero__mag-meta{ grid-template-columns: 1fr; row-gap: 18px; }
+  .u-hero__mag-meta-list{ width: 100%; }
+
+  /* config: stack already at 900; tidy paddings */
+  .u-config2__form,
+  .u-config2__result{ padding: 24px 20px; }
+  .u-config2__sizes{ gap: 8px; }
+
+  /* reviews — copy above the swipeable compare pair */
+  .u-review-slide{ gap: 32px; padding: 0; }
+  .u-review-slide__compare{ gap: 12px; }
+  .u-review-slide__col:first-child,
+  .u-review-slide__col:last-child{ transform: none; }
+  .u-review-slide__img{ border-width: 5px; }
+  .u-review-slide__caption{ font-size: var(--fs-xs); }
+
+  /* notes: keep mono notes readable, not oversized */
+  .u-result-note,
+  .u-steps__note{ font-size: var(--fs-sm) !important; align-items: flex-start; }
+
+  /* section header lede sizing */
+  .u-sec-head__title{ max-width: 100%; }
+}
+
+/* very small phones — stack the До/После pair */
+@media (max-width: 460px){
+  .u-review-slide__compare{ grid-template-columns: 1fr; }
+}

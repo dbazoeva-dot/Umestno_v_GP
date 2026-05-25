@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ru" data-fontpair="garamond">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Уместно — красивый порядок в каждом ящике</title>
+<meta name="description" content="Уместно — конфигуратор хранения на базе ИИ. Введите размеры ящика и выберите, что хранить — получите готовую схему раскладки и подходящие органайзеры за 2–3 минуты. Полная схема за 149 ₽." />
+<meta property="og:title" content="Уместно — готовая схема хранения под ваш ящик" />
+<meta property="og:description" content="Введите размеры и то, что хотите хранить. Уместно соберёт схему хранения и подберёт подходящие товары." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#F4E3D2" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=Commissioner:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="landing_design/styles.css" />
+<link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────── -->
+<header class="u-header">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="#" class="u-logo">у<span class="m">М</span>естно</a>
+    <nav class="u-nav">
+      <a href="#how">Как это работает</a>
+      <a href="#result">Результат</a>
+      <a href="#whom">Для кого</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="u-header__cta">
+      <button class="u-btn u-btn--accent u-btn--sm" style="background-color:rgb(125,140,114)">Начать расчёт — 149 ₽</button>
+    </div>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="#how">Как это работает</a>
+    <a href="#result">Результат</a>
+    <a href="#whom">Для кого</a>
+    <a href="#reviews">Отзывы</a>
+    <a href="#faq">FAQ</a>
+    <button class="u-btn u-btn--accent" style="background-color:rgb(125,140,114)">Начать расчёт — 149 ₽</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ── 01. Hero · Magazine ────────────────────────────────── -->
+<section class="u-hero u-hero--mag" data-screen-label="01 Hero · Magazine">
+  <div class="u-hero__mag-shell">
+    <div class="u-hero__mag-topbar">
+      <div class="u-hero__mag-tag">
+        <span class="bullet" style="background-color:rgb(125,140,114);color:rgb(255,255,255)"></span>
+        <span style="font-size:clamp(11px, 0.85vw, 13px)">Конфигуратор хранения · Уместно</span>
+      </div>
+      <a class="u-hero__mag-link" href="#how">
+        Начать расчёт <span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="u-hero__mag-banner">
+      <h1 class="u-hero__mag-title">
+        <span class="row row-1" style="font-weight:500">Готовая <em style="font-weight:500;font-size:1.06em;color:rgb(125,140,114)">схема хранения</em></span>
+        <span class="row row-2" style="font-weight:500">под ваш ящик</span>
+      </h1>
+
+      <div class="u-hero__mag-meta">
+        <ul class="u-hero__mag-meta-list">
+          <li style="font-family:&quot;JetBrains Mono&quot;;font-size:clamp(16px, 1.5vw, 22px)"><span class="dash" aria-hidden="true" style="color:rgb(125,140,114);font-size:clamp(14px, 1.2vw, 18px);font-weight:700">—</span>без долгого поиска</li>
+          <li style="font-family:&quot;JetBrains Mono&quot;;font-size:clamp(16px, 1.5vw, 22px)"><span class="dash" aria-hidden="true" style="color:rgb(125,140,114);font-weight:700">—</span>без тестовых раскладок на&nbsp;полу</li>
+          <li style="font-family:&quot;JetBrains Mono&quot;;font-size:clamp(16px, 1.5vw, 22px)"><span class="dash" aria-hidden="true" style="font-weight:700;color:rgb(125,140,114)">—</span>без ошибочных покупок и возвратов</li>
+        </ul>
+        <p class="u-hero__mag-meta-note" style="font-family:&quot;JetBrains Mono&quot;;font-size:clamp(15px, 1.4vw, 21px);line-height:1.2">Введите размеры и то, что хотите хранить.<br />Уместно соберет схему хранения вещей и подберет подходящие товары.</p>
+      </div>
+    </div>
+
+    <figure class="u-hero__mag-photo">
+      <img src="landing_design/assets/hero-drawer-v2.png" alt="Аккуратно собранный ящик с органайзерами и схемой раскладки" />
+      <div class="u-hero__mag-price">
+        <div class="u-hero__mag-price-row">
+          <span class="label" style="font-family:&quot;JetBrains Mono&quot;;font-weight:400">Полная схема расчёта</span>
+          <span class="amt" style="font-family:&quot;JetBrains Mono&quot;">149&nbsp;₽</span>
+        </div>
+        <span class="sub" style="font-family:&quot;JetBrains Mono&quot;;font-size:16px">без скрытых платежей и подписок</span>
+      </div>
+    </figure>
+
+    <div class="u-hero__mag-foot">
+      <a class="u-hero__mag-cta" href="#how">
+        <span class="label">Начать расчет</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02. Проблема ───────────────────────────────────────── -->
+<section class="u-section u-section--linked-bottom" data-screen-label="02 Проблема" data-chapter="01" data-chapter-label="ЗНАКОМО">
+  <div class="u-container">
+    <div class="u-sec-head" style="width:1300px;max-width:100%">
+      <div class="u-sec-head__num" style="font-size:clamp(11px, 0.85vw, 13px)">N° 01 · знакомо?</div>
+      <h2 class="u-sec-head__title" style="width:1200px;max-width:100%">Когда хочется порядок, но&nbsp;приходится<br /><em>собирать сложный пазл</em></h2>
+    </div>
+    <div class="u-problem-grid">
+      <div class="u-pain">
+        <div class="u-pain__icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 6h22M13 42h22"/>
+            <path d="M15 6c0 6 3 9 9 12-6 3-9 6-9 12"/>
+            <path d="M33 6c0 6-3 9-9 12 6 3 9 6 9 12"/>
+            <path d="M17 9c0 3 2 5 7 7 5-2 7-4 7-7" fill="currentColor" opacity="0.18" stroke="none"/>
+            <path d="M17 39c0-4 2-6 7-7 5 1 7 3 7 7" fill="currentColor" opacity="0.18" stroke="none"/>
+            <circle cx="24" cy="22" r="0.8" fill="currentColor"/>
+            <circle cx="24" cy="26" r="0.6" fill="currentColor"/>
+            <circle cx="24" cy="30" r="0.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>На подбор уходит<br /><em>слишком много времени</em></h3>
+        <p>Нужно искать, сравнивать десятки карточек и держать в голове, что может подойти.</p>
+      </div>
+      <div class="u-pain">
+        <div class="u-pain__icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="7" width="14" height="14" rx="1.5"/>
+            <circle cx="34" cy="14" r="7.5"/>
+            <path d="M14 41 L24 25 L34 41 Z"/>
+            <path d="M22 13 L26 13 M24 11 L24 15" opacity="0.55"/>
+            <path d="M26 28 L29 26 M27 24 L29 29" opacity="0.55"/>
+          </svg>
+        </div>
+        <h3>Сложно собрать<br /><em>всё вместе</em></h3>
+        <p>Отдельные органайзеры выглядят подходяще, но неясно, как они будут работать вместе.</p>
+      </div>
+      <div class="u-pain">
+        <div class="u-pain__icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="22" width="40" height="20" rx="2"/>
+            <path d="M21 41 H27"/>
+            <path d="M9 22 V14 M9 14 c0 -1.5 -2 -1.5 -2 0 V22" fill="currentColor" opacity="0.16" stroke="currentColor"/>
+            <path d="M16 22 V10 M16 10 c0 -2 -3 -2 -3 0 V22" fill="currentColor" opacity="0.16" stroke="currentColor"/>
+            <path d="M24 22 V8" />
+            <path d="M22 11 L24 8 L26 11"/>
+            <path d="M32 22 V12 M32 12 c0 -2 -3 -2 -3 0 V22" fill="currentColor" opacity="0.16" stroke="currentColor"/>
+            <path d="M40 22 V16 M40 16 c0 -1.5 -2 -1.5 -2 0 V22" fill="currentColor" opacity="0.16" stroke="currentColor"/>
+            <path d="M8 32 L14 30 L20 34 L26 30 L32 34 L40 31" opacity="0.55"/>
+          </svg>
+        </div>
+        <h3>Ящик заполнен, но хранить<br /><em>всё равно неудобно</em></h3>
+        <p>Органайзеры занимают место, но не подходят под то, что Вы храните.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03. Четыре шага ────────────────────────────────────── -->
+<section class="u-section u-section--linked" id="steps" data-screen-label="03 Четыре шага">
+  <div class="u-container">
+    <div class="u-sec-head u-sec-head--sage">
+      <div class="u-sec-head__main">
+        <h2 class="u-sec-head__title">С <span class="u-brand-inline">уМестно</span> все становится <em>гораздо проще</em></h2>
+      </div>
+      <p class="u-sec-head__lede">От размеров ящика до готовой схемы и подходящих органайзеров за несколько минут.</p>
+    </div>
+    <div class="u-steps u-steps--4">
+      <div class="u-step-card">
+        <div class="u-step-card__num">01</div>
+        <h4>Введите размеры</h4>
+        <div class="u-step-card__rule" aria-hidden="true"></div>
+        <p>Укажите глубину, ширину и высоту по внутренним размерам.</p>
+      </div>
+      <div class="u-step-card">
+        <div class="u-step-card__num">02</div>
+        <h4>Выберите, что хранить</h4>
+        <div class="u-step-card__rule" aria-hidden="true"></div>
+        <p>Отметьте типы вещей, их объём и приоритет хранения: удобно, вместительно или экономично.</p>
+      </div>
+      <div class="u-step-card">
+        <div class="u-step-card__num">03</div>
+        <h4>Получите схему и рекомендации</h4>
+        <div class="u-step-card__rule" aria-hidden="true"></div>
+        <p>Уместно соберёт конфигурацию и покажет, что где хранить, как разместить блоки и как сложить вещи внутри.</p>
+      </div>
+      <div class="u-step-card">
+        <div class="u-step-card__num">04</div>
+        <h4>Соберите ящик по схеме</h4>
+        <div class="u-step-card__rule" aria-hidden="true"></div>
+        <p>К каждому блоку предложим подходящие органайзеры со ссылками на популярные маркетплейсы. Можно купить их или использовать аналоги по размерам.</p>
+      </div>
+    </div>
+    <div class="u-result-note u-steps__note" style="font-size:21px;font-family:&quot;JetBrains Mono&quot;">
+      <span class="ic" style="border-color:rgb(125,140,114)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg>
+      </span>
+      Итоговый результат можно сохранить, скачать или отправить себе на почту
+    </div>
+  </div>
+</section>
+
+<!-- ── 04. Как это работает — конфигуратор ─────────────────── -->
+<section class="u-section u-section--linked-bottom" id="how" data-screen-label="04 Как это работает" data-chapter="02" data-chapter-label="КОНФИГУРАТОР">
+  <div class="u-container">
+    <div class="u-sec-head u-sec-head--split">
+      <div class="u-sec-head__num">N° 02 · как это работает</div>
+      <h2 class="u-sec-head__title">Как выглядит <em class="nowrap">расчет в Уместно</em></h2>
+      <p class="u-sec-head__lede">Вы вводите размеры пространства и категорию вещей. Уместно сразу анализирует данные и выводит схему раскладки, размеры блоков, рекомендации по складыванию вещей и подберает товары с популярных маркетплейсов под каждый блок.</p>
+    </div>
+
+    <div class="u-config2__colheads" aria-hidden="true">
+      <div class="u-config2__colhead">
+        <span class="u-config2__colhead-num">I.</span>
+        <span class="u-config2__colhead-lbl" style="color:rgb(208,138,114)">Вы вводите данные</span>
+      </div>
+      <div class="u-config2__colhead u-config2__colhead--accent">
+        <span class="u-config2__colhead-num" style="color:rgb(159,149,118)">II.</span>
+        <span class="u-config2__colhead-lbl"><em style="color:rgb(154,144,115)">Уместно собирает результат</em></span>
+      </div>
+    </div>
+
+    <div class="u-config2">
+      <div class="u-config2__body">
+        <!-- LEFT — form -->
+        <div class="u-config2__form">
+          <div class="u-config2__head-row">
+            <div class="u-config2__demo-tag">
+              <span class="dot" aria-hidden="true"></span>
+              <span>Пример заполнения формы</span>
+            </div>
+            <div class="u-config2__timer" style="background-color:rgb(244,227,210)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10"/><path d="M8 3c0 4 2 6 4 7m0 0c2 1 4 3 4 7M16 3c0 4-2 6-4 7m0 0c-2 1-4 3-4 7"/><path d="M9 19c0-2.2 1.3-3.5 3-4 1.7.5 3 1.8 3 4z" fill="currentColor" opacity=".25" stroke="none"/></svg>
+              <span>~ 2–3 минуты</span>
+            </div>
+          </div>
+
+          <div class="u-config2__group">
+            <div class="u-config2__lbl">Размеры пространства, см</div>
+            <div class="u-config2__sizes">
+              <div class="u-config2__sz"><label>Ширина</label><input data-dim="w" value="80" /></div>
+              <div class="u-config2__sz"><label>Глубина</label><input data-dim="d" value="45" /></div>
+              <div class="u-config2__sz"><label>Высота</label><input data-dim="h" value="15" /></div>
+            </div>
+          </div>
+
+          <div class="u-config2__group">
+            <div class="u-config2__lbl">Что хранить</div>
+            <div class="u-config2__cat">Трусы, носки, майки, ремни</div>
+          </div>
+
+          <div class="u-config2__group">
+            <div class="u-config2__lbl">Что важнее</div>
+            <div class="u-config2__pri-list">
+              <button class="u-config2__pri on" data-pri="Удобно" type="button">
+                <span class="u-config2__check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+                <span class="u-config2__pri-body"><span class="ttl">Удобно</span><span class="sub">Проще видеть и доставать</span></span>
+              </button>
+              <button class="u-config2__pri" data-pri="Вместительно" type="button">
+                <span class="u-config2__check"></span>
+                <span class="u-config2__pri-body"><span class="ttl">Вместительно</span><span class="sub">Максимально плотно</span></span>
+              </button>
+              <button class="u-config2__pri" data-pri="Экономично" type="button">
+                <span class="u-config2__check"></span>
+                <span class="u-config2__pri-body"><span class="ttl">Экономично</span><span class="sub">Простые варианты</span></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="u-config2__cta-area">
+            <button class="u-btn u-btn--accent u-btn--lg u-config2__cta-btn">
+              Перейти к форме расчёта - 149 ₽
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <div class="u-config2__fineprint" style="font-family:&quot;JetBrains Mono&quot;">
+              Один раз. Без подписок. Файл со схемой остаётся у&nbsp;вас навсегда.
+            </div>
+          </div>
+        </div>
+
+        <div class="u-config2__divider"></div>
+
+        <!-- RIGHT — result -->
+        <div class="u-config2__result">
+          <div class="u-config2__group">
+            <div class="u-config2__lbl">
+              <span>Рекомендуемая конфигурация</span>
+              <span class="u-config2__rmeta"><span data-rmeta>80×45×15</span> см · 4 блока</span>
+            </div>
+            <div class="u-config2__schema">
+              <img src="landing_design/assets/sample-scheme.webp" alt="Пример схемы хранения: четыре блока в одном лотке" />
+            </div>
+          </div>
+
+          <div class="u-config2__group u-config2__group--products">
+            <div class="u-config2__lbl">Рекомендуемые товары</div>
+            <div class="u-config2__products">
+              <div class="u-config2__pr-card">
+                <div class="u-config2__pr-img"><img src="landing_design/assets/product-slots-white.png" alt="Органайзер со слотами" /></div>
+                <div class="u-config2__pr-info">
+                  <div class="u-config2__pr-b">блок 01</div>
+                  <div class="u-config2__pr-n">Органайзер со слотами</div>
+                  <div class="u-config2__pr-sub">11 слотов · полужёсткий</div>
+                </div>
+              </div>
+              <div class="u-config2__pr-card">
+                <div class="u-config2__pr-img"><img src="landing_design/assets/product-fabric-beige.png" alt="Тканевый контейнер с разделителями" /></div>
+                <div class="u-config2__pr-info">
+                  <div class="u-config2__pr-b">блок 02</div>
+                  <div class="u-config2__pr-n">Тканевый контейнер с разделителями</div>
+                  <div class="u-config2__pr-sub">плотный лён · 5 отделений</div>
+                </div>
+              </div>
+              <div class="u-config2__pr-card">
+                <div class="u-config2__pr-img"><img src="landing_design/assets/product-cells-beige.png" alt="Контейнер с ячейками" /></div>
+                <div class="u-config2__pr-info">
+                  <div class="u-config2__pr-b">блок 03</div>
+                  <div class="u-config2__pr-n">Контейнер с ячейками</div>
+                  <div class="u-config2__pr-sub">плотная ткань · 16 ячеек</div>
+                </div>
+              </div>
+              <div class="u-config2__pr-card">
+                <div class="u-config2__pr-img"><img src="landing_design/assets/product-cells-wood-brown.png" alt="Деревянный органайзер" /></div>
+                <div class="u-config2__pr-info">
+                  <div class="u-config2__pr-b">блок 04</div>
+                  <div class="u-config2__pr-n">Деревянный органайзер</div>
+                  <div class="u-config2__pr-sub">дерево · 9 ячеек</div>
+                </div>
+              </div>
+            </div>
+            <div class="u-config2__compat-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+              Все органайзеры совместимы со схемой по размеру и высоте
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 05. Что включено в результат ───────────────────────── -->
+<section class="u-section u-section--linked" id="result" data-screen-label="05 Как выглядит результат" data-chapter="03">
+  <div class="u-container">
+    <div class="u-sec-head">
+      <div class="u-sec-head__num">N° 03 · результат</div>
+      <h2 class="u-sec-head__title">Что включено в результат</h2>
+      <p class="u-sec-head__lede">Уместно покажет не просто типовую схему, а готовую конфигурацию хранения под размеры Вашего пространства и необходимые вещи.</p>
+    </div>
+    <div class="u-result-cards">
+      <div class="u-result-card" style="border-color:rgb(125,140,114)">
+        <h5>Схема хранения</h5>
+        <p>Наглядный план с размерами зон для каждой группы вещей.</p>
+      </div>
+      <div class="u-result-card" style="border-color:rgb(125,140,114)">
+        <h5>Назначение ячеек</h5>
+        <p>Для каждого блока будет понятно назначение с учётом частоты использования.</p>
+      </div>
+      <div class="u-result-card" style="border-color:rgb(125,140,114)">
+        <h5>Памятка по хранению</h5>
+        <p>Короткие подсказки, как складывать и распределять вещи внутри блоков, чтобы схема работала эффективно.</p>
+      </div>
+      <div class="u-result-card" style="border-color:rgb(125,140,114)">
+        <h5>Рекомендации по органайзерам</h5>
+        <p>Подберём товары не общей выдачей, а под каждый блок схемы отдельно — точно подходящие под размеры.</p>
+      </div>
+    </div>
+    <div class="u-result-note" style="font-size:21px;font-family:&quot;JetBrains Mono&quot;">
+      <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></span>
+      Итоговый результат можно сохранить, скачать или отправить себе на почту единым файлом.
+    </div>
+  </div>
+</section>
+
+<!-- ── 06. Не просто красиво. Логично. ────────────────────── -->
+<section class="u-section u-section--warm" data-screen-label="06 Не просто красиво. Логично" data-chapter="04" data-chapter-label="ЛОГИКА">
+  <div class="u-container">
+    <div class="u-sec-head">
+      <div class="u-sec-head__num">N° 04 · логика</div>
+      <h2 class="u-sec-head__title">Не просто красиво. <em>Логично.</em></h2>
+      <p class="u-sec-head__lede">Уместно — конфигуратор хранения на базе ИИ. Он не раскладывает вещи на глаз. Внутри — правила профессиональной организации пространства: группировка, доступность, подходящий формат хранения, размеры вещей и сравнение вариантов.</p>
+    </div>
+
+    <article class="u-logic-essay">
+      <p><strong class="u-logic-essay__lead">Группировка вещей.</strong> Система держит связанные категории рядом, чтобы хранение не распадалось на случайные зоны. <span class="u-logic-essay__sub">Вы не получите схему, где носки внезапно стоят между бельевыми блоками.</span></p>
+      <p><strong class="u-logic-essay__lead">Удобный доступ.</strong> Система учитывает частоту использования вещей и помогает расположить их в более доступных зонах. <span class="u-logic-essay__sub">Повседневные вещи не уедут в самый дальний или неудобный край.</span></p>
+      <p><strong class="u-logic-essay__lead">Профессиональные подходы к хранению.</strong> Используются проверенные принципы организации пространства, чтобы подобрать лучший формат хранения под каждый тип вещей. <span class="u-logic-essay__sub">Не универсальная «коробка для всего», а ячейки, слоты, открытые секции под конкретную задачу.</span></p>
+      <p><strong class="u-logic-essay__lead">Размеры вещей.</strong> Система учитывает размеры каждого типа вещей, чтобы секции не были слишком мелкими, тесными или лишне крупными. <span class="u-logic-essay__sub">Вы не получите схему, где носки занимают столько же места, что и джинсы.</span></p>
+    </article>
+
+    <aside class="u-logic-finale">
+      <div class="u-logic-finale__label">И ещё одно</div>
+      <h4 class="u-logic-finale__title">ИИ сравнивает варианты и собирает рабочую схему</h4>
+      <p>Мы не подставляем первый подходящий органайзер. Система анализирует разные сочетания блоков, форматов хранения и товаров, чтобы собрать решение, которое лучше использует пространство и подходит под выбранные вещи.</p>
+      <p class="u-logic-finale__pull">В результате вы получаете не одну случайную раскладку, а выбранную конфигурацию: с понятными зонами, подходящими форматами хранения и товарами под каждый блок.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ── Интерлюдия ─────────────────────────────────────────── -->
+<section class="u-interlude" data-screen-label="— Интерлюдия">
+  <img src="landing_design/assets/branch-leaves.png" alt="" class="u-decor u-decor--interlude-l" aria-hidden="true" />
+  <img src="landing_design/assets/branch-twig.png" alt="" class="u-decor u-decor--interlude-r" aria-hidden="true" />
+  <div class="u-interlude__inner">
+    <p class="u-interlude__text" style="font-size:clamp(32px, 4.4vw, 60px);width:1200px;max-width:100%">Порядок начинается <em style="letter-spacing:-1.5px;font-size:clamp(32px, 4.4vw, 60px)">не с покупки органайзеров</em>,<br />а с удобной системы, которую легко поддерживать каждый день.</p>
+    <div class="u-interlude__source">принцип Уместно</div>
+  </div>
+</section>
+
+<!-- ── 08. Отзывы ─────────────────────────────────────────── -->
+<section class="u-section u-section--warm" id="reviews" data-screen-label="08 Отзывы" data-chapter="06">
+  <div class="u-container">
+    <div class="u-sec-head">
+      <div class="u-sec-head__main">
+        <div class="u-sec-head__num">N° 06 · ОТЗЫВЫ</div>
+        <h2 class="u-sec-head__title">Спокойствие, к которому <em class="nowrap">легко привыкаешь</em></h2>
+      </div>
+    </div>
+
+    <div class="u-review-slide" data-reviews>
+      <div class="u-review-slide__copy">
+        <div class="u-review-slide__num">История <span data-review-num>01</span> / 5</div>
+        <p class="u-review-slide__quote" data-review-quote style="font-size:clamp(22px, 2vw, 30px)">Я бы сама очень долго собирала это по частям. Здесь сразу стало понятно, что покупать и как это должно встать внутри.</p>
+        <div class="u-review-slide__author">
+          <div class="av" data-review-av>А</div>
+          <div class="meta"><b data-review-name>Анна</b><span data-review-city>Москва</span></div>
+        </div>
+
+        <div class="u-review-nav">
+          <button class="nav" data-review-prev aria-label="Назад">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <div class="dots" data-review-dots></div>
+          <button class="nav" data-review-next aria-label="Вперёд">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="u-review-slide__compare">
+        <div class="u-review-slide__col">
+          <div class="u-review-slide__img">
+            <img data-review-bfr src="landing_design/assets/review1-bfr.webp" alt="До" />
+            <span class="pill">До</span>
+          </div>
+          <div class="u-review-slide__caption" data-review-bfr-cap>Вещи лежат вместе, зоны хранения не выделены.</div>
+        </div>
+        <div class="u-review-slide__col">
+          <div class="u-review-slide__img">
+            <img data-review-aftr src="landing_design/assets/review1-aftr.webp" alt="После" />
+            <span class="pill after">После</span>
+          </div>
+          <div class="u-review-slide__caption" data-review-aftr-cap>Пространство разделено на отдельные зоны — для белья и аксессуаров.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 09. FAQ ────────────────────────────────────────────── -->
+<section class="u-section" id="faq" data-screen-label="09 FAQ" data-chapter="07">
+  <div class="u-container">
+    <div class="u-sec-head">
+      <div class="u-sec-head__main">
+        <div class="u-sec-head__num">N° 07 · ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ</div>
+        <h2 class="u-sec-head__title">Коротко о том, как <em>устроено Уместно</em></h2>
+      </div>
+      <p class="u-sec-head__lede">Если остался вопрос, пишите на help@umestno-home.ru.</p>
+    </div>
+    <div class="u-faq" data-faq></div>
+  </div>
+</section>
+
+<!-- ── 10. Финальный CTA ──────────────────────────────────── -->
+<section class="u-section u-section--tight" data-screen-label="10 Финальный CTA">
+  <div class="u-container">
+    <div class="u-finalcta--fade">
+      <div class="u-finalcta__inner">
+        <div class="u-finalcta__art">
+          <img src="landing_design/assets/final-cta.webp" alt="Готовое решение по хранению" />
+        </div>
+        <div class="u-finalcta__copy">
+          <h3 style="font-family:var(--f-display);font-weight:var(--fw-display);font-size:var(--fs-h3);line-height:var(--lh-tight);margin:0">
+            Получите долгосрочный <em style="color:var(--u-accent);font-style:normal">порядок</em> <span style="white-space:nowrap">и удобное</span> хранение в своём ящике
+          </h3>
+          <p style="margin:16px 0 24px;color:var(--u-ink-2);font-size:var(--fs-md);max-width:52ch">Начните с любого сценария, чтобы понять, насколько это быстро. Полная схема расчёта за 149 ₽, без подписок.</p>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <button class="u-btn u-btn--accent u-btn--lg">Начать подбор<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <div style="display:flex;gap:18px;color:var(--u-ink-3);font-size:var(--fs-xs);flex-wrap:wrap">
+              <span style="display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>149 ₽ один раз</span>
+              <span style="display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Без подписок</span>
+              <span style="display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Файл на почту</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="#" class="u-logo">у<span class="m">М</span>естно</a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="#how">Как это работает</a>
+        <a href="#result">Результат</a>
+        <a href="#whom">Для кого</a>
+        <a href="#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Документы</h6>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия использования</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Соцсети</h6>
+        <div class="u-footer__socials">
+          <a href="#" aria-label="Pinterest"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
