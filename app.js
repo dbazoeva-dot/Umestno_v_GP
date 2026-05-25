@@ -184,6 +184,62 @@
     cfgMq.addEventListener('change', placeCta);
   }
 
+  /* ── config2 «assembly» animation (scroll-triggered, once) ── */
+  var c2 = document.querySelector('.u-config2');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (c2 && !reduceMotion && 'IntersectionObserver' in window) {
+    c2.classList.add('anim-armed');
+
+    // 1) size fields count up, result meta tracks along
+    var sizeInputs = Array.prototype.slice.call(c2.querySelectorAll('[data-dim]'));
+    var rmetaEl = c2.querySelector('[data-rmeta]');
+    var sizesWrap = c2.querySelector('.u-config2__sizes');
+    var sizeTargets = sizeInputs.map(function (inp) { return parseInt(inp.value, 10) || 0; });
+    sizeInputs.forEach(function (inp) { inp.value = ''; });
+    var countPlayed = false;
+    var playCount = function () {
+      if (countPlayed) return; countPlayed = true;
+      var dur = 720, t0 = null;
+      var frame = function (ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 2);
+        sizeInputs.forEach(function (inp, i) {
+          inp.value = Math.round(sizeTargets[i] * e);
+          inp.parentNode.classList.add('is-filling');
+        });
+        if (rmetaEl) rmetaEl.textContent = sizeInputs.map(function (_, i) { return Math.round(sizeTargets[i] * e); }).join('×');
+        if (p < 1) { requestAnimationFrame(frame); return; }
+        sizeInputs.forEach(function (inp, i) { inp.value = sizeTargets[i]; inp.parentNode.classList.remove('is-filling'); });
+        if (rmetaEl) rmetaEl.textContent = sizeTargets.join('×');
+      };
+      requestAnimationFrame(frame);
+    };
+
+    // 2) result assembles: scheme, then product cards 01→04
+    var schema = c2.querySelector('.u-config2__schema');
+    var resultEl = c2.querySelector('.u-config2__result');
+    var prCards = Array.prototype.slice.call(c2.querySelectorAll('.u-config2__pr-card'));
+    var revealPlayed = false;
+    var playReveal = function () {
+      if (revealPlayed) return; revealPlayed = true;
+      if (schema) setTimeout(function () { schema.classList.add('is-in'); }, 80);
+      prCards.forEach(function (card, i) {
+        setTimeout(function () { card.classList.add('is-in'); }, 280 + i * 150);
+      });
+    };
+
+    var observe = function (target, cb) {
+      if (!target) { cb(); return; }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { io.disconnect(); cb(); } });
+      }, { threshold: 0.3 });
+      io.observe(target);
+    };
+    observe(sizesWrap, playCount);
+    observe(resultEl, playReveal);
+  }
+
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },

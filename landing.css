@@ -388,3 +388,29 @@ body{ overflow-x: hidden; }
   white-space: normal;
   text-align: center;
 }
+
+/* ════════════════════════════════════════════════════════════
+   «Как это работает» — scroll-triggered reveal (JS-armed).
+   The .anim-armed class is added by JS only when motion is allowed,
+   so without JS / with reduced motion everything is visible as-is.
+   ════════════════════════════════════════════════════════════ */
+.u-config2.anim-armed .u-config2__schema,
+.u-config2.anim-armed .u-config2__pr-card{
+  opacity: 0;
+  transform: translateY(16px);
+  will-change: opacity, transform;
+}
+.u-config2.anim-armed .u-config2__schema{
+  transition: opacity .55s ease, transform .55s ease;
+}
+.u-config2.anim-armed .u-config2__pr-card{
+  transition: opacity .5s ease, transform .5s ease;
+}
+.u-config2.anim-armed .u-config2__schema.is-in,
+.u-config2.anim-armed .u-config2__pr-card.is-in{
+  opacity: 1;
+  transform: none;
+}
+/* size fields glow softly while the values count up */
+.u-config2__sz.is-filling,
+.u-config2__sz.is-filling:focus-within{ border-color: var(--u-accent); }
