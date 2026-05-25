@@ -116,6 +116,7 @@
 }
 .u-calc__lede{
   margin: 0;
+  font-family: var(--f-display);
   font-size: var(--fs-md);
   color: var(--u-ink-2);
   max-width: 52ch;
