@@ -484,10 +484,10 @@ body{ overflow-x: hidden; }
 }
 
 /* ════════════════════════════════════════════════════════════
-   «Не просто красиво. Логично.» — keep the magazine feel but make
-   the principles scannable on mobile: numbered, with the lead as a
-   heading and the example as a quiet italic line. Drop the big
-   single-column drop-cap (it belongs to the 2-column desktop view).
+   «Не просто красиво. Логично.» — keep the magazine feel on mobile:
+   a small (≈2-line) drop-cap opens every principle, the lead stays
+   inline-bold, and the grey example becomes its own block set off by
+   a thin left rule. Desktop two-column essay is unchanged.
    ════════════════════════════════════════════════════════════ */
 @media (max-width: 768px){
   .u-logic-essay{
@@ -495,33 +495,34 @@ body{ overflow-x: hidden; }
     line-height: 1.6;
     margin: 4px 0 36px;
   }
-  .u-logic-essay > p:first-child::first-letter{
-    float: none;
-    font-size: 1em;
-    line-height: inherit;
-    color: inherit;
-    padding: 0;
-    margin: 0;
-  }
   .u-logic-essay p{
-    margin: 0;
-    padding: 22px 0;
-    border-top: 1px solid var(--u-taupe);
+    margin: 0 0 28px;
     color: var(--u-ink-2);
   }
-  .u-logic-essay p:first-child{ border-top: 0; padding-top: 4px; }
+  .u-logic-essay p:last-child{ margin-bottom: 0; }
+  /* small drop-cap on every principle (~2 lines tall) */
+  .u-logic-essay p::first-letter{
+    float: left;
+    font-family: var(--f-display);
+    font-weight: 500;
+    font-size: 2.6em;
+    line-height: 0.86;
+    color: var(--u-accent);
+    padding: 3px 10px 0 0;
+  }
   .u-logic-essay__lead{
-    display: block;
-    margin: 0 0 8px;
-    font-size: var(--fs-xl);
-    line-height: var(--lh-snug);
+    display: inline;
+    font-weight: var(--fw-card);
     color: var(--u-ink);
   }
+  /* grey example → its own block, set off by a thin left rule */
   .u-logic-essay__sub{
     display: block;
-    margin-top: 10px;
-    font-style: italic;
-    font-size: var(--fs-sm);
+    clear: left;
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--u-taupe);
     color: var(--u-ink-3);
+    font-size: var(--fs-sm);
   }
 }
