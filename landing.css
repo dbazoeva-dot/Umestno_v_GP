@@ -179,6 +179,12 @@ body{ overflow-x: hidden; }
   /* apology page paddings */
   .u-apology__body{ padding: clamp(24px, 6vw, 40px); }
 }
+@media (max-width: 520px){
+  /* item rows: stack «что хранить» over «объём» so long select
+     labels (e.g. «Средне (9–16 пар)») aren't clipped in a ~156px track */
+  .u-calc__item-row{ grid-template-columns: 1fr; }
+  .u-calc__item-row .u-calc__item-rm{ grid-column: auto; }
+}
 @media (max-width: 480px){
   .u-calc__step-marker{ font-size: var(--fs-xl); }
 }
