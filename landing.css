@@ -537,3 +537,26 @@ body{ overflow-x: hidden; }
     line-height: 1.65;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   PROTOTYPE — carry the mobile principle treatment to desktop:
+   small raised ink initials on principles 2–4 and the grey example
+   as its own muted line. The first principle keeps its big accent
+   drop-cap (defined in styles.css). ≥769px only.
+   ════════════════════════════════════════════════════════════ */
+@media (min-width: 769px){
+  .u-logic-essay p::first-letter{
+    float: none;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 2em;
+    line-height: 1;
+    color: var(--u-ink);
+    margin: 0 -1px 0 0;
+  }
+  .u-logic-essay__sub{
+    display: block;
+    margin-top: 6px;
+    color: var(--u-ink-3);
+  }
+}
