@@ -1438,7 +1438,7 @@ a{ color: inherit; text-decoration: none; }
   letter-spacing: var(--tr-tight);
   margin: 0 0 16px;
   color: var(--u-ink);
-  max-width: 18ch;
+  max-width: 26ch;
 }
 .u-logic-finale p{
   margin: 0;
@@ -1454,7 +1454,8 @@ a{ color: inherit; text-decoration: none; }
   border-left: 1px solid var(--u-sage-d);
   padding-left: 20px;
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 2 / 4;        /* span title + body rows … */
+  align-self: end;        /* … and sit flush with the body's bottom */
 }
 
 @media (max-width: 900px){
@@ -1462,7 +1463,7 @@ a{ color: inherit; text-decoration: none; }
   .u-logic-finale{ grid-template-columns: 1fr; padding: 32px 28px; }
   .u-logic-finale__title{ max-width: none; }
   .u-logic-finale p{ margin-bottom: 18px; }
-  .u-logic-finale__pull{ grid-column: 1; grid-row: auto; margin-top: 0; margin-bottom: 0; }
+  .u-logic-finale__pull{ grid-column: 1; grid-row: auto; align-self: auto; margin-top: 0; margin-bottom: 0; }
 }
 
 @keyframes u-leaf-sway {
