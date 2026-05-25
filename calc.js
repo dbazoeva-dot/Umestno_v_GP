@@ -134,10 +134,11 @@
     var imgs = carousel.querySelectorAll('.u-calc__carousel-frame img');
     var dots = carousel.querySelectorAll('.u-calc__carousel-dots .dot');
     var caps = [
-      { cap: 'Пример аккуратной конфигурации', meta: 'комод 80×45×15 · 4 блока' },
       { cap: 'Зонирование под бельё и аксессуары', meta: 'Анна, Москва' },
       { cap: 'Категории по понятным блокам', meta: 'Елена, Владикавказ' },
-      { cap: 'Готовая схема: что где хранить', meta: 'результат расчёта' }
+      { cap: 'Своё место под частоту использования', meta: 'Максим, Санкт-Петербург' },
+      { cap: 'Бельевые категории собраны рядом', meta: 'Ирина, Москва' },
+      { cap: 'Каждая вещь по своим зонам', meta: 'Давид, Екатеринбург' }
     ];
     var capEl = carousel.querySelector('.u-calc__carousel-cap');
     var subEl = carousel.querySelector('.u-calc__carousel-sub');
