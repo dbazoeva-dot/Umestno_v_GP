@@ -190,30 +190,38 @@
   if (c2 && !reduceMotion && 'IntersectionObserver' in window) {
     c2.classList.add('anim-armed');
 
-    // 1) size fields count up, result meta tracks along
+    // 1) size fields are "typed in" one after another, digit by digit
     var sizeInputs = Array.prototype.slice.call(c2.querySelectorAll('[data-dim]'));
     var rmetaEl = c2.querySelector('[data-rmeta]');
     var sizesWrap = c2.querySelector('.u-config2__sizes');
-    var sizeTargets = sizeInputs.map(function (inp) { return parseInt(inp.value, 10) || 0; });
+    var sizeTargets = sizeInputs.map(function (inp) { return String(parseInt(inp.value, 10) || 0); });
     sizeInputs.forEach(function (inp) { inp.value = ''; });
+    if (rmetaEl) rmetaEl.textContent = '';
     var countPlayed = false;
     var playCount = function () {
       if (countPlayed) return; countPlayed = true;
-      var dur = 720, t0 = null;
-      var frame = function (ts) {
-        if (!t0) t0 = ts;
-        var p = Math.min(1, (ts - t0) / dur);
-        var e = 1 - Math.pow(1 - p, 2);
-        sizeInputs.forEach(function (inp, i) {
-          inp.value = Math.round(sizeTargets[i] * e);
-          inp.parentNode.classList.add('is-filling');
-        });
-        if (rmetaEl) rmetaEl.textContent = sizeInputs.map(function (_, i) { return Math.round(sizeTargets[i] * e); }).join('×');
-        if (p < 1) { requestAnimationFrame(frame); return; }
-        sizeInputs.forEach(function (inp, i) { inp.value = sizeTargets[i]; inp.parentNode.classList.remove('is-filling'); });
-        if (rmetaEl) rmetaEl.textContent = sizeTargets.join('×');
-      };
-      requestAnimationFrame(frame);
+      var charMs = 110, fieldGapMs = 180, clock = 0;
+      sizeInputs.forEach(function (inp, idx) {
+        var str = sizeTargets[idx];
+        var wrap = inp.parentNode;
+        for (var k = 1; k <= str.length; k++) {
+          (function (k) {
+            setTimeout(function () {
+              inp.value = str.slice(0, k);
+              wrap.classList.add('is-filling');
+            }, clock + k * charMs);
+          })(k);
+        }
+        clock += str.length * charMs;
+        // field done: drop the glow, advance the live meta
+        (function (idx, at) {
+          setTimeout(function () {
+            sizeInputs[idx].parentNode.classList.remove('is-filling');
+            if (rmetaEl) rmetaEl.textContent = sizeTargets.slice(0, idx + 1).join('×');
+          }, at);
+        })(idx, clock);
+        clock += fieldGapMs;
+      });
     };
 
     // 2) result assembles: scheme, then product cards 01→04
