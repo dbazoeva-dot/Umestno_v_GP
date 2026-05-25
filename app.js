@@ -237,14 +237,6 @@
       });
     };
 
-    // between them: a pulse travels down the mobile connector rail
-    var divider = c2.querySelector('.u-config2__divider');
-    var flowPlayed = false;
-    var playFlow = function () {
-      if (flowPlayed) return; flowPlayed = true;
-      if (divider) divider.classList.add('is-flowing');
-    };
-
     var observe = function (target, cb) {
       if (!target) { cb(); return; }
       var io = new IntersectionObserver(function (entries) {
@@ -253,8 +245,25 @@
       io.observe(target);
     };
     observe(sizesWrap, playCount);
-    observe(divider, playFlow);
     observe(resultEl, playReveal);
+
+    // mobile connector: the bead rides up/down the rail with the scroll
+    var divider = c2.querySelector('.u-config2__divider');
+    if (divider && window.matchMedia('(max-width: 900px)').matches) {
+      var DOT = 11, PAD = 6;
+      var syncBead = function () {
+        var r = divider.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        var prog = (vh - r.top) / (vh + r.height);
+        prog = Math.max(0, Math.min(1, prog));
+        var travel = Math.max(0, r.height - PAD * 2 - DOT);
+        divider.style.setProperty('--c2-dot', (PAD + prog * travel) + 'px');
+        divider.classList.toggle('is-active', r.top < vh && r.bottom > 0);
+      };
+      syncBead();
+      window.addEventListener('scroll', function () { window.requestAnimationFrame(syncBead); }, { passive: true });
+      window.addEventListener('resize', syncBead);
+    }
   }
 
   /* ── Result checklist: reveal rows + checks on scroll (mobile) ── */
