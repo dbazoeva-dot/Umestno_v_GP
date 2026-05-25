@@ -363,9 +363,10 @@ body{ overflow-x: hidden; }
   .u-config2__result{ padding: 22px 18px 24px; gap: 20px; }
   /* dedicated portrait (3:4) mobile scheme image fills exactly */
   .u-config2__schema{ aspect-ratio: 3 / 4; }
-  /* recommended products: two rows of two, smaller titles */
+  /* recommended products: two rows of two, compact type */
   .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .u-config2__pr-n{ font-size: 13px; }
+  .u-config2__pr-n{ font-size: 11px; }
+  .u-config2__pr-sub{ font-size: 10px; }
   /* fineprint under the CTA */
   .u-config2__fineprint{ font-size: 9px; }
   /* keep a normal gap before the note when stacked (no column to fill) */
