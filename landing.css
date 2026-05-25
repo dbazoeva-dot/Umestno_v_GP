@@ -127,18 +127,6 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-review-slide__compare{ grid-template-columns: 1fr; }
 }
 
-/* ── configurator progress: 2 steps + half-filled connector ── */
-.u-calc__progress ol{ grid-template-columns: 1fr 1fr; }
-/* active step (configure): connector is half sage / half grey */
-.u-calc__progress-step.is-active .u-calc__progress-bar{
-  background: linear-gradient(90deg,
-    var(--u-sage-d) 0, var(--u-sage-d) 50%,
-    var(--u-line) 50%, var(--u-line) 100%);
-}
-/* result page: step 1 done → connector fully sage (calc.css already does
-   this for .is-done, kept here for clarity) */
-.u-calc__progress-step.is-done .u-calc__progress-bar{ background: var(--u-sage-d); }
-
 /* ── configurator (/configure, /no-fit) mobile fixes ───── */
 /* The global .u-container leaves ~40px outer margin + 40px inner padding
    on mobile (from --container: calc(100vw - 80px) + --gutter: 40px), which
@@ -161,16 +149,11 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
     overflow-wrap: break-word;
     word-break: break-word;
   }
-  /* progress: tighter so 3 steps fit; calc.css already allows x-scroll */
-  .u-calc__progress-step{ padding-right: 10px; gap: 10px; }
-  .u-calc__progress-num{ width: 30px; height: 30px; }
-  .u-calc__progress-bar{ left: 30px; top: 15px; }
   /* primary CTA: drop the 280px min so it fits narrow screens */
   .u-calc__actions .u-calc__cta{ min-width: 0; width: 100%; }
   /* apology page paddings */
   .u-apology__body{ padding: clamp(24px, 6vw, 40px); }
 }
 @media (max-width: 480px){
-  .u-calc__progress-lbl{ font-size: 12px; }
   .u-calc__step-marker{ font-size: var(--fs-xl); }
 }
