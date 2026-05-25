@@ -140,18 +140,6 @@
     render();
   }
 
-  /* ── Steps section overlap: pin its heading right under the
-     problem-section heading (title under title) ────────────── */
-  var problemHead = document.querySelector('section[data-screen-label="02 Проблема"] .u-sec-head');
-  var stepsHead = document.querySelector('#steps .u-sec-head');
-  if (problemHead && stepsHead) {
-    var setStepsHeadTop = function () {
-      stepsHead.style.setProperty('--steps-head-top', (72 + problemHead.offsetHeight) + 'px');
-    };
-    setStepsHeadTop();
-    window.addEventListener('resize', setStepsHeadTop);
-  }
-
   /* ── FAQ accordion ───────────────────────────────────── */
   var FAQS = [
     { q: 'Что я получу после расчёта?', a: 'Вы получите готовую схему хранения под ваши размеры и выбранные вещи. В результате будут показаны зоны хранения, назначение и точные размеры каждого блока, рекомендации по складыванию вещей и подходящие товары под каждый блок схемы. Это не просто список органайзеров, а конфигурация, которую можно использовать при покупке и организации пространства.' },

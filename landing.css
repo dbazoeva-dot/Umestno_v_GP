@@ -283,33 +283,4 @@ body{ overflow-x: hidden; }
     font-size: var(--fs-md);
     line-height: var(--lh-base);
   }
-
-  /* ── Section overlap: the steps section («С уМестно…») slides up
-     over the problem section («Когда хочется порядок…») as you
-     scroll, but the problem title stays pinned — so the two section
-     headings momentarily stack, title under title. ──────────────── */
-  section[data-screen-label="02 Проблема"] .u-sec-head{
-    position: sticky;
-    top: 72px;                 /* just below the sticky site header */
-    z-index: 30;               /* stays above the rising steps panel */
-    background: var(--u-bg);
-    margin-bottom: 0;
-    padding-bottom: 14px;
-  }
-  #steps{
-    position: relative;
-    z-index: 20;               /* above problem cards, below problem title */
-    background: var(--u-bg);
-    margin-top: -22px;         /* tuck under the problem section */
-    border-radius: 24px 24px 0 0;
-    box-shadow: 0 -14px 26px -16px rgba(60,45,33,0.22);
-    padding-top: 26px;
-  }
-  #steps .u-sec-head{
-    position: sticky;
-    top: var(--steps-head-top, 210px);   /* rests under the problem title */
-    z-index: 5;
-    background: var(--u-bg);
-    padding-bottom: 12px;
-  }
 }
