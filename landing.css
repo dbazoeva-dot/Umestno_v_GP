@@ -136,8 +136,9 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
 .u-calc__select-wrap select,
 .u-apology__email input{ width: 100%; min-width: 0; }
 .u-calc__item-row{ min-width: 0; }
-/* safety net against any residual horizontal overflow on the calc pages */
+/* safety net against any residual horizontal overflow */
 .u-calc{ overflow-x: clip; }
+body{ overflow-x: hidden; }
 
 /* ── configurator (/configure, /no-fit) mobile fixes ───── */
 /* The global .u-container leaves ~40px outer margin + 40px inner padding
@@ -161,6 +162,18 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
     overflow-wrap: break-word;
     word-break: break-word;
   }
+  /* choice cards stay 3-across on mobile, each ≈ (viewport − paddings)/3 */
+  .u-calc__choices{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .u-calc__choice{
+    min-width: 0;
+    height: auto !important;
+    padding: 16px 6px;
+    gap: 8px;
+    font-size: var(--fs-xs);
+  }
+  .u-calc__choice-ic{ width: 34px; height: 34px; }
+  .u-calc__choice-t{ text-align: center; line-height: 1.2; }
+  .u-calc__choice-soon{ top: 6px; right: 6px; padding: 2px 5px; }
   /* primary CTA: drop the 280px min so it fits narrow screens */
   .u-calc__actions .u-calc__cta{ min-width: 0; width: 100%; }
   /* apology page paddings */
