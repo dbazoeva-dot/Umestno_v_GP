@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru" data-fontpair="garamond">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Уместно — не удалось подобрать конфигурацию</title>
+<meta name="description" content="По введённым размерам не удалось собрать надёжную схему хранения. Проверьте внутренние размеры ящика или уменьшите объём одной категории — либо оставьте e-mail для ручного подбора." />
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#FFFDF9" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=Commissioner:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../landing_design/styles.css" />
+<link rel="stylesheet" href="../landing_design/calc.css" />
+<link rel="stylesheet" href="../landing.css" />
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+    <nav class="u-nav">
+      <a href="../#how">Как это работает</a>
+      <a href="../#result">Результат</a>
+      <a href="../#whom">Для кого</a>
+      <a href="../#reviews">Отзывы</a>
+      <a href="../#faq">FAQ</a>
+    </nav>
+    <div class="u-header__cta">
+      <a class="u-btn u-btn--accent u-btn--sm" style="background-color:rgb(125,140,114)" href="../configure/">Начать расчёт — 149 ₽</a>
+    </div>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../#how">Как это работает</a>
+    <a href="../#result">Результат</a>
+    <a href="../#whom">Для кого</a>
+    <a href="../#reviews">Отзывы</a>
+    <a href="../#faq">FAQ</a>
+    <a class="u-btn u-btn--accent" style="background-color:rgb(125,140,114)" href="../configure/">Начать расчёт — 149 ₽</a>
+  </nav>
+</header>
+
+<main class="u-calc u-calc--apology">
+  <div class="u-container">
+
+    <!-- Progress (step 3 active) -->
+    <nav class="u-calc__progress" aria-label="Этапы расчёта">
+      <ol>
+        <li class="u-calc__progress-step is-done">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">1</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">1. Параметры</span>
+          <span class="u-calc__progress-bar" aria-hidden="true"></span>
+        </li>
+        <li class="u-calc__progress-step is-done">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">2</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">2. Что храните</span>
+          <span class="u-calc__progress-bar" aria-hidden="true"></span>
+        </li>
+        <li class="u-calc__progress-step is-active">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">3</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">3. Решение</span>
+        </li>
+      </ol>
+    </nav>
+
+    <section class="u-apology">
+      <div class="u-apology__art" aria-hidden="true">
+        <img src="../landing_design/assets/branch-leaves.png" alt="" decoding="async" />
+        <img src="../landing_design/assets/branch-twig.png" alt="" class="twig" decoding="async" />
+      </div>
+
+      <div class="u-apology__body">
+        <div class="u-apology__eyebrow">
+          <span class="dot"></span>
+          <span>результат расчёта</span>
+        </div>
+
+        <h1 class="u-apology__title">
+          К&nbsp;сожалению,<br />
+          <em>подобрать конфигурацию не&nbsp;удалось</em>
+        </h1>
+
+        <p class="u-apology__lede">По введённым размерам мы не можем собрать надёжную схему. Некоторые блоки не помещаются целиком. Попробуйте уменьшить объём одной из категорий или проверьте внутренние размеры ящика.</p>
+
+        <div class="u-apology__what">
+          <div class="u-apology__what-row">
+            <div class="u-apology__what-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="1.2"/><path d="M7 9v2M10 9v3M13 9v2M16 9v3M19 9v2"/></svg></div>
+            <div><strong>Проверьте размеры.</strong> Измеряйте внутренние стороны ящика — без учёта стенок.</div>
+          </div>
+          <div class="u-apology__what-row">
+            <div class="u-apology__what-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></div>
+            <div><strong>Уменьшите одну категорию.</strong> Часто помогает выбрать «Мало» вместо «Много» в одной позиции.</div>
+          </div>
+          <div class="u-apology__what-row">
+            <div class="u-apology__what-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.6-2.5 1.8-2.5 3.5"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></div>
+            <div><strong>Можем подсказать вручную.</strong> Оставьте e-mail, мы попробуем провести подбор вручную и пришлём вариант.</div>
+          </div>
+        </div>
+
+        <div class="u-apology__email">
+          <label>
+            <span>Ваш e-mail</span>
+            <input type="email" placeholder="you@example.com" />
+          </label>
+          <button type="button" class="u-btn u-btn--sage u-btn--lg">Прислать&nbsp;вариант</button>
+        </div>
+
+        <div class="u-apology__actions">
+          <a href="../configure/" class="u-apology__back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span style="font-size:21px;font-family:&quot;JetBrains Mono&quot;">Вернуться к&nbsp;расчёту</span>
+          </a>
+          <span class="u-apology__refund">Оплата не была произведена</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../#how">Как это работает</a>
+        <a href="../#result">Результат</a>
+        <a href="../#whom">Для кого</a>
+        <a href="../#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Документы</h6>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия использования</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Соцсети</h6>
+        <div class="u-footer__socials">
+          <a href="#" aria-label="Pinterest"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../app.js"></script>
+</body>
+</html>
