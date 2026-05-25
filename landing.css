@@ -368,6 +368,8 @@ body{ overflow-x: hidden; }
   /* recommended products: two rows of two, smaller titles */
   .u-config2__products{ grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .u-config2__pr-n{ font-size: 13px; }
+  /* fineprint under the CTA */
+  .u-config2__fineprint{ font-size: 9px; }
   /* keep a normal gap before the note when stacked (no column to fill) */
   .u-config2__compat-note{ margin-top: 14px; }
 }
