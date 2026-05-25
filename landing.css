@@ -127,6 +127,18 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-review-slide__compare{ grid-template-columns: 1fr; }
 }
 
+/* ── configurator progress: 2 steps + half-filled connector ── */
+.u-calc__progress ol{ grid-template-columns: 1fr 1fr; }
+/* active step (configure): connector is half sage / half grey */
+.u-calc__progress-step.is-active .u-calc__progress-bar{
+  background: linear-gradient(90deg,
+    var(--u-sage-d) 0, var(--u-sage-d) 50%,
+    var(--u-line) 50%, var(--u-line) 100%);
+}
+/* result page: step 1 done → connector fully sage (calc.css already does
+   this for .is-done, kept here for clarity) */
+.u-calc__progress-step.is-done .u-calc__progress-bar{ background: var(--u-sage-d); }
+
 /* ── configurator (/configure, /no-fit) mobile fixes ───── */
 /* The global .u-container leaves ~40px outer margin + 40px inner padding
    on mobile (from --container: calc(100vw - 80px) + --gutter: 40px), which
