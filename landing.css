@@ -500,15 +500,19 @@ body{ overflow-x: hidden; }
     color: var(--u-ink-2);
   }
   .u-logic-essay p:last-child{ margin-bottom: 0; }
-  /* light initial cap opening each principle */
-  .u-logic-essay p::first-letter{
-    float: left;
+  /* raised initial opening each principle — its baseline sits on the
+     first line's bottom. Override the desktop first-child drop-cap too
+     (its selector is more specific, so it must be matched here). */
+  .u-logic-essay p::first-letter,
+  .u-logic-essay > p:first-child::first-letter{
+    float: none;
     font-family: var(--f-display);
     font-weight: 400;
-    font-size: 1.7em;
+    font-size: 2em;
     line-height: 1;
     color: var(--u-accent);
-    padding: 2px 9px 0 0;
+    padding: 0;
+    margin: 0 5px 0 0;
   }
   .u-logic-essay__lead{
     display: inline;
