@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ru" data-fontpair="garamond">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Уместно — расчёт хранения</title>
+<meta name="description" content="Введите размеры пространства и выберите, что хранить — Уместно подберёт схему хранения и совместимые органайзеры. Полная схема за 149 ₽." />
+<meta name="theme-color" content="#FFFDF9" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=Commissioner:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../landing_design/styles.css" />
+<link rel="stylesheet" href="../landing_design/calc.css" />
+<link rel="stylesheet" href="../landing.css" />
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+    <nav class="u-nav">
+      <a href="../#how">Как это работает</a>
+      <a href="../#result">Результат</a>
+      <a href="../#whom">Для кого</a>
+      <a href="../#reviews">Отзывы</a>
+      <a href="../#faq">FAQ</a>
+    </nav>
+    <div class="u-header__cta">
+      <a class="u-btn u-btn--accent u-btn--sm" style="background-color:rgb(125,140,114)" href="../configure/">Начать расчёт — 149 ₽</a>
+    </div>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../#how">Как это работает</a>
+    <a href="../#result">Результат</a>
+    <a href="../#whom">Для кого</a>
+    <a href="../#reviews">Отзывы</a>
+    <a href="../#faq">FAQ</a>
+    <a class="u-btn u-btn--accent" style="background-color:rgb(125,140,114)" href="../configure/">Начать расчёт — 149 ₽</a>
+  </nav>
+</header>
+
+<main class="u-calc">
+  <div class="u-container">
+
+    <!-- Progress -->
+    <nav class="u-calc__progress" aria-label="Этапы расчёта">
+      <ol>
+        <li class="u-calc__progress-step is-active">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">1</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">1. Параметры</span>
+          <span class="u-calc__progress-bar" aria-hidden="true"></span>
+        </li>
+        <li class="u-calc__progress-step is-todo">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">2</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">2. Что храните</span>
+          <span class="u-calc__progress-bar" aria-hidden="true"></span>
+        </li>
+        <li class="u-calc__progress-step is-todo">
+          <span class="u-calc__progress-num" aria-hidden="true" style="background-color:rgb(128,142,116);font-family:&quot;JetBrains Mono&quot;">3</span>
+          <span class="u-calc__progress-lbl" style="font-family:&quot;JetBrains Mono&quot;;font-weight:600;font-size:clamp(13px, 1.4vw, 21px)">3. Решение</span>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="u-calc__layout">
+      <section class="u-calc__form-card">
+        <header class="u-calc__head">
+          <div class="u-calc__eyebrow">
+            <span class="dot" aria-hidden="true"></span>
+            <span>конфигуратор · шаг 1–2</span>
+          </div>
+          <h1 class="u-calc__title">Подберём хранение<br /><em>под ваш ящик</em></h1>
+          <p class="u-calc__lede">Пожалуйста, введите данные в форме ниже. Это займёт всего пару минут.</p>
+        </header>
+
+        <div class="u-calc__divider" aria-hidden="true"></div>
+
+        <!-- Тип пространства -->
+        <div class="u-calc__group">
+          <div class="u-calc__lbl" style="font-size:16px">Тип пространства</div>
+          <div class="u-calc__choices">
+            <button type="button" class="u-calc__choice is-on" aria-pressed="true" style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-4 9 4-9 4-9-4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/></svg></span>
+              <span class="u-calc__choice-t">Ящик</span>
+            </button>
+            <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>
+              <span class="u-calc__choice-t">Полка</span>
+              <span class="u-calc__choice-soon">скоро</span>
+            </button>
+            <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1v-9z"/></svg></span>
+              <span class="u-calc__choice-t">Секция</span>
+              <span class="u-calc__choice-soon">скоро</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Что хранить (тип) -->
+        <div class="u-calc__group">
+          <div class="u-calc__lbl" style="font-size:16px">Что хранить</div>
+          <div class="u-calc__choices">
+            <button type="button" class="u-calc__choice is-on" aria-pressed="true" style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l3 2 2 1 2-1 3-2 3 3-3 3v9H6v-9L3 7z"/></svg></span>
+              <span class="u-calc__choice-t">Одежда для взрослых</span>
+            </button>
+            <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="7" r="2"/><path d="M4 20c0-3 2.5-5 5-5s5 2 5 5"/><path d="M14 19c.5-2 2-3.5 4-3.5"/></svg></span>
+              <span class="u-calc__choice-t">Детское</span>
+              <span class="u-calc__choice-soon">скоро</span>
+            </button>
+            <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled style="height:118px">
+              <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/><path d="M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></svg></span>
+              <span class="u-calc__choice-t">Текстиль и постель</span>
+              <span class="u-calc__choice-soon">скоро</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Размеры -->
+        <div class="u-calc__group">
+          <div class="u-calc__lbl" style="font-size:16px">Размеры пространства, см</div>
+          <div class="u-calc__sizes">
+            <label class="u-calc__sz">
+              <span style="font-family:&quot;JetBrains Mono&quot;">Ширина</span>
+              <input type="text" inputmode="numeric" data-dim="w" value="80" placeholder="80" />
+            </label>
+            <label class="u-calc__sz">
+              <span style="font-family:&quot;JetBrains Mono&quot;">Глубина</span>
+              <input type="text" inputmode="numeric" data-dim="d" value="45" placeholder="45" />
+            </label>
+            <label class="u-calc__sz">
+              <span style="font-family:&quot;JetBrains Mono&quot;">Высота</span>
+              <input type="text" inputmode="numeric" data-dim="h" value="15" placeholder="15" />
+            </label>
+          </div>
+
+          <div class="u-calc__preset-row">
+            <div class="u-calc__preset-label">Популярные размеры</div>
+            <div class="u-calc__presets">
+              <button type="button" class="u-calc__preset" data-w="60" data-d="40" data-h="15" style="border-radius:12px;border-color:rgb(125,140,114);color:rgb(125,140,114);background-color:rgb(234,234,221)">60×40×15</button>
+              <button type="button" class="u-calc__preset is-on" data-w="80" data-d="45" data-h="15" style="border-radius:12px;border-color:rgb(125,140,114);color:rgb(125,140,114);background-color:rgb(234,234,221)">80×45×15</button>
+              <button type="button" class="u-calc__preset" data-w="90" data-d="50" data-h="20" style="border-radius:12px;border-color:rgb(125,140,114);color:rgb(125,140,114);background-color:rgb(234,234,221)">90×50×20</button>
+              <button type="button" class="u-calc__preset" data-w="80" data-d="45" data-h="18" style="border-radius:12px;border-color:rgb(125,140,114);color:rgb(125,140,114);background-color:rgb(234,234,221)">Комод IKEA</button>
+            </div>
+          </div>
+
+          <label class="u-calc__check">
+            <input type="checkbox" />
+            <span class="box" aria-hidden="true"></span>
+            <span>Не знаю точные размеры. Можно продолжить с примерными размерами, но перед покупкой органайзеров лучше измерить ящик.</span>
+          </label>
+
+          <div class="u-calc__helper">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-4 10c1 .8 1.5 1.6 1.5 3h5c0-1.4.5-2.2 1.5-3A6 6 0 0012 3z"/></svg>
+            <span style="font-family:&quot;JetBrains Mono&quot;">Размеры нужны, чтобы все органайзеры точно подошли. Пожалуйста, измеряйте <em style="font-family:&quot;JetBrains Mono&quot;">внутренние</em>&nbsp;стороны.</span>
+          </div>
+        </div>
+
+        <div class="u-calc__divider u-calc__divider--soft" aria-hidden="true"></div>
+
+        <div class="u-calc__step-marker">
+          <span class="num">2</span>
+          <span>Что вы храните</span>
+        </div>
+
+        <!-- Типы вещей -->
+        <div class="u-calc__group">
+          <div class="u-calc__lbl" style="font-size:16px">Типы вещей <span class="u-calc__lbl-meta">до 4 категорий</span></div>
+          <div class="u-calc__items" data-items></div>
+          <button type="button" class="u-calc__add" data-add>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>
+            <span>Добавить ещё категорию</span>
+          </button>
+        </div>
+
+        <!-- Приоритет -->
+        <div class="u-calc__group">
+          <div class="u-calc__lbl" style="font-size:16px">Что важнее</div>
+          <div class="u-calc__priority">
+            <button type="button" class="u-calc__pri-btn is-on" aria-pressed="true">
+              <span class="u-calc__pri-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span class="u-calc__pri-body"><span class="ttl">Удобно</span><span class="sub">видно каждую вещь, легко доставать</span></span>
+            </button>
+            <button type="button" class="u-calc__pri-btn" aria-pressed="false">
+              <span class="u-calc__pri-check" aria-hidden="true"></span>
+              <span class="u-calc__pri-body"><span class="ttl">Вместительно</span><span class="sub">максимум объёма на каждом см²</span></span>
+            </button>
+            <button type="button" class="u-calc__pri-btn" aria-pressed="false">
+              <span class="u-calc__pri-check" aria-hidden="true"></span>
+              <span class="u-calc__pri-body"><span class="ttl">Экономично</span><span class="sub">минимум органайзеров и трат</span></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="u-calc__actions">
+          <a href="../no-fit/" class="u-btn u-btn--accent u-btn--lg u-calc__cta">
+            <span style="font-size:21px">Получить расчёт — 149&nbsp;₽</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="../#how" class="u-btn u-btn--ghost u-btn--lg" style="border-width:0 0 1px;font-size:14px;border-radius:0;padding:10px">Посмотреть пример</a>
+        </div>
+
+        <div class="u-calc__fineprint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span style="font-size:16px">Оплата производится через сервис ЮKassa. После оплаты Вы будете перенаправлены на страницу с финальным результатом.</span>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="u-calc__sidebar">
+        <div class="u-calc__carousel">
+          <div class="u-calc__carousel-frame">
+            <img src="../landing_design/assets/hero-drawer-v2.png" alt="Пример аккуратной конфигурации" class="is-on" decoding="async" />
+            <img src="../landing_design/assets/review1-aftr.webp" alt="Зонирование под бельё и аксессуары" loading="lazy" decoding="async" />
+            <img src="../landing_design/assets/review2-aftr.webp" alt="Категории по понятным блокам" loading="lazy" decoding="async" />
+            <img src="../landing_design/assets/sample-scheme.webp" alt="Готовая схема: что где хранить" loading="lazy" decoding="async" />
+          </div>
+          <div class="u-calc__carousel-meta">
+            <div class="u-calc__carousel-cap">Пример аккуратной конфигурации</div>
+            <div class="u-calc__carousel-sub">комод 80×45×15 · 4 блока</div>
+          </div>
+          <div class="u-calc__carousel-dots" role="tablist">
+            <button type="button" class="dot is-on" aria-label="Слайд 1"></button>
+            <button type="button" class="dot" aria-label="Слайд 2"></button>
+            <button type="button" class="dot" aria-label="Слайд 3"></button>
+            <button type="button" class="dot" aria-label="Слайд 4"></button>
+          </div>
+        </div>
+
+        <div class="u-calc__points">
+          <div class="u-calc__point">
+            <div class="u-calc__point-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div>
+              <div class="u-calc__point-t">Подбор за 2–3 минуты</div>
+              <div class="u-calc__point-d">Простой процесс без лишних шагов.</div>
+            </div>
+          </div>
+          <div class="u-calc__point">
+            <div class="u-calc__point-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+            <div>
+              <div class="u-calc__point-t">Без долгого поиска вручную</div>
+              <div class="u-calc__point-d">Мы делаем сложное — простым.</div>
+            </div>
+          </div>
+          <div class="u-calc__point">
+            <div class="u-calc__point-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <div>
+              <div class="u-calc__point-t">Только совместимые решения</div>
+              <div class="u-calc__point-d">Всё точно подойдёт по размерам.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="u-calc__tip">
+          <div class="u-calc__tip-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-4 10c1 .8 1.5 1.6 1.5 3h5c0-1.4.5-2.2 1.5-3A6 6 0 0012 3z"/></svg></div>
+          <div class="u-calc__tip-body">
+            <strong>Совет: </strong>измерьте внутренние размеры ящика. Это размеры, под которые будут подобраны органайзеры.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Advantages -->
+  <section class="u-calc__advs">
+    <div class="u-container">
+      <div class="u-calc__advs-grid">
+        <div class="u-calc__adv">
+          <div class="u-calc__adv-ic adv-1" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <div>
+            <div class="u-calc__adv-t">Экономит время</div>
+            <div class="u-calc__adv-d">Не нужно искать и сравнивать десятки органайзеров.</div>
+          </div>
+        </div>
+        <div class="u-calc__adv">
+          <div class="u-calc__adv-ic adv-2" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div>
+            <div class="u-calc__adv-t">Меньше ошибок</div>
+            <div class="u-calc__adv-d">Система учитывает размеры и совместимость товаров.</div>
+          </div>
+        </div>
+        <div class="u-calc__adv">
+          <div class="u-calc__adv-ic adv-3" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/><path d="M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></svg></div>
+          <div>
+            <div class="u-calc__adv-t">Красивый результат</div>
+            <div class="u-calc__adv-d">На выходе — понятная схема и подобранные товары.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../#how">Как это работает</a>
+        <a href="../#result">Результат</a>
+        <a href="../#whom">Для кого</a>
+        <a href="../#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Документы</h6>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия использования</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Соцсети</h6>
+        <div class="u-footer__socials">
+          <a href="#" aria-label="Pinterest"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../app.js"></script>
+<script src="../calc.js"></script>
+</body>
+</html>
