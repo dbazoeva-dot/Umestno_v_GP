@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { VolumeLevel } from "@engine/types.js";
 
 const CONTENT_TYPES = [
@@ -52,6 +53,7 @@ interface Item {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
@@ -101,8 +103,13 @@ export default function Home() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (!res.ok) setError(data.error ?? "Ошибка сервера");
-      else setResult(data);
+      if (!res.ok) {
+        setError(data.error ?? "Ошибка сервера");
+      } else if (data.fit_status === "fit_partial" || data.fit_status === "fit_none") {
+        router.push("/no-fit");
+      } else {
+        setResult(data);
+      }
     } catch {
       setError("Не удалось подключиться к серверу");
     } finally {

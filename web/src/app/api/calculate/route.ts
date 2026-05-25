@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
   );
 
   const configurationId = rows[0].id;
+  const fitStatus = engineResult.result.scheme?.fit_status ?? engineResult.result.fit_status;
 
-  return NextResponse.json({ configuration_id: configurationId });
+  return NextResponse.json({ configuration_id: configurationId, fit_status: fitStatus });
 }
