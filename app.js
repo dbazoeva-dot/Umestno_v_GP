@@ -140,38 +140,27 @@
     render();
   }
 
-  /* ── Steps carousel dots (mobile swipe) ──────────────── */
+  /* ── Steps accordion (mobile: tap a spine to open) ───── */
   var stepsTrack = document.querySelector('.u-steps--4');
-  var stepsDots = document.querySelector('[data-steps-dots]');
-  if (stepsTrack && stepsDots) {
+  if (stepsTrack) {
     var stepCards = Array.prototype.slice.call(stepsTrack.querySelectorAll('.u-step-card'));
-    var trackPad = function () { return parseFloat(getComputedStyle(stepsTrack).paddingLeft) || 0; };
-    stepCards.forEach(function (card, i) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('aria-label', 'Шаг ' + (i + 1));
-      if (i === 0) b.setAttribute('aria-current', 'true');
-      b.addEventListener('click', function () {
-        stepsTrack.scrollTo({ left: card.offsetLeft - trackPad(), behavior: 'smooth' });
-      });
-      stepsDots.appendChild(b);
-    });
-    var stepDotEls = stepsDots.querySelectorAll('button');
-    var syncStepDots = function () {
-      var pad = trackPad();
-      var best = 0, bestDist = Infinity;
-      stepCards.forEach(function (c, i) {
-        var dist = Math.abs((c.offsetLeft - pad) - stepsTrack.scrollLeft);
-        if (dist < bestDist) { bestDist = dist; best = i; }
-      });
-      stepDotEls.forEach(function (d, i) {
-        if (i === best) d.setAttribute('aria-current', 'true');
-        else d.removeAttribute('aria-current');
+    var openStep = function (card) {
+      stepCards.forEach(function (c) {
+        var on = c === card;
+        c.classList.toggle('is-open', on);
+        c.setAttribute('aria-expanded', on ? 'true' : 'false');
       });
     };
-    stepsTrack.addEventListener('scroll', function () {
-      window.requestAnimationFrame(syncStepDots);
-    }, { passive: true });
+    stepCards.forEach(function (card, i) {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      if (i === 0) card.classList.add('is-open');
+      card.setAttribute('aria-expanded', i === 0 ? 'true' : 'false');
+      card.addEventListener('click', function () { openStep(card); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStep(card); }
+      });
+    });
   }
 
   /* ── FAQ accordion ───────────────────────────────────── */

@@ -193,10 +193,12 @@ body{ overflow-x: hidden; }
    MOBILE EDITORIAL LAYER — the landing is mobile-first in usage,
    so ≤768px gets a purpose-built layout instead of a squeezed
    desktop. Three areas: hero breathing room, problem-card
-   hierarchy, and a real vertical stepper for the 4 steps.
+   hierarchy, and a horizontal accordion for the 4 steps.
    ════════════════════════════════════════════════════════════ */
-/* swipe dots exist only for the mobile steps carousel */
-.u-steps-dots{ display: none; }
+/* the head wrapper is invisible to layout on desktop — the number
+   and h4 act as direct children of the step card (as before). The
+   mobile accordion turns it into a real left-edge "spine". */
+.u-step-card__head{ display: contents; }
 
 @media (max-width: 768px){
   /* ── Hero: give it air ──────────────────────────────────── */
@@ -228,49 +230,62 @@ body{ overflow-x: hidden; }
   .u-pain h3{ font-size: var(--fs-xl); padding-top: 2px; }   /* 24px vs 34px head */
   .u-pain p{ font-size: var(--fs-md); }
 
-  /* ── Steps: horizontal swipe carousel — saves vertical height
-     so users reach «Как это работает» much sooner ──────────── */
+  /* ── Steps: horizontal accordion with overlapping cards ────
+     Collapsed cards show only a vertical "spine" (number + title)
+     on the left edge; tapping a card slides it open to reveal the
+     description. Stays one card tall, reads as a clear sequence. */
   .u-steps--4{
     display: flex;
     grid-template-columns: none;
-    gap: 14px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    align-items: stretch;
+    gap: 0;
     padding-top: 8px;
-    /* bleed to the screen edges, then re-pad so the first card
-       lines up with the section content */
-    margin-left: calc(-1 * clamp(14px, 4vw, 24px));
-    margin-right: calc(-1 * clamp(14px, 4vw, 24px));
-    padding-left: clamp(14px, 4vw, 24px);
-    padding-right: clamp(14px, 4vw, 24px);
-    scroll-padding-left: clamp(14px, 4vw, 24px);
+    min-height: 300px;
+    overflow: visible;
   }
-  .u-steps--4::-webkit-scrollbar{ display: none; }
   .u-step-card{
-    flex: 0 0 80%;
-    scroll-snap-align: start;
-    display: flex; flex-direction: column;
-    gap: 12px;
-    border: 1px solid var(--u-line) !important;
-    border-radius: 16px;
-    background: var(--u-card);
-    padding: 22px 22px 24px !important;
+    flex: 0 0 46px;
+    min-width: 46px;
     position: relative;
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--u-line) !important;
+    border-radius: 14px;
+    background: var(--u-card);
+    padding: 0 !important;
+    cursor: pointer;
+    /* overlap each card onto the previous one for a layered stack */
+    margin-left: -16px;
+    box-shadow: -8px 0 18px -10px rgba(60,45,33,0.28);
+    transition: flex-basis .42s cubic-bezier(.4,.01,.2,1);
   }
+  .u-step-card:first-child{ margin-left: 0; box-shadow: none; }
   .u-step-card::after{ display: none !important; }
-  /* number → soft circular badge */
+  .u-step-card.is-open{ flex: 1 1 0%; }
+
+  /* the always-visible left spine: number on top, vertical title */
+  .u-step-card__head{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 46px;
+    padding: 14px 0 18px;
+    z-index: 2;
+  }
   .u-step-card .u-step-card__num{
-    width: 40px; height: 40px;
+    width: 30px; height: 30px;
     margin: 0;
     border-radius: 50%;
     background: var(--u-warm);
     color: var(--u-accent);
-    font-size: var(--fs-md);
+    font-size: var(--fs-sm);
     font-weight: 600;
     line-height: 1;
     display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
   .u-step-card:nth-child(3) .u-step-card__num{
     background: rgba(125,140,114,0.16);
@@ -278,25 +293,23 @@ body{ overflow-x: hidden; }
   }
   .u-step-card h4{
     min-height: 0;
-    display: block;
-    font-size: var(--fs-xl);
+    margin: 0;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);   /* read bottom-to-top */
+    white-space: nowrap;
+    font-size: var(--fs-sm);
+    line-height: 1.1;
+    letter-spacing: 0;
   }
   .u-step-card__rule{ display: none; }
-
-  /* swipe indicator dots */
-  .u-steps-dots{
-    display: flex; justify-content: center; gap: 8px;
-    margin-top: 22px;
+  /* description panel, revealed to the right of the spine when open */
+  .u-step-card p{
+    margin: 0 0 0 46px;
+    padding: 16px 16px 18px 2px;
+    opacity: 0;
+    transition: opacity .3s ease .08s;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-base);
   }
-  .u-steps-dots button{
-    width: 7px; height: 7px;
-    padding: 0; border: 0; border-radius: 50%;
-    background: var(--u-line-2);
-    cursor: pointer;
-    transition: width .25s ease, background-color .25s ease, border-radius .25s ease;
-  }
-  .u-steps-dots button[aria-current="true"]{
-    width: 22px; border-radius: 4px;
-    background: var(--u-accent);
-  }
+  .u-step-card.is-open p{ opacity: 1; }
 }
