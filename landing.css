@@ -508,9 +508,9 @@ body{ overflow-x: hidden; }
     font-weight: 400;
     font-size: 2em;
     line-height: 1;
-    color: var(--u-accent);
+    color: var(--u-ink);        /* 2–4 in the main text colour */
     padding: 0;
-    margin: 0 5px 0 0;
+    margin: 0 2px 0 0;          /* tight — reads as part of the word */
   }
   /* the opening principle keeps a big article-style drop-cap
      (override the more-specific desktop first-child rule here) */
@@ -518,6 +518,7 @@ body{ overflow-x: hidden; }
     float: left;
     font-size: 3.4em;
     line-height: 0.78;
+    color: var(--u-accent);     /* opener stays accent */
     padding: 6px 12px 0 0;
     margin: 0;
   }
