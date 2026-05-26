@@ -560,3 +560,15 @@ body{ overflow-x: hidden; }
     color: var(--u-ink-3);
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   «Логика» + finale — desktop width/spacing tuning (≥769px).
+   ════════════════════════════════════════════════════════════ */
+@media (min-width: 769px){
+  section[data-screen-label="06 Не просто красиво. Логично"] .u-sec-head__lede{ max-width: 90ch; }
+  .u-logic-essay{ max-width: 80ch; }
+  .u-logic-finale{ max-width: 100ch; }
+  /* inside the AI card: more air under the title, pull-quote at body size */
+  .u-logic-finale__title{ margin-bottom: 28px; }
+  .u-logic-finale__pull{ font-size: var(--fs-md) !important; }
+}
