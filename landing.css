@@ -610,7 +610,7 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     --ba: 50%;
     --ban: .5;
   }
-  .u-review-slide__col{ transform: none !important; gap: 10px; }
+  .u-review-slide__col{ transform: none !important; gap: 0; position: relative; }
   .u-review-slide__col:nth-child(2){
     position: absolute; inset: 0 0 auto 0; width: 100%;
     pointer-events: none;
@@ -620,12 +620,13 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     aspect-ratio: 4 / 3;
     box-shadow: 0 16px 34px -18px rgba(80,60,40,.42);
   }
-  /* soft polaroid frames (wider bottom): До terracotta, После sage */
+  /* polaroid frames: thin sides, wide coloured bottom holds the caption.
+     До terracotta, После sage. */
   .u-review-slide__col:first-child .u-review-slide__img{
-    border: 6px solid #E9C7BB; border-bottom-width: 16px;
+    border: 6px solid #B6735C; border-bottom-width: 52px;
   }
   .u-review-slide__col:nth-child(2) .u-review-slide__img{
-    border: 6px solid #CFD8C5; border-bottom-width: 16px;
+    border: 6px solid #7D8C72; border-bottom-width: 52px;
     clip-path: inset(0 0 0 var(--ba));   /* reveal «После» right of the handle */
   }
   .u-review-slide__img .pill{ left: 10px; top: 10px; }
@@ -634,7 +635,7 @@ section[data-screen-label="06 Не просто красиво. Логично"]
   /* drag handle (visual; JS sets its height to the image) */
   .u-review-slide__handle{
     display: block; position: absolute;
-    top: 0; left: var(--ba); height: var(--ba-h, 75vw);
+    top: 6px; left: var(--ba); height: var(--ba-h, 60vw);
     width: 2px; margin-left: -1px;
     background: rgba(255,255,255,.92);
     box-shadow: 0 0 0 1px rgba(0,0,0,.06);
@@ -650,21 +651,19 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     background-repeat: no-repeat; background-position: center;
   }
 
-  /* only the dominant side's caption shows; the other fades to 0.
-     Full width, stacked; «После» on top with an opaque backing so the
-     swap never shows overlapping letters. */
-  .u-review-slide__col:first-child .u-review-slide__caption,
-  .u-review-slide__col:nth-child(2) .u-review-slide__caption{
-    width: 100%;
+  /* caption sits on the coloured polaroid bottom; the dominant side's
+     caption shows, the other fades out (no overlapping letters) */
+  .u-review-slide__caption{
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 52px; margin: 0;
+    display: flex; align-items: center;
+    padding: 0 12px;
+    color: #FFFDF9;
+    font-family: var(--f-sans);
+    font-size: var(--fs-2xs); line-height: 1.25;
     text-align: left;
     transition: opacity .25s ease;
   }
-  .u-review-slide__col:first-child .u-review-slide__caption{
-    opacity: calc(1 - var(--ban));
-  }
-  .u-review-slide__col:nth-child(2) .u-review-slide__caption{
-    background: var(--u-warm);
-    opacity: var(--ban);
-    z-index: 2;
-  }
+  .u-review-slide__col:first-child .u-review-slide__caption{ opacity: calc(1 - var(--ban)); }
+  .u-review-slide__col:nth-child(2) .u-review-slide__caption{ opacity: var(--ban); z-index: 5; }
 }

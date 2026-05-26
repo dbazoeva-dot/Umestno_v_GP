@@ -98,7 +98,11 @@
     var compareEl = slide.querySelector('.u-review-slide__compare');
     var baImg = el.bfr ? el.bfr.closest('.u-review-slide__img') : null;
     var baMq = window.matchMedia('(max-width: 768px)');
-    var setBaH = function () { if (compareEl && baImg && baImg.offsetHeight) compareEl.style.setProperty('--ba-h', baImg.offsetHeight + 'px'); };
+    var setBaH = function () {
+      if (!compareEl || !baImg) return;
+      var h = baImg.offsetHeight - 58;
+      if (h > 80) compareEl.style.setProperty('--ba-h', h + 'px');
+    };
     var resetBa = function () {
       if (!compareEl) return;
       compareEl.style.setProperty('--ba', '50%');
@@ -168,6 +172,8 @@
       window.addEventListener('pointerup', function () { baDragging = false; });
       window.addEventListener('pointercancel', function () { baDragging = false; });
       window.addEventListener('resize', setBaH);
+      window.addEventListener('load', setBaH);
+      requestAnimationFrame(setBaH);
     }
 
     render();
