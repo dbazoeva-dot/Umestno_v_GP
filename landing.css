@@ -258,11 +258,14 @@ body{ overflow-x: hidden; }
   }
   /* third line hugs the right screen edge */
   .u-hero__mag-title .row-2{ align-self: flex-end; text-align: right; }
-  .u-hero__mag-banner{ display: flex; flex-direction: column; gap: 26px; }
-  .u-hero__mag-meta{ row-gap: 24px; margin-top: 4px; }
+  /* unify the vertical rhythm — every block gap is 24px */
+  .u-hero__mag-shell{ gap: 24px; }
+  .u-hero__mag-topbar{ padding-top: 0; padding-bottom: 0; }
+  .u-hero__mag-banner{ display: flex; flex-direction: column; gap: 24px; }
+  .u-hero__mag-meta{ row-gap: 24px; margin-top: 0; }
   .u-hero__mag-meta-list li{ padding: 6px 0; }
-  .u-hero__mag-photo{ margin-top: 6px; min-height: 0; }
-  .u-hero__mag-foot{ padding-top: 12px; }
+  .u-hero__mag-photo{ margin-top: 0; min-height: 0; }
+  .u-hero__mag-foot{ padding-top: 24px; }
 
   /* ── Problem cards: clear hierarchy under the section title ─ */
   .u-pain{
