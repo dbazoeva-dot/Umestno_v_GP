@@ -109,8 +109,8 @@
 .u-res-scheme{
   position: relative;
   container-type: inline-size;   /* scheme scales as one self-similar unit (cqw) */
-  border-radius: 2.4cqw;
-  padding: 3cqw;   /* drawer wall thickness — proportional (cqw) */
+  border-radius: 2cqw;
+  padding: 1.7cqw;   /* drawer wall thickness — proportional (cqw) */
   background:
     linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
     url(assets/tex-wood.webp);
@@ -126,7 +126,7 @@
   grid-template-rows: 1fr 2fr;
   gap: 1.2cqw;
   aspect-ratio: 80 / 45;
-  padding: 1.5cqw;
+  padding: 1cqw;
   border-radius: 1.3cqw;
   background:
     linear-gradient(rgba(247,238,219,.55), rgba(247,238,219,.55)),
