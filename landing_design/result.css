@@ -25,7 +25,7 @@
 .u-res-hero__lede{ margin: 0; font-size: var(--fs-md); line-height: var(--lh-base); color: var(--u-ink-2); }
 
 /* ── Summary chips ────────────────────────────────────────────── */
-.u-res-chips{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.u-res-chips{ display: flex; flex-wrap: wrap; gap: 14px; }
 .u-res-chip{
   display: flex; align-items: center; gap: 14px;
   padding: 16px 18px;
@@ -314,7 +314,7 @@
   .u-res-prod-block__intro{ position: static; }
 }
 @media (max-width: 768px){
-  .u-res-chips{ grid-template-columns: 1fr 1fr; }
+  .u-res-chip{ flex: 1 1 100%; }
   /* product variants: horizontal swipe instead of a column */
   .u-res-prod-cards{
     grid-template-columns: none;
@@ -329,7 +329,4 @@
   .u-res-save__actions .u-btn{ width: 100%; justify-content: center; }
   .u-res-table__head,
   .u-res-table__row{ grid-template-columns: 32px 1fr 1.3fr; gap: 10px; }
-}
-@media (max-width: 420px){
-  .u-res-chips{ grid-template-columns: 1fr; }
 }
