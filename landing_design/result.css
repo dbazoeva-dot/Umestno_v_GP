@@ -2,8 +2,8 @@
    Layout-слой поверх общей дизайн-системы (styles.css токены/компоненты).
    Только классы с префиксом .u-res. */
 
-.u-res{ padding: clamp(28px, 4vw, 52px) 0 clamp(64px, 8vw, 110px); background: var(--u-bg); }
-.u-res > .u-container{ display: flex; flex-direction: column; gap: clamp(28px, 4vw, 52px); }
+.u-res{ padding: clamp(28px, 4vw, 48px) 0 clamp(60px, 7vw, 96px); background: var(--u-bg); }
+.u-res > .u-container{ max-width: 1280px; display: flex; flex-direction: column; gap: clamp(24px, 3vw, 40px); }
 
 /* shared little eyebrow */
 .u-res-eyebrow{
@@ -18,7 +18,7 @@
 .u-res-hero{ display: flex; flex-direction: column; gap: 14px; max-width: 70ch; }
 .u-res-hero__title{
   margin: 0; font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: var(--fs-h2); line-height: var(--lh-tight); letter-spacing: var(--tr-snug);
+  font-size: clamp(30px, 3vw, 42px); line-height: var(--lh-tight); letter-spacing: var(--tr-snug);
   color: var(--u-ink);
 }
 .u-res-hero__title em{ font-style: italic; color: var(--u-sage-d); font-weight: 500; }
@@ -45,7 +45,7 @@
   font-family: var(--f-mono); font-size: var(--fs-2xs);
   letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
 }
-.u-res-chip__val{ font-family: var(--f-display); font-size: var(--fs-lg); font-weight: 500; color: var(--u-ink); line-height: 1.15; }
+.u-res-chip__val{ font-family: var(--f-display); font-size: var(--fs-md); font-weight: 500; color: var(--u-ink); line-height: 1.2; }
 
 /* ── Generic card + section heading ───────────────────────────── */
 .u-res-card{
@@ -57,11 +57,11 @@
 .u-res-h{ margin-bottom: 20px; }
 .u-res-h h2{
   margin: 0; font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: var(--fs-h3); line-height: var(--lh-snug); letter-spacing: var(--tr-snug); color: var(--u-ink);
+  font-size: clamp(22px, 2vw, 28px); line-height: var(--lh-snug); letter-spacing: var(--tr-snug); color: var(--u-ink);
 }
 .u-res-h p{ margin: 8px 0 0; font-size: var(--fs-sm); line-height: var(--lh-base); color: var(--u-ink-2); }
-.u-res-h--lg{ margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
-.u-res-h--lg h2{ font-size: var(--fs-h2); }
+.u-res-h--lg{ margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.u-res-h--lg h2{ font-size: clamp(27px, 2.8vw, 38px); }
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
 /* ── Main grid ────────────────────────────────────────────────── */
