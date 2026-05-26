@@ -75,18 +75,16 @@
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
 /* ── Main grid ────────────────────────────────────────────────── */
-.u-res-grid{ display: grid; grid-template-columns: 1.7fr 1fr; gap: 24px; align-items: stretch; }
-.u-res-grid--even{ grid-template-columns: 1fr 1fr; align-items: start; }
+.u-res-grid{ display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+.u-res-grid--even{ grid-template-columns: 1fr 1fr; }
 .u-res-grid__col{ display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-/* the last card of each column hugs the bottom so both columns
-   finish on the same line regardless of which is taller */
-.u-res-grid > .u-res-grid__col > .u-res-card:last-child{ margin-top: auto; }
 
 /* ── Scheme (drawer top view) ─────────────────────────────────────
    Wooden tray with mitred corners (conic-gradient frame) + a recessed
    floor; soft velvet plaques with layered shadows and a faint weave. */
 .u-res-scheme{
   position: relative;
+  max-width: 680px; margin-inline: auto;
   border-radius: 16px;
   padding: clamp(15px, 1.8vw, 24px);
   background: conic-gradient(from 45deg,
@@ -143,8 +141,9 @@
 .u-res-table__head,
 .u-res-table__row{
   display: grid; grid-template-columns: 46px 1fr 1.4fr; gap: 12px; align-items: center;
-  padding: 13px 4px;
+  padding: 21px 4px;
 }
+.u-res-table__head{ padding-top: 4px; }
 .u-res-table__head{
   font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide);
   text-transform: uppercase; color: var(--u-ink-3);
