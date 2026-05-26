@@ -741,13 +741,15 @@
 }
 .u-apology__what-row strong{ color: var(--u-ink); font-weight: 600; }
 .u-apology__what-ic{
-  width: 36px; height: 36px; border-radius: 999px;
-  background: var(--u-card);
-  border: 1px solid var(--u-line-2);
+  width: 28px; height: 28px; border-radius: 999px;
+  margin-top: -3px; /* optically centre the chip on the first text line */
+  background: rgba(125, 140, 114, .14);
+  border: 1px solid rgba(125, 140, 114, .30);
   color: var(--u-sage-d);
   display: inline-flex; align-items: center; justify-content: center;
   flex: 0 0 auto;
 }
+.u-apology__what-ic svg{ width: 17px; height: 17px; }
 .u-apology__email{
   display: grid; grid-template-columns: 1fr auto; gap: 10px;
   align-items: end;

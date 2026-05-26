@@ -209,8 +209,17 @@ body{ overflow-x: hidden; }
   .u-calc__choice-soon{ top: 6px; right: 6px; padding: 2px 5px; }
   /* primary CTA: drop the 280px min so it fits narrow screens */
   .u-calc__actions .u-calc__cta{ min-width: 0; width: 100%; }
-  /* apology page paddings */
-  .u-apology__body{ padding: clamp(24px, 6vw, 40px); }
+  /* apology page — tighter hierarchy + slimmer decorative band */
+  .u-apology{ padding-top: 12px; gap: 18px; }
+  .u-apology__body{ padding: clamp(24px, 6vw, 36px); gap: 18px; }
+  .u-apology__title{ font-size: clamp(29px, 8.2vw, 40px); }
+  .u-apology__lede{ font-size: var(--fs-sm); }
+  .u-apology__what{ padding: 18px 16px; gap: 12px; }
+  /* slim banner; leaves become tasteful corner accents rather than an
+     over-scaled crop */
+  .u-apology__art{ aspect-ratio: auto; height: 124px; border-radius: 18px; padding: 0; }
+  .u-apology__art > img{ width: 34%; top: auto; bottom: -18%; left: auto; right: 5%; transform: rotate(-8deg); opacity: .78; }
+  .u-apology__art > img.twig{ width: 26%; top: -16%; bottom: auto; left: 5%; right: auto; transform: rotate(16deg); opacity: .58; }
 }
 @media (max-width: 520px){
   /* item rows: stack «что хранить» over «объём» so long select
