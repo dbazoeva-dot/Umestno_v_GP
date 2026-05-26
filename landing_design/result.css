@@ -54,7 +54,8 @@
   padding: clamp(22px, 2.4vw, 32px);
 }
 .u-res-card--warm{ background: var(--u-warm); border-color: rgba(80,60,40,.08); box-shadow: none; }
-.u-res-save-mini{ display: flex; flex-direction: column; gap: 12px; }
+/* frameless: no card background/border — just the buttons */
+.u-res-save-mini{ display: flex; flex-direction: column; gap: 12px; padding: 0; background: none; border: 0; box-shadow: none; }
 .u-res-save-mini .u-btn{ width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 10px; }
 .u-res-own-text{ margin: 0; font-size: var(--fs-sm); line-height: var(--lh-base); color: var(--u-ink-2); max-width: 60ch; }
 .u-res-h{ margin-bottom: 18px; }
@@ -91,8 +92,9 @@
 .u-res-grid .u-res-scheme-card{ flex: 1 1 auto; display: flex; flex-direction: column; }
 .u-res-grid .u-res-scheme{ margin-top: auto; }
 .u-res-grid .u-res-scheme__note{ margin-bottom: auto; }
-.u-res-grid .u-res-card--warm{ flex: 1 1 auto; display: flex; flex-direction: column; }
-.u-res-grid .u-res-card--warm .u-res-why{ margin-block: auto; }
+/* frameless save buttons pinned to the bottom of the right column,
+   aligning with the sizes-table bottom on the left */
+.u-res-grid .u-res-save-mini{ margin-top: auto; }
 
 /* ── Scheme (drawer top view) ─────────────────────────────────────
    Real textures: oak wood (frame + floor) and a neutral fabric grain
