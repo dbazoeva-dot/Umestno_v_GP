@@ -209,6 +209,8 @@ body{ overflow-x: hidden; }
   .u-calc__choice-soon{ top: 6px; right: 6px; padding: 2px 5px; }
   /* primary CTA: drop the 280px min so it fits narrow screens */
   .u-calc__actions .u-calc__cta{ min-width: 0; width: 100%; }
+  /* sidebar «Совет» tip is redundant on mobile */
+  .u-calc__tip{ display: none; }
   /* apology page — tighter hierarchy + slimmer decorative band */
   .u-apology{ padding-top: 12px; gap: 18px; }
   .u-apology__body{ padding: clamp(24px, 6vw, 36px); gap: 18px; }
