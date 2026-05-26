@@ -669,9 +669,9 @@
 }
 /* small decorative sprigs tucked into opposite corners, each turned
    so its tip points toward the corner/edge (not inward) */
-.u-apology__art > img{ position: absolute; width: 27%; opacity: .5; }
-.u-apology__art > img:first-child{ right: -5%; bottom: -5%; }            /* tip → bottom-right */
-.u-apology__art > img.twig{ left: -5%; top: -5%; transform: rotate(180deg); } /* tip → top-left */
+.u-apology__art > img{ position: absolute; width: 36%; opacity: .5; }
+.u-apology__art > img:first-child{ right: -6%; bottom: -6%; }            /* tip → bottom-right */
+.u-apology__art > img.twig{ left: -6%; top: -6%; transform: rotate(180deg); } /* tip → top-left */
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;
   background: var(--u-card);
