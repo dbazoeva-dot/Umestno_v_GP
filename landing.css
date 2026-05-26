@@ -583,3 +583,9 @@ section[data-screen-label="06 Не просто красиво. Логично"]
   .u-logic-finale__title{ margin-bottom: 28px; }
   .u-logic-finale__pull{ font-size: var(--fs-md) !important; }
 }
+
+/* Interlude quote — smaller on mobile (inline size is set on the markup) */
+@media (max-width: 768px){
+  .u-interlude__text,
+  .u-interlude__text em{ font-size: clamp(24px, 6.5vw, 26px) !important; }
+}
