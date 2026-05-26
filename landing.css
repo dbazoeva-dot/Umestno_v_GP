@@ -268,7 +268,16 @@ body{ overflow-x: hidden; }
   .u-hero__mag-meta-list li{ padding: 6px 0; }
   /* raise the photo closer to the lede */
   .u-hero__mag-photo{ margin-top: -10px; min-height: 0; }
-  .u-hero__mag-foot{ padding-top: 24px; }
+  /* price tag: much quieter, tucked in the corner so it no longer
+     shouts or covers the CTA below */
+  .u-hero__mag-price{ right: 12px; bottom: -14px; padding: 10px 14px; gap: 4px; border-radius: 14px; }
+  .u-hero__mag-price-row{ gap: 14px; }
+  .u-hero__mag-price .label{ font-size: var(--fs-xs); }
+  .u-hero__mag-price .amt{ font-size: var(--fs-lg); }
+  .u-hero__mag-price .sub{ font-size: var(--fs-2xs); padding-top: 4px; }
+  /* CTA «Начать расчёт» sits clear below the (now small) tag */
+  .u-hero__mag-foot{ padding-top: 44px; }
+  .u-hero__mag-cta{ font-size: 30px; }
 
   /* ── Problem cards: clear hierarchy under the section title ─ */
   .u-pain{
