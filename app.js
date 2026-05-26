@@ -95,6 +95,16 @@
       aftrCap: slide.querySelector('[data-review-aftr-cap]'),
       dots: slide.querySelector('[data-review-dots]')
     };
+    var compareEl = slide.querySelector('.u-review-slide__compare');
+    var baImg = el.bfr ? el.bfr.closest('.u-review-slide__img') : null;
+    var baMq = window.matchMedia('(max-width: 768px)');
+    var setBaH = function () { if (compareEl && baImg && baImg.offsetHeight) compareEl.style.setProperty('--ba-h', baImg.offsetHeight + 'px'); };
+    var resetBa = function () {
+      if (!compareEl) return;
+      compareEl.style.setProperty('--ba', '50%');
+      compareEl.style.setProperty('--ban', '.5');
+      setBaH();
+    };
     // build dots
     REVIEWS.forEach(function (_, i) {
       var b = document.createElement('button');
@@ -116,6 +126,7 @@
       el.dots.querySelectorAll('button').forEach(function (b, i) {
         b.classList.toggle('active', i === idx);
       });
+      resetBa();
     };
     var go = function (delta) { idx = (idx + delta + REVIEWS.length) % REVIEWS.length; render(); };
     var prev = slide.querySelector('[data-review-prev]');
@@ -133,9 +144,30 @@
       if (startX === null) return;
       var dx = e.changedTouches[0].clientX - startX;
       var dy = e.changedTouches[0].clientY - startY;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); }
+      /* on mobile the compare IS the before/after slider, so don't
+         hijack horizontal drags for review switching there */
+      if (!baMq.matches && Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); }
       startX = startY = null;
     }, { passive: true });
+
+    /* before/after drag slider (mobile) */
+    if (compareEl) {
+      var baDragging = false;
+      var setBa = function (clientX) {
+        var rect = compareEl.getBoundingClientRect();
+        var x = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        compareEl.style.setProperty('--ba', (x * 100).toFixed(1) + '%');
+        compareEl.style.setProperty('--ban', (1 - x).toFixed(3));
+      };
+      compareEl.addEventListener('pointerdown', function (e) {
+        if (!baMq.matches) return;
+        baDragging = true; setBa(e.clientX);
+      });
+      window.addEventListener('pointermove', function (e) { if (baDragging) setBa(e.clientX); });
+      window.addEventListener('pointerup', function () { baDragging = false; });
+      window.addEventListener('pointercancel', function () { baDragging = false; });
+      window.addEventListener('resize', setBaH);
+    }
 
     render();
   }

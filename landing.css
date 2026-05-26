@@ -143,7 +143,7 @@ body.u-nav-open .u-burger span:nth-child(3){ transform: translateY(-7px) rotate(
   .u-review-slide{ gap: 32px; padding: 0; }
   .u-review-slide__compare{ gap: 12px; }
   .u-review-slide__col:first-child,
-  .u-review-slide__col:last-child{ transform: none; }
+  .u-review-slide__col:nth-child(2){ transform: none; }
   .u-review-slide__img{ border-width: 5px; }
   .u-review-slide__caption{ font-size: var(--fs-xs); }
 
@@ -588,4 +588,72 @@ section[data-screen-label="06 Не просто красиво. Логично"]
 @media (max-width: 768px){
   .u-interlude__text,
   .u-interlude__text em{ font-size: clamp(24px, 6.5vw, 26px) !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Reviews — mobile before/after drag-slider.
+   The before/after frames are identical, so on mobile we overlay
+   them into one full-width image and reveal «После» by dragging a
+   handle. The comparison leads (order:-1); quote/author/nav follow.
+   Captions cross-fade with the handle: «До» left, «После» right.
+   Desktop keeps the side-by-side compare. ═══════════════════════ */
+.u-review-slide__handle{ display: none; }
+
+@media (max-width: 768px){
+  .u-review-slide{ display: flex; flex-direction: column; gap: 22px; }
+  .u-review-slide__compare{
+    order: -1;                       /* photos lead */
+    position: relative;
+    display: block;
+    gap: 0;
+    touch-action: pan-y;             /* vertical scroll ok, we handle horizontal */
+    --ba: 50%;
+    --ban: .5;
+  }
+  .u-review-slide__col{ transform: none !important; gap: 10px; }
+  .u-review-slide__col:nth-child(2){
+    position: absolute; inset: 0 0 auto 0; width: 100%;
+    pointer-events: none;
+  }
+  .u-review-slide__img{
+    margin: 0; border: 0; border-radius: 14px;
+    aspect-ratio: 4 / 3;
+    box-shadow: 0 16px 34px -18px rgba(80,60,40,.42);
+  }
+  .u-review-slide__col:nth-child(2) .u-review-slide__img{
+    clip-path: inset(0 0 0 var(--ba));   /* reveal «После» right of the handle */
+  }
+  .u-review-slide__img .pill{ left: 10px; top: 10px; }
+  .u-review-slide__col:nth-child(2) .u-review-slide__img .pill.after{ left: auto; right: 10px; }
+
+  /* drag handle (visual; JS sets its height to the image) */
+  .u-review-slide__handle{
+    display: block; position: absolute;
+    top: 0; left: var(--ba); height: var(--ba-h, 75vw);
+    width: 2px; margin-left: -1px;
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.06);
+    z-index: 4; pointer-events: none;
+  }
+  .u-review-slide__handle span{
+    position: absolute; top: 50%; left: 50%;
+    width: 38px; height: 38px; margin: -19px 0 0 -19px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 2px 10px rgba(0,0,0,.28);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38' fill='none' stroke='%23B6735C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M16 13l-4 6 4 6M22 13l4 6-4 6'/></svg>");
+    background-repeat: no-repeat; background-position: center;
+  }
+
+  /* captions cross-fade with the handle: До left, После right */
+  .u-review-slide__col:first-child .u-review-slide__caption{
+    text-align: left;
+    opacity: calc(1 - var(--ban));
+    transition: opacity .15s linear;
+  }
+  .u-review-slide__col:nth-child(2) .u-review-slide__caption{
+    text-align: right;
+    opacity: var(--ban);
+    transition: opacity .15s linear;
+  }
 }

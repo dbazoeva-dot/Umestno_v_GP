@@ -2642,7 +2642,7 @@ a{ color: inherit; text-decoration: none; }
 .u-review-slide__compare{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .u-review-slide__col{ display:flex; flex-direction:column; gap: 14px; }
 .u-review-slide__col:first-child{ transform: rotate(-1.2deg); }
-.u-review-slide__col:last-child{ transform: rotate(1.2deg); }
+.u-review-slide__col:nth-child(2){ transform: rotate(1.2deg); }
 .u-review-slide__img{
   position: relative; border-radius: 4px; overflow: hidden;
   aspect-ratio: 4/3.4; background: var(--u-warm);
