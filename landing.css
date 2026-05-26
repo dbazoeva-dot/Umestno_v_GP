@@ -682,3 +682,68 @@ section[data-screen-label="06 Не просто красиво. Логично"]
   .u-review-slide__col:first-child .u-review-slide__caption{ opacity: calc(1 - var(--ban)); }
   .u-review-slide__col:nth-child(2) .u-review-slide__caption{ opacity: var(--ban); z-index: 5; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Header + mobile menu — warm (hero-colour) bar, softer CTA, and a
+   full-screen magazine-style mobile menu.
+   ════════════════════════════════════════════════════════════ */
+.u-header{
+  background: var(--u-warm);   /* solid hero warm (no blur → fixed menu fills viewport) */
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 1px solid rgba(80, 60, 40, .08);
+}
+/* softer CTA (outline) in header + menu — fixes dark-on-sage text */
+.u-header__cta .u-btn,
+.u-mobile-nav .u-btn{
+  background: transparent !important;
+  color: var(--u-sage-d) !important;
+  border: 1.5px solid var(--u-sage-d) !important;
+  font-weight: 600;
+}
+.u-header__cta .u-btn:hover,
+.u-mobile-nav .u-btn:hover{
+  background: var(--u-sage-d) !important;
+  color: #FFFDF9 !important;
+}
+
+@media (max-width: 768px){
+  body.u-nav-open{ overflow: hidden; }
+  /* full-screen warm overlay below the header */
+  .u-mobile-nav{
+    position: fixed; left: 0; right: 0; top: 72px; bottom: 0;
+    z-index: 45;
+    background: var(--u-warm);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-bottom: 0;
+    display: flex; flex-direction: column; gap: 0;
+    padding: clamp(20px, 5vw, 30px) clamp(20px, 6vw, 40px) calc(env(safe-area-inset-bottom, 0px) + 28px);
+    overflow-y: auto;
+    counter-reset: mnav;
+  }
+  /* editorial nav links: big serif + mono index */
+  .u-mobile-nav a:not(.u-btn){
+    font-family: var(--f-display);
+    font-weight: 500;
+    font-size: clamp(30px, 9vw, 44px);
+    line-height: 1.0;
+    color: var(--u-ink);
+    padding: 22px 0;
+    border-bottom: 1px solid rgba(80, 60, 40, .12);
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  .u-mobile-nav a:not(.u-btn)::before{
+    counter-increment: mnav;
+    content: counter(mnav, decimal-leading-zero);
+    font-family: var(--f-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tr-widest);
+    color: var(--u-accent);
+    align-self: flex-start;
+    margin-top: 6px;
+  }
+  .u-mobile-nav .u-btn{
+    margin: 28px 0 0;
+    width: 100%; justify-content: center;
+    padding: 16px 24px; font-size: var(--fs-md);
+  }
+}
