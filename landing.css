@@ -747,3 +747,76 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     padding: 16px 24px; font-size: var(--fs-md);
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Subpage nav (configure / no-fit): a single first-level
+   «О сервисе» (→ landing Hero) with the landing sections as a
+   submenu — desktop hover-dropdown, mobile nested list.
+   Scoped to .u-header--sub / .u-navgroup so the landing nav is
+   untouched.
+   ════════════════════════════════════════════════════════════ */
+/* desktop dropdown */
+.u-navgroup{ position: relative; }
+.u-navgroup__top{ display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.u-navgroup__caret{
+  width: 0; height: 0;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: .55; margin-top: 1px;
+  transition: transform .2s ease, opacity .2s ease;
+}
+.u-navgroup:hover .u-navgroup__caret,
+.u-navgroup:focus-within .u-navgroup__caret{ transform: rotate(180deg); opacity: .85; }
+.u-navgroup__sub{
+  position: absolute; top: calc(100% + 16px); right: 0;
+  display: flex; flex-direction: column; gap: 1px;
+  min-width: 210px;
+  background: var(--u-card, #FFFDF9);
+  border: 1px solid var(--u-line);
+  border-radius: 12px;
+  padding: 9px;
+  box-shadow: 0 20px 44px -20px rgba(60, 45, 30, .38);
+  opacity: 0; visibility: hidden; transform: translateY(-7px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.u-navgroup__sub::before{ content: ""; position: absolute; left: 0; right: 0; top: -16px; height: 16px; }
+.u-navgroup:hover .u-navgroup__sub,
+.u-navgroup:focus-within .u-navgroup__sub{ opacity: 1; visibility: visible; transform: translateY(0); }
+.u-navgroup__sub a{
+  font-size: var(--fs-sm); color: var(--u-ink-2); font-weight: 500;
+  padding: 9px 12px; border-radius: 8px; white-space: nowrap;
+}
+.u-navgroup__sub a:hover{ color: var(--u-ink); background: var(--u-warm); }
+
+/* mobile nested list */
+@media (max-width: 768px){
+  .u-header--sub .u-mobile-nav a.u-mnav-top{
+    font-family: var(--f-display); font-weight: 500;
+    font-size: clamp(34px, 10vw, 48px); line-height: 1.0;
+    color: var(--u-ink);
+    padding: 6px 0 22px; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(80, 60, 40, .14);
+    display: block;
+  }
+  .u-header--sub .u-mobile-nav a.u-mnav-top::before{ content: none; }
+  .u-header--sub .u-mnav-sub{
+    display: flex; flex-direction: column;
+    counter-reset: mnav;
+  }
+  .u-header--sub .u-mobile-nav .u-mnav-sub a{
+    font-family: var(--f-display); font-weight: 500;
+    font-size: clamp(22px, 6.5vw, 30px); line-height: 1.0;
+    color: var(--u-ink-2);
+    padding: 19px 0;
+    border-bottom: 1px solid rgba(80, 60, 40, .10);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .u-header--sub .u-mobile-nav .u-mnav-sub a::before{
+    counter-increment: mnav;
+    content: counter(mnav, decimal-leading-zero);
+    font-family: var(--f-mono); font-size: var(--fs-2xs);
+    letter-spacing: var(--tr-widest); color: var(--u-accent);
+    align-self: flex-start; margin-top: 5px;
+  }
+}
