@@ -1,3 +1,4 @@
 dist/
 node_modules/
 engine/db/sku_catalog.db
+*.tsbuildinfo
