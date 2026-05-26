@@ -434,8 +434,6 @@
 .u-calc__pri-btn:hover{ border-color: var(--u-ink-3); }
 .u-calc__pri-btn.is-on{
   border-color: var(--u-sage-d);
-  background: var(--u-sage-d);
-  color: #fff;
   box-shadow: 0 0 0 1px var(--u-sage-d) inset;
 }
 .u-calc__pri-check{
@@ -448,8 +446,9 @@
   background: var(--u-card);
 }
 .u-calc__pri-btn.is-on .u-calc__pri-check{
-  background: #fff;
-  border-color: #fff;
+  background: var(--u-sage-d);
+  border-color: var(--u-sage-d);
+  color: #fff;
 }
 .u-calc__pri-body{ display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .u-calc__pri-body .ttl{
@@ -463,9 +462,6 @@
   font-size: var(--fs-xs);
   color: var(--u-ink-3);
   line-height: 1.4;
-}
-.u-calc__pri-btn.is-on .u-calc__pri-body .sub{
-  color: rgba(255,255,255,.78);
 }
 
 /* actions */
