@@ -338,6 +338,7 @@
   line-height: var(--lh-base);
 }
 .u-calc__helper svg{ color: var(--u-accent); flex: 0 0 auto; margin-top: 2px; }
+.u-calc__helper img{ width: 24px; height: 24px; flex: 0 0 auto; margin-top: 0; }
 .u-calc__helper em{ font-style: normal; color: var(--u-ink); font-weight: 600; }
 
 /* item rows */
