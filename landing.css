@@ -645,22 +645,20 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     background-repeat: no-repeat; background-position: center;
   }
 
-  /* only the dominant side's caption shows (no overlapping letters);
-     an opaque backing masks the other during the quick swap */
+  /* caption opacity tracks the visible share of its side; the two are
+     kept on opposite halves so they never overlap letters */
   .u-review-slide__col:first-child .u-review-slide__caption,
   .u-review-slide__col:nth-child(2) .u-review-slide__caption{
-    background: var(--u-warm);
-    border-radius: 8px;
-    padding: 4px 8px;
+    max-width: 47%;
     transition: opacity .12s linear;
   }
   .u-review-slide__col:first-child .u-review-slide__caption{
     text-align: left;
-    opacity: calc(1 - var(--ban));
+    opacity: calc(1 - var(--ban));   /* «До» = visible share of before */
   }
   .u-review-slide__col:nth-child(2) .u-review-slide__caption{
     text-align: right;
-    opacity: var(--ban);
-    z-index: 2;
+    margin-left: auto;
+    opacity: var(--ban);             /* «После» = visible share of after */
   }
 }
