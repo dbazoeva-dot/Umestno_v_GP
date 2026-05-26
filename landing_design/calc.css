@@ -667,13 +667,12 @@
   background: linear-gradient(180deg, #ECECDF 0%, #D8DCC9 100%);
   border-radius: 24px;
   overflow: hidden;
-  display: grid; place-items: center;
 }
-.u-apology__art > img{
-  width: 84%; height: 84%;
-  object-fit: contain;
-  opacity: .62;
-}
+/* small decorative sprigs tucked into opposite corners, each turned
+   so its tip points toward the corner/edge (not inward) */
+.u-apology__art > img{ position: absolute; width: 40%; opacity: .5; }
+.u-apology__art > img:first-child{ right: -7%; bottom: -7%; }            /* tip → bottom-right */
+.u-apology__art > img.twig{ left: -7%; top: -7%; transform: rotate(180deg); } /* tip → top-left */
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;
   background: var(--u-card);

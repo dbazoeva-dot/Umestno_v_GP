@@ -215,12 +215,11 @@ body{ overflow-x: hidden; }
   .u-apology__title{ font-size: clamp(29px, 8.2vw, 40px); }
   .u-apology__lede{ font-size: var(--fs-sm); }
   .u-apology__what{ padding: 18px 16px; gap: 12px; }
-  /* slim banner; the whole olive sprig sits as an accent on the right */
-  .u-apology__art{ aspect-ratio: auto; height: 132px; border-radius: 18px; display: block; }
-  .u-apology__art > img{
-    position: absolute; top: 50%; right: 5%; transform: translateY(-50%);
-    height: 112%; width: auto; opacity: .5;
-  }
+  /* slim banner; small olive sprigs in opposite corners, tips → edges */
+  .u-apology__art{ aspect-ratio: auto; height: 124px; border-radius: 18px; }
+  .u-apology__art > img{ width: 26%; opacity: .5; }
+  .u-apology__art > img:first-child{ right: -4%; bottom: -12%; top: auto; left: auto; }
+  .u-apology__art > img.twig{ left: -4%; top: -12%; right: auto; bottom: auto; transform: rotate(180deg); }
 }
 @media (max-width: 520px){
   /* item rows: stack «что хранить» over «объём» so long select
