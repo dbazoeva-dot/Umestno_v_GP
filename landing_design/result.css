@@ -83,18 +83,9 @@
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
 /* ── Main grid ────────────────────────────────────────────────── */
-.u-res-grid{ display: grid; grid-template-columns: 7fr 3fr; gap: 24px; align-items: stretch; }
+.u-res-grid{ display: grid; grid-template-columns: 7fr 3fr; gap: 24px; align-items: start; }
 .u-res-grid--even{ grid-template-columns: 1fr 1fr; align-items: start; }
 .u-res-grid__col{ display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-/* equal-height columns; the shorter one absorbs the extra height by
-   centring its main element (scheme on the left, «почему» on the
-   right) — the scheme keeps its true proportions, no gaps. */
-.u-res-grid .u-res-scheme-card{ flex: 1 1 auto; display: flex; flex-direction: column; }
-.u-res-grid .u-res-scheme{ margin-top: auto; }
-.u-res-grid .u-res-scheme__note{ margin-bottom: auto; }
-/* frameless save buttons pinned to the bottom of the right column,
-   aligning with the sizes-table bottom on the left */
-.u-res-grid .u-res-save-mini{ margin-top: auto; }
 
 /* ── Scheme (drawer top view) ─────────────────────────────────────
    Real textures: oak wood (frame + floor) and a neutral fabric grain
