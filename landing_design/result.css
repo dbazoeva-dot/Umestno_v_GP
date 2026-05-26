@@ -103,13 +103,13 @@
   border-radius: 18px;
   padding: clamp(18px, 2.2vw, 32px);
   background: conic-gradient(from 45deg,
-    #D9BE93 0deg 90deg,    /* right */
-    #CCAF7E 90deg 180deg,  /* bottom */
-    #E2C99F 180deg 270deg, /* left */
-    #D6BB8B 270deg 360deg  /* top */);
+    #E0C6A0 0deg 90deg,    /* right */
+    #D8BD92 90deg 180deg,  /* bottom */
+    #E4CDA6 180deg 270deg, /* left */
+    #DDC39C 270deg 360deg  /* top */);
   box-shadow:
     0 26px 56px -26px rgba(90,65,30,.42),
-    inset 0 0 0 1.5px rgba(150,110,55,.28);
+    inset 0 0 0 1.5px rgba(150,110,55,.18);
 }
 .u-res-scheme__inner{
   position: relative;
