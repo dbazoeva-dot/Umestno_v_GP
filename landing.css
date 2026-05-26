@@ -645,17 +645,21 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     background-repeat: no-repeat; background-position: center;
   }
 
-  /* captions are clipped by the SAME handle as the photo: left of the
-     handle reads «До», right reads «После». Both full width, stacked;
-     «После» sits on top, clipped like the after image, with an opaque
-     backing so it masks «До» on its side. */
+  /* only the dominant side's caption shows; the other fades to 0.
+     Full width, stacked; «После» on top with an opaque backing so the
+     swap never shows overlapping letters. */
   .u-review-slide__col:first-child .u-review-slide__caption,
   .u-review-slide__col:nth-child(2) .u-review-slide__caption{
     width: 100%;
     text-align: left;
+    transition: opacity .25s ease;
+  }
+  .u-review-slide__col:first-child .u-review-slide__caption{
+    opacity: calc(1 - var(--ban));
   }
   .u-review-slide__col:nth-child(2) .u-review-slide__caption{
     background: var(--u-warm);
-    clip-path: inset(0 0 0 var(--ba));
+    opacity: var(--ban);
+    z-index: 2;
   }
 }

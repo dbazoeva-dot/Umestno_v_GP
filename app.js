@@ -102,7 +102,7 @@
     var resetBa = function () {
       if (!compareEl) return;
       compareEl.style.setProperty('--ba', '50%');
-      compareEl.style.setProperty('--ban', '.5');
+      compareEl.style.setProperty('--ban', '1');
       setBaH();
     };
     // build dots
@@ -157,9 +157,8 @@
         var rect = compareEl.getBoundingClientRect();
         var x = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
         compareEl.style.setProperty('--ba', (x * 100).toFixed(1) + '%');
-        /* caption opacity tracks how much of each side is shown:
-           «До» visible = x, «После» visible = 1 − x */
-        compareEl.style.setProperty('--ban', (1 - x).toFixed(3));
+        /* show the caption of the dominant side; fade the other out */
+        compareEl.style.setProperty('--ban', x <= 0.5 ? '1' : '0');
       };
       compareEl.addEventListener('pointerdown', function (e) {
         if (!baMq.matches) return;
