@@ -112,7 +112,7 @@
 .u-res-scheme__inner{
   position: relative;
   display: grid;
-  grid-template-columns: 40% 30% 30%;
+  grid-template-columns: 4fr 3fr 3fr;
   grid-template-rows: 1fr 2fr;
   gap: clamp(10px, 1.3vw, 18px);
   aspect-ratio: 80 / 45;
@@ -135,15 +135,21 @@
   background-size: 320px;
   background-blend-mode: multiply;
   box-shadow:
-    inset 0 2px 4px rgba(255,255,255,.45),
-    inset 0 -8px 16px rgba(80,62,38,.12),
-    inset 0 0 0 1px rgba(120,95,55,.10),
-    0 5px 12px rgba(70,50,25,.22);
+    inset 0 3px 5px rgba(255,255,255,.55),       /* top highlight */
+    inset 0 -12px 22px rgba(70,55,35,.18),       /* cushion underside */
+    inset 0 0 0 1px rgba(120,95,55,.12),
+    0 3px 5px rgba(55,40,20,.20),                /* contact shadow */
+    0 14px 28px -8px rgba(55,40,20,.30);         /* soft float */
 }
 /* velvet sheen — soft light pooling toward the upper-centre */
 .u-res-block::before{
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: radial-gradient(125% 115% at 50% 32%, rgba(255,255,255,.30), rgba(255,255,255,0) 62%);
+  background: radial-gradient(120% 110% at 50% 30%, rgba(255,255,255,.34), rgba(255,255,255,0) 58%);
+}
+/* edge vignette — darkens the rim so the cushion reads as raised */
+.u-res-block::after{
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(125% 125% at 50% 45%, rgba(60,45,25,0) 52%, rgba(60,45,25,.14) 100%);
 }
 .u-res-block__n,
 .u-res-block__cat{ position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3; }
