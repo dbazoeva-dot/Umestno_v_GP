@@ -94,7 +94,7 @@
   position: relative;
   container-type: inline-size;   /* scheme scales as one self-similar unit (cqw) */
   border-radius: 2.4cqw;
-  padding: 3cqw;
+  padding: 3cqw;   /* drawer wall thickness — proportional (cqw) */
   background:
     linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
     url(assets/tex-wood.webp);
