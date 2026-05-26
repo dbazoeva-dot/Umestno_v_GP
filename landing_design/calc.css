@@ -667,21 +667,12 @@
   background: linear-gradient(180deg, #ECECDF 0%, #D8DCC9 100%);
   border-radius: 24px;
   overflow: hidden;
-  padding: 32px;
+  display: grid; place-items: center;
 }
 .u-apology__art > img{
-  position: absolute;
-  width: 75%;
-  top: -8%; left: -8%;
-  opacity: 0.85;
-  transform: rotate(-12deg);
-}
-.u-apology__art > img.twig{
-  width: 55%;
-  top: auto; left: auto;
-  bottom: -6%; right: -8%;
-  transform: rotate(28deg);
-  opacity: 0.75;
+  width: 84%; height: 84%;
+  object-fit: contain;
+  opacity: .62;
 }
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;

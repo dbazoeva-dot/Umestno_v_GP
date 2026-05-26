@@ -215,11 +215,12 @@ body{ overflow-x: hidden; }
   .u-apology__title{ font-size: clamp(29px, 8.2vw, 40px); }
   .u-apology__lede{ font-size: var(--fs-sm); }
   .u-apology__what{ padding: 18px 16px; gap: 12px; }
-  /* slim banner; leaves become tasteful corner accents rather than an
-     over-scaled crop */
-  .u-apology__art{ aspect-ratio: auto; height: 124px; border-radius: 18px; padding: 0; }
-  .u-apology__art > img{ width: 34%; top: auto; bottom: -18%; left: auto; right: 5%; transform: rotate(-8deg); opacity: .78; }
-  .u-apology__art > img.twig{ width: 26%; top: -16%; bottom: auto; left: 5%; right: auto; transform: rotate(16deg); opacity: .58; }
+  /* slim banner; the whole olive sprig sits as an accent on the right */
+  .u-apology__art{ aspect-ratio: auto; height: 132px; border-radius: 18px; display: block; }
+  .u-apology__art > img{
+    position: absolute; top: 50%; right: 5%; transform: translateY(-50%);
+    height: 112%; width: auto; opacity: .5;
+  }
 }
 @media (max-width: 520px){
   /* item rows: stack «что хранить» over «объём» so long select
