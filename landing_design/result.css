@@ -95,21 +95,19 @@
 .u-res-grid .u-res-card--warm .u-res-why{ margin-block: auto; }
 
 /* ── Scheme (drawer top view) ─────────────────────────────────────
-   Light-oak tray with a mitred frame + inner lip, a pale wooden floor,
-   and soft velvet plaques (sheen + grain + drop). Template for the
-   client-rendered scheme. */
+   Real textures: oak wood (frame + floor) and a neutral fabric grain
+   tinted per block. Template for the client-rendered scheme. */
 .u-res-scheme{
   position: relative;
   border-radius: 18px;
   padding: clamp(18px, 2.2vw, 32px);
-  background: conic-gradient(from 45deg,
-    #E0C6A0 0deg 90deg,    /* right */
-    #D8BD92 90deg 180deg,  /* bottom */
-    #E4CDA6 180deg 270deg, /* left */
-    #DDC39C 270deg 360deg  /* top */);
+  background:
+    linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
+    url(assets/tex-wood.webp);
+  background-size: cover;
   box-shadow:
     0 26px 56px -26px rgba(90,65,30,.42),
-    inset 0 0 0 1.5px rgba(150,110,55,.18);
+    inset 0 0 0 1.5px rgba(150,110,55,.20);
 }
 .u-res-scheme__inner{
   position: relative;
@@ -120,9 +118,12 @@
   aspect-ratio: 80 / 45;
   padding: clamp(10px, 1.3vw, 18px);
   border-radius: 10px;
-  background: #E7D7B7;   /* pale wooden tray floor — shows in the gaps */
+  background:
+    linear-gradient(rgba(247,238,219,.55), rgba(247,238,219,.55)),
+    url(assets/tex-wood.webp);
+  background-size: cover;
   box-shadow:
-    inset 0 2px 7px rgba(120,85,40,.32),
+    inset 0 2px 8px rgba(120,85,40,.34),
     inset 0 0 0 1.5px rgba(150,110,55,.22);
 }
 .u-res-block{
@@ -130,8 +131,11 @@
   border-radius: 22px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 5px; text-align: center; padding: 10px;
+  background-image: url(assets/tex-fabric.webp);
+  background-size: 320px;
+  background-blend-mode: multiply;
   box-shadow:
-    inset 0 2px 4px rgba(255,255,255,.5),
+    inset 0 2px 4px rgba(255,255,255,.45),
     inset 0 -8px 16px rgba(80,62,38,.12),
     inset 0 0 0 1px rgba(120,95,55,.10),
     0 5px 12px rgba(70,50,25,.22);
@@ -139,23 +143,16 @@
 /* velvet sheen — soft light pooling toward the upper-centre */
 .u-res-block::before{
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: radial-gradient(125% 115% at 50% 32%, rgba(255,255,255,.40), rgba(255,255,255,0) 62%);
-}
-/* velvet grain */
-.u-res-block::after{
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 100px 100px;
-  opacity: .13; mix-blend-mode: multiply;
+  background: radial-gradient(125% 115% at 50% 32%, rgba(255,255,255,.30), rgba(255,255,255,0) 62%);
 }
 .u-res-block__n,
 .u-res-block__cat{ position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3; }
 .u-res-block__n{ font-size: var(--fs-md); font-weight: 500; letter-spacing: 0; text-transform: none; }
 .u-res-block__cat{ font-size: var(--fs-md); font-weight: 500; }
-.u-res-block.b1{ grid-column: 1 / -1; grid-row: 1; background: #EFE7D6; }
-.u-res-block.b2{ grid-column: 1; grid-row: 2; background: #A6B38C; }
-.u-res-block.b3{ grid-column: 2; grid-row: 2; background: #F2ECDD; }
-.u-res-block.b4{ grid-column: 3; grid-row: 2; background: #DDC59B; }
+.u-res-block.b1{ grid-column: 1 / -1; grid-row: 1; background-color: #EFE7D6; }
+.u-res-block.b2{ grid-column: 1; grid-row: 2; background-color: #A6B38C; }
+.u-res-block.b3{ grid-column: 2; grid-row: 2; background-color: #F2ECDD; }
+.u-res-block.b4{ grid-column: 3; grid-row: 2; background-color: #DDC59B; }
 .u-res-scheme__note{ margin: 14px 0 0; font-size: var(--fs-xs); color: var(--u-ink-3); line-height: 1.5; }
 
 /* ── Sizes table ──────────────────────────────────────────────── */
