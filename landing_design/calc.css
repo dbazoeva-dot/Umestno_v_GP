@@ -328,8 +328,8 @@
 
 /* helper note */
 .u-calc__helper{
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px 14px 8px;
   background: var(--u-warm);
   border-radius: 12px;
   font-family: var(--f-sans);
@@ -338,7 +338,7 @@
   line-height: var(--lh-base);
 }
 .u-calc__helper svg{ color: var(--u-accent); flex: 0 0 auto; margin-top: 2px; }
-.u-calc__helper img{ width: 46px; height: 46px; flex: 0 0 auto; margin-top: 0; }
+.u-calc__helper img{ width: 46px; height: 46px; flex: 0 0 auto; margin: 0 0 0 -4px; }
 .u-calc__helper em{ font-style: normal; color: var(--u-ink); font-weight: 600; }
 
 /* item rows */
