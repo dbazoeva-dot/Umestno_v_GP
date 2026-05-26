@@ -254,10 +254,13 @@ body{ overflow-x: hidden; }
   .u-hero h1.u-hero__mag-title{
     font-size: clamp(40px, 12.5vw, 58px);
     line-height: 1.0;
+    width: 100%;
   }
+  /* third line hugs the right screen edge */
+  .u-hero__mag-title .row-2{ align-self: flex-end; text-align: right; }
   .u-hero__mag-banner{ display: flex; flex-direction: column; gap: 26px; }
   .u-hero__mag-meta{ row-gap: 24px; margin-top: 4px; }
-  .u-hero__mag-meta-list li{ padding: 13px 0; }
+  .u-hero__mag-meta-list li{ padding: 6px 0; }
   .u-hero__mag-photo{ margin-top: 6px; min-height: 0; }
   .u-hero__mag-foot{ padding-top: 12px; }
 
