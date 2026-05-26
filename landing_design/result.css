@@ -28,7 +28,7 @@
 .u-res-chips{ display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
 .u-res-chip{
   display: flex; align-items: center; gap: 14px;
-  width: 250px; flex: 0 0 250px;
+  flex: 0 0 auto; width: clamp(220px, 20vw, 300px);
   padding: 16px 18px;
   background: var(--u-card); border: 1px solid var(--u-line-2);
   border-radius: var(--r-md); box-shadow: var(--sh-card);
