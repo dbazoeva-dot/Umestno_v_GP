@@ -57,6 +57,22 @@
 /* frameless: no card background/border — just the buttons */
 .u-res-save-mini{ display: flex; flex-direction: column; gap: 12px; padding: 0; background: none; border: 0; box-shadow: none; }
 .u-res-save-mini .u-btn{ width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 10px; }
+/* «отправить на почту» — e-mail field revealed only on click (declutter) */
+.u-res-mail{ display: flex; flex-direction: column; gap: 10px; }
+.u-res-mail [hidden]{ display: none !important; }   /* beat .u-btn display */
+.u-res-mail__form{ display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.u-res-mail__form[hidden]{ display: none; }
+.u-res-mail__form input{
+  flex: 1 1 180px; min-width: 0; height: 52px; padding: 0 16px;
+  border: 1px solid var(--u-line-2); background: var(--u-card); border-radius: 12px;
+  font-family: var(--f-sans); font-size: var(--fs-md); color: var(--u-ink); outline: none;
+}
+.u-res-mail__form input:focus{ border-color: var(--u-sage-d); }
+.u-res-mail__form .u-btn{ flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
+.u-res-mail__done{ margin: 0; font-size: var(--fs-sm); color: var(--u-sage-d); }
+.u-res-mail__done[hidden]{ display: none; }
+/* in the narrow right-column block, stack the field and its button full-width */
+.u-res-save-mini .u-res-mail__form .u-btn{ width: 100%; }
 .u-res-own-text{ margin: 0; font-size: var(--fs-sm); line-height: var(--lh-base); color: var(--u-ink-2); max-width: 60ch; }
 .u-res-h{ margin-bottom: 18px; }
 /* block titles read as a slightly larger eyebrow, not a heading */

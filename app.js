@@ -23,6 +23,33 @@
     });
   }
 
+  /* ── Result: reveal e-mail field on click, then "send" ── */
+  document.querySelectorAll('[data-mail-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wrap = btn.closest('.u-res-mail');
+      if (!wrap) return;
+      btn.hidden = true;
+      var form = wrap.querySelector('[data-mail-form]');
+      if (form) {
+        form.hidden = false;
+        var inp = form.querySelector('input');
+        if (inp) inp.focus();
+      }
+    });
+  });
+  document.querySelectorAll('[data-mail-form]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      // TODO: wire to a mailing service (Formspree / EmailJS / backend) — none connected yet
+      var wrap = form.closest('.u-res-mail');
+      form.hidden = true;
+      if (wrap) {
+        var done = wrap.querySelector('.u-res-mail__done');
+        if (done) done.hidden = false;
+      }
+    });
+  });
+
   /* ── Configurator: priority + live size meta ─────────── */
   var priList = document.querySelector('.u-config2__pri-list');
   if (priList) {
