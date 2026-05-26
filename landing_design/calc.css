@@ -325,6 +325,8 @@
   border-color: var(--u-accent);
 }
 .u-calc__check:hover .box{ border-color: var(--u-ink-3); }
+.u-calc__check-txt{ display: flex; flex-direction: column; gap: 4px; }
+.u-calc__check-txt .h{ font-size: 12px; color: var(--u-ink-3); line-height: 1.4; }
 
 /* helper note */
 .u-calc__helper{
