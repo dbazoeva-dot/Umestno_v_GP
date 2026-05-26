@@ -70,8 +70,15 @@
   background: var(--u-sage-d); flex: 0 0 auto;
 }
 .u-res-h p{ margin: 9px 0 0; font-size: var(--fs-sm); line-height: var(--lh-base); color: var(--u-ink-2); }
-.u-res-h--lg{ margin-bottom: 22px; display: flex; flex-direction: column; gap: 10px; }
-.u-res-h--lg h2{ font-size: 15px; }
+.u-res-h--lg{ margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+/* section title — a real heading, like the hero (not an eyebrow) */
+.u-res-h--lg h2{
+  font-family: var(--f-display); font-weight: var(--fw-display);
+  font-size: clamp(30px, 3vw, 42px); line-height: var(--lh-tight);
+  letter-spacing: var(--tr-snug); color: var(--u-ink);
+  text-transform: none; display: block;
+}
+.u-res-h--lg h2::before{ content: none; }
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
 /* ── Main grid ────────────────────────────────────────────────── */
@@ -214,12 +221,14 @@
 .u-res-prod-block__n{ font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-sage-d); }
 .u-res-prod-block__cat{ font-family: var(--f-display); font-size: var(--fs-2xl); font-weight: 500; color: var(--u-ink); line-height: 1; }
 .u-res-prod-block__desc{ font-size: var(--fs-sm); line-height: var(--lh-base); color: var(--u-ink-2); margin-top: 4px; }
-.u-res-prod-cards{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.u-res-prod-cards{ display: flex; flex-wrap: wrap; gap: 16px; }
 .u-res-prod-card{
+  width: 210px; flex: 0 0 auto;
   background: var(--u-card); border: 1px solid var(--u-line-2); border-radius: var(--r-md);
-  padding: 14px; display: flex; flex-direction: column; gap: 4px;
+  padding: 12px; display: flex; flex-direction: column; gap: 3px;
   transition: box-shadow .18s ease, border-color .18s ease;
 }
+.u-res-prod-card__b{ display: none; }
 .u-res-prod-card:hover{ box-shadow: var(--sh-card-hov); border-color: var(--u-taupe); }
 .u-res-prod-card__img{
   aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: var(--u-warm);
