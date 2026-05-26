@@ -2609,11 +2609,20 @@ a{ color: inherit; text-decoration: none; }
 
 /* reviews — editorial: slight tilt, polaroid feel */
 .u-review-slide{
-  display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  grid-template-areas: "num compare" "copy compare";
+  grid-template-rows: auto auto;
+  column-gap: 56px; row-gap: 18px;
+  align-content: center;
   background: transparent; border: 0; border-radius: 0;
   padding: 0;
 }
+.u-review-slide__num{ grid-area: num; }
+.u-review-slide__compare{ grid-area: compare; align-self: center; }
+.u-review-slide__foot{ display: flex; flex-direction: column; gap: 24px; }
 .u-review-slide__copy{
+  grid-area: copy;
   display:flex; flex-direction:column; gap: 24px;
   justify-content: center;
 }

@@ -600,7 +600,22 @@ section[data-screen-label="06 Не просто красиво. Логично"]
 .u-review-slide__handle{ display: none; }
 
 @media (max-width: 768px){
-  .u-review-slide{ display: flex; flex-direction: column; gap: 22px; }
+  .u-review-slide{ display: flex; flex-direction: column; gap: 18px; }
+  /* «История 01 / 5» eyebrow above the photos */
+  .u-review-slide__num{ order: -2; margin: 0; }
+  /* smaller testimonial text */
+  .u-review-slide__quote{ font-size: var(--fs-md) !important; }
+  .u-review-slide__copy{ gap: 16px; }
+  /* nav on the left, author on the right, one row */
+  .u-review-slide__foot{
+    display: flex; flex-direction: row-reverse;
+    align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .u-review-slide__author .meta{ text-align: right; }
+  .u-review-nav{ margin-top: 0; gap: 8px; }
+  .u-review-nav button.nav{ width: 32px; height: 32px; }
+  .u-review-nav .dots button{ width: 6px; height: 6px; }
+  .u-review-nav .dots button.active{ width: 18px; }
   .u-review-slide__compare{
     order: -1;                       /* photos lead */
     position: relative;
