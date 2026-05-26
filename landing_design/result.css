@@ -25,13 +25,13 @@
 .u-res-hero__lede{ margin: 0; font-size: var(--fs-md); line-height: var(--lh-base); color: var(--u-ink-2); }
 
 /* ── Summary chips ────────────────────────────────────────────── */
-.u-res-chips{ display: flex; flex-wrap: wrap; gap: 14px; }
+.u-res-chips{ display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
 .u-res-chip{
   display: flex; align-items: center; gap: 14px;
+  width: 250px; flex: 0 0 250px;
   padding: 16px 18px;
   background: var(--u-card); border: 1px solid var(--u-line-2);
   border-radius: var(--r-md); box-shadow: var(--sh-card);
-  min-width: 0;
 }
 .u-res-chip__ic{
   width: 38px; height: 38px; border-radius: 999px; flex: 0 0 auto;
