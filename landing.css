@@ -616,11 +616,16 @@ section[data-screen-label="06 Не просто красиво. Логично"]
     pointer-events: none;
   }
   .u-review-slide__img{
-    margin: 0; border: 0; border-radius: 14px;
+    margin: 0; border-radius: 8px;
     aspect-ratio: 4 / 3;
     box-shadow: 0 16px 34px -18px rgba(80,60,40,.42);
   }
+  /* soft polaroid frames (wider bottom): До terracotta, После sage */
+  .u-review-slide__col:first-child .u-review-slide__img{
+    border: 6px solid #E9C7BB; border-bottom-width: 16px;
+  }
   .u-review-slide__col:nth-child(2) .u-review-slide__img{
+    border: 6px solid #CFD8C5; border-bottom-width: 16px;
     clip-path: inset(0 0 0 var(--ba));   /* reveal «После» right of the handle */
   }
   .u-review-slide__img .pill{ left: 10px; top: 10px; }
