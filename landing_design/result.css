@@ -328,13 +328,13 @@
   /* product variants: horizontal swipe instead of a column */
   .u-res-prod-cards{
     grid-template-columns: none;
-    display: flex; gap: 12px;
+    display: flex; flex-wrap: nowrap; gap: 12px;
     overflow-x: auto; scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch; scrollbar-width: none;
     padding-bottom: 4px;
   }
   .u-res-prod-cards::-webkit-scrollbar{ display: none; }
-  .u-res-prod-card{ flex: 0 0 80%; scroll-snap-align: start; min-width: 0; }
+  .u-res-prod-card{ flex: 0 0 80%; width: auto; scroll-snap-align: start; min-width: 0; }
   .u-res-save{ flex-direction: column; align-items: stretch; }
   .u-res-save__actions .u-btn{ width: 100%; justify-content: center; }
   .u-res-table__head,
