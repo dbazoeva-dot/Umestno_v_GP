@@ -161,9 +161,9 @@
 .u-res-block__cat{ position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3; }
 .u-res-block__n{ font-size: var(--fs-md); font-weight: 500; letter-spacing: 0; text-transform: none; }
 .u-res-block__cat{ font-size: var(--fs-md); font-weight: 500; }
-.u-res-block.b1{ grid-column: 1 / -1; grid-row: 1; background-color: #EFE7D6; }
+.u-res-block.b1{ grid-column: 1 / -1; grid-row: 1; background-color: #EBDFC4; }
 .u-res-block.b2{ grid-column: 1; grid-row: 2; background-color: #A6B38C; }
-.u-res-block.b3{ grid-column: 2; grid-row: 2; background-color: #F2ECDD; }
+.u-res-block.b3{ grid-column: 2; grid-row: 2; background-color: #EDEAE1; }
 .u-res-block.b4{ grid-column: 3; grid-row: 2; background-color: #DDC59B; }
 .u-res-scheme__note{ margin: 14px 0 0; font-size: var(--fs-xs); color: var(--u-ink-3); line-height: 1.5; }
 
@@ -185,9 +185,15 @@
 .u-res-table__num{
   width: 28px; height: 28px; border-radius: 999px; flex: 0 0 auto;
   display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(125,140,114,.12); color: var(--u-sage-d);
+  background: var(--u-line-2); color: var(--u-ink-2);
+  box-shadow: inset 0 0 0 1px rgba(80,60,40,.10);
   font-family: var(--f-mono); font-size: var(--fs-xs);
 }
+/* colour each number circle like its block on the scheme */
+.u-res-table__row:nth-child(2) .u-res-table__num{ background: #EBDFC4; }
+.u-res-table__row:nth-child(3) .u-res-table__num{ background: #A6B38C; }
+.u-res-table__row:nth-child(4) .u-res-table__num{ background: #EDEAE1; }
+.u-res-table__row:nth-child(5) .u-res-table__num{ background: #DDC59B; }
 
 /* ── Zones (what goes where) ──────────────────────────────────── */
 .u-res-zones{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
