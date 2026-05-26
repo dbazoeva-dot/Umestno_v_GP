@@ -670,9 +670,9 @@
 /* small decorative sprigs tucked into opposite corners, each turned
    so its tip points toward the corner/edge (not inward) */
 .u-apology__art > img{ position: absolute; opacity: .5; }
-/* two sprigs down the left side; the right of the panel stays open */
-.u-apology__art > img.twig{ width: 33%; left: 1%; top: 15%; }              /* upper: grows down-right (natural) */
-.u-apology__art > img:first-child{ width: 47%; left: 2%; bottom: -3%; transform: scaleY(-1); } /* lower: grows up-right */
+/* sprigs turned toward the corners (not the centre); bottom one larger */
+.u-apology__art > img.twig{ width: 40%; left: -5%; top: -5%; transform: rotate(180deg); } /* tip → top-left corner */
+.u-apology__art > img:first-child{ width: 60%; right: -6%; bottom: -6%; }                  /* tip → bottom-right corner, bigger */
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;
   background: var(--u-card);
