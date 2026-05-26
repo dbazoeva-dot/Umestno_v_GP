@@ -672,8 +672,8 @@
 .u-apology__art > img{ position: absolute; opacity: .5; }
 /* upper sprig: tip → top-left corner */
 .u-apology__art > img.twig{ width: 32%; left: -5%; top: -5%; transform: rotate(180deg); }
-/* lower branch: fully inside the panel, flipped vertically */
-.u-apology__art > img:first-child{ width: 54%; right: 3%; bottom: 3%; transform: scaleY(-1); }
+/* lower branch: fully inside the panel, flipped horizontally + vertically */
+.u-apology__art > img:first-child{ width: 54%; right: 3%; bottom: 3%; transform: scaleX(-1) scaleY(-1); }
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;
   background: var(--u-card);
