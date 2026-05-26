@@ -1,7 +1,7 @@
 import type { NormalizedInput, ValidationErrorDetail, ValidationResult } from "../types.js";
-const underwearContentTypes = ["socks_regular", "panties", "boxers", "sport_tops", "bras", "tights", "thermals", "pajamas", "nightgowns"];
+const underwearContentTypes = ["socks_regular", "panties", "boxers", "sport_tops", "bras", "tights", "thermals", "pajamas", "nightgowns", "swimwear"];
 const softClothesContentTypes = ["tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts", "pajamas"];
-const accessoriesContentTypes = ["belts", "jewelry_large", "jewelry_small", "scarves", "ties", "swimwear"];
+const accessoriesContentTypes = ["belts", "jewelry_large", "jewelry_small", "scarves", "ties"];
 const allowedByCategory: Record<string, string[]> = {
   underwear: underwearContentTypes,
   soft_clothes: softClothesContentTypes,

@@ -115,8 +115,8 @@ function accessScore(value: number | string) { return typeof value === "number" 
 function round(value: number) { return Number(value.toFixed(4)); }
 
 function semanticStorageCategory(contentType: string) {
-  if (["socks", "socks_regular", "panties", "boxers", "bras", "tights", "sport_tops", "thermals"].includes(contentType)) return "underwear";
+  if (["socks", "socks_regular", "panties", "boxers", "bras", "tights", "sport_tops", "thermals", "swimwear"].includes(contentType)) return "underwear";
   if (["tshirts", "longsleeves", "sweaters", "jeans", "leggings", "shorts", "pajamas", "nightgowns"].includes(contentType)) return "soft_clothes";
-  if (["belts", "jewelry_large", "jewelry_small", "scarves", "ties", "swimwear"].includes(contentType)) return "accessories";
+  if (["belts", "jewelry_large", "jewelry_small", "scarves", "ties"].includes(contentType)) return "accessories";
   return "mixed";
 }
