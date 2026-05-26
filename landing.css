@@ -609,7 +609,7 @@ section[data-screen-label="06 Не просто красиво. Логично"]
   /* nav on the left, author on the right, one row */
   .u-review-slide__foot{
     display: flex; flex-direction: row-reverse;
-    align-items: center; justify-content: space-between; gap: 12px;
+    align-items: flex-end; justify-content: space-between; gap: 12px;
   }
   .u-review-slide__author .meta{ text-align: right; }
   .u-review-nav{ margin-top: 0; gap: 8px; }
