@@ -117,7 +117,10 @@
     });
   }
 
-  // «Почему эта схема подходит» — факты ввода + человеческие тексты правил
+  // деликатные категории — для них показываем правило D06 (запас по высоте)
+  var DELICATE = { bras: 1, swimwear: 1, sport_tops: 1 };
+
+  // «Почему эта схема подходит» — компактные факты (без подписей) + правила
   function renderWhy(payload) {
     var list = document.querySelector('.u-res-why');
     if (!list) return;
@@ -126,21 +129,21 @@
     var c = C();
     var bullets = [];
 
+    // Факты: только заголовки — детали уже показаны в чипах сверху
     var lid = (scheme.layout_plan && scheme.layout_plan.layout_id) || '';
     var m = lid.match(/_(convenient|capacity)_(\d+)x(\d+)/);
-    if (m) bullets.push({ t: 'Собрана под ваш ящик', d: m[2] + ' × ' + m[3] + ' см по дну' });
-
-    if (zones.length) {
-      var items = zones.map(function (z) { return label(z.content_type).toLowerCase(); }).join(', ');
-      bullets.push({ t: 'Учитывает выбранные вещи', d: items });
-    }
+    bullets.push({ t: 'Собрана под ваш ящик' });
+    if (zones.length) bullets.push({ t: 'Учитывает выбранные вещи' });
     if (m) {
       var pr = (c.priorityLabel && c.priorityLabel(m[1])) || m[1];
-      bullets.push({ t: 'Приоритет — ' + pr, d: m[1] === 'capacity' ? 'максимум вместимости в этом объёме' : 'часто используемое легко доставать' });
+      bullets.push({ t: 'Приоритет — ' + pr });
     }
 
+    // Правила: с пояснениями; D06 — только если есть деликатные вещи
+    var hasDelicate = zones.some(function (z) { return DELICATE[z.content_type]; });
     var applied = (payload.why_this_layout) || (scheme.layout_plan && scheme.layout_plan.rules_applied) || [];
     applied.forEach(function (id) {
+      if (id === 'D06' && !hasDelicate) return;
       var rt = c.ruleText && c.ruleText(id);
       if (rt) bullets.push(rt);
     });
@@ -148,7 +151,7 @@
     list.innerHTML = '';
     bullets.forEach(function (b) {
       var li = document.createElement('li');
-      li.innerHTML = '<span class="t">' + esc(b.t) + '</span><span class="d">' + esc(b.d) + '</span>';
+      li.innerHTML = '<span class="t">' + esc(b.t) + '</span>' + (b.d ? '<span class="d">' + esc(b.d) + '</span>' : '');
       list.appendChild(li);
     });
   }
