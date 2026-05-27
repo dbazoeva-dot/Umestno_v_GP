@@ -140,7 +140,7 @@
   grid-template-rows: 1fr 2fr;
   gap: 1.2cqw;
   aspect-ratio: 80 / 45;
-  padding: 0;
+  padding: 1.3cqw;                /* small floor margin so blocks sit off the wall */
   border-radius: 0;               /* crisp 90° inner corners — real drawer floor */
   background:
     linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
