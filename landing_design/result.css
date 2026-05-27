@@ -151,8 +151,10 @@
 .u-res-block.is-reserve .u-res-block__cat{
   font-family: var(--f-mono); font-size: clamp(9px, 1.5cqw, 15px);
   letter-spacing: var(--tr-wide); text-transform: uppercase;
-  color: rgba(90,70,45,.62); font-weight: 500;
+  color: rgba(90,70,45,.62); font-weight: 500; white-space: nowrap;
 }
+/* narrow reserve strip → rotate the label 90° */
+.u-res-block.is-reserve.is-vlabel .u-res-block__cat{ transform: rotate(-90deg); }
 .u-res-block{
   position: relative; overflow: hidden;
   border-radius: 1.4cqw;

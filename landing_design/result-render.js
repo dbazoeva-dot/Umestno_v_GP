@@ -56,7 +56,7 @@
     });
     reserve.forEach(function (r) {
       var el = document.createElement('div');
-      el.className = 'u-res-block is-reserve';
+      el.className = 'u-res-block is-reserve' + (r.d_cm > r.w_cm * 1.4 ? ' is-vlabel' : '');
       place(el, r.x_cm, r.y_cm, r.w_cm, r.d_cm, W, D);
       el.innerHTML = '<span class="u-res-block__cat">Резерв</span>';
       inner.appendChild(el);
