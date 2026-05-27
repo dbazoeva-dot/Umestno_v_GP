@@ -260,14 +260,15 @@
 /* ── How to fold ──────────────────────────────────────────────── */
 .u-res-fold{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .u-res-fold-row{
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: flex-start; gap: 12px;
   padding: 11px 0; border-bottom: 1px solid var(--u-line);
 }
 .u-res-fold-row:last-child{ border-bottom: 0; }
-.u-res-fold__ic{ width: 30px; height: 30px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
+.u-res-fold__ic{ width: 30px; height: 30px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
 .u-res-fold__ic img{ width: 30px; height: 30px; object-fit: contain; display: block; }
-.u-res-fold__cat{ font-family: var(--f-display); font-size: var(--fs-md); font-weight: 500; color: var(--u-ink); flex: 0 0 auto; white-space: nowrap; }
-.u-res-fold__how{ font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--u-ink-2); text-align: right; margin-left: auto; flex: 1 1 auto; min-width: 0; line-height: 1.4; }
+.u-res-fold__body{ display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.u-res-fold__cat{ font-family: var(--f-display); font-size: var(--fs-md); font-weight: 500; color: var(--u-ink); }
+.u-res-fold__how{ font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--u-ink-2); line-height: 1.45; }
 .u-res-fold__note{ margin: 16px 0 0; font-size: var(--fs-xs); color: var(--u-ink-3); font-style: italic; line-height: 1.5; }
 
 /* ── Why it fits ──────────────────────────────────────────────── */

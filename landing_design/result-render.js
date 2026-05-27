@@ -109,8 +109,10 @@
       li.className = 'u-res-fold-row';
       li.innerHTML =
         '<span class="u-res-fold__ic">' + (icon ? '<img src="' + ASSET + icon + '" alt="" decoding="async" />' : '') + '</span>' +
-        '<span class="u-res-fold__cat">' + esc(label(ct)) + '</span>' +
-        '<span class="u-res-fold__how">' + esc(tip) + '</span>';
+        '<span class="u-res-fold__body">' +
+          '<span class="u-res-fold__cat">' + esc(label(ct)) + '</span>' +
+          '<span class="u-res-fold__how">' + esc(tip) + '</span>' +
+        '</span>';
       list.appendChild(li);
     });
   }

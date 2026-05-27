@@ -46,41 +46,44 @@
   GROUPS.forEach(function (g) { GROUP_RU[g.id] = g.ru; });
 
   /* ── Памятка «Как сложить» — совет по складыванию на категорию.
-     РЕДАКТИРУЕМО: формулировки можно править вручную. ── */
+     Источник: таблица библиотеки A (мэтчинг иконок + тексты). ── */
   var FOLD_TIP = {
-    socks:         'по парам, в одну ячейку',
-    panties:       'тонкими конвертиками, вертикально',
-    boxers:        'сложить вдвое, поставить вертикально',
-    sport_tops:    'свернуть нетугим рулончиком',
-    bras:          'вложить чашку в чашку, не сминая форму',
-    tights:        'свернуть рулончиком, по парам',
-    thermals:      'сложить прямоугольником, вертикально',
-    pajamas:       'сложить комплектом, вертикально',
-    nightgowns:    'сложить пополам, поставить вертикально',
-    swimwear:      'свернуть нетугим рулончиком',
-    tshirts:       'плотными прямоугольниками, вертикально',
-    longsleeves:   'сложить прямоугольником, вертикально',
-    sweaters:      'сложить стопкой, не сминая',
-    jeans:         'сложить пополам и свернуть рулоном',
-    leggings:      'свернуть рулончиком',
-    shorts:        'сложить вдвое, поставить вертикально',
-    belts:         'свернуть в нетугую спираль',
-    jewelry_large: 'разложить по отдельным ячейкам',
-    jewelry_small: 'разложить по мелким ячейкам',
-    scarves:       'свернуть рулончиком',
-    ties:          'свернуть рулончиком, по одному в ячейку'
+    panties:       'сложить тонкими конвертиками, поставить вертикально',
+    boxers:        'сложить в прямоугольник, поставить вертикально',
+    bras:          'вложить каждый в свою секцию, лямки убрать внутрь',
+    socks:         'свернуть пару в компактный рулон и поставить в ячейку',
+    tights:        'сложить в прямоугольник и поставить вертикально',
+    tank_tops:     'сложить в прямоугольник и поставить вертикально',
+    tshirts:       'сложить в прямоугольник и поставить вертикально',
+    sport_tops:    'сложить тонкими конвертиками, поставить вертикально',
+    longsleeves:   'сложить в прямоугольник и поставить вертикально',
+    pajamas:       'сложить верх и низ вместе одним прямоугольником',
+    thermals:      'сложить верх и низ вместе одним прямоугольником',
+    leggings:      'сложить по длине и поставить вертикально',
+    nightgowns:    'сложить бретели внутрь и убрать в отдельный блок',
+    jeans:         'сложить в прямоугольник, поставить вертикально',
+    shorts:        'сложить в прямоугольник, поставить вертикально',
+    sweaters:      'убрать рукава внутрь и сложить в прямоугольник',
+    swimwear:      'хранить комплектом, сложить тонким конвертиком',
+    belts:         'свернуть в нетугую спираль пряжкой наружу',
+    ties:          'свернуть свободным рулоном от узкого конца',
+    scarves:       'тонкие свернуть рулоном, плотные — прямоугольником',
+    jewelry_small: 'разложить по отдельным секциям',
+    jewelry_large: 'разложить по отдельным открытым секциям'
   };
   FOLD_TIP.socks_regular = FOLD_TIP.socks;
 
-  /* иконка категории (файлы в landing_design/assets) */
+  /* иконка категории (файлы в landing_design/assets).
+     ВНИМАНИЕ: pajamas.png и tank_top.png пока отсутствуют в assets. */
   var FOLD_ICON = {
-    socks: 'socks.png', panties: 'panties.png', boxers: 'boxers.png',
-    sport_tops: 'sport_tops.png', bras: 'bras.png', tights: 'tights.png',
-    thermals: 'themals.png', nightgowns: 'nightgpwn.png', swimwear: 'swimwear.png',
-    tshirts: 'tshirt.png', longsleeves: 'longsleeve.png', sweaters: 'sweater.png',
-    jeans: 'jeans.png', leggings: 'leggins.png', shorts: 'shorts.png',
-    belts: 'belt.png', jewelry_large: 'jewelry_large.png',
-    jewelry_small: 'jewelry_small.png', scarves: 'scarves.png', ties: 'ties.png'
+    panties: 'panties.png', boxers: 'boxers.png', bras: 'bras.png',
+    socks: 'socks.png', tights: 'tights.png', tank_tops: 'tank_top.png',
+    tshirts: 'tshirt.png', sport_tops: 'sport_tops.png', longsleeves: 'longsleeve.png',
+    pajamas: 'pajamas.png', thermals: 'thermals.png', leggings: 'leggings.png',
+    nightgowns: 'nightgown.png', jeans: 'jeans.png', shorts: 'shorts.png',
+    sweaters: 'sweater.png', swimwear: 'swimwear.png', belts: 'belt.png',
+    ties: 'ties.png', scarves: 'scarves.png',
+    jewelry_small: 'jewelry_small.png', jewelry_large: 'jewelry_large.png'
   };
   FOLD_ICON.socks_regular = FOLD_ICON.socks;
 
