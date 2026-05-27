@@ -16,16 +16,18 @@
     var ys = zones.map(function (z) { return z.y_cm + z.assigned_d_cm; }).concat(reserve.map(function (r) { return r.y_cm + r.d_cm; }));
     return { W: Math.max.apply(null, xs.length ? xs : [1]), D: Math.max.apply(null, ys.length ? ys : [1]) };
   }
-  // оставить только прямоугольники, не вложенные в более крупный (free_rectangles перекрываются)
-  function cleanReserve(rects) {
-    return rects.filter(function (r) {
-      if (r.w_cm < 2 || r.d_cm < 2) return false;
-      return !rects.some(function (o) {
-        return o !== r && o.x_cm <= r.x_cm && o.y_cm <= r.y_cm &&
-          (o.x_cm + o.w_cm) >= (r.x_cm + r.w_cm) && (o.y_cm + o.d_cm) >= (r.y_cm + r.d_cm) &&
-          (o.w_cm * o.d_cm) > (r.w_cm * r.d_cm);
-      });
+  // Резерв = одна правильная прямоугольная зона. Из перекрывающихся free_rectangles
+  // берём самый «полезный»: короткая сторона ≥ порога (туда реально влезет органайзер/
+  // коробка), максимальная площадь. Мелочь и тонкие сливеры резервом не помечаем.
+  var RESERVE_MIN_SIDE = 8; // см
+  function bestReserve(rects) {
+    var best = null, bestArea = 0;
+    (rects || []).forEach(function (r) {
+      if (Math.min(r.w_cm, r.d_cm) < RESERVE_MIN_SIDE) return;
+      var area = r.w_cm * r.d_cm;
+      if (area > bestArea) { best = r; bestArea = area; }
     });
+    return best ? [best] : [];
   }
   function place(el, x, y, w, d, W, D) {
     el.style.left = 'calc(' + round(x / W * 100) + '% + 0.55cqw)';
@@ -38,7 +40,7 @@
     var inner = document.querySelector('.u-res-scheme__inner');
     if (!inner || !scheme) return;
     var zones = scheme.assigned_zones || [];
-    var reserve = cleanReserve(scheme.reserve_zones || []);
+    var reserve = bestReserve(scheme.reserve_zones || []);
     var e = extents(zones, scheme.reserve_zones || []);
     var W = (drawer && drawer.w_cm) || e.W, D = (drawer && drawer.d_cm) || e.D;
 
@@ -72,7 +74,7 @@
     table.innerHTML = '';
     if (head) table.appendChild(head);
     var zones = scheme.assigned_zones || [];
-    var reserve = cleanReserve(scheme.reserve_zones || []);
+    var reserve = bestReserve(scheme.reserve_zones || []);
 
     function row(numHtml, what, size) {
       var r = document.createElement('div');
