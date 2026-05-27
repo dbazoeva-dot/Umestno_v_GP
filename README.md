@@ -22,33 +22,42 @@
 
 ## Архитектура
 
+Фронт — **статические страницы (HTML/CSS/JS)**, уже готовые в этом репозитории.
+Бэкенд — лёгкий сервер на **Node** (чтобы запускать TS-движок `runUmestnoEngine`
+напрямую, без переписывания). **React/Next.js для MVP не нужны.**
+
 ```
 Браузер
   ↓ HTTPS
-Next.js (TimeWeb) — web/
-  ├── Страницы (React)
-  ├── /api/calculate    — движок + SKU matching + INSERT configurations
-  ├── /api/order/create — INSERT orders + YooKassa createPayment
+Статический фронт (этот репозиторий: /, /configure, /no-fit, /result)
+  ↓ fetch
+Node API (сервер)
+  ├── /api/calculate       — движок + SKU matching + INSERT configurations
+  ├── /api/order/create    — INSERT orders + YooKassa createPayment
   ├── /api/payment/webhook — UPDATE status=paid + email + CRM
   ├── /api/result/[token]  — схема + органайзеры
-  └── /api/pdf/[token]     — PDF через @react-pdf/renderer
+  └── /api/pdf/[token]     — PDF на бэке
         ↓
-PostgreSQL (TimeWeb) — конфигурации, заказы, SKU каталог
+PostgreSQL — конфигурации, заказы, SKU каталог
 ```
 
 - Движок (`runUmestnoEngine`) и SKU каталог — **только на сервере**, не выходят на фронт.
-- Всё в одном Next.js приложении (`web/`).
+- Сервер на Node — потому что движок на TypeScript.
+- Серверная часть (API, БД, платежи, письма, PDF) — **этап 2**; сейчас в репозитории только фронт + движок.
 
 ## Структура репозитория
 
 ```
-engine/          — движок расчёта схем хранения
-  libraries/     — библиотеки A–E (volumeToCount, storageUnitProfile, skuCatalog…)
-  sku/           — matchSkus
-  scripts/       — buildSkuDb.py, exportSkuTs.py
-  db/            — schema.sql, sku_catalog.db
-web/             — Next.js приложение
-  src/app/       — страницы и API routes
+engine/            — движок расчёта схем хранения (TypeScript)
+  libraries/       — библиотеки A–E (volumeToCount, storageUnitProfile, skuCatalog…)
+  sku/             — matchSkus
+  scripts/         — buildSkuDb.py, exportSkuTs.py
+  db/              — schema.sql, sku_catalog.db
+index.html         — лендинг
+landing_design/    — стили и скрипты витрины (result.css, result-render.js…)
+result/            — страница результата (статическая)
+configure/, no-fit/ — конфигуратор и страница «не подошло»
+(server/           — Node API: планируется, этап 2)
 ```
 
 ## Внешние сервисы
@@ -62,13 +71,13 @@ web/             — Next.js приложение
 
 ## Хостинг и домен
 
-- **TimeWeb** — Next.js + PostgreSQL (~1000 ₽/месяц)
+- **TimeWeb** — Node + PostgreSQL (~1000 ₽/месяц)
 - **Домен** `umestno-home.ru` куплен на Nethouse → DNS направить на TimeWeb
 
 ## PDF
 
-Генерация на бэкенде через `@react-pdf/renderer`.  
-Отправляется автоматически на email после подтверждения оплаты.
+Генерируется на бэке (Node) после подтверждения оплаты и отправляется на email.
+Конкретная библиотека — на этапе серверной разработки.
 
 ## Разработка
 
@@ -82,8 +91,8 @@ npm run calibration:json:four-item-stress
 python3 engine/scripts/buildSkuDb.py   # Excel → engine/db/sku_catalog.db
 python3 engine/scripts/exportSkuTs.py  # DB → skuCatalogData.ts (только для тестов)
 
-# Next.js
-cd web && npm run dev
+# Фронт — статические страницы: открыть напрямую или поднять любой статик-сервер
+python3 -m http.server   # затем http://localhost:8000/result/
 ```
 
 Подробности по движку — в [README_ENGINE.md](./README_ENGINE.md).
