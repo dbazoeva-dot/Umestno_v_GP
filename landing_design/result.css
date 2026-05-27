@@ -119,10 +119,10 @@
    meeting at 45° corner seams (decoration — independent of the renderer) */
 .u-res-frame{ position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
 .u-res-frame__w{ position: absolute; inset: 0; background-size: cover; background-position: center; }
-.u-res-frame__w--t{ background-image: url(assets/tex-wood-v.webp); clip-path: polygon(0 0, 100% 0, calc(100% - var(--res-wall)) var(--res-wall), var(--res-wall) var(--res-wall)); }
-.u-res-frame__w--b{ background-image: url(assets/tex-wood-v.webp); clip-path: polygon(0 100%, var(--res-wall) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), 100% 100%); }
-.u-res-frame__w--l{ background-image: url(assets/tex-wood.webp);   clip-path: polygon(0 0, var(--res-wall) var(--res-wall), var(--res-wall) calc(100% - var(--res-wall)), 0 100%); }
-.u-res-frame__w--r{ background-image: url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
+.u-res-frame__w--t{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood-v.webp); clip-path: polygon(0 0, 100% 0, calc(100% - var(--res-wall)) var(--res-wall), var(--res-wall) var(--res-wall)); }
+.u-res-frame__w--b{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood-v.webp); clip-path: polygon(0 100%, var(--res-wall) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), 100% 100%); }
+.u-res-frame__w--l{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood.webp);   clip-path: polygon(0 0, var(--res-wall) var(--res-wall), var(--res-wall) calc(100% - var(--res-wall)), 0 100%); }
+.u-res-frame__w--r{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
 /* thin shading along the mitre seams + inner lip for depth */
 .u-res-frame::after{
   content: ""; position: absolute; inset: var(--res-wall); border-radius: 1px;
@@ -135,7 +135,7 @@
   grid-template-rows: 1fr 2fr;
   gap: 1.2cqw;
   aspect-ratio: 80 / 45;
-  padding: 1cqw;
+  padding: 0;
   border-radius: 2px;
   background:
     linear-gradient(rgba(247,238,219,.55), rgba(247,238,219,.55)),
