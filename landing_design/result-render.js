@@ -200,7 +200,40 @@
     renderWarnings(payload);
   }
 
+  // Uniform zoom: render the upper block at a fixed design width and scale it
+  // to the available width, so the layout looks identical at every desktop
+  // width. Transform doesn't reserve layout space, so we set the wrapper height.
+  function initZoom() {
+    var zoom = document.querySelector('.u-res-zoom');
+    if (!zoom) return;
+    var grid = zoom.querySelector('.u-res-grid');
+    if (!grid) return;
+    var DW = parseFloat(getComputedStyle(grid).getPropertyValue('--res-dw')) || 1720;
+    var mq = window.matchMedia('(max-width: 900px)');
+    function apply() {
+      if (mq.matches) {                       // stacked mobile — no zoom
+        grid.style.removeProperty('--res-zoom');
+        zoom.style.height = '';
+        return;
+      }
+      var z = Math.min(1, zoom.clientWidth / DW);
+      grid.style.setProperty('--res-zoom', z);
+      zoom.style.height = (grid.offsetHeight * z) + 'px';
+    }
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(apply);
+      ro.observe(zoom);                        // width changes (viewport)
+      ro.observe(grid);                        // content height changes (warn, bullets)
+    }
+    (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply));
+    window.addEventListener('resize', apply);
+    apply();
+  }
+  if (document.readyState !== 'loading') initZoom();
+  else document.addEventListener('DOMContentLoaded', initZoom);
+
   global.UMESTNO = global.UMESTNO || {};
+  global.UMESTNO.initZoom = initZoom;
   global.UMESTNO.renderScheme = renderScheme;
   global.UMESTNO.renderSizesTable = renderSizesTable;
   global.UMESTNO.renderFolding = renderFolding;
