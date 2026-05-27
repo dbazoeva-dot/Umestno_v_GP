@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=Commissioner:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../landing_design/styles.css" />
 <link rel="stylesheet" href="../landing.css" />
-<link rel="stylesheet" href="../landing_design/result.css?v=13" />
+<link rel="stylesheet" href="../landing_design/result.css?v=14" />
 </head>
 <body>
 
@@ -204,6 +204,23 @@
       </div>
     </div>
     </div>
+    <script>
+      /* Uniform zoom applied BEFORE first paint (here, not on DOMContentLoaded)
+         so the layout never shifts after load — keeps CLS ~0. */
+      (function () {
+        var w = document.querySelector('.u-res-zoom');
+        if (!w) return;
+        var grid = w.querySelector('.u-res-grid');
+        var DW = parseFloat(getComputedStyle(grid).getPropertyValue('--res-dw')) || 1720;
+        function apply() {
+          if (window.matchMedia('(max-width: 900px)').matches) { w.classList.remove('is-zoomed'); return; }
+          grid.style.setProperty('--res-zoom', Math.min(1, w.clientWidth / DW));
+          w.classList.add('is-zoomed');
+        }
+        apply();
+        window.addEventListener('resize', apply);
+      })();
+    </script>
 
     <!-- ── Products by block ────────────────────────────────── -->
     <section class="u-res-section">
@@ -449,13 +466,13 @@
 
 <script src="../app.js"></script>
 <script src="../landing_design/content-labels.js?v=6"></script>
-<script src="../landing_design/result-render.js?v=8"></script>
+<script src="../landing_design/result-render.js?v=9"></script>
 <script src="sample-payload.js?v=2"></script>
 <script>
   // В проде payload приходит от бэкенда по токену; здесь — демо-payload.
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.UMESTNO && window.UMESTNO_PAYLOAD) window.UMESTNO.render(window.UMESTNO_PAYLOAD);
-  });
+  // Рендерим синхронно (скрипт в конце body, DOM уже разобран) — до первой
+  // отрисовки, чтобы подмена контента не добавляла сдвиг (CLS).
+  if (window.UMESTNO && window.UMESTNO_PAYLOAD) window.UMESTNO.render(window.UMESTNO_PAYLOAD);
 </script>
 </body>
 </html>

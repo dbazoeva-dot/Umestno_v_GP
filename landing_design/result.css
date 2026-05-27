@@ -99,21 +99,21 @@
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
 /* ── Uniform zoom of the upper result block ───────────────────────
-   The grid renders at a fixed design width (etalon) and is scaled to fit
-   the available width, so the layout looks identical at every desktop
-   width (zoom) instead of reflowing. JS sets --res-zoom and the wrapper
-   height (transform doesn't reserve layout space on its own). */
-.u-res-zoom{ position: relative; }
-.u-res-zoom > .u-res-grid{
-  position: absolute; top: 0; left: 0;
+   The grid renders at a fixed design width (etalon) and is uniformly
+   zoomed to the available width, so the layout looks identical at every
+   desktop width (zoom) instead of reflowing. We use the `zoom` property
+   (not transform) so it stays in normal flow and reserves its own height —
+   no absolute positioning, no JS height management, no overlap on load.
+   Before JS sets --res-zoom the grid stays in normal responsive flow
+   (safe fallback), then JS adds .is-zoomed. */
+.u-res-zoom.is-zoomed{ overflow: hidden; }
+.u-res-zoom.is-zoomed > .u-res-grid{
   width: var(--res-dw, 1720px);
-  transform-origin: top left;
-  transform: scale(var(--res-zoom, 1));
+  zoom: var(--res-zoom, 1);
 }
 @media (max-width: 900px){
   /* stacked mobile layout — drop the zoom, flow normally */
-  .u-res-zoom{ height: auto !important; }
-  .u-res-zoom > .u-res-grid{ position: static; width: auto; transform: none; }
+  .u-res-zoom.is-zoomed > .u-res-grid{ width: auto; zoom: 1; }
 }
 
 /* ── Main grid ────────────────────────────────────────────────────
