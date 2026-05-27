@@ -98,18 +98,35 @@
 .u-res-h--lg h2::before{ content: none; }
 .u-res-h--lg p{ margin: 0; font-size: var(--fs-md); max-width: 64ch; }
 
-/* ── Main grid ────────────────────────────────────────────────── */
-.u-res-grid{ display: grid; grid-template-columns: 7fr 3fr; gap: 24px; align-items: start; }
-.u-res-grid--even{ grid-template-columns: 1fr 1fr; align-items: start; }
+/* ── Main grid ────────────────────────────────────────────────────
+   Фиксированный скелет: обе колонки растягиваются на одну высоту, низ
+   совпадает. «Гибкие» элементы (таблица размеров слева, кнопки справа)
+   поглощают разницу высот, поэтому контейнеры стоят на месте независимо
+   от количества контента внутри. */
+.u-res-grid{ display: grid; grid-template-columns: 7fr 3fr; gap: 24px; align-items: stretch; }
+.u-res-grid--even{ grid-template-columns: 1fr 1fr; align-items: stretch; }
 .u-res-grid__col{ display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+/* карточка-«наполнитель» (таблица размеров) тянется до низа колонки */
+.u-res-grid__col > .u-res-card--fill{ flex: 1 1 auto; }
+/* кнопки сохранения всегда прибиты к нижнему краю правой колонки */
+.u-res-grid__col > .u-res-save-mini{ margin-top: auto; }
 
 /* ── Scheme (drawer top view) ─────────────────────────────────────
    Real textures: oak wood (frame + floor) and a neutral fabric grain
    tinted per block. Template for the client-rendered scheme. */
+/* fixed drawing area: card height stays constant; drawer fits inside (letterbox)
+   so a flat-long or tall drawer never resizes the container, only its own shape */
+.u-res-stage{
+  aspect-ratio: 80 / 45;
+  container-type: size;          /* enables cqw/cqh for the fit calc below */
+  display: flex; align-items: center; justify-content: center;
+}
 .u-res-scheme{
   --res-wall: 1.7cqw;            /* drawer wall thickness — proportional (cqw) */
+  --ar: 1.7778;                  /* drawer W/D — set by renderer; default 80/45 */
   position: relative;
-  display: flow-root;            /* contain the inner's margin (no collapse) */
+  aspect-ratio: var(--ar);
+  width: min(100cqw, calc(100cqh * var(--ar)));  /* largest box of ratio --ar fitting the stage */
   container-type: inline-size;   /* scheme scales as one self-similar unit (cqw) */
   border-radius: 3px;            /* near-square corners — real drawer */
   background:                    /* wood base — matches walls so no beige seam */
@@ -133,13 +150,12 @@
   pointer-events: none;
 }
 .u-res-scheme__inner{
-  position: relative;
-  margin: var(--res-wall);       /* wall inset — cqw resolves vs scheme, matches frame */
+  position: absolute;
+  inset: var(--res-wall);        /* fill scheme minus walls — matches frame */
   display: grid;
   grid-template-columns: 4fr 3fr 3fr;
   grid-template-rows: 1fr 2fr;
   gap: 1.2cqw;
-  aspect-ratio: 80 / 45;
   padding: 1.3cqw;                /* small floor margin so blocks sit off the wall */
   border-radius: 0;               /* crisp 90° inner corners — real drawer floor */
   background:

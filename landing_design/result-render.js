@@ -42,8 +42,9 @@
     var e = extents(zones, scheme.reserve_zones || []);
     var W = (drawer && drawer.w_cm) || e.W, D = (drawer && drawer.d_cm) || e.D;
 
+    var schemeEl = inner.closest('.u-res-scheme');
+    if (schemeEl) schemeEl.style.setProperty('--ar', round(W / D));
     inner.classList.add('is-data');
-    inner.style.aspectRatio = W + ' / ' + D;
     inner.innerHTML = '';
 
     zones.forEach(function (z, i) {
