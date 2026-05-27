@@ -49,6 +49,7 @@
     zones.forEach(function (z, i) {
       var el = document.createElement('div');
       el.className = 'u-res-block b' + ((i % 4) + 1);
+      if (z.zone_id) el.dataset.zone = z.zone_id;
       place(el, z.x_cm, z.y_cm, z.assigned_w_cm, z.assigned_d_cm, W, D);
       el.innerHTML = '<span class="u-res-block__n">Блок ' + (i + 1) + '</span>' +
         '<span class="u-res-block__cat">' + label(z.content_type) + '</span>';
@@ -88,15 +89,123 @@
     });
   }
 
+  var ASSET = '../landing_design/assets/';
+  function C() { return global.UMESTNO_CONTENT || {}; }
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+
+  // «Как сложить вещи» — строка на каждую назначенную категорию
+  function renderFolding(result) {
+    var list = document.querySelector('.u-res-fold');
+    if (!list) return;
+    var rows = result.what_to_store_where || [];
+    if (!rows.length) return;
+    var c = C();
+    list.innerHTML = '';
+    rows.forEach(function (r) {
+      var ct = r.content_type;
+      var tip = (c.foldTip && c.foldTip(ct)) || r.instruction || '';
+      var icon = c.foldIcon && c.foldIcon(ct);
+      var li = document.createElement('li');
+      li.className = 'u-res-fold-row';
+      li.innerHTML =
+        '<span class="u-res-fold__ic">' + (icon ? '<img src="' + ASSET + icon + '" alt="" decoding="async" />' : '') + '</span>' +
+        '<span class="u-res-fold__cat">' + esc(label(ct)) + '</span>' +
+        '<span class="u-res-fold__how">' + esc(tip) + '</span>';
+      list.appendChild(li);
+    });
+  }
+
+  // «Почему эта схема подходит» — факты ввода + человеческие тексты правил
+  function renderWhy(payload) {
+    var list = document.querySelector('.u-res-why');
+    if (!list) return;
+    var scheme = payload.scheme || payload.scheme_payload || payload;
+    var zones = scheme.assigned_zones || [];
+    var c = C();
+    var bullets = [];
+
+    var lid = (scheme.layout_plan && scheme.layout_plan.layout_id) || '';
+    var m = lid.match(/_(convenient|capacity)_(\d+)x(\d+)/);
+    if (m) bullets.push({ t: 'Собрана под ваш ящик', d: m[2] + ' × ' + m[3] + ' см по дну' });
+
+    if (zones.length) {
+      var items = zones.map(function (z) { return label(z.content_type).toLowerCase(); }).join(', ');
+      bullets.push({ t: 'Учитывает выбранные вещи', d: items });
+    }
+    if (m) {
+      var pr = (c.priorityLabel && c.priorityLabel(m[1])) || m[1];
+      bullets.push({ t: 'Приоритет — ' + pr, d: m[1] === 'capacity' ? 'максимум вместимости в этом объёме' : 'часто используемое легко доставать' });
+    }
+
+    var applied = (payload.why_this_layout) || (scheme.layout_plan && scheme.layout_plan.rules_applied) || [];
+    applied.forEach(function (id) {
+      var rt = c.ruleText && c.ruleText(id);
+      if (rt) bullets.push(rt);
+    });
+
+    list.innerHTML = '';
+    bullets.forEach(function (b) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="t">' + esc(b.t) + '</span><span class="d">' + esc(b.d) + '</span>';
+      list.appendChild(li);
+    });
+  }
+
+  // «Обратите внимание» — только SoftHeightWarning; подстановка content_type → ru
+  function renderWarnings(payload) {
+    var section = document.querySelector('.u-res-warn-card');
+    var list = document.querySelector('.u-res-warn');
+    if (!list) return;
+    var scheme = payload.scheme || payload.scheme_payload || payload;
+    var warnings = (payload.content_warnings) || (scheme && scheme.content_warnings) || [];
+    var soft = warnings.filter(function (w) {
+      return w.warning_code === 'compressed_storage' || w.warning_code === 'deformation_risk';
+    });
+    list.innerHTML = '';
+    if (!soft.length) { if (section) section.hidden = true; return; }
+    if (section) section.hidden = false;
+    soft.forEach(function (w) {
+      var msg = w.message || '';
+      if (w.content_type) msg = msg.split(w.content_type).join(label(w.content_type));
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="u-res-warn__cat">' + esc(label(w.content_type)) + '</span>' +
+        '<span class="u-res-warn__msg">' + esc(msg) + '</span>';
+      list.appendChild(li);
+    });
+    markSchemeWarnings(soft);
+  }
+
+  // маркер «!» на блоке схемы с предупреждением (по zone_id)
+  function markSchemeWarnings(soft) {
+    soft.forEach(function (w) {
+      if (!w.zone_id) return;
+      var block = document.querySelector('.u-res-block[data-zone="' + (window.CSS && CSS.escape ? CSS.escape(w.zone_id) : w.zone_id) + '"]');
+      if (block && !block.querySelector('.u-res-block__warn')) {
+        block.classList.add('has-warn');
+        var badge = document.createElement('span');
+        badge.className = 'u-res-block__warn';
+        badge.setAttribute('aria-label', 'есть нюанс по высоте');
+        badge.textContent = '!';
+        block.appendChild(badge);
+      }
+    });
+  }
+
   function render(payload) {
     if (!payload) return;
     var scheme = payload.scheme || payload.scheme_payload || payload;
     renderScheme(scheme, payload.drawer);
     renderSizesTable(scheme);
+    renderFolding(payload);
+    renderWhy(payload);
+    renderWarnings(payload);
   }
 
   global.UMESTNO = global.UMESTNO || {};
   global.UMESTNO.renderScheme = renderScheme;
   global.UMESTNO.renderSizesTable = renderSizesTable;
+  global.UMESTNO.renderFolding = renderFolding;
+  global.UMESTNO.renderWhy = renderWhy;
+  global.UMESTNO.renderWarnings = renderWarnings;
   global.UMESTNO.render = render;
 })(window);
