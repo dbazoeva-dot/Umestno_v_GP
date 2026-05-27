@@ -107,17 +107,26 @@
    Real textures: oak wood (frame + floor) and a neutral fabric grain
    tinted per block. Template for the client-rendered scheme. */
 .u-res-scheme{
+  --res-wall: 1.7cqw;            /* drawer wall thickness — proportional (cqw) */
   position: relative;
   container-type: inline-size;   /* scheme scales as one self-similar unit (cqw) */
-  border-radius: 2cqw;
-  padding: 1.7cqw;   /* drawer wall thickness — proportional (cqw) */
-  background:
-    linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
-    url(assets/tex-wood.webp);
-  background-size: cover;
-  box-shadow:
-    0 26px 56px -26px rgba(90,65,30,.42),
-    inset 0 0 0 1.5px rgba(150,110,55,.20);
+  border-radius: 3px;            /* near-square corners — real drawer */
+  padding: var(--res-wall);
+  background: #c9ac80;           /* wood base under the mitred walls */
+  box-shadow: 0 26px 56px -26px rgba(90,65,30,.42);
+}
+/* mitred wooden frame: 4 trapezoid walls, side walls' grain rotated 90°,
+   meeting at 45° corner seams (decoration — independent of the renderer) */
+.u-res-frame{ position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
+.u-res-frame__w{ position: absolute; inset: 0; background-size: cover; background-position: center; }
+.u-res-frame__w--t{ background-image: url(assets/tex-wood-v.webp); clip-path: polygon(0 0, 100% 0, calc(100% - var(--res-wall)) var(--res-wall), var(--res-wall) var(--res-wall)); }
+.u-res-frame__w--b{ background-image: url(assets/tex-wood-v.webp); clip-path: polygon(0 100%, var(--res-wall) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), 100% 100%); }
+.u-res-frame__w--l{ background-image: url(assets/tex-wood.webp);   clip-path: polygon(0 0, var(--res-wall) var(--res-wall), var(--res-wall) calc(100% - var(--res-wall)), 0 100%); }
+.u-res-frame__w--r{ background-image: url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
+/* thin shading along the mitre seams + inner lip for depth */
+.u-res-frame::after{
+  content: ""; position: absolute; inset: var(--res-wall); border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(70,50,25,.18), 0 2px 6px rgba(70,50,25,.28);
 }
 .u-res-scheme__inner{
   position: relative;
@@ -127,7 +136,7 @@
   gap: 1.2cqw;
   aspect-ratio: 80 / 45;
   padding: 1cqw;
-  border-radius: 1.3cqw;
+  border-radius: 2px;
   background:
     linear-gradient(rgba(247,238,219,.55), rgba(247,238,219,.55)),
     url(assets/tex-wood.webp);
