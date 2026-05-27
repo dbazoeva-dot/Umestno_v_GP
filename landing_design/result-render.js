@@ -129,15 +129,8 @@
     var c = C();
     var bullets = [];
 
-    // Факты: только заголовки — детали уже показаны в чипах сверху
-    var lid = (scheme.layout_plan && scheme.layout_plan.layout_id) || '';
-    var m = lid.match(/_(convenient|capacity)_(\d+)x(\d+)/);
-    bullets.push({ t: 'Собрана под ваш ящик' });
-    if (zones.length) bullets.push({ t: 'Учитывает выбранные вещи' });
-    if (m) {
-      var pr = (c.priorityLabel && c.priorityLabel(m[1])) || m[1];
-      bullets.push({ t: 'Приоритет — ' + pr });
-    }
+    // Один общий факт — детали (размеры, вещи, приоритет) уже в чипах сверху
+    bullets.push({ t: 'Собрана под ваши индивидуальные данные' });
 
     // Правила: с пояснениями; D06 — только если есть деликатные вещи
     var hasDelicate = zones.some(function (z) { return DELICATE[z.content_type]; });
