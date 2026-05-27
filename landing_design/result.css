@@ -109,10 +109,13 @@
 .u-res-scheme{
   --res-wall: 1.7cqw;            /* drawer wall thickness — proportional (cqw) */
   position: relative;
+  display: flow-root;            /* contain the inner's margin (no collapse) */
   container-type: inline-size;   /* scheme scales as one self-similar unit (cqw) */
   border-radius: 3px;            /* near-square corners — real drawer */
-  padding: var(--res-wall);
-  background: #c9ac80;           /* wood base under the mitred walls */
+  background:                    /* wood base — matches walls so no beige seam */
+    linear-gradient(rgba(248,238,219,.32), rgba(248,238,219,.32)),
+    url(assets/tex-wood.webp);
+  background-size: cover;
   box-shadow: 0 26px 56px -26px rgba(90,65,30,.42);
 }
 /* mitred wooden frame: 4 trapezoid walls, side walls' grain rotated 90°,
@@ -125,6 +128,7 @@
 .u-res-frame__w--r{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
 .u-res-scheme__inner{
   position: relative;
+  margin: var(--res-wall);       /* wall inset — cqw resolves vs scheme, matches frame */
   display: grid;
   grid-template-columns: 4fr 3fr 3fr;
   grid-template-rows: 1fr 2fr;
