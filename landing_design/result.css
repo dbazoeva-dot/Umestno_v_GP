@@ -136,6 +136,10 @@
     inset 0 2px 8px rgba(120,85,40,.34),
     inset 0 0 0 1.5px rgba(150,110,55,.22);
 }
+/* data-driven mode: blocks positioned absolutely by cm→% (renderer sets
+   left/bottom/width/height inline); the static grid demo is replaced. */
+.u-res-scheme__inner.is-data{ display: block; padding: 0; }
+.u-res-scheme__inner.is-data .u-res-block{ position: absolute; }
 .u-res-block{
   position: relative; overflow: hidden;
   border-radius: 1.4cqw;
