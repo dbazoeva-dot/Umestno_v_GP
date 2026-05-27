@@ -122,10 +122,10 @@
    meeting at 45° corner seams (decoration — independent of the renderer) */
 .u-res-frame{ position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
 .u-res-frame__w{ position: absolute; inset: 0; background-size: cover; background-position: center; }
-.u-res-frame__w--t{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood-v.webp); clip-path: polygon(0 0, 100% 0, calc(100% - var(--res-wall)) var(--res-wall), var(--res-wall) var(--res-wall)); }
-.u-res-frame__w--b{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood-v.webp); clip-path: polygon(0 100%, var(--res-wall) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), 100% 100%); }
-.u-res-frame__w--l{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood.webp);   clip-path: polygon(0 0, var(--res-wall) var(--res-wall), var(--res-wall) calc(100% - var(--res-wall)), 0 100%); }
-.u-res-frame__w--r{ background-image: linear-gradient(rgba(248,238,219,.32),rgba(248,238,219,.32)), url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
+.u-res-frame__w--t{ background-image: linear-gradient(to bottom, rgba(253,246,230,.36) 0, rgba(70,48,22,.34) var(--res-wall)), url(assets/tex-wood-v.webp); clip-path: polygon(0 0, 100% 0, calc(100% - var(--res-wall)) var(--res-wall), var(--res-wall) var(--res-wall)); }
+.u-res-frame__w--b{ background-image: linear-gradient(to top,    rgba(253,246,230,.36) 0, rgba(70,48,22,.34) var(--res-wall)), url(assets/tex-wood-v.webp); clip-path: polygon(0 100%, var(--res-wall) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), 100% 100%); }
+.u-res-frame__w--l{ background-image: linear-gradient(to right,  rgba(253,246,230,.36) 0, rgba(70,48,22,.34) var(--res-wall)), url(assets/tex-wood.webp);   clip-path: polygon(0 0, var(--res-wall) var(--res-wall), var(--res-wall) calc(100% - var(--res-wall)), 0 100%); }
+.u-res-frame__w--r{ background-image: linear-gradient(to left,   rgba(253,246,230,.36) 0, rgba(70,48,22,.34) var(--res-wall)), url(assets/tex-wood.webp);   clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--res-wall)) calc(100% - var(--res-wall)), calc(100% - var(--res-wall)) var(--res-wall)); }
 .u-res-scheme__inner{
   position: relative;
   margin: var(--res-wall);       /* wall inset — cqw resolves vs scheme, matches frame */
@@ -135,12 +135,17 @@
   gap: 1.2cqw;
   aspect-ratio: 80 / 45;
   padding: 0;
-  border-radius: 2px;
+  border-radius: 0;               /* crisp 90° inner corners — real drawer floor */
   background:
-    linear-gradient(rgba(248,238,219,.32), rgba(248,238,219,.32)),
+    linear-gradient(rgba(248,238,219,.30), rgba(248,238,219,.30)),
     url(assets/tex-wood.webp);
   background-size: cover;
-  box-shadow: inset 0 2px 8px rgba(120,85,40,.28);
+  box-shadow:                     /* floor seated below walls — shadow on all 4 edges */
+    inset 0 0 0 1px rgba(58,40,18,.34),
+    inset 0 7px 13px -4px rgba(50,34,15,.5),
+    inset 0 -5px 11px -4px rgba(50,34,15,.3),
+    inset 7px 0 13px -5px rgba(50,34,15,.36),
+    inset -7px 0 13px -5px rgba(50,34,15,.36);
 }
 /* data-driven mode: blocks positioned absolutely by cm→% (renderer sets
    left/bottom/width/height inline); the static grid demo is replaced. */
