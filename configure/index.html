@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css" />
 <link rel="stylesheet" href="../landing.css" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
+<link rel="stylesheet" href="../landing_design/consent.css?v=1" />
 </head>
 <body>
 
@@ -314,6 +315,7 @@
         <a href="../privacy/">Политика конфиденциальности</a>
         <a href="../refunds/">Политика возвратов</a>
         <a href="../contacts/">Контакты</a>
+        <a href="#" onclick="event.preventDefault(); umestnoCookieSettings(); return false;">Настройки cookies</a>
       </div>
       <div class="u-footer__col">
         <h6>Соцсети</h6>
@@ -333,5 +335,6 @@
 
 <script src="../app.js"></script>
 <script src="../calc.js"></script>
+<script src="../landing_design/consent.js?v=1" defer></script>
 </body>
 </html>

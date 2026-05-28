@@ -1,0 +1,47 @@
+/* ── Cookie consent banner ───────────────────────────────────────
+   Компактная плашка внизу экрана с двумя кнопками. Появляется при первом
+   заходе или при клике на «Настройки cookies» в подвале. Хранит выбор в
+   localStorage, сам решает, грузить ли аналитику. */
+.u-cookie{
+  position: fixed; left: 16px; right: 16px; bottom: 16px;
+  z-index: 9999;
+  background: #2E2E2E; color: #FAFAFA;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center;
+  box-shadow: 0 16px 48px -12px rgba(0,0,0,.45);
+  font-family: var(--f-sans, "Manrope", system-ui, sans-serif);
+  font-size: 14px; line-height: 1.5;
+  animation: u-cookie-in .25s ease-out;
+}
+@keyframes u-cookie-in{ from{ opacity:0; transform: translateY(8px) } to{ opacity:1; transform: none } }
+
+.u-cookie__text{ color: rgba(255,255,255,.92); max-width: 64ch; }
+.u-cookie__text a{ color: #E8A78A; text-decoration: underline; text-underline-offset: 3px; }
+.u-cookie__text a:hover{ color: #F0BCA6; }
+
+.u-cookie__btns{ display: flex; gap: 10px; flex-shrink: 0; }
+.u-cookie__btns button{
+  border: 1px solid rgba(255,255,255,.22);
+  background: transparent;
+  color: #FAFAFA;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.u-cookie__btns button:hover{ border-color: rgba(255,255,255,.45); }
+.u-cookie__btns button.primary{
+  background: #7D8C72; border-color: transparent;
+}
+.u-cookie__btns button.primary:hover{ background: #69785F; }
+
+@media (max-width: 640px){
+  .u-cookie{ grid-template-columns: 1fr; gap: 12px; padding: 14px 16px; }
+  .u-cookie__btns{ width: 100%; }
+  .u-cookie__btns button{ flex: 1; padding: 12px 14px; }
+}
