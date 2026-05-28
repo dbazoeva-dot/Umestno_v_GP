@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Технические страницы — не индексировать
+# Technical pages — not for indexing
 Disallow: /no-fit/
 Disallow: /result/
 
