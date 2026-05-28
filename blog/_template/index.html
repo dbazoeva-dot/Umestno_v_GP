@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ru" data-fontpair="garamond">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- ──────────────────────────────────────────────────────────────────
+     ШАБЛОН СТАТЬИ. Скопируй эту папку (`_template/`) → переименуй в slug
+     статьи (только латиница, цифры, дефисы — это станет URL).
+     После — пройдись по всем меткам «[…]» и подставь свой текст.
+     Никаких сборок, фреймворков и магии — обычный HTML.
+─────────────────────────────────────────────────────────────────── -->
+
+<title>[Заголовок статьи] | Журнал Уместно</title>
+<meta name="description" content="[Короткий лид 1–2 предложения для поиска и соцсетей. До ~160 символов.]" />
+<meta name="theme-color" content="#FFFDF9" />
+
+<!-- Open Graph — превью при шеринге в соцсетях/мессенджерах -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="[Заголовок статьи]" />
+<meta property="og:description" content="[Тот же короткий лид, что и выше.]" />
+<meta property="og:image" content="https://umestno-home.ru/assets/images/blog/[файл-обложки].webp" />
+<meta property="og:url" content="https://umestno-home.ru/blog/[slug-статьи]/" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../landing_design/styles.css" />
+<link rel="stylesheet" href="../../landing.css" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=1" />
+
+<!-- Структурированные данные Article для Яндекса/Google -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "[Заголовок статьи]",
+  "description": "[Короткий лид.]",
+  "image": "https://umestno-home.ru/assets/images/blog/[файл-обложки].webp",
+  "datePublished": "2026-05-26",
+  "author": { "@type": "Organization", "name": "Уместно" },
+  "publisher": { "@type": "Organization", "name": "Уместно" }
+}
+</script>
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header u-header--sub">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../../" class="u-logo">у<span class="m">М</span>естно</a>
+    <nav class="u-nav">
+      <div class="u-navgroup">
+        <a href="../../" class="u-navgroup__top">О сервисе<span class="u-navgroup__caret" aria-hidden="true"></span></a>
+        <div class="u-navgroup__sub">
+          <a href="../../#how">Как это работает</a>
+          <a href="../../#result">Результат</a>
+          <a href="../../#reviews">Отзывы</a>
+          <a href="../../#faq">FAQ</a>
+        </div>
+      </div>
+      <a href="../" class="u-navgroup__top">Журнал</a>
+    </nav>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../../" class="u-mnav-top">О сервисе</a>
+    <div class="u-mnav-sub">
+      <a href="../../#how">Как это работает</a>
+      <a href="../../#result">Результат</a>
+      <a href="../../#reviews">Отзывы</a>
+      <a href="../../#faq">FAQ</a>
+    </div>
+    <a href="../" class="u-mnav-top">Журнал</a>
+  </nav>
+</header>
+
+<main class="u-article">
+  <div class="u-container">
+
+    <a href="../" class="u-article__back">← Все статьи</a>
+
+    <header class="u-article__head">
+      <div class="u-blog__kicker">[Категория, например: Гайд]</div>
+      <h1 class="u-article__title">[Заголовок статьи]</h1>
+      <p class="u-article__lede">[Лид: 1–2 предложения, что в статье и зачем читать.]</p>
+      <div class="u-blog__meta">
+        <span>[Дата публикации, например: 26 мая 2026]</span>
+        <span>[N минут чтения]</span>
+      </div>
+    </header>
+
+    <figure class="u-article__hero">
+      <img src="../../assets/images/blog/[файл-обложки].webp" alt="" loading="eager" decoding="async" />
+    </figure>
+
+    <article class="u-article__body">
+      <!-- Первый абзац = «лид внутри статьи». На него навешивается дроп-капс
+           (первая буква крупная декоративная) — ничего не надо делать руками. -->
+      <p>[Первый абзац — задаёт тон. Должен сразу втягивать в чтение.]</p>
+
+      <p>[Обычный абзац. Просто пиши как пишется. Жирность — <strong>strong</strong>, курсив — <em>em</em>, ссылка — <a href="../../">внутрь сайта</a>.]</p>
+
+      <h2>[Подзаголовок второго уровня]</h2>
+      <p>[Текст под подзаголовком.]</p>
+
+      <h3>[Маленький подзаголовок]</h3>
+      <p>[Текст под маленьким подзаголовком.]</p>
+
+      <ul>
+        <li>[Пункт списка]</li>
+        <li>[Пункт списка]</li>
+      </ul>
+
+      <blockquote>
+        [Цитата или ключевая мысль крупно — это блок-цитата, выделяется крупным курсивом.]
+      </blockquote>
+
+      <figure>
+        <img src="../../assets/images/blog/[картинка-в-статье].webp" alt="" loading="lazy" />
+        <figcaption>[Подпись к картинке]</figcaption>
+      </figure>
+
+      <p>[Заключительный абзац. Что забрать с собой, какой следующий шаг.]</p>
+
+      <div class="u-article__end" aria-hidden="true"></div>
+    </article>
+
+    <footer class="u-article__more">
+      <div class="u-article__more-h">Дальше</div>
+      <a href="../">← Все статьи в журнале</a>
+    </footer>
+
+  </div>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../../" class="u-logo">у<span class="m">М</span>естно</a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../../#how">Как это работает</a>
+        <a href="../../#result">Результат</a>
+        <a href="../../#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Журнал</h6>
+        <a href="../">Все статьи</a>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ru" data-fontpair="garamond">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Журнал | Уместно — про порядок, пространство и хранение</title>
+<meta name="description" content="Журнал Уместно — статьи об организации хранения, проектировании пространства и работе с вещами. Принципы, конкретные приёмы, истории." />
+<meta name="theme-color" content="#FFFDF9" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Журнал | Уместно" />
+<meta property="og:description" content="Статьи об организации хранения и работе с пространством." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../landing_design/styles.css" />
+<link rel="stylesheet" href="../landing.css" />
+<link rel="stylesheet" href="../landing_design/blog.css?v=1" />
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header u-header--sub">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+    <nav class="u-nav">
+      <div class="u-navgroup">
+        <a href="../" class="u-navgroup__top">О сервисе<span class="u-navgroup__caret" aria-hidden="true"></span></a>
+        <div class="u-navgroup__sub">
+          <a href="../#how">Как это работает</a>
+          <a href="../#result">Результат</a>
+          <a href="../#reviews">Отзывы</a>
+          <a href="../#faq">FAQ</a>
+        </div>
+      </div>
+      <a href="./" class="u-navgroup__top">Журнал</a>
+    </nav>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../" class="u-mnav-top">О сервисе</a>
+    <div class="u-mnav-sub">
+      <a href="../#how">Как это работает</a>
+      <a href="../#result">Результат</a>
+      <a href="../#reviews">Отзывы</a>
+      <a href="../#faq">FAQ</a>
+    </div>
+    <a href="./" class="u-mnav-top">Журнал</a>
+  </nav>
+</header>
+
+<!-- ─────────────────────────────────────────────────────────
+     ЛИСТИНГ ЖУРНАЛА.
+     Каждая статья — отдельная папка `/blog/<slug>/` с index.html
+     внутри. Ниже руками поддерживаем два списка:
+       1) featured — самая свежая/главная (одна).
+       2) grid — все остальные карточки.
+     Шаблон статьи: /blog/_template/index.html
+     Инструкция: см. раздел «Журнал — как добавить статью» в README.
+───────────────────────────────────────────────────────── -->
+<main class="u-blog">
+  <div class="u-container">
+
+    <section class="u-blog-hero">
+      <div class="u-blog__kicker">N° 01 · Журнал</div>
+      <h1 class="u-blog-hero__title">Про порядок, пространство и хранение</h1>
+      <p class="u-blog-hero__lede">Конкретные приёмы и идеи о том, как сделать ящики и шкафы удобнее в быту — без долгих ремонтов и магазинной охоты.</p>
+    </section>
+
+    <!-- featured (одна, самая важная) -->
+    <section class="u-blog-featured">
+      <a class="u-blog-featured__img" href="./kak-organizovat-yashik/" aria-hidden="true">
+        <img src="../assets/images/blog/cover-organize-drawer.webp" alt="" loading="lazy" decoding="async" />
+      </a>
+      <div class="u-blog-featured__body">
+        <div class="u-blog__kicker">Гайд</div>
+        <h2 class="u-blog-featured__title"><a href="./kak-organizovat-yashik/">Как организовать ящик: 5 шагов от хаоса к порядку</a></h2>
+        <p class="u-blog-featured__lede">Простая последовательность — от того, как измерить ящик и решить, что в нём будет жить, до того, как удержать порядок через месяц после уборки.</p>
+        <div class="u-blog__meta">
+          <span>26 мая 2026</span><span>7 минут чтения</span>
+        </div>
+      </div>
+    </section>
+
+    <hr class="u-blog__rule" />
+
+    <!-- grid — остальные статьи -->
+    <section class="u-blog-grid" aria-label="Все статьи">
+      <!-- Когда статей будет ≥ 2, добавляй карточки сюда. Шаблон одной карточки —
+           см. ниже (закомментировано). Сейчас одна заглушка-«скоро». -->
+      <article class="u-blog-card">
+        <div class="u-blog-card__img" aria-hidden="true"></div>
+        <div class="u-blog__kicker">Скоро</div>
+        <h3 class="u-blog-card__title">Следующая статья — в подготовке</h3>
+        <p class="u-blog-card__lede">Скоро здесь появятся материалы о складывании, выборе органайзеров и психологии порядка.</p>
+      </article>
+      <!--
+      <article class="u-blog-card">
+        <a class="u-blog-card__img" href="./slug-novoi-stati/">
+          <img src="../assets/images/blog/cover-slug.webp" alt="" loading="lazy" />
+        </a>
+        <div class="u-blog__kicker">Категория</div>
+        <h3 class="u-blog-card__title"><a href="./slug-novoi-stati/">Заголовок статьи</a></h3>
+        <p class="u-blog-card__lede">Краткое описание в 1–2 предложения.</p>
+        <div class="u-blog__meta"><span>Дата</span><span>N минут чтения</span></div>
+      </article>
+      -->
+    </section>
+
+  </div>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../" class="u-logo">у<span class="m">М</span>естно</a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../#how">Как это работает</a>
+        <a href="../#result">Результат</a>
+        <a href="../#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Журнал</h6>
+        <a href="./">Все статьи</a>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../app.js"></script>
+</body>
+</html>
