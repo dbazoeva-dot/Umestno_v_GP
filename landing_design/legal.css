@@ -1,0 +1,91 @@
+/* ── Legal pages (оферта, политика, возвраты, контакты) ──────────
+   Узкая читабельная колонка, аккуратная типографика для длинных
+   юридических текстов. Базовая визуальная система та же, что и на
+   остальном сайте (Cormorant Garamond, Manrope, тёплый off-white). */
+
+.u-legal{ background: var(--u-bg); padding: clamp(40px, 6vw, 96px) 0 clamp(64px, 8vw, 120px); }
+.u-legal > .u-container{ display: flex; flex-direction: column; gap: clamp(28px, 3.5vw, 48px); }
+
+.u-legal__back{
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+}
+.u-legal__back:hover{ color: var(--u-accent); }
+
+.u-legal__head{ display: flex; flex-direction: column; gap: 14px; max-width: 80ch; }
+.u-legal__kicker{
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-accent);
+}
+.u-legal__title{
+  font-family: var(--f-display); font-weight: var(--fw-display);
+  font-size: clamp(36px, 4.4vw, 56px); line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight); color: var(--u-ink); margin: 0;
+}
+.u-legal__meta{ font-family: var(--f-sans); font-size: var(--fs-sm); color: var(--u-ink-3); margin: 0; }
+
+/* основной текст — узкая колонка для удобного чтения */
+.u-legal__body{
+  max-width: 72ch; margin: 0;
+  font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.7; color: var(--u-ink);
+}
+.u-legal__body > * + *{ margin-top: 1.1em; }
+.u-legal__body h2{
+  font-family: var(--f-display); font-weight: var(--fw-display);
+  font-size: clamp(24px, 2.4vw, 32px); line-height: var(--lh-tight);
+  letter-spacing: var(--tr-snug); color: var(--u-ink);
+  margin: 2em 0 0.4em;
+}
+.u-legal__body h3{
+  font-family: var(--f-display); font-weight: var(--fw-display);
+  font-size: clamp(19px, 1.9vw, 24px); line-height: var(--lh-snug);
+  color: var(--u-ink); margin: 1.6em 0 0.3em;
+}
+.u-legal__body p{ margin: 0; }
+.u-legal__body a{ color: var(--u-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.u-legal__body a:hover{ color: var(--u-accent-d); }
+.u-legal__body em{ font-style: italic; }
+.u-legal__body strong{ font-weight: 600; }
+.u-legal__body ul, .u-legal__body ol{ padding-left: 1.2em; margin: 0; }
+.u-legal__body li{ margin: 0.4em 0; }
+
+/* контактные «карточки» (для /contacts/ — реквизиты + email) */
+.u-legal__contact{
+  display: grid; grid-template-columns: max-content 1fr; gap: 6px 24px;
+  font-family: var(--f-sans); font-size: var(--fs-md); line-height: var(--lh-relaxed);
+}
+.u-legal__contact dt{ color: var(--u-ink-3); }
+.u-legal__contact dd{ color: var(--u-ink); margin: 0; }
+
+/* «Редакция от …» в шапке (необязательная плашка) */
+.u-legal__rev{
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
+}
+
+/* ── Чекбоксы согласия (политика/оферта) ───────────────────────── */
+.u-consent{
+  display: flex; gap: 10px; align-items: flex-start;
+  font-family: var(--f-sans); font-size: var(--fs-sm); line-height: var(--lh-base);
+  color: var(--u-ink-2);
+  margin: 0;
+}
+.u-consent input[type="checkbox"]{
+  appearance: none; -webkit-appearance: none;
+  width: 18px; height: 18px; flex: 0 0 auto;
+  border: 1.5px solid var(--u-line-2); border-radius: 4px; background: var(--u-card);
+  cursor: pointer; margin: 1px 0 0;
+  position: relative; transition: background-color .15s ease, border-color .15s ease;
+}
+.u-consent input[type="checkbox"]:hover{ border-color: var(--u-sage-d); }
+.u-consent input[type="checkbox"]:checked{ background: var(--u-sage-d); border-color: var(--u-sage-d); }
+.u-consent input[type="checkbox"]:checked::after{
+  content: ""; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2L13 5'/></svg>");
+  background-size: 14px 14px; background-position: center; background-repeat: no-repeat;
+}
+.u-consent label{ cursor: pointer; user-select: none; }
+.u-consent a{ color: var(--u-accent); text-decoration: underline; text-underline-offset: 3px; }
+.u-consent a:hover{ color: var(--u-accent-d); }
