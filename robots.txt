@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Технические страницы — не индексировать
+Disallow: /no-fit/
+Disallow: /result/
+
+Sitemap: https://umestno-home.ru/sitemap.xml
