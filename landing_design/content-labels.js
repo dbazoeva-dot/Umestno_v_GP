@@ -101,6 +101,45 @@
 
   var PRIORITY_RU = { convenient: 'удобно', capacity: 'вместительно' };
 
+  /* ── Описание блока в рекомендациях ─────────────────────────────
+     Текст, который рендерится в шапке блока рекомендаций ниже категории.
+     Зависит от того, **как зона реально размещена**:
+       primary — в основном контейнере категории (cells или slots);
+       open    — в открытом отсеке (fallback, когда основной не влез).
+     Альтернативный контейнер у всех категорий = open, поэтому матрица
+     по факту двумерная: content_type × {primary | open}.
+     Комментарий рядом подсказывает, в чём именно primary для категории
+     и как лежат вещи (storage_method) — чтобы было удобно формулировать.
+
+     РЕДАКТИРУЕМО. Тексты сейчас пустые — заполни их. ── */
+  var BLOCK_DESC = {
+    // ── БЕЛЬЁ ──────────────────────────────────────────────
+    socks:         { primary: '' /* cells   · roll */,                 open: '' },
+    panties:       { primary: '' /* cells   · folded_squares_thin */,  open: '' },
+    boxers:        { primary: '' /* slots   · folded_squares_medium */,open: '' },
+    sport_tops:    { primary: '' /* slots   · flat */,                 open: '' },
+    bras:          { primary: '' /* slots   · delicate_stack */,       open: '' },
+    tights:        { primary: '' /* cells   · roll */,                 open: '' },
+    thermals:      { primary: '' /* slots   · folded_squares_bulky */, open: '' },
+    pajamas:       { primary: '' /* slots   · folded_squares_bulky */, open: '' },
+    nightgowns:    { primary: '' /* slots   · folded_squares_medium */,open: '' },
+    swimwear:      { primary: '' /* slots   · flat */,                 open: '' },
+    // ── ОДЕЖДА ─────────────────────────────────────────────
+    tshirts:       { primary: '' /* slots   · folded_squares_medium */,open: '' },
+    longsleeves:   { primary: '' /* slots   · folded_squares_thin */,  open: '' },
+    sweaters:      { primary: '' /* slots   · folded_squares_bulky */, open: '' },
+    jeans:         { primary: '' /* slots   · folded_squares_bulky */, open: '' },
+    leggings:      { primary: '' /* slots   · folded_squares_thin */,  open: '' },
+    shorts:        { primary: '' /* slots   · folded_squares_medium */,open: '' },
+    // ── АКСЕССУАРЫ ─────────────────────────────────────────
+    belts:         { primary: '' /* cells   · roll */,                 open: '' },
+    jewelry_large: { primary: '' /* cells   · flat */,                 open: '' },
+    jewelry_small: { primary: '' /* cells   · flat */,                 open: '' },
+    scarves:       { primary: '' /* slots   · roll */,                 open: '' },
+    ties:          { primary: '' /* cells   · roll */                  ,open: '' }
+  };
+  BLOCK_DESC.socks_regular = BLOCK_DESC.socks; // алиас движка
+
   global.UMESTNO_CONTENT = {
     groups: GROUPS,
     items: ITEMS,
@@ -115,6 +154,13 @@
     /** {t,d} текст правила раскладки или null, если правило не показываем */
     ruleText: function (ruleId) { return RULE_TEXT[ruleId] || null; },
     /** ru-название приоритета */
-    priorityLabel: function (p) { return PRIORITY_RU[p] || p; }
+    priorityLabel: function (p) { return PRIORITY_RU[p] || p; },
+    /** описание блока в рекомендациях — зависит от фактического division_type
+     *  (cells/slots → primary текст; open → open-fallback текст) */
+    blockDesc: function (contentType, divisionType) {
+      var entry = BLOCK_DESC[contentType];
+      if (!entry) return '';
+      return (divisionType === 'open') ? (entry.open || '') : (entry.primary || '');
+    }
   };
 })(window);
