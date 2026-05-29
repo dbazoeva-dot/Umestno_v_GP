@@ -3,7 +3,40 @@
 Postgres 16, единая база `umestno` на VPS. Пользователь приложения —
 `umestno_app`. Миграции — обычные SQL-файлы, накатываются по очереди.
 
-## Первый накат
+## Начальная установка (один раз на VPS)
+
+```bash
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+```
+
+Создание БД и пользователя:
+
+```bash
+sudo -u postgres psql
+```
+
+В psql:
+```sql
+CREATE DATABASE umestno;
+CREATE USER umestno_app WITH PASSWORD 'СЛУЧАЙНЫЙ_24+_СИМВОЛ';
+GRANT ALL PRIVILEGES ON DATABASE umestno TO umestno_app;
+\q
+```
+
+Затем grant на схему public:
+```bash
+sudo -u postgres psql -d umestno -c "GRANT ALL ON SCHEMA public TO umestno_app;"
+```
+
+Проверка коннекта:
+```bash
+psql -U umestno_app -d umestno -h localhost -W
+```
+
+## Первый накат миграции
 
 На VPS (после установки Postgres и создания пользователя `umestno_app`):
 

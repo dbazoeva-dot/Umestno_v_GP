@@ -71,8 +71,52 @@ configure/, no-fit/ — конфигуратор и страница «не по
 
 ## Хостинг и домен
 
-- **TimeWeb** — Node + PostgreSQL (~1000 ₽/месяц)
-- **Домен** `umestno-home.ru` куплен на Nethouse → DNS направить на TimeWeb
+- **TimeWeb VPS** (5.129.253.188, Ubuntu 24.04) — nginx, Node, PostgreSQL на одной машине
+- **Репо на VPS:** `/var/www/umestno` (`git pull origin main` из этой папки)
+- **Домен** `umestno-home.ru` куплен на Nethouse → DNS направлен на TimeWeb VPS
+- **SSL** — Let's Encrypt через certbot, автообновление
+
+## БД (Postgres 16 на VPS)
+
+База — на той же VPS, не managed. Подключение через Unix-socket / localhost.
+
+| Параметр | Значение |
+|----------|----------|
+| Database | `umestno` |
+| User | `umestno_app` |
+| Host | `localhost` |
+| Port | `5432` (дефолт) |
+| Пароль | в парольном менеджере (НЕ в репо) |
+
+### Накат миграций
+
+Миграции — обычные SQL-файлы в `db/migrations/`. Накатываются вручную в порядке номеров:
+
+```bash
+cd /var/www/umestno
+psql -U umestno_app -d umestno -h localhost -f db/migrations/000N_*.sql
+```
+
+После каждого наката проверь через `\dt` в psql, что таблицы появились.
+
+### Бэкап (TODO: добавить в cron)
+
+```bash
+sudo -u postgres pg_dump -Fc umestno > /var/backups/umestno-$(date +%F).dump
+```
+
+Делать раз в сутки в cron'е после того, как пойдут реальные заказы.
+
+### Восстановление
+
+```bash
+sudo -u postgres pg_restore -d umestno --clean /var/backups/umestno-YYYY-MM-DD.dump
+```
+
+## PDF
+
+Генерируется на бэке (Node) после подтверждения оплаты и отправляется на email.
+Конкретная библиотека — на этапе серверной разработки.
 
 ## PDF
 
@@ -87,9 +131,13 @@ npm test
 npm run calibration:json
 npm run calibration:json:four-item-stress
 
-# Обновление SKU каталога
-python3 engine/scripts/buildSkuDb.py   # Excel → engine/db/sku_catalog.db
-python3 engine/scripts/exportSkuTs.py  # DB → skuCatalogData.ts (только для тестов)
+# Обновление SKU каталога — Excel → JSON для тестов / загрузки в БД
+python3 engine/scripts/extractSkuCatalog.py E_SKU_catalog_vNNNN.xlsx > /tmp/catalog.json
+
+# Бенчмарк раскладок (10 эталонных сценариев)
+CATALOG=/tmp/catalog.json node dist/engine/test/benchmark10.js
+# A/B сравнение column-first вкл/выкл
+CATALOG=/tmp/catalog.json node dist/engine/test/benchmark10Compare.js
 
 # Фронт — статические страницы: открыть напрямую или поднять любой статик-сервер
 python3 -m http.server   # затем http://localhost:8000/result/
