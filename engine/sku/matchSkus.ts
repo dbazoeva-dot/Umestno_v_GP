@@ -66,7 +66,7 @@ function fitsCellSize(sku: SkuCatalogRow, unit_w: number, unit_d: number, unit_h
 }
 
 function passesBaseFilter(sku: SkuCatalogRow, divType: DivisionType, geom: LaneGeom, zone: PlacedZone): boolean {
-  if (sku.availability_status === "unavailable") return false;
+  if (sku.availability_status === "out_of_stock") return false;
   if (sku.division_type !== divType) return false;
   if ((sku.capacity_units ?? 0) < geom.cap_per_lane) return false;
   if (!fitsCellSize(sku, zone.unit_w_cm, zone.unit_d_cm, zone.unit_h_cm)) return false;
@@ -152,7 +152,7 @@ function tryComposedFromSlots(zone: PlacedZone, catalog: SkuCatalogRow[], colorP
   // Preferred: slots run along zone's depth → need cols units side-by-side along width.
   // Slot SKU's `cols` (number of slots) must cover `rows` (= depth direction).
   const preferred = catalog.filter((sku) => {
-    if (sku.availability_status === "unavailable") return false;
+    if (sku.availability_status === "out_of_stock") return false;
     if (sku.division_type !== "slots") return false;
     if ((sku.cols ?? 0) < rows) return false;
     if ((sku.capacity_units ?? 0) < preferredGeom.cap_per_lane) return false;
@@ -172,7 +172,7 @@ function tryComposedFromSlots(zone: PlacedZone, catalog: SkuCatalogRow[], colorP
   // Slot SKU's `cols` must cover `cols` (= width direction). Requires can_rotate=yes.
   const rotated = catalog.filter((sku) => {
     if (sku.can_rotate !== "yes") return false;
-    if (sku.availability_status === "unavailable") return false;
+    if (sku.availability_status === "out_of_stock") return false;
     if (sku.division_type !== "slots") return false;
     if ((sku.cols ?? 0) < cols) return false;
     if ((sku.capacity_units ?? 0) < rotatedGeom.cap_per_lane) return false;

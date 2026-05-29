@@ -155,7 +155,9 @@ cap_per_lane = max(items_per_lane)   // самый загруженный lane
 
 Перед сортировкой по правилам #1–#5 — базовый отбор:
 
-- `availability_status !== 'unavailable'`
+- `availability_status !== 'out_of_stock'` (статусы `available` и
+  `unknown` допускаются; `unknown` означает «не успели проверить»,
+  фильтровать его жёстко — терять часть каталога)
 - `division_type` совпадает с тем, что пробуем
   (primary / alternative / 'slots' для composed-fallback)
 - `cell_width_cm` (или `width_cm`, если пусто) в пределах
