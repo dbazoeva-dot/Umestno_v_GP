@@ -78,15 +78,18 @@ function asciiLines(drawer: { w: number; d: number }, zones: any[]): string[] {
   return lines;
 }
 
-function reserveSummary(out: any) {
+function reserveSummary(out: any, drawer: { w: number; d: number }) {
   const rects = out.scheme_payload?.reserve_zones ?? out.debug?.fit_result?.free_rectangles ?? [];
-  const totalArea = rects.reduce((s: number, r: any) => s + r.w_cm * r.d_cm, 0);
+  // free_rectangles в MaxRects-стиле перекрываются; реальный резерв = drawer - sum of zones
+  const zones = out.scheme_payload?.assigned_zones ?? [];
+  const zonesArea = zones.reduce((s: number, z: any) => s + z.assigned_w_cm * z.assigned_d_cm, 0);
+  const geometricFree = drawer.w * drawer.d - zonesArea;
   let biggest = { w: 0, d: 0, area: 0 };
   for (const r of rects) {
     const a = r.w_cm * r.d_cm;
     if (a > biggest.area) biggest = { w: r.w_cm, d: r.d_cm, area: a };
   }
-  return { count: rects.length, totalArea, biggest };
+  return { count: rects.length, geometricFree, biggest };
 }
 
 function rowJoin(left: string[], right: string[], sep = "    "): string {
@@ -122,19 +125,22 @@ for (const sc of scenarios) {
   const linesR = ["AFTER  (+ column-first)",   "", ...asciiLines(drawer, after.scheme_payload.assigned_zones)];
   console.log(rowJoin(linesL, linesR, "   "));
 
-  const rL = reserveSummary(before);
-  const rR = reserveSummary(after);
+  const rL = reserveSummary(before, drawer);
+  const rR = reserveSummary(after, drawer);
   const usedDepthL = before.debug.fit_result.used_depth_cm;
   const usedDepthR = after.debug.fit_result.used_depth_cm;
   const matchesL = (before.debug.sku_matching_result ?? []).filter((m: any) => m.match_status === "exact").length;
   const matchesR = (after.debug.sku_matching_result ?? []).filter((m: any) => m.match_status === "exact").length;
   const zonesN = before.scheme_payload.assigned_zones.length;
+  const drawerArea = drawer.w * drawer.d;
+  const zonesAreaL = drawerArea - rL.geometricFree;
+  const zonesAreaR = drawerArea - rR.geometricFree;
 
   console.log();
-  console.log(`                            ${pad("BEFORE", 22)} | AFTER`);
-  console.log(`  reserve rects:            ${padL(String(rL.count), 22)} | ${rR.count}`);
-  console.log(`  reserve total area, см²:  ${padL(rL.totalArea.toFixed(0), 22)} | ${rR.totalArea.toFixed(0)}`);
-  console.log(`  biggest reserve rect:     ${padL(`${rL.biggest.w}×${rL.biggest.d} = ${rL.biggest.area.toFixed(0)}`, 22)} | ${rR.biggest.w}×${rR.biggest.d} = ${rR.biggest.area.toFixed(0)}`);
-  console.log(`  used_depth, см:           ${padL(`${usedDepthL} / ${drawer.d}`, 22)} | ${usedDepthR} / ${drawer.d}`);
-  console.log(`  matches:                  ${padL(`${matchesL}/${zonesN}`, 22)} | ${matchesR}/${zonesN}`);
+  console.log(`                                  ${pad("BEFORE", 22)} | AFTER`);
+  console.log(`  площадь зон, см² (из ${drawerArea}):      ${padL(zonesAreaL.toFixed(0), 22)} | ${zonesAreaR.toFixed(0)}`);
+  console.log(`  ▸ геом. резерв, см²:            ${padL(rL.geometricFree.toFixed(0), 22)} | ${rR.geometricFree.toFixed(0)}`);
+  console.log(`  ▸ biggest free rect:            ${padL(`${rL.biggest.w}×${rL.biggest.d} = ${rL.biggest.area.toFixed(0)}`, 22)} | ${rR.biggest.w}×${rR.biggest.d} = ${rR.biggest.area.toFixed(0)}`);
+  console.log(`  used_depth, см:                 ${padL(`${usedDepthL} / ${drawer.d}`, 22)} | ${usedDepthR} / ${drawer.d}`);
+  console.log(`  matches:                        ${padL(`${matchesL}/${zonesN}`, 22)} | ${matchesR}/${zonesN}`);
 }
