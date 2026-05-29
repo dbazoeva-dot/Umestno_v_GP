@@ -2,6 +2,9 @@ import type { CalculatedZone, DrawerSize, FitResult, LayoutPlan, PlacedZone, Sof
 import { runFitCheck } from "./runFitCheck.js";
 import { findFreeRectangles } from "./findFreeRectangles.js";
 
+/** Toggle column-first stratay at runtime, mostly for A/B diagnostics. */
+export const featureFlags = { columnFirst: true };
+
 export function generatePlacementCandidates({ zoneVariants, drawerSize }: { zoneVariants: CalculatedZone[][]; drawerSize: DrawerSize }): FitResult[] {
   if (zoneVariants.length === 0) return [];
 
@@ -22,10 +25,12 @@ export function generatePlacementCandidates({ zoneVariants, drawerSize }: { zone
         if (!seen.has(csKey)) { seen.add(csKey); results.push(colStack); }
       }
 
-      const colFirst = tryColumnFirstPlacement(perm, drawerSize);
-      if (colFirst) {
-        const cfKey = fingerprint(colFirst);
-        if (!seen.has(cfKey)) { seen.add(cfKey); results.push(colFirst); }
+      if (featureFlags.columnFirst) {
+        const colFirst = tryColumnFirstPlacement(perm, drawerSize);
+        if (colFirst) {
+          const cfKey = fingerprint(colFirst);
+          if (!seen.has(cfKey)) { seen.add(cfKey); results.push(colFirst); }
+        }
       }
     }
   }
