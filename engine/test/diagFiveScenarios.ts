@@ -86,6 +86,41 @@ function assembly(top: SkuCatalogRow, units: number, status: string, zone: any):
   return { w: top.width_cm * units + gap * (units - 1), d: top.depth_cm, h: top.height_cm };
 }
 
+// ── ближайший кандидат — игнорим фильтры, ранжируем по «сумме промахов» ─
+// Так мы видим, ЧТО подобрал бы матчер, если бы порог был мягче, и точную
+// дельту по всем осям. Это и есть диагностический view.
+function closestCandidate(zone: any, catalog: SkuCatalogRow[], unitsNeeded: number): SkuCatalogRow | null {
+  const candidates = catalog.filter((s) =>
+    s.availability_status !== "out_of_stock" &&
+    s.division_type === zone.division_type,
+  );
+  if (candidates.length === 0) return null;
+  const itemGap = zone.needs_item_gap ? (zone.item_gap ?? 0) : 0;
+  const effW = zone.unit_w_cm + itemGap;
+  const effD = zone.unit_d_cm + itemGap;
+  let best: SkuCatalogRow | null = null;
+  let bestScore = Infinity;
+  for (const sku of candidates) {
+    const cw = sku.cell_width_cm ?? sku.width_cm;
+    const cd = sku.cell_depth_cm ?? sku.depth_cm;
+    // нормализованные промахи (км — крупный вес у footprint, чтобы close-by-shape выигрывал)
+    const dCellW = Math.abs(cw - effW);
+    const dCellD = Math.abs(cd - effD);
+    const dCap   = Math.max(0, zone.count - sku.capacity_units * unitsNeeded);
+    const fitsNormal = sku.width_cm <= zone.assigned_w_cm && sku.depth_cm <= zone.assigned_d_cm;
+    const fitsRotated = sku.can_rotate === "yes" && sku.depth_cm <= zone.assigned_w_cm && sku.width_cm <= zone.assigned_d_cm;
+    const fpOverflow = (fitsNormal || fitsRotated)
+      ? 0
+      : Math.max(
+          Math.max(0, sku.width_cm - zone.assigned_w_cm) + Math.max(0, sku.depth_cm - zone.assigned_d_cm),
+          Math.max(0, sku.depth_cm - zone.assigned_w_cm) + Math.max(0, sku.width_cm - zone.assigned_d_cm),
+        );
+    const score = dCellW * 1 + dCellD * 2 + dCap * 0.5 + fpOverflow * 1;
+    if (score < bestScore) { bestScore = score; best = sku; }
+  }
+  return best;
+}
+
 // ── run ─────────────────────────────────────────────────────────
 let scenariosShown = 0;
 const skipped: string[] = [];
@@ -123,33 +158,48 @@ for (const sc of scenarios) {
   for (let i = 0; i < placed.length; i++) {
     const z = placed[i];
     const m = matches[i];
-    const top = m?.candidates?.[0];
+    const matched = m?.candidates?.[0];
+    const matcherStatus = m?.match_status ?? "?";
 
-    let summed = "—";
-    let dCap = "—", dW = "—", dD = "—", dH = "—";
-    if (top) {
-      const asm = assembly(top, m.units_needed, m.match_status, z);
-      const isMulti = m.units_needed > 1;
-      summed = isMulti
-        ? `${asm.w.toFixed(1)}×${asm.d.toFixed(1)}×${asm.h.toFixed(1)}`
-        : "—";
-      const refW = asm.w, refD = asm.d, refH = asm.h;
-      dW = (refW - z.assigned_w_cm).toFixed(1);
-      dD = (refD - z.assigned_d_cm).toFixed(1);
-      dH = (refH - z.assigned_h_cm).toFixed(1);
-      dCap = ((top.capacity_units * m.units_needed) - z.count).toString();
+    // Если матчер отдал кандидата — берём его. Если нет — ищем ближайший по форме,
+    // чтобы дельты показывали, ЧЕГО не хватило.
+    const units = m?.units_needed ?? 1;
+    let top: SkuCatalogRow | null = matched ?? closestCandidate(z, skuCatalog, units);
+    const isFallback = !matched && !!top;
+    const noteSku = matched ? "" : (top ? " (closest, отвергнут)" : "");
+
+    if (!top) {
+      // даже ближайшего нет (в каталоге нет SKU нужного division_type)
+      printRow([
+        z.content_type + " — no SKU of div=" + z.division_type,
+        String(z.count),
+        `${z.assigned_w_cm}×${z.assigned_d_cm}×${z.assigned_h_cm}`,
+        "—", "—", "—", "—", "—", "—", "—", "—",
+      ]);
+      continue;
     }
 
+    const asm = assembly(top, units, matcherStatus, z);
+    const isMulti = units > 1;
+    const summed = isMulti
+      ? `${asm.w.toFixed(1)}×${asm.d.toFixed(1)}×${asm.h.toFixed(1)}`
+      : "—";
+    const dW = (asm.w - z.assigned_w_cm).toFixed(1);
+    const dD = (asm.d - z.assigned_d_cm).toFixed(1);
+    const dH = (asm.h - z.assigned_h_cm).toFixed(1);
+    const dCap = ((top.capacity_units * units) - z.count).toString();
+
     printRow([
-      z.content_type,
+      z.content_type + noteSku,
       String(z.count),
       `${z.assigned_w_cm}×${z.assigned_d_cm}×${z.assigned_h_cm}`,
-      top?.sku_id ?? "—",
-      top ? String(top.capacity_units) : "—",
-      top ? `${top.width_cm}×${top.depth_cm}×${top.height_cm}` : "—",
+      top.sku_id,
+      String(top.capacity_units),
+      `${top.width_cm}×${top.depth_cm}×${top.height_cm}`,
       summed,
       dCap, dW, dD, dH,
     ]);
+    void isFallback;
   }
   console.log();
 }
