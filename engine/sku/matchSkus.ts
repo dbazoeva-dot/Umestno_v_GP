@@ -56,20 +56,29 @@ function fitsFootprint(sku: SkuCatalogRow, lane_w: number, lane_d: number, lane_
   return normal || rotated;
 }
 
-function fitsCellSize(sku: SkuCatalogRow, unit_w: number, unit_d: number, unit_h: number): boolean {
+function fitsCellSize(sku: SkuCatalogRow, eff_w: number, eff_d: number, unit_h: number): boolean {
   const cw = sku.cell_width_cm ?? sku.width_cm;
   const cd = sku.cell_depth_cm ?? sku.depth_cm;
-  if (Math.abs(cw - unit_w) > TOL.cellW) return false;
-  if (Math.abs(cd - unit_d) > TOL.cellD) return false;
+  // Compare SKU cell to EFFECTIVE cell (unit + item_gap), not raw unit.
+  // The tolerances ±3 / ±1.5 are meant around the realistic cell size that
+  // includes finger-room/packing margin, not the bare item footprint.
+  if (Math.abs(cw - eff_w) > TOL.cellW) return false;
+  if (Math.abs(cd - eff_d) > TOL.cellD) return false;
   if (sku.height_cm < unit_h - TOL.hUnder || sku.height_cm > unit_h + TOL.hOver) return false;
   return true;
+}
+
+function effectiveCellDims(zone: PlacedZone): { eff_w: number; eff_d: number } {
+  const gap = zone.needs_item_gap ? (zone.item_gap ?? 0) : 0;
+  return { eff_w: zone.unit_w_cm + gap, eff_d: zone.unit_d_cm + gap };
 }
 
 function passesBaseFilter(sku: SkuCatalogRow, divType: DivisionType, geom: LaneGeom, zone: PlacedZone): boolean {
   if (sku.availability_status === "out_of_stock") return false;
   if (sku.division_type !== divType) return false;
   if ((sku.capacity_units ?? 0) < geom.cap_per_lane) return false;
-  if (!fitsCellSize(sku, zone.unit_w_cm, zone.unit_d_cm, zone.unit_h_cm)) return false;
+  const { eff_w, eff_d } = effectiveCellDims(zone);
+  if (!fitsCellSize(sku, eff_w, eff_d, zone.unit_h_cm)) return false;
   if (!fitsFootprint(sku, geom.lane_w, geom.lane_d, geom.lane_h)) return false;
   return true;
 }
@@ -156,7 +165,8 @@ function tryComposedFromSlots(zone: PlacedZone, catalog: SkuCatalogRow[], colorP
     if (sku.division_type !== "slots") return false;
     if ((sku.cols ?? 0) < rows) return false;
     if ((sku.capacity_units ?? 0) < preferredGeom.cap_per_lane) return false;
-    if (!fitsCellSize(sku, zone.unit_w_cm, zone.unit_d_cm, zone.unit_h_cm)) return false;
+    const eff = effectiveCellDims(zone);
+    if (!fitsCellSize(sku, eff.eff_w, eff.eff_d, zone.unit_h_cm)) return false;
     if (sku.width_cm > preferredGeom.lane_w) return false;
     if (sku.depth_cm > preferredGeom.lane_d) return false;
     return true;
@@ -176,11 +186,12 @@ function tryComposedFromSlots(zone: PlacedZone, catalog: SkuCatalogRow[], colorP
     if (sku.division_type !== "slots") return false;
     if ((sku.cols ?? 0) < cols) return false;
     if ((sku.capacity_units ?? 0) < rotatedGeom.cap_per_lane) return false;
-    // when rotated, slot's cell_width aligns with zone's unit_d_cm
+    // when rotated, slot's cell_width aligns with zone's effective unit_d, cell_depth → unit_w
     const cw = sku.cell_width_cm ?? sku.width_cm;
     const cd = sku.cell_depth_cm ?? sku.depth_cm;
-    if (Math.abs(cw - zone.unit_d_cm) > TOL.cellD) return false;
-    if (Math.abs(cd - zone.unit_w_cm) > TOL.cellW) return false;
+    const eff = effectiveCellDims(zone);
+    if (Math.abs(cw - eff.eff_d) > TOL.cellD) return false;
+    if (Math.abs(cd - eff.eff_w) > TOL.cellW) return false;
     if (sku.height_cm < zone.unit_h_cm - TOL.hUnder || sku.height_cm > zone.unit_h_cm + TOL.hOver) return false;
     if (sku.depth_cm > rotatedGeom.lane_w) return false;
     if (sku.width_cm > rotatedGeom.lane_d) return false;

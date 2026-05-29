@@ -161,9 +161,18 @@ cap_per_lane = max(items_per_lane)   // самый загруженный lane
 - `division_type` совпадает с тем, что пробуем
   (primary / alternative / 'slots' для composed-fallback)
 - `cell_width_cm` (или `width_cm`, если пусто) в пределах
-  `zone.unit_w_cm ± 3`
-- `cell_depth_cm` (или `depth_cm`) в пределах `zone.unit_d_cm ± 1.5`
+  `(zone.unit_w_cm + item_gap) ± 3`
+- `cell_depth_cm` (или `depth_cm`) в пределах
+  `(zone.unit_d_cm + item_gap) ± 1.5`
 - `height_cm` в пределах `[zone.unit_h_cm − 3 ; zone.unit_h_cm + 5]`
+
+Точка отсчёта — **эффективный размер ячейки** = `unit + item_gap`
+(где `item_gap` берётся из профиля content_type, 0 если
+`needs_item_gap=false`). Допуски ±3 / ±1.5 заложены **уже с учётом
+рыночного finger-room**: эффективная ячейка ~6.5 см + 1.5 см
+допуск = 8 см — это и есть распространённый размер cells-органайзера.
+Сравнение с сырым `unit` теряло поправку на gap и резало валидных
+кандидатов.
 - `capacity_units × set_quantity ≥ items_needed_in_zone`
   (зона требует столько-то контента, упаковка должна это закрыть)
 - геометрия: `sku.width_cm ≤ lane_w_cm` и `sku.depth_cm ≤ lane_d_cm`,
