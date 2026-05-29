@@ -51,8 +51,8 @@ const scenarios: Scenario[] = [
              items: [{ content_type: "jeans", volume_level: "medium" }, { content_type: "tshirts", volume_level: "medium" }, { content_type: "sweaters", volume_level: "medium" }], priority: "convenient" } },
 
   // ── Группа D — accessories ────────────────────────────────
-  { id: "S10", group: "D", name: "60×35×10  belts + ties + jewelry_small medium",
-    input: { drawer_width_cm: 60, drawer_depth_cm: 35, drawer_height_cm: 10, storage_category: "accessories",
+  { id: "S10", group: "D", name: "60×35×12  belts + ties + jewelry_small medium",
+    input: { drawer_width_cm: 60, drawer_depth_cm: 35, drawer_height_cm: 12, storage_category: "accessories",
              items: [{ content_type: "belts", volume_level: "medium" }, { content_type: "ties", volume_level: "medium" }, { content_type: "jewelry_small", volume_level: "medium" }], priority: "convenient" } },
 ];
 
