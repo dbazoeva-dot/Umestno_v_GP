@@ -8,6 +8,7 @@ import { loadEnv } from "./config/env.js";
 import { createPool } from "./db/pool.js";
 import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
 import { calculateHandler } from "./api/calculate.js";
+import { resultHandler } from "./api/result.js";
 import type { SkuCatalogRow } from "../engine/types.js";
 
 const env = loadEnv();
@@ -43,6 +44,10 @@ app.get("/api/healthz", async (_req: Request, res: Response) => {
 // ── 1.3 — расчёт схемы + матчинг SKU + сохранение в БД ─────
 
 app.post("/api/calculate", calculateHandler(pool, () => catalogCache));
+
+// ── 1.4 — чтение сохранённого расчёта для рендера result-страницы ─
+
+app.get("/api/result/:token", resultHandler(pool, env));
 
 // ── обработчик ошибок последним ─────────────────────────────
 
