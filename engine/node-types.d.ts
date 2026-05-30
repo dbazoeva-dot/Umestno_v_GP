@@ -5,6 +5,17 @@ declare module "node:child_process" {
     options?: { cwd?: string; encoding?: string }
   ): Buffer;
 }
+declare module "node:crypto" {
+  export function randomBytes(size: number): {
+    toString(encoding: "hex" | "base64" | "base64url" | "utf8"): string;
+  };
+}
+declare module "crypto" {
+  export function randomBytes(size: number): {
+    toString(encoding: "hex" | "base64" | "base64url" | "utf8"): string;
+  };
+}
+
 declare module "node:fs" {
   export function writeFileSync(path: string, data: string, encoding?: string): void;
   export function readFileSync(path: string, encoding: string): string;
