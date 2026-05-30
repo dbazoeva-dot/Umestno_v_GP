@@ -142,6 +142,9 @@ def build_records(rows):
             i = idx.get(src)
             raw = row[i] if i is not None and i < len(row) else ""
             rec[dst] = coerce(raw, kind)
+        # NOT NULL дефолты под колонки sku, где БД ожидает значение
+        if rec.get("set_quantity") is None: rec["set_quantity"] = 1
+        if rec.get("can_rotate") is None:   rec["can_rotate"]   = False
         if rec.get("sku_id") and rec.get("division_type") and rec.get("width_cm") is not None:
             records.append(rec)
     return records
