@@ -7,15 +7,19 @@
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node dist/engine/test/runCalibration.js && node dist/engine/test/matchSkusSpec.js",
     "test:db-catalog": "npm run build --silent && node dist/server/test/testCatalogFromDb.js",
+    "start": "npm run build --silent && node dist/server/index.js",
     "calibration:json": "npm run build --silent && node dist/engine/test/printCalibrationCase.js",
     "calibration:json:forced-open": "npm run build --silent && node dist/engine/test/printCalibrationCase.js forced-open-fallback",
     "calibration:json:four-item-stress": "npm run build --silent && node dist/engine/test/printCalibrationCase.js four-item-stress",
     "visualize:scenarios": "npm run build --silent && node dist/engine/tools/renderScenarioHtml.js"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
     "pg": "^8.13.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/pg": "^8.11.10",
     "typescript": "^5.6.3"
   }

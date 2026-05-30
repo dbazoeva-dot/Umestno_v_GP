@@ -1,0 +1,61 @@
+// Umestno API — точка входа.
+//
+// На старте: коннект к Postgres, прогрев каталога, поднятие Express.
+// Эндпойнты добавляются по очереди (см. ARCHITECTURE.md, API surface).
+
+import express, { type Request, type Response, type NextFunction } from "express";
+import { loadEnv } from "./config/env.js";
+import { createPool } from "./db/pool.js";
+import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
+import type { SkuCatalogRow } from "../engine/types.js";
+
+const env = loadEnv();
+const pool = createPool();
+
+// Прогретый в памяти каталог. Парсер каталога (после прода) сможет
+// дёрнуть refresh — пока обновляется только перезапуском сервера.
+let catalogCache: SkuCatalogRow[] = [];
+
+async function warmupCatalog() {
+  catalogCache = await loadCatalogFromDb(pool);
+  console.log(`[catalog] загружено ${catalogCache.length} активных SKU`);
+}
+
+const app = express();
+app.use(express.json({ limit: "256kb" }));
+
+// ── базовые эндпойнты ───────────────────────────────────────
+
+app.get("/api/healthz", async (_req: Request, res: Response) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({
+      ok: true,
+      env: env.NODE_ENV,
+      catalog_size: catalogCache.length,
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+});
+
+// ── обработчик ошибок последним ─────────────────────────────
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("[error]", err);
+  res.status(500).json({ ok: false, error: env.NODE_ENV === "production" ? "internal_error" : err.message });
+});
+
+// ── start ───────────────────────────────────────────────────
+
+async function main() {
+  await warmupCatalog();
+  app.listen(env.PORT, "127.0.0.1", () => {
+    console.log(`[api] umestno listening on http://127.0.0.1:${env.PORT}  (env=${env.NODE_ENV})`);
+  });
+}
+
+main().catch((e) => {
+  console.error("[fatal] startup failed:", e);
+  process.exit(1);
+});
