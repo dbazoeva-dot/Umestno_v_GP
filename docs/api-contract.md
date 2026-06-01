@@ -385,6 +385,6 @@ user_agent). Без этого — 400 Bad Request.
 | 1.5b | result.html → fetch → render через `result-render.js` (упрощённый renderWhy/renderFolding) | ✓ ГОТОВО |
 | 1.5c | `GET /api/sku/click/:sku/:platform` + кнопки «Купить» | ✗ СНЯТО (см. ниже) |
 | 1.5d | nginx-config: проксировать `/api/*` на Node | ✓ ГОТОВО |
-| 1.5e | systemd-unit для Node, чтобы сервер пережил перезапуск VPS | ⏳ ПЛАН |
+| 1.5e | systemd-unit для Node, чтобы сервер пережил перезапуск VPS | ✓ ГОТОВО |
 
 После 1.5 — переход к Стадии 2 (email + PDF).

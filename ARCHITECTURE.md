@@ -30,7 +30,7 @@ SKU-органайзеры с маркетплейсов. Доход — affilia
   1.5b result.html: динамический рендер из API         ✓ готово
   1.5c /api/sku/click/:sku/:platform                   ✗ снято — карточки кликаются на product_url напрямую
   1.5d nginx /api/* → Node                             ✓ готово
-  1.5e systemd-unit для Node                           ⏳ план
+  1.5e systemd-unit для Node                           ✓ готово
 
 СТАДИЯ 2 — EMAIL + PDF + СОГЛАСИЯ                  [после 1.5]
   После расчёта пользователь оставляет email — приходит PDF.

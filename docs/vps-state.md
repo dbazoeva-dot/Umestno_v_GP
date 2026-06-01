@@ -76,7 +76,7 @@
 | 22 | SSH | внешний |
 | 80, 443 | nginx | внешний |
 | 5432 | Postgres | **только localhost** (не открыт наружу) |
-| (3000 или socket) | Node API — TBD после установки | только localhost |
+| 3000 | Node API (systemd `umestno-api.service`, см. `deploy/`) | только localhost, наружу через nginx /api/ |
 
 ## Бэкапы
 

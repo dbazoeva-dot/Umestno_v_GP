@@ -1,0 +1,45 @@
+[Unit]
+Description=Umestno Node API
+Documentation=https://github.com/dbazoeva-dot/Umestno_v_GP
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/umestno
+# Прод-режим. Если в /var/www/umestno/.env есть NODE_ENV или PORT —
+# их подхватит сам server/config/env.ts через dotenv. Здесь дублируем
+# только то, что должно быть у systemd до загрузки .env.
+Environment=NODE_ENV=production
+
+# Запускаем уже собранный сервер. Сборка (npm run build) делается
+# при деплое (git pull → npm run build), а не при старте — иначе
+# каждая перезагрузка VPS будет тратить минуту на компиляцию.
+ExecStart=/usr/bin/node /var/www/umestno/dist/server/index.js
+
+# Если процесс упал — рестарт через 5 секунд, до 5 попыток в течение
+# минуты (если за минуту 5 падений подряд — больше не пробуем,
+# админ должен разобраться).
+Restart=on-failure
+RestartSec=5
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+# Логи в journald (журнал systemd). Смотреть:
+#   journalctl -u umestno-api -f          # follow в реальном времени
+#   journalctl -u umestno-api --since '10 min ago'
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=umestno-api
+
+# Безопасность: ограничиваем что процесс может в файловой системе.
+# /var/www/umestno нужен только на чтение (dist/, package.json, .env);
+# писать процессу нужно только в /tmp.
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
