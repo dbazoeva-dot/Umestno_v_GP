@@ -241,7 +241,13 @@
         .then(function (data) {
           if (!data || !data.token) throw new Error('bad_response');
           var fit = data.fit_status;
-          var path = (fit === 'fit_none' || fit === 'no_scheme') ? '/no-fit/' : '/result/';
+          // Решение #8 в docs/api-contract.md: только fit_all (и его
+          // вариант fit_all_after_adjustment) показываем как успешный
+          // расчёт. fit_partial/fit_none/no_scheme — все на /no-fit/,
+          // потому что деньги (когда подключим оплату) брать только
+          // когда схема полностью построена.
+          var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
+          var path = ok ? '/result/' : '/no-fit/';
           location.href = path + '?t=' + encodeURIComponent(data.token);
         })
         .catch(function (err) {

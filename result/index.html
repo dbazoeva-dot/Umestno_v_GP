@@ -406,7 +406,13 @@
       })
       .then(function (payload) {
         if (!payload) return;
-        if (payload.fit_status === 'no_scheme' || payload.fit_status === 'fit_none') {
+        // Решение #8 (api-contract.md): на /result/ остаются только
+        // полностью успешные расчёты. fit_partial/fit_none/no_scheme
+        // выкидываем на /no-fit/, даже если юзер пришёл сюда по прямой
+        // ссылке (например по старому токену).
+        var fit = payload.fit_status;
+        var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
+        if (!ok) {
           location.replace('/no-fit/?t=' + encodeURIComponent(token));
           return;
         }
