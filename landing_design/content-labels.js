@@ -101,6 +101,38 @@
 
   var PRIORITY_RU = { convenient: 'удобно', capacity: 'вместительно' };
 
+  /* ── Пороги объёма по категориям (зеркало engine `volumeToCount`) ──
+     Используется конфигуратором для динамических подписей уровней:
+       small  → "Мало (1–N1 unit)"
+       medium → "Средне ((N1+1)–N2 unit)"
+       large  → "Много ((N2+1)+ unit)"
+     При изменении engine/libraries/defaultLibraries.ts → обновлять здесь.
+     См. BL-06 в README_ENGINE.md — потом заменим build-скриптом. */
+  var VOLUME_BOUNDS = {
+    socks:         { small: 8,  medium: 16, unit: 'пар' },
+    panties:       { small: 6,  medium: 10, unit: 'шт' },
+    boxers:        { small: 5,  medium: 8,  unit: 'шт' },
+    sport_tops:    { small: 4,  medium: 6,  unit: 'шт' },
+    bras:          { small: 3,  medium: 6,  unit: 'шт' },
+    tights:        { small: 3,  medium: 8,  unit: 'шт' },
+    thermals:      { small: 2,  medium: 4,  unit: 'компл.' },
+    pajamas:       { small: 2,  medium: 4,  unit: 'шт' },
+    nightgowns:    { small: 2,  medium: 4,  unit: 'шт' },
+    swimwear:      { small: 2,  medium: 4,  unit: 'шт' },
+    tshirts:       { small: 5,  medium: 10, unit: 'шт' },
+    longsleeves:   { small: 3,  medium: 6,  unit: 'шт' },
+    sweaters:      { small: 2,  medium: 4,  unit: 'шт' },
+    jeans:         { small: 2,  medium: 4,  unit: 'шт' },
+    leggings:      { small: 3,  medium: 6,  unit: 'шт' },
+    shorts:        { small: 3,  medium: 5,  unit: 'шт' },
+    belts:         { small: 2,  medium: 4,  unit: 'шт' },
+    jewelry_large: { small: 3,  medium: 8,  unit: 'шт' },
+    jewelry_small: { small: 10, medium: 25, unit: 'шт' },
+    scarves:       { small: 2,  medium: 5,  unit: 'шт' },
+    ties:          { small: 3,  medium: 7,  unit: 'шт' }
+  };
+  VOLUME_BOUNDS.socks_regular = VOLUME_BOUNDS.socks;
+
   /* ── Описание блока в рекомендациях ─────────────────────────────
      Текст, который рендерится в шапке блока рекомендаций ниже категории.
      Зависит от того, **как зона реально размещена**:
@@ -176,6 +208,17 @@
     ruleText: function (ruleId) { return RULE_TEXT[ruleId] || null; },
     /** ru-название приоритета */
     priorityLabel: function (p) { return PRIORITY_RU[p] || p; },
+    /** {small, medium, unit} пороги объёма для категории или null */
+    volumeBounds: function (contentType) { return VOLUME_BOUNDS[contentType] || null; },
+    /** подпись уровня объёма: "Мало (1–8 пар)" / "Средне (9–16 пар)" / "Много (17+ пар)" */
+    volumeLabel: function (contentType, level) {
+      var b = VOLUME_BOUNDS[contentType];
+      if (!b) return '';
+      if (level === 'small')  return 'Мало (1–' + b.small + ' ' + b.unit + ')';
+      if (level === 'medium') return 'Средне (' + (b.small + 1) + '–' + b.medium + ' ' + b.unit + ')';
+      if (level === 'large')  return 'Много (' + (b.medium + 1) + '+ ' + b.unit + ')';
+      return '';
+    },
     /** описание блока в рекомендациях — зависит от фактического division_type
      *  (cells/slots → primary текст; open → open-fallback текст) */
     blockDesc: function (contentType, divisionType) {
