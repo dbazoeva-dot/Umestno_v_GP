@@ -17,7 +17,7 @@ import { generateCalculatedZones } from "../zones/generateCalculatedZones.js";
 
 export const baseCalibrationInput: UserInput = { drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", item_1_content_type: "socks_regular", item_1_volume_level: "medium", item_2_content_type: "bras", item_2_volume_level: "medium", item_3_content_type: "panties", item_3_volume_level: "medium", priority: "convenient", color_preference: "not_important" };
 export const forcedOpenFallbackCalibrationInput: UserInput = { drawer_width_cm: 75, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", item_1_content_type: "bras", item_1_volume_level: "medium", item_2_content_type: "socks_regular", item_2_volume_level: "medium", item_3_content_type: "panties", item_3_volume_level: "medium", priority: "convenient", color_preference: "not_important" };
-export const fourItemStressCalibrationInput: UserInput = { drawer_width_cm: 150, drawer_depth_cm: 40, drawer_height_cm: 20, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "large" }, { content_type: "socks_regular", volume_level: "large" }, { content_type: "tights", volume_level: "medium" } ], priority: "convenient", color_preference: "not_important" };
+export const fourItemStressCalibrationInput: UserInput = { drawer_width_cm: 120, drawer_depth_cm: 40, drawer_height_cm: 20, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "large" }, { content_type: "bras", volume_level: "large" }, { content_type: "socks_regular", volume_level: "large" }, { content_type: "tights", volume_level: "medium" } ], priority: "convenient", color_preference: "not_important" };
 
 export function buildCalibrationCaseReport({ input, schemeId, maxItemsOverride }: { input: UserInput; schemeId: string; maxItemsOverride?: number }) {
   const normalizedInput = normalizeInput(input, maxItemsOverride ? { maxItems: maxItemsOverride } : undefined);
@@ -46,6 +46,6 @@ export function buildBaseCalibrationCaseReport(input: UserInput = baseCalibratio
 export function buildForcedOpenFallbackCalibrationCaseReport(input: UserInput = forcedOpenFallbackCalibrationInput) { return buildCalibrationCaseReport({ input, schemeId: "scheme_75x45_forced_open_fallback" }); }
 export function buildFourItemStressCalibrationCaseReport(input: UserInput = fourItemStressCalibrationInput) {
   const productionValidationResult = validateInput(normalizeInput(input));
-  return { production_validation_result: productionValidationResult, calibration_stress_result: buildCalibrationCaseReport({ input, schemeId: "scheme_150x40_four_item_stress" }) };
+  return { production_validation_result: productionValidationResult, calibration_stress_result: buildCalibrationCaseReport({ input, schemeId: "scheme_120x40_four_item_stress" }) };
 }
 function toAssignedZoneSummary(zone: { zone_id: string; content_type: string; division_type: string; x_cm: number; y_cm: number; assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number }) { return { zone_id: zone.zone_id, content_type: zone.content_type, division_type: zone.division_type, x_cm: zone.x_cm, y_cm: zone.y_cm, assigned_w_cm: zone.assigned_w_cm, assigned_d_cm: zone.assigned_d_cm, assigned_h_cm: zone.assigned_h_cm }; }
