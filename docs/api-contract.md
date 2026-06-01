@@ -377,12 +377,12 @@ user_agent). Без этого — 400 Bad Request.
 | 1.2 | Базовый Express API + `/api/healthz` | ✓ ГОТОВО |
 | 1.3 | `POST /api/calculate` — расчёт + сохранение | ✓ ГОТОВО |
 | 1.4 | `GET /api/result/:token` — чтение сохранённого | ✓ ГОТОВО (но отдаёт полный engine_output — см. ниже) |
-| 1.4.5 | Привести `/api/result/:token` к контракту (срезать внутренние поля) | ⏳ В РАБОТЕ |
+| 1.4.5 | Привести `/api/result/:token` к контракту (срезать внутренние поля) | ✓ ГОТОВО |
 | 1.5a | configure-форма: 21 категория, динамические объёмы | ✓ ГОТОВО |
-| 1.5a-submit | configure-форма: submit-обработчик → POST /api/calculate | ⏳ ПЛАН (после 1.5b) |
-| 1.5b | result.html → fetch → render через `result-render.js` (упрощённый renderWhy/renderFolding) | ⏳ ПЛАН |
+| 1.5a-submit | configure-форма: submit-обработчик → POST /api/calculate | ✓ ГОТОВО |
+| 1.5b | result.html → fetch → render через `result-render.js` (упрощённый renderWhy/renderFolding) | ✓ ГОТОВО |
 | 1.5c | `GET /api/sku/click/:sku/:platform` + кнопки «Купить» | ⏳ ПЛАН |
-| 1.5d | nginx-config: проксировать `/api/*` на Node | ⏳ ПЛАН |
+| 1.5d | nginx-config: проксировать `/api/*` на Node | ✓ ГОТОВО |
 | 1.5e | systemd-unit для Node, чтобы сервер пережил перезапуск VPS | ⏳ ПЛАН |
 
 После 1.5 — переход к Стадии 2 (email + PDF).

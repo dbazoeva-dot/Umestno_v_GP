@@ -49,7 +49,7 @@
 | `POST /api/calculate` | работает, сохраняет в БД, возвращает токен |
 | `GET /api/result/:token` | работает, отдаёт сохранённый расчёт + matches |
 | `GET /api/sku/click/...` | не реализован (1.5c) |
-| nginx proxy `/api/*` → Node | **не настроен** (запускаем `npm start` вручную, локально) |
+| nginx proxy `/api/*` → Node | **настроен** (`location /api/` → `http://127.0.0.1:3000`, см. `docs/nginx-api-snippet.conf`). Проверка: `curl -sS https://umestno-home.ru/api/healthz`. |
 | systemd unit для Node API | **не настроен** (после первого деплоя добавить) |
 
 ## Файлы и пути
