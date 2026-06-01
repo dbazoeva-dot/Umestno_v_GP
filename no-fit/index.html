@@ -157,6 +157,22 @@
 </footer>
 
 <script src="../app.js"></script>
+<script>
+  // Пробрасываем токен расчёта в линк «Вернуться к расчёту». На /configure/
+  // calc.js увидит ?t=… и подтянет input через /api/result/:token, чтобы
+  // юзеру не вводить размеры/категории заново.
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var token = params.get('t') || params.get('token');
+    if (!token) return;
+    var back = document.querySelector('.u-apology__back');
+    if (!back) return;
+    var href = back.getAttribute('href') || '';
+    if (href.indexOf('configure') >= 0) {
+      back.setAttribute('href', '../configure/?t=' + encodeURIComponent(token));
+    }
+  })();
+</script>
 <script src="../landing_design/metrika.js?v=1" defer></script>
 </body>
 </html>

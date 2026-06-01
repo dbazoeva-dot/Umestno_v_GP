@@ -160,6 +160,50 @@
     });
   }
 
+  /* ── Prefill формы из существующего расчёта (?t=TOKEN) ──── */
+  // Пользователь пришёл с /no-fit/?t=… (после «Вернуться к расчёту»)
+  // или, в будущем, с /result/?t=… (после «Изменить параметры»).
+  // Подтягиваем input через GET /api/result/:token и подставляем в
+  // поля, чтобы не пере-вводить руками. Чекбокс оферты намеренно
+  // оставляем пустым — каждый расчёт = отдельное согласие (152-ФЗ).
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var token = params.get('t') || params.get('token');
+    if (!token || !itemsRoot) return;
+
+    function fromEngineCt(ct) { return ct === 'socks_regular' ? 'socks' : ct; }
+
+    fetch('/api/result/' + encodeURIComponent(token), { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        var input = payload && payload.input;
+        if (!input) return;
+
+        if (input.drawer) {
+          ['w','d','h'].forEach(function (k) {
+            var inp = document.querySelector('[data-dim="' + k + '"]');
+            if (inp && input.drawer[k + '_cm']) inp.value = input.drawer[k + '_cm'];
+          });
+          // снимаем подсветку преcета — введённые размеры могли не совпадать ни с одним
+          document.querySelectorAll('.u-calc__preset').forEach(function (p) { p.classList.remove('is-on'); });
+        }
+
+        if (Array.isArray(input.items) && input.items.length > 0) {
+          itemsRoot.innerHTML = input.items
+            .slice(0, MAX_ROWS)
+            .map(function (it) { return rowHTML(fromEngineCt(it.content_type), it.volume_level); })
+            .join('');
+          refresh();
+        }
+
+        if (input.priority) {
+          var btn = document.querySelector('.u-calc__pri-btn[data-priority="' + input.priority + '"]');
+          if (btn) btn.click();
+        }
+      })
+      .catch(function (e) { console.warn('[prefill] failed', e); });
+  })();
+
   /* ── Submit: POST /api/calculate → редирект по fit_status ── */
   // CTA остаётся <a href="../no-fit/"> как fallback: если JS не загрузился
   // или сломался, клик уведёт на /no-fit/ (безопасный исход). Тут мы
