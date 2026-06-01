@@ -24,6 +24,10 @@ async function warmupCatalog() {
 }
 
 const app = express();
+// nginx стоит на 127.0.0.1, поэтому доверяем заголовку X-Forwarded-For
+// только когда запрос пришёл через loopback. 'true' тут небезопасно —
+// позволит любому клиенту подделать X-Forwarded-For.
+app.set("trust proxy", "loopback");
 app.use(express.json({ limit: "256kb" }));
 
 // ── базовые эндпойнты ───────────────────────────────────────

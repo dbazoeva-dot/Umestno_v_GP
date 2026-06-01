@@ -2,9 +2,11 @@
 //
 // Принимает форму конфигуратора → гонит engine + matchSkus →
 // сохраняет результат в configurations + configuration_skus →
+// в одной транзакции пишет согласие с офертой в consents →
 // возвращает token для перехода на /result/[token].
 //
 // Контракт запроса задаётся фронтом из configure/index.html.
+// consent_oferta: true обязателен (api-contract.md решение №6).
 
 import { randomBytes } from "crypto";
 import type { Request, Response } from "express";
@@ -12,6 +14,11 @@ import type { Pool } from "pg";
 import { runUmestnoEngine } from "../../engine/index.js";
 import { defaultLibraries } from "../../engine/libraries/defaultLibraries.js";
 import type { SkuCatalogRow, FitStatus } from "../../engine/types.js";
+
+// Текущая версия оферты. Меняется при редактировании самой оферты —
+// при изменении завести новый код ('oferta_v2', …), старые согласия
+// остаются с прежней версией для аудита.
+const OFERTA_VERSION = "oferta_v1";
 
 interface CalculateRequest {
   drawer_width_cm: number;
@@ -22,6 +29,7 @@ interface CalculateRequest {
   priority: "convenient" | "capacity" | "budget";
   color_preference?: string;
   session_id?: string;
+  consent_oferta: true;
 }
 
 interface CalculateResponse {
@@ -52,6 +60,10 @@ export function calculateHandler(pool: Pool, getCatalog: () => SkuCatalogRow[]) 
       return res.status(400).json({ ok: false, error: "invalid_request" });
     }
     const body = req.body as CalculateRequest;
+    if (body.consent_oferta !== true) {
+      // отдельный код, чтобы фронт мог показать релевантную ошибку
+      return res.status(400).json({ ok: false, error: "consent_required" });
+    }
 
     // Передаём актуальный каталог в engine через libraries (не мутируя
     // глобальный defaultLibraries — это важно для конкурентных запросов).
@@ -77,58 +89,67 @@ export function calculateHandler(pool: Pool, getCatalog: () => SkuCatalogRow[]) 
     const token = makeToken();
     const fitStatus: FitStatus | "no_scheme" = result.scheme_payload?.fit_status ?? "no_scheme";
 
+    // ip — реальный клиентский (с учётом trust proxy='loopback' в index.ts),
+    // user_agent — из заголовка; оба для аудита согласий.
+    const ip = req.ip ?? null;
+    const userAgent = req.get("user-agent") ?? null;
+
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
-      await client.query(
+      const inserted = await client.query<{ id: string }>(
         `INSERT INTO configurations (session_id, input_payload, engine_output, fit_status, token)
-         VALUES ($1, $2, $3, $4, $5)`,
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id`,
         [body.session_id ?? null, body, result, fitStatus, token],
+      );
+      const configId = inserted.rows[0].id;
+
+      // 152-ФЗ: журналируем согласие с офертой. email тут ещё неизвестен
+      // (юзер впишет его позже на result-странице) — оставляем NULL,
+      // потом связываем по configuration_id если согласимся на ПД.
+      await client.query(
+        `INSERT INTO consents (email, configuration_id, consent_type, consent_version, ip, user_agent)
+         VALUES (NULL, $1, 'oferta', $2, $3, $4)`,
+        [configId, OFERTA_VERSION, ip, userAgent],
       );
 
       // Если схема построена — пишем выбранные SKU по каждой зоне
       if (result.scheme_payload && result.debug.sku_matching_result) {
-        const configRow = await client.query<{ id: string }>(
-          `SELECT id FROM configurations WHERE token = $1`,
-          [token],
-        );
-        const configId = configRow.rows[0]?.id;
-        if (configId) {
-          const matches = result.debug.sku_matching_result;
-          for (let i = 0; i < matches.length; i++) {
-            const m = matches[i] as {
-              zone_id?: string;
-              content_type?: string;
-              match_status?: string;
-              match_kind?: string | null;
-              units_needed?: number;
-              packs_needed?: number;
-              candidates?: Array<{ sku_id?: string; set_quantity?: number }>;
-            };
-            const top = m.candidates?.[0];
-            const matchStatus = m.match_status ?? "no_match";
-            if (matchStatus === "no_match" || !top?.sku_id) continue;
+        const matches = result.debug.sku_matching_result;
+        for (let i = 0; i < matches.length; i++) {
+          const m = matches[i] as {
+            zone_id?: string;
+            content_type?: string;
+            match_status?: string;
+            match_kind?: string | null;
+            units_needed?: number;
+            packs_needed?: number;
+            candidates?: Array<{ sku_id?: string; set_quantity?: number }>;
+          };
+          const top = m.candidates?.[0];
+          const matchStatus = m.match_status ?? "no_match";
+          if (matchStatus === "no_match" || !top?.sku_id) continue;
 
-            await client.query(
-              `INSERT INTO configuration_skus
-                 (configuration_id, sku_id, zone_id, content_type, block_index,
-                  units_needed, packs_needed, set_quantity_snap, match_status, match_kind)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-              [
-                configId,
-                top.sku_id,
-                m.zone_id ?? null,
-                m.content_type ?? null,
-                i,
-                m.units_needed ?? 1,
-                m.packs_needed ?? 1,
-                top.set_quantity ?? 1,
-                matchStatus,
-                m.match_kind ?? null,
-              ],
-            );
-          }
+          await client.query(
+            `INSERT INTO configuration_skus
+               (configuration_id, sku_id, zone_id, content_type, block_index,
+                units_needed, packs_needed, set_quantity_snap, match_status, match_kind)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [
+              configId,
+              top.sku_id,
+              m.zone_id ?? null,
+              m.content_type ?? null,
+              i,
+              m.units_needed ?? 1,
+              m.packs_needed ?? 1,
+              top.set_quantity ?? 1,
+              matchStatus,
+              m.match_kind ?? null,
+            ],
+          );
         }
       }
 
