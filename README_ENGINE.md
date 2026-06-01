@@ -318,8 +318,17 @@ the first regression caused by a missed sync ships to prod, whichever comes firs
 
 ### BL-07: `content_warnings` (soft height) — wiring to `/api/result`
 
-**Status:** open — not exposed via API yet; deferred for explicit
-product/copy review before showing on result page.
+**Status:** ✓ closed 2026-06-02. Реализовано так:
+- Сервер отдаёт `scheme.content_warnings[]` с минимумом полей
+  `{warning_code, content_type, zone_id}` — БЕЗ engine-текста, потому
+  что текст движка раскрывает внутренние параметры
+  («комфортная высота 16 см»).
+- Тексты предупреждений лежат на фронте в `WARNING_TEXT`
+  (content-labels.js) с шаблоном `{category}`, рендерер
+  (renderWarnings) подставляет ru-категорию через LABEL.
+- Принцип «копирайт на фронте» соблюдён (api-contract.md:147).
+
+Старое описание сохраняю для истории:
 
 **Problem:** The engine already emits `SchemePayload.content_warnings:
 SoftHeightWarning[]` with a fully built ru-text message

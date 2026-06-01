@@ -101,6 +101,15 @@
 
   var PRIORITY_RU = { convenient: 'удобно', capacity: 'вместительно', budget: 'экономично' };
 
+  /* ── Тексты предупреждений для блока «Обратите внимание» ──────
+     Сервер шлёт только warning_code + content_type + zone_id;
+     текст собираем тут (принцип «копирайт на фронте»). Шаблон
+     с {category} подменяется через LABEL[content_type]. */
+  var WARNING_TEXT = {
+    compressed_storage: '{category} будут храниться чуть плотнее обычного — поместятся, но могут быть немного смяты.',
+    deformation_risk:   '{category} могут потерять форму при таком хранении. Если важно сохранить вид — рассмотрите более высокий ящик.'
+  };
+
   /* ── Пороги объёма по категориям (зеркало engine `volumeToCount`) ──
      Используется конфигуратором для динамических подписей уровней:
        small  → "Мало (1–N1 unit)"
@@ -208,6 +217,14 @@
     ruleText: function (ruleId) { return RULE_TEXT[ruleId] || null; },
     /** ru-название приоритета */
     priorityLabel: function (p) { return PRIORITY_RU[p] || p; },
+    /** текст предупреждения по warning_code, с подстановкой ru-категории.
+     *  Сервер шлёт код + content_type, текст собираем тут. */
+    warningText: function (warningCode, contentType) {
+      var tpl = WARNING_TEXT[warningCode];
+      if (!tpl) return '';
+      var cat = LABEL[contentType] || contentType;
+      return tpl.replace('{category}', cat);
+    },
     /** {small, medium, unit} пороги объёма для категории или null */
     volumeBounds: function (contentType) { return VOLUME_BOUNDS[contentType] || null; },
     /** подпись уровня объёма: "Мало (1–8 пар)" / "Средне (9–16 пар)" / "Много (17+ пар)" */

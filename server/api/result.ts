@@ -31,10 +31,17 @@ interface PublicReserveRect {
   x_cm: number; y_cm: number; w_cm: number; d_cm: number; h_cm: number;
 }
 
+interface PublicContentWarning {
+  warning_code: "compressed_storage" | "deformation_risk";
+  content_type: string;
+  zone_id: string;
+}
+
 interface PublicScheme {
   drawer: { w_cm: number; d_cm: number; h_cm: number };
   assigned_zones: PublicAssignedZone[];
   reserve_zones: PublicReserveRect[];
+  content_warnings: PublicContentWarning[];
 }
 
 interface PublicMatch {
@@ -98,6 +105,7 @@ function clampScheme(raw: unknown, inputDrawer: PublicInput["drawer"]): PublicSc
   const sp = raw as Record<string, unknown>;
   const assignedRaw = Array.isArray(sp.assigned_zones) ? (sp.assigned_zones as Array<Record<string, unknown>>) : [];
   const reserveRaw = Array.isArray(sp.reserve_zones) ? (sp.reserve_zones as Array<Record<string, unknown>>) : [];
+  const warningsRaw = Array.isArray(sp.content_warnings) ? (sp.content_warnings as Array<Record<string, unknown>>) : [];
   return {
     drawer: { w_cm: inputDrawer.w_cm, d_cm: inputDrawer.d_cm, h_cm: inputDrawer.h_cm },
     assigned_zones: assignedRaw.map((z) => ({
@@ -116,6 +124,18 @@ function clampScheme(raw: unknown, inputDrawer: PublicInput["drawer"]): PublicSc
       d_cm: Number(r.d_cm ?? 0),
       h_cm: Number(r.h_cm ?? 0),
     })),
+    // Soft height warnings от движка. Шлём ТОЛЬКО код + категорию + zone_id,
+    // без message — потому что текст движка раскрывает внутренние параметры
+    // («доступно 15 см, комфортная высота 16 см»), которые мы не хотим
+    // показывать наружу. Финальный текст собирается на фронте из словаря
+    // WARNING_TEXT в content-labels.js (принцип «копирайт на фронте»).
+    content_warnings: warningsRaw
+      .filter((w) => w && typeof w === "object")
+      .map((w) => ({
+        warning_code: (w.warning_code === "deformation_risk" ? "deformation_risk" : "compressed_storage") as PublicContentWarning["warning_code"],
+        content_type: String(w.content_type ?? ""),
+        zone_id:      String(w.zone_id ?? ""),
+      })),
   };
 }
 

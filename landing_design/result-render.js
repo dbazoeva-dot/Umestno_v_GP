@@ -167,7 +167,10 @@
     });
   }
 
-  // «Обратите внимание» — только SoftHeightWarning; подстановка content_type → ru
+  // «Обратите внимание» — SoftHeightWarning'и. Сервер шлёт только
+  // warning_code + content_type + zone_id (без текста, чтобы не
+  // раскрывать внутренние параметры движка). Финальный текст
+  // собираем из WARNING_TEXT в content-labels.js.
   function renderWarnings(payload) {
     var section = document.querySelector('.u-res-warn-card');
     var list = document.querySelector('.u-res-warn');
@@ -180,9 +183,9 @@
     list.innerHTML = '';
     if (!soft.length) { if (section) section.hidden = true; return; }
     if (section) section.hidden = false;
+    var c = C();
     soft.forEach(function (w) {
-      var msg = w.message || '';
-      if (w.content_type) msg = msg.split(w.content_type).join(label(w.content_type));
+      var msg = (c.warningText && c.warningText(w.warning_code, w.content_type)) || '';
       var li = document.createElement('li');
       li.innerHTML = '<span class="u-res-warn__cat">' + esc(label(w.content_type)) + '</span>' +
         '<span class="u-res-warn__msg">' + esc(msg) + '</span>';

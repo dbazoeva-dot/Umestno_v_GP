@@ -231,10 +231,11 @@ interface ResultResponse {
 
   // «Почему эта схема подходит» — НЕ шлём (см. Решение №1).
 
-  // «Обратите внимание» (content_warnings) — пока НЕ шлём.
-  // Движок их строит (SchemePayload.content_warnings), отрисовщик
-  // (renderWarnings) умеет читать. Wiring отложен — см. BL-07 в
-  // README_ENGINE.md.
+  // «Обратите внимание» (content_warnings) — теперь часть scheme.
+  // Шлём ТОЛЬКО {warning_code, content_type, zone_id} без текста.
+  // Текст собирается на фронте из словаря WARNING_TEXT в
+  // content-labels.js, чтобы не раскрывать алгоритмические
+  // параметры движка наружу.
 
   // Подобранные SKU по блокам
   matches: Array<{
