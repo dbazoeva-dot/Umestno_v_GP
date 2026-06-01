@@ -57,7 +57,7 @@
 | Что | Путь |
 |-----|------|
 | Репо | `/var/www/umestno` |
-| nginx config | `/etc/nginx/sites-available/umestno-home.ru` |
+| nginx config | `/etc/nginx/sites-available/default` (symlink: `sites-enabled/default`). Содержит несколько `server {}` блоков: HTTP-fallback `listen 80 default_server, server_name _`, HTTPS-production `listen 443 ssl, server_name www.umestno-home.ru umestno-home.ru` (managed by Certbot), HTTP→HTTPS redirect `listen 80; server_name umestno-home.ru`. Прод-трафик идёт в HTTPS-блок. |
 | nginx SSL cert | `/etc/letsencrypt/live/umestno-home.ru/` |
 | Postgres data | `/var/lib/postgresql/16/main/` (стандарт) |
 
