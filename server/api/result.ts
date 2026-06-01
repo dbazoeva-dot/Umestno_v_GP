@@ -149,6 +149,7 @@ export function resultHandler(pool: Pool, env: Env) {
       sku_id: string;
       product_title: string;
       product_url: string | null;
+      affiliate_url: string | null;
       image_s3_key: string | null;
       width_cm: string;
       depth_cm: string;
@@ -159,7 +160,8 @@ export function resultHandler(pool: Pool, env: Env) {
       color_group: string | null;
     }>(
       `SELECT cs.zone_id, cs.content_type, cs.block_index,
-              s.sku_id, s.product_title, s.product_url, s.image_s3_key,
+              s.sku_id, s.product_title, s.product_url, s.affiliate_url,
+              s.image_s3_key,
               s.width_cm, s.depth_cm, s.height_cm,
               s.capacity_units, s.rigidity, s.division_type, s.color_group
          FROM configuration_skus cs
@@ -176,7 +178,10 @@ export function resultHandler(pool: Pool, env: Env) {
       sku: {
         sku_id:         r.sku_id,
         product_title:  r.product_title,
-        product_url:    r.product_url,
+        // Партнёрская ссылка предпочтительнее публичной (если есть).
+        // Фронт получает одно поле product_url и не отличает одно от
+        // другого; expected_affiliate_cpa на фронт не уходит (бизнес-метрика).
+        product_url:    r.affiliate_url ?? r.product_url,
         image_url:      buildImageUrl(env, r.image_s3_key),
         width_cm:       parseFloat(r.width_cm),
         depth_cm:       parseFloat(r.depth_cm),

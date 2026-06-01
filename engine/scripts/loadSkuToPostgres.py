@@ -25,7 +25,7 @@ except ImportError:
     sys.exit("Нужен psycopg2: sudo apt install -y python3-psycopg2  (или pip install psycopg2-binary)")
 
 NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
-DEFAULT_XLSX = os.path.join(os.path.dirname(__file__), "..", "..", "E_SKU_catalog_v2905.xlsx")
+DEFAULT_XLSX = os.path.join(os.path.dirname(__file__), "..", "..", "E_SKU_catalog_v0106.xlsx")
 
 # Колонки xlsx → колонки таблицы sku. Имена обычно совпадают, кроме нескольких.
 # kind: str | num | int | yn | bool_yn
@@ -35,6 +35,7 @@ FIELD_MAP = [
     ("seller_or_brand",     "seller_or_brand",     "str"),
     ("product_title",       "product_title",       "str"),
     ("product_url",         "product_url",         "str"),
+    ("affiliate_url",       "affiliate_url",       "str"),
     ("picture_matching",    "image_s3_key",        "str"),    # ← переименовано
     ("division_type",       "division_type",       "str"),
     ("rigidity",            "rigidity",            "str"),
@@ -70,6 +71,7 @@ FIELD_MAP = [
     ("quality_notes",       "quality_notes",       "str"),
     ("fit_risk_notes",      "fit_risk_notes",      "str"),
     ("source_confidence",   "source_confidence",   "str"),
+    ("expected_affiliate_cpa", "expected_affiliate_cpa", "str"),
 ]
 
 

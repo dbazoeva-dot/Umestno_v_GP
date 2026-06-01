@@ -244,7 +244,7 @@ interface ResultResponse {
     sku: {
       sku_id: string;
       product_title: string;
-      product_url: string | null; // ссылка на товар (может быть партнёрской); фронт оборачивает карточку в <a>
+      product_url: string | null; // сервер отдаёт affiliate_url ?? product_url (один из); фронт оборачивает карточку в <a>
       image_url: string;          // собирается на сервере (IMAGE_BASE_URL + key + .webp)
       width_cm: number; depth_cm: number; height_cm: number;
       capacity_units: number;     // для строки «11 слотов»
