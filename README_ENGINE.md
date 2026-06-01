@@ -245,6 +245,46 @@ and extend `matchSkus` to try set candidates after single-piece candidates fail.
 
 **Suggested next step:** design after individual organizer matching is live for clothing/underwear.
 
+### BL-04: Engine `volume_to_count` mismatches with Library A
+
+**Status:** open — engine numbers kept as-is for now; await source-of-truth call.
+
+**Problem:** `engine/libraries/defaultLibraries.ts` and Library A disagree on four `volume_to_count` rows:
+
+| content_type | level  | engine | Library A |
+|--------------|--------|--------|-----------|
+| panties      | large  | 16     | 18        |
+| boxers       | small  | 5      | 6         |
+| boxers       | medium | 8      | 10        |
+| tights       | medium | 8      | 6         |
+
+Aligning the engine to Library A immediately breaks `fourItemStressCalibration`:
+panties large grows 16 → 18, requiring `cells_4x5` (41 × 16 cm) instead of `cells_4x4`,
+which no longer fits drawer 120×40 alongside bras + socks + tights → `fit_partial`,
+panties dropped. Re-tuning the stress drawer (e.g. 120 → 150 cm) is mechanically
+trivial but changes the fixture without knowing whose numbers are correct.
+
+**What needs to be decided:**
+1. Are Library A's 4 numbers corrections to the engine (then update engine + re-tune the stress fixture to preserve the slot-split regression intent) or errors in A (then fix A)?
+2. If engine wins, who owns Library A's correction so the spreadsheet doesn't drift back?
+
+**Decision recorded 2026-06-01:** revert engine changes (`eb008a2`), build the configurator
+form on engine numbers, resolve discrepancies with Library A authors before MVP launch.
+
+### BL-05: `soft_clothes` vs `clothing` naming inconsistency
+
+**Status:** open — pure rename, no behavioural effect.
+
+**Problem:** `engine/types.ts` declares the storage category as `soft_clothes`,
+but Library A and the frontend label list call it `clothing`.
+
+**Why deferred:** `storage_category` does not affect calculation — the server
+hard-codes `mixed` on every request, so the value never reaches the planner in
+practice. A rename is cosmetic.
+
+**Suggested next step:** rename to `clothing` during the next engine-types touch
+to remove the internal drift.
+
 ## Codex workflow rule
 
 After every completed iteration:
