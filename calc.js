@@ -2,9 +2,10 @@
 (function () {
   'use strict';
 
-  var ITEM_OPTIONS = ['Носки', 'Трусы', 'Майки', 'Футболки', 'Ремни', 'Аксессуары'];
-  var QTY_OPTIONS = ['Мало (до 8 пар)', 'Средне (9–16 пар)', 'Много (17–30 пар)', 'Очень много (30+)'];
+  // Категории и подписи объёма берём из UMESTNO_CONTENT (landing_design/content-labels.js).
+  // engine.max_items = 4 → MAX_ROWS = 4.
   var MAX_ROWS = 4;
+  var VOLUME_LEVELS = ['small', 'medium', 'large'];
 
   /* ── Choice cards (single-select within each group) ──── */
   document.querySelectorAll('.u-calc__choices').forEach(function (group) {
@@ -63,24 +64,44 @@
     var chevron = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
     var trash = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 7h14M9 7V5h6v2m-8 0v12h10V7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-    var optionsHTML = function (opts, selected) {
-      return '<option value="">— выбрать —</option>' + opts.map(function (o) {
-        return '<option value="' + o + '"' + (o === selected ? ' selected' : '') + '>' + o + '</option>';
+    var content = window.UMESTNO_CONTENT;
+
+    var escape = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
+
+    var typeOptionsHTML = function (selectedId) {
+      var html = '<option value="">— выбрать —</option>';
+      content.groups.forEach(function (g) {
+        html += '<optgroup label="' + escape(g.ru) + '">';
+        content.items.filter(function (it) { return it.group === g.id; }).forEach(function (it) {
+          html += '<option value="' + it.id + '"' + (it.id === selectedId ? ' selected' : '') + '>' + escape(it.ru) + '</option>';
+        });
+        html += '</optgroup>';
+      });
+      return html;
+    };
+
+    var qtyOptionsHTML = function (contentType, selectedLevel) {
+      if (!contentType || !content.volumeBounds(contentType)) {
+        return '<option value="">— сначала выберите категорию —</option>';
+      }
+      return VOLUME_LEVELS.map(function (lvl) {
+        return '<option value="' + lvl + '"' + (lvl === selectedLevel ? ' selected' : '') + '>' + escape(content.volumeLabel(contentType, lvl)) + '</option>';
       }).join('');
     };
-    var rowHTML = function (type, qty) {
+
+    var rowHTML = function (typeId, level) {
+      var qtyDisabled = !typeId || !content.volumeBounds(typeId);
       return '<div class="u-calc__item-row">' +
         '<label class="u-calc__field"><span class="u-calc__field-lbl">Что хранить</span>' +
-          '<div class="u-calc__select-wrap"><select data-role="type">' + optionsHTML(ITEM_OPTIONS, type) + '</select>' + chevron + '</div></label>' +
+          '<div class="u-calc__select-wrap"><select data-role="type">' + typeOptionsHTML(typeId) + '</select>' + chevron + '</div></label>' +
         '<label class="u-calc__field"><span class="u-calc__field-lbl">Объем</span>' +
-          '<div class="u-calc__select-wrap"><select data-role="qty">' + optionsHTML(QTY_OPTIONS, qty) + '</select>' + chevron + '</div></label>' +
+          '<div class="u-calc__select-wrap"><select data-role="qty"' + (qtyDisabled ? ' disabled' : '') + '>' + qtyOptionsHTML(typeId, level) + '</select>' + chevron + '</div></label>' +
         '<button type="button" class="u-calc__item-rm" aria-label="Удалить строку">' + trash + '</button>' +
       '</div>';
     };
 
     var refresh = function () {
       var rows = itemsRoot.querySelectorAll('.u-calc__item-row');
-      // hide remove button when only one row remains
       rows.forEach(function (row) {
         var rm = row.querySelector('.u-calc__item-rm');
         if (rm) rm.style.display = rows.length > 1 ? '' : 'none';
@@ -89,7 +110,7 @@
     };
 
     // default 2 rows
-    itemsRoot.innerHTML = rowHTML('Носки', 'Средне (9–16 пар)') + rowHTML('Трусы', 'Средне (9–16 пар)');
+    itemsRoot.innerHTML = rowHTML('socks', 'medium') + rowHTML('panties', 'medium');
 
     itemsRoot.addEventListener('click', function (e) {
       var rm = e.target.closest('.u-calc__item-rm');
@@ -97,6 +118,17 @@
         rm.closest('.u-calc__item-row').remove();
         refresh();
       }
+    });
+    itemsRoot.addEventListener('change', function (e) {
+      var sel = e.target;
+      if (sel.tagName !== 'SELECT' || sel.dataset.role !== 'type') return;
+      var row = sel.closest('.u-calc__item-row');
+      var qty = row && row.querySelector('select[data-role="qty"]');
+      if (!qty) return;
+      var prev = qty.value;
+      var typeId = sel.value;
+      qty.innerHTML = qtyOptionsHTML(typeId, prev || 'medium');
+      qty.disabled = !typeId || !content.volumeBounds(typeId);
     });
     if (addBtn) {
       addBtn.addEventListener('click', function () {
