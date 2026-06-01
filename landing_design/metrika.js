@@ -49,4 +49,9 @@
   function init() { load(); bindGoals(); }
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
+
+  // Экспорт для других скриптов (calc.js): чтобы они могли стрелять
+  // цели без дублирования YM_ID и проверок на window.ym.
+  // Использование: window.UMESTNO_TRACK && window.UMESTNO_TRACK('goal_name')
+  window.UMESTNO_TRACK = reachGoal;
 })();

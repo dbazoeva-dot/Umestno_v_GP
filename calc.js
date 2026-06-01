@@ -253,6 +253,20 @@
         .catch(function (err) {
           cta.dataset.loading = '';
           cta.classList.remove('is-loading');
+          // Различаем «сервер ответил с ошибкой» (err.status есть) и
+          // «запрос вообще не дошёл» (err.status отсутствует — это
+          // network error, в России чаще всего антивирус/расширение).
+          if (!err || !err.status) {
+            // Стреляем цель в Метрику чтобы потом увидеть масштаб
+            // потерь. Запрос в Метрику обычно проходит даже там, где
+            // /api/* блокируется (Метрика whitelist'нута у антивирусов).
+            if (window.UMESTNO_TRACK) {
+              try { window.UMESTNO_TRACK('calc_request_blocked'); } catch (e) {}
+            }
+            showCalcError('Запрос не дошёл до сервера. Возможно, его блокирует антивирус или расширение браузера. Добавьте umestno-home.ru в исключения антивируса или попробуйте другой браузер.');
+            console.error('[calculate] network error (likely blocked locally)', err);
+            return;
+          }
           showCalcError(humanizeCalcError(err));
           console.error('[calculate] failed', err);
         });

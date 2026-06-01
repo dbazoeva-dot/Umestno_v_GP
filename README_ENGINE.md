@@ -510,6 +510,51 @@ email». Юзер не понимает, что у него **почти** по�
 **Связано с:** BL-07 (content_warnings — другие предупреждения),
 docs/api-contract.md решение №8 (актуальное «жёстко на no-fit»).
 
+### BL-12: Compatibility with Russian antivirus suites
+
+**Status:** open — observed in production with Kaspersky on author's
+laptop: POST `/api/calculate` got silently intercepted, the request
+never reached the server, no error was visible to the user. fetch's
+`.catch` did fire (the `gc.kis.v2.scr.kaspersky-labs.com` scan endpoint
+returned 400 to Kaspersky internally), but the rejection looked like a
+generic network error in Chrome.
+
+**Why it matters:** Kaspersky is widely deployed in Russia, especially
+among women 35+ — a chunk of our target audience. Other AVs (Dr.Web,
+Avast, Norton in Russian build) likely behave similarly. If 10% of
+intended buyers hit a wall, that's 10% lost revenue — significant
+when the catalog is just starting.
+
+**What's already done (02.06):**
+1. Frontend distinguishes HTTP errors (server returned 4xx/5xx) from
+   network errors (no response at all). For network errors we show a
+   specific message: «Запрос не дошёл до сервера. Возможно, его
+   блокирует антивирус или расширение браузера…» with a hint to
+   whitelist `umestno-home.ru` or try another browser.
+2. On every network-error catch we fire Yandex Metrika goal
+   `calc_request_blocked` — so we can measure the loss rate from the
+   Metrika dashboard. Metrika beacons usually pass even when /api/*
+   is blocked (AVs whitelist them).
+
+**What's not done:**
+1. Test matrix across AV+browser combos: Kaspersky+Chrome,
+   Kaspersky+Yandex.Browser, Dr.Web+Chrome, Avast+Firefox, Norton+Edge.
+   Need to find which AVs actually block, and what request shape
+   triggers them (POST? JSON content-type? URL pattern?).
+2. If a specific AV reliably blocks our /api/calculate — try
+   workarounds: alternative endpoint path (not /api/), form-encoded
+   body instead of JSON, GET with query params instead of POST,
+   adding a non-suspicious `Accept` header, etc.
+3. FAQ entry on the site: «У меня кнопка «Получить расчёт» не работает,
+   что делать?» — пошагово как добавить домен в исключения Kaspersky /
+   Dr.Web / других распространённых AV.
+4. Monitor `calc_request_blocked` goal in Metrika. Если > 5% — нужно
+   решать раньше; если < 1% — терпимо до следующей итерации.
+
+**Suggested next step:** дождаться первой партии реальных юзеров,
+посмотреть в Метрике сколько раз стрелял `calc_request_blocked`,
+тогда уже решать стоит ли тратить силы на обходы.
+
 ## Codex workflow rule
 
 After every completed iteration:
