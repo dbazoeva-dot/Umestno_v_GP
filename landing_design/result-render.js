@@ -96,17 +96,25 @@
   function C() { return global.UMESTNO_CONTENT || {}; }
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 
-  // «Как сложить вещи» — строка на каждую назначенную категорию
-  function renderFolding(result) {
+  // «Как сложить вещи» — строка на каждую уникальную категорию из схемы.
+  // Текст советов лежит в FOLD_TIP (content-labels.js), сервер их не шлёт.
+  function renderFolding(payload) {
     var list = document.querySelector('.u-res-fold');
     if (!list) return;
-    var rows = result.what_to_store_where || [];
-    if (!rows.length) return;
+    var scheme = payload.scheme || payload;
+    var zones = scheme.assigned_zones || [];
+    var seen = {}, types = [];
+    zones.forEach(function (z) {
+      var ct = z.content_type;
+      if (!ct || seen[ct]) return;
+      seen[ct] = true;
+      types.push(ct);
+    });
+    if (!types.length) return;
     var c = C();
     list.innerHTML = '';
-    rows.forEach(function (r) {
-      var ct = r.content_type;
-      var tip = (c.foldTip && c.foldTip(ct)) || r.instruction || '';
+    types.forEach(function (ct) {
+      var tip = (c.foldTip && c.foldTip(ct)) || '';
       var icon = c.foldIcon && c.foldIcon(ct);
       var li = document.createElement('li');
       li.className = 'u-res-fold-row';
@@ -123,26 +131,33 @@
   // деликатные категории — для них показываем правило D06 (запас по высоте)
   var DELICATE = { bras: 1, swimwear: 1, sport_tops: 1 };
 
-  // «Почему эта схема подходит» — компактные факты (без подписей) + правила
+  // «Почему эта схема подходит» — компактные факты + правила.
+  // Сервер id правил не шлёт (api-contract решение №1), поэтому список
+  // фиксирован на фронте: 1 общий + D01 + D05 (всегда), D04 если есть
+  // полезный резерв, D06 если есть деликатные категории.
   function renderWhy(payload) {
     var list = document.querySelector('.u-res-why');
     if (!list) return;
-    var scheme = payload.scheme || payload.scheme_payload || payload;
+    var scheme = payload.scheme || payload;
     var zones = scheme.assigned_zones || [];
-    var c = C();
-    var bullets = [];
-
-    // Один общий факт — детали (размеры, вещи, приоритет) уже в чипах сверху
-    bullets.push({ t: 'Собрана под ваши индивидуальные данные' });
-
-    // Правила: с пояснениями; D06 — только если есть деликатные вещи
+    var hasReserve = (scheme.reserve_zones || []).some(function (r) {
+      return Math.min(r.w_cm, r.d_cm) >= RESERVE_MIN_SIDE;
+    });
     var hasDelicate = zones.some(function (z) { return DELICATE[z.content_type]; });
-    var applied = (payload.why_this_layout) || (scheme.layout_plan && scheme.layout_plan.rules_applied) || [];
-    applied.forEach(function (id) {
-      if (id === 'D06' && !hasDelicate) return;
+    var c = C();
+    var bullets = [{ t: 'Собрана под ваши индивидуальные данные' }];
+    ['D01', 'D05'].forEach(function (id) {
       var rt = c.ruleText && c.ruleText(id);
       if (rt) bullets.push(rt);
     });
+    if (hasReserve) {
+      var d4 = c.ruleText && c.ruleText('D04');
+      if (d4) bullets.push(d4);
+    }
+    if (hasDelicate) {
+      var d6 = c.ruleText && c.ruleText('D06');
+      if (d6) bullets.push(d6);
+    }
 
     list.innerHTML = '';
     bullets.forEach(function (b) {
@@ -192,14 +207,68 @@
     });
   }
 
+  // ru-склонение числительного для подписи карточки органайзера
+  function pluralRu(n, forms) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return forms[0];
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return forms[1];
+    return forms[2];
+  }
+  var UNIT_STEMS = {
+    slots:    ['слот', 'слота', 'слотов'],
+    cells:    ['ячейка', 'ячейки', 'ячеек'],
+    dividers: ['секция', 'секции', 'секций'],
+    open:     null
+  };
+  var RIGIDITY_RU = { soft: 'мягкий', semi_rigid: 'полужёсткий', rigid: 'жёсткий' };
+
+  // «Подходящие органайзеры» — один блок на каждый подобранный SKU.
+  // Группировки нет: на этапе MVP backend пишет ровно один топ-матч на зону.
+  function renderMatches(payload) {
+    var root = document.querySelector('[data-matches]');
+    if (!root) return;
+    var matches = payload.matches || [];
+    root.innerHTML = '';
+    matches.forEach(function (m, i) {
+      var ct = m.content_type;
+      var sku = m.sku || {};
+      var n = (m.block_index != null ? m.block_index : i) + 1;
+      var stems = UNIT_STEMS[sku.division_type];
+      var subParts = [];
+      if (stems && sku.capacity_units) subParts.push(sku.capacity_units + ' ' + pluralRu(sku.capacity_units, stems));
+      if (RIGIDITY_RU[sku.rigidity]) subParts.push(RIGIDITY_RU[sku.rigidity]);
+      var sizes = [sku.width_cm, sku.depth_cm, sku.height_cm].map(cm).join(' × ') + ' см';
+
+      var block = document.createElement('div');
+      block.className = 'u-res-prod-block';
+      block.innerHTML =
+        '<div class="u-res-prod-block__intro">' +
+          '<span class="u-res-prod-block__n">Блок ' + n + '</span>' +
+          '<span class="u-res-prod-block__cat">' + esc(label(ct)) + '</span>' +
+        '</div>' +
+        '<div class="u-res-prod-cards">' +
+          '<article class="u-res-prod-card">' +
+            '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
+            '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
+            '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
+            (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
+            '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>' +
+          '</article>' +
+        '</div>';
+      root.appendChild(block);
+    });
+  }
+
   function render(payload) {
     if (!payload) return;
     var scheme = payload.scheme || payload.scheme_payload || payload;
-    renderScheme(scheme, payload.drawer);
+    var drawer = (scheme && scheme.drawer) || (payload.input && payload.input.drawer) || payload.drawer;
+    renderScheme(scheme, drawer);
     renderSizesTable(scheme);
     renderFolding(payload);
     renderWhy(payload);
     renderWarnings(payload);
+    renderMatches(payload);
   }
 
   global.UMESTNO = global.UMESTNO || {};
@@ -208,5 +277,6 @@
   global.UMESTNO.renderFolding = renderFolding;
   global.UMESTNO.renderWhy = renderWhy;
   global.UMESTNO.renderWarnings = renderWarnings;
+  global.UMESTNO.renderMatches = renderMatches;
   global.UMESTNO.render = render;
 })(window);

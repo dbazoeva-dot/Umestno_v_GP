@@ -197,47 +197,44 @@ interface ResultResponse {
   fit_status: "fit_all" | "fit_partial" | "fit_none" | "no_scheme";
   created_at: string;          // ISO
 
-  // Эхо ввода — для чипов и контекста на result-странице
+  // Эхо ввода — для чипов и контекста на result-странице.
+  // storage_category на чипах не показывается → не шлём.
   input: {
     drawer: { w_cm: number; d_cm: number; h_cm: number };
-    storage_category: string;
     items: Array<{ content_type: string; volume_level: "small"|"medium"|"large" }>;
     priority: "convenient" | "capacity" | "budget";
   };
 
-  // Схема ящика
+  // Схема ящика. Имена полей сохраняем как у движка (assigned_zones,
+  // assigned_w_cm/...) — отрисовщик landing_design/result-render.js так
+  // читает; ремап ради косметики ломал бы рабочий рендер. Сырые внутренние
+  // поля (option_id, calculation_mode, layout_plan, layout_rule_evaluations,
+  // selected_calculated_zones, …) сюда НЕ попадают.
   scheme: {
-    drawer: { w_cm: number; d_cm: number };   // для пропорций (renderScheme)
-    zones: Array<{
+    drawer: { w_cm: number; d_cm: number; h_cm: number };  // для пропорций renderScheme
+    assigned_zones: Array<{
       zone_id: string;
       content_type: string;
       x_cm: number; y_cm: number;
-      w_cm: number; d_cm: number; h_cm: number;
+      assigned_w_cm: number; assigned_d_cm: number; assigned_h_cm: number;
     }>;
+    // Сырые свободные прямоугольники из движка. Отрисовщик сам выбирает
+    // «полезный» (короткая сторона ≥ 8см, max площадь) через bestReserve.
     reserve_zones: Array<{
-      x_cm: number; y_cm: number; w_cm: number; d_cm: number;
+      x_cm: number; y_cm: number; w_cm: number; d_cm: number; h_cm: number;
     }>;
   };
 
-  // «Как сложить»
-  folding: Array<{
-    content_type: string;
-    instruction?: string;       // fallback к foldTip из content-labels.js
-  }>;
+  // «Как сложить» — НЕ шлём. У фронта есть FOLD_TIP в content-labels.js
+  // на 21 категорию; renderFolding строит список из уникальных
+  // assigned_zones[].content_type и берёт текст оттуда.
 
-  // «Почему эта схема подходит» — УЖЕ ГОТОВЫЕ ТЕКСТЫ (без id правил)
-  why_this_layout: Array<{
-    text: string;               // главный bullet
-    detail?: string;            // подзаголовок
-  }>;
+  // «Почему эта схема подходит» — НЕ шлём (см. Решение №1).
 
-  // «Обратите внимание»
-  content_warnings: Array<{
-    warning_code: "compressed_storage" | "deformation_risk";
-    message: string;            // готовый ru-текст
-    content_type: string;
-    zone_id: string;            // маркер «!» на схеме
-  }>;
+  // «Обратите внимание» (content_warnings) — пока НЕ шлём.
+  // Движок их строит (SchemePayload.content_warnings), отрисовщик
+  // (renderWarnings) умеет читать. Wiring отложен — см. BL-07 в
+  // README_ENGINE.md.
 
   // Подобранные SKU по блокам
   matches: Array<{
@@ -257,6 +254,13 @@ interface ResultResponse {
   }>;
 }
 ```
+
+Что **не** передаётся в `matches[].sku` (специально):
+- `product_url` — публичную ссылку на товар отдаём только через
+  `/api/sku/click/:sku_id/:platform` (трекаем affiliate)
+- `match_status`, `match_kind`, `units_needed`, `packs_needed`,
+  `set_quantity` — внутренние результаты матчера; фронту для рендера
+  карточки не нужны
 
 ### GET `/api/sku/click/:sku_id/:platform?config_id=…`
 
@@ -374,7 +378,8 @@ user_agent). Без этого — 400 Bad Request.
 | 1.3 | `POST /api/calculate` — расчёт + сохранение | ✓ ГОТОВО |
 | 1.4 | `GET /api/result/:token` — чтение сохранённого | ✓ ГОТОВО (но отдаёт полный engine_output — см. ниже) |
 | 1.4.5 | Привести `/api/result/:token` к контракту (срезать внутренние поля) | ⏳ В РАБОТЕ |
-| 1.5a | Переписать configure-форму (21 категория, динамические объёмы) + submit-обработчик | ⏳ ПЛАН |
+| 1.5a | configure-форма: 21 категория, динамические объёмы | ✓ ГОТОВО |
+| 1.5a-submit | configure-форма: submit-обработчик → POST /api/calculate | ⏳ ПЛАН (после 1.5b) |
 | 1.5b | result.html → fetch → render через `result-render.js` (упрощённый renderWhy/renderFolding) | ⏳ ПЛАН |
 | 1.5c | `GET /api/sku/click/:sku/:platform` + кнопки «Купить» | ⏳ ПЛАН |
 | 1.5d | nginx-config: проксировать `/api/*` на Node | ⏳ ПЛАН |
