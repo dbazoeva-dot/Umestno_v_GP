@@ -407,6 +407,66 @@ product page. Until those accounts exist, there's nothing to migrate to.
 Until done: MVP ships with mixed coverage. Clicks still work, monetization
 is partial.
 
+### BL-10: Promo code system (Stage 3 dependency)
+
+**Status:** scoped — database design agreed, business design (which codes,
+when, what discounts) — owned by product. Implementation deferred until
+Stage 3 (YooKassa integration), because promo codes are no-op on the
+free MVP path (`orders.status='sent_free'` regardless).
+
+**Scenarios to support (all three):**
+- **(a) Discount codes** — `EARLYBIRD20` = -20%, `NY2026` = -50 ₽, with
+  expiration and usage caps.
+- **(b) Free codes for friends/testers** — `FRIENDS` = 100% off,
+  `orders.status='sent_free'`, bypasses YooKassa entirely. Useful as a
+  permanent backdoor for known users even after `PAYMENT_REQUIRED=true`.
+- **(c) Tracking codes** — `ALEX2026` = 0% discount but logs the source
+  in `orders.promo_code_id`. UTM-equivalent but in our own DB.
+
+**Schema (migration `0003_promo_codes.sql`, to be written):**
+
+```sql
+CREATE TABLE promo_codes (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  code            text NOT NULL UNIQUE,         -- 'FRIENDS', 'EARLYBIRD20'
+  discount_type   text NOT NULL CHECK (discount_type IN ('percent','fixed','free')),
+  discount_value  int NOT NULL,                 -- % or kopecks; 100 for 'free'
+  max_uses        int,                          -- NULL = unlimited
+  uses_count      int NOT NULL DEFAULT 0,
+  valid_from      timestamptz,
+  valid_until     timestamptz,
+  notes           text,                         -- internal: why created
+  is_active       bool NOT NULL DEFAULT true,
+  created_at      timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE orders
+  ADD COLUMN promo_code_id uuid REFERENCES promo_codes(id),
+  ADD COLUMN discount_kop  int NOT NULL DEFAULT 0;
+```
+
+`discount_kop` is denormalized on purpose: if the parent `promo_codes`
+row is later edited (rate change, deactivation), historical orders keep
+their original discount. Same pattern as `configuration_skus.set_quantity_snap`.
+
+**Endpoints (to be written in Stage 3):**
+- `POST /api/promo/validate` — `{code} → {valid, discount_type, discount_value, message?}`.
+  Returns 400 with reason if expired/exhausted/inactive/not-found.
+- `POST /api/order/create` — accepts optional `promo_code`, re-validates
+  server-side, computes discount, sets `orders.amount_kop` and
+  `discount_kop`. If discount_type='free' → `orders.status='sent_free'`
+  immediately, no YooKassa call.
+
+**Frontend (Stage 3):**
+- Form on `/result/` near email submit: `[input promo code] → live validation`
+- Show `«Скидка X% / -Y ₽ → итого Z ₽»`
+
+**Open product decisions (Dzera owns):**
+- Naming convention (descriptive vs short vs gift-card-style random)
+- Initial set of codes for soft launch
+- Whether codes are case-sensitive (recommend no — store and compare in lowercase)
+- One code per order, or can stack? (recommend one — stacking gets messy fast)
+
 ## Codex workflow rule
 
 After every completed iteration:
