@@ -9,6 +9,11 @@ import { createPool } from "./db/pool.js";
 import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
 import { calculateHandler } from "./api/calculate.js";
 import { resultHandler } from "./api/result.js";
+import {
+  originCheck,
+  calculateLimiterPerMinute,
+  calculateLimiterPerHour,
+} from "./middleware/security.js";
 import type { SkuCatalogRow } from "../engine/types.js";
 
 const env = loadEnv();
@@ -46,8 +51,16 @@ app.get("/api/healthz", async (_req: Request, res: Response) => {
 });
 
 // ── 1.3 — расчёт схемы + матчинг SKU + сохранение в БД ─────
+// Защита: пускаем только с нашего домена (originCheck) и не больше
+// 5 req/min + 30 req/hour с одного IP (см. middleware/security.ts).
 
-app.post("/api/calculate", calculateHandler(pool, () => catalogCache));
+app.post(
+  "/api/calculate",
+  originCheck(env),
+  calculateLimiterPerMinute,
+  calculateLimiterPerHour,
+  calculateHandler(pool, () => catalogCache),
+);
 
 // ── 1.4 — чтение сохранённого расчёта для рендера result-страницы ─
 
