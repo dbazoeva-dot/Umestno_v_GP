@@ -15,19 +15,30 @@ SKU-органайзеры с маркетплейсов. Доход — affilia
 ## Стадии релиза
 
 ```
-СТАДИЯ 1 — ЖИВОЙ КАЛЬКУЛЯТОР С СОХРАНЕНИЕМ
+СТАДИЯ 1 — ЖИВОЙ КАЛЬКУЛЯТОР С СОХРАНЕНИЕМ        [в работе]
   Сайт принимает форму, сохраняет расчёт в БД, отдаёт схему +
   matched SKU на странице результата. Affiliate-клики
   трекаются.
 
-СТАДИЯ 2 — EMAIL + PDF + СОГЛАСИЯ
+  1.1 loadCatalogFromDb() из Postgres                  ✓ готово
+  1.2 базовый Express API + /api/healthz               ✓ готово
+  1.3 POST /api/calculate (engine + persist)           ✓ готово
+  1.4 GET /api/result/:token                           ✓ готово
+  1.4.5 contract-cleanup ответа /api/result            ⏳ в работе
+  1.5a configure: 21 категория + submit-обработчик     ⏳ план
+  1.5b result.html: динамический рендер из API         ⏳ план
+  1.5c /api/sku/click/:sku/:platform                   ⏳ план
+  1.5d nginx /api/* → Node                             ⏳ план
+  1.5e systemd-unit для Node                           ⏳ план
+
+СТАДИЯ 2 — EMAIL + PDF + СОГЛАСИЯ                  [после 1.5]
   После расчёта пользователь оставляет email — приходит PDF.
   Согласия на ПД и оферту журналируются.
   Этого достаточно для бесплатной раздачи MVP.
 
-СТАДИЯ 3 — YOOKASSA
+СТАДИЯ 3 — YOOKASSA                                [после одобрения]
   Подключается createPayment + webhook. orders.status =
-  created → pending → paid. После одобрения от ЮКассы.
+  created → pending → paid.
 ```
 
 ## Финальная архитектура
