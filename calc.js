@@ -160,6 +160,104 @@
     });
   }
 
+  /* ── Submit: POST /api/calculate → редирект по fit_status ── */
+  // CTA остаётся <a href="../no-fit/"> как fallback: если JS не загрузился
+  // или сломался, клик уведёт на /no-fit/ (безопасный исход). Тут мы
+  // перехватываем клик, гоним POST и редиректим по результату.
+  var cta = document.querySelector('.u-calc__cta');
+  if (cta) {
+    cta.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (cta.dataset.loading === '1') return;
+
+      var payload = collectPayload();
+      var err = validatePayload(payload);
+      if (err) { showCalcError(err); return; }
+
+      cta.dataset.loading = '1';
+      cta.classList.add('is-loading');
+      hideCalcError();
+
+      fetch('/api/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (!data || !data.token) throw new Error('bad_response');
+          var fit = data.fit_status;
+          var path = (fit === 'fit_none' || fit === 'no_scheme') ? '/no-fit/' : '/result/';
+          location.href = path + '?t=' + encodeURIComponent(data.token);
+        })
+        .catch(function (err) {
+          cta.dataset.loading = '';
+          cta.classList.remove('is-loading');
+          showCalcError('Не получилось рассчитать. Проверьте подключение и попробуйте ещё раз.');
+          console.error('[calculate] failed', err);
+        });
+    });
+  }
+
+  // Алиас фронт↔движок (см. content-labels.js строка 4). Только socks
+  // отличается id'шником; на остальных категориях фронтовый id совпадает с
+  // content_type движка.
+  function toEngineCt(id) { return id === 'socks' ? 'socks_regular' : id; }
+
+  function collectPayload() {
+    function dim(k) { var inp = document.querySelector('[data-dim="' + k + '"]'); return inp ? Number(inp.value) : NaN; }
+    var items = [];
+    document.querySelectorAll('.u-calc__item-row').forEach(function (row) {
+      var t = row.querySelector('select[data-role=type]');
+      var q = row.querySelector('select[data-role=qty]');
+      if (t && q && t.value && q.value) items.push({ content_type: toEngineCt(t.value), volume_level: q.value });
+    });
+    var pri = document.querySelector('.u-calc__pri-btn[aria-pressed="true"]');
+    var consent = document.querySelector('#u-consent-oferta');
+    return {
+      drawer_width_cm: dim('w'),
+      drawer_depth_cm: dim('d'),
+      drawer_height_cm: dim('h'),
+      // сервер всегда подставляет mixed (api-contract решение #1),
+      // но validateRequest требует строку — шлём 'mixed' явно.
+      storage_category: 'mixed',
+      items: items,
+      priority: pri ? pri.getAttribute('data-priority') : '',
+      consent_oferta: !!(consent && consent.checked)
+    };
+  }
+
+  function validatePayload(p) {
+    if (!(p.drawer_width_cm > 0) || !(p.drawer_depth_cm > 0) || !(p.drawer_height_cm > 0))
+      return 'Укажите размеры ящика (ширина, глубина, высота) в сантиметрах.';
+    if (!p.items.length) return 'Выберите хотя бы одну категорию и объём.';
+    if (!p.priority) return 'Выберите приоритет (удобно / вместительно / экономично).';
+    if (!p.consent_oferta) return 'Подтвердите согласие с офертой, чтобы продолжить.';
+    return null;
+  }
+
+  function showCalcError(msg) {
+    var box = document.querySelector('[data-calc-error]');
+    if (!box) {
+      box = document.createElement('div');
+      box.setAttribute('data-calc-error', '');
+      box.setAttribute('role', 'alert');
+      box.style.cssText = 'background:#fff3eb;border:1px solid #d27a4d;color:#7a3a1a;padding:10px 12px;border-radius:8px;margin:8px 0 12px;font-size:14px;line-height:1.4';
+      var actions = document.querySelector('.u-calc__actions');
+      if (actions) actions.parentNode.insertBefore(box, actions);
+    }
+    box.textContent = msg;
+    box.hidden = false;
+  }
+  function hideCalcError() {
+    var box = document.querySelector('[data-calc-error]');
+    if (box) box.hidden = true;
+  }
+
   /* ── Carousel (auto-rotate + dots) ────────────────────── */
   var carousel = document.querySelector('.u-calc__carousel');
   if (carousel) {
