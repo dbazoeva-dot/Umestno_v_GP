@@ -285,6 +285,37 @@ practice. A rename is cosmetic.
 **Suggested next step:** rename to `clothing` during the next engine-types touch
 to remove the internal drift.
 
+### BL-06: Unified source of truth for engine input tables
+
+**Status:** open — duplicate by hand for MVP, redesign before catalog grows past
+~30 content types.
+
+**Problem:** Several engine input tables are mirrored on the frontend so the
+configurator can render labels and dropdowns without an API roundtrip:
+- `volumeToCount` (engine) ↔ `VOLUME_BOUNDS` (`landing_design/content-labels.js`)
+- content_type list (engine `types.ts`) ↔ `UMESTNO_CONTENT.items`
+- group structure ↔ `UMESTNO_CONTENT.groups`
+- (future) priority list, color_preference list, fold tips, etc.
+
+At 21 content types and ~5 tables this is a 5-minute manual sync per change
+and drift is caught by eye. At 100+ content types — likely once the
+post-MVP catalog expansion starts (BL-01 sets, BL-02 dividers, BL-03 jewelry
+sub-types) — every engine edit will silently desync the form.
+
+**What needs to be designed:**
+1. Canonical format — TypeScript/JSON file in `engine/libraries/` is the source;
+   everything else generated.
+2. Generation pipeline — build script that reads the canonical file and emits:
+   - `landing_design/volume-bounds.js` (or whichever frontend bundle replaces it)
+   - typed enums for engine
+   - validation tables for the server's request schema
+3. CI guard — fail the build if generated artifacts are stale vs source.
+4. Migration path — how to introduce this without breaking the existing
+   `content-labels.js` consumer (result-render).
+
+**Suggested next step:** revisit when total content types crosses ~30 or when
+the first regression caused by a missed sync ships to prod, whichever comes first.
+
 ## Codex workflow rule
 
 After every completed iteration:
