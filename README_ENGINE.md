@@ -316,6 +316,33 @@ sub-types) — every engine edit will silently desync the form.
 **Suggested next step:** revisit when total content types crosses ~30 or when
 the first regression caused by a missed sync ships to prod, whichever comes first.
 
+### BL-07: `content_warnings` (soft height) — wiring to `/api/result`
+
+**Status:** open — not exposed via API yet; deferred for explicit
+product/copy review before showing on result page.
+
+**Problem:** The engine already emits `SchemePayload.content_warnings:
+SoftHeightWarning[]` with a fully built ru-text message
+(`buildSoftHeightMessage` in `engine/fit/generateDepthStackCandidates.ts`).
+The result page (`landing_design/result-render.js:156`) already has a renderer
+(`renderWarnings`) that reads `content_warnings`, draws an «Обратите внимание»
+card, and marks affected zone blocks with a `!` badge.
+
+The wiring gap is on the server: `server/api/result.ts` doesn't project
+`scheme_payload.content_warnings` into the public response, so the renderer
+never receives the array even when warnings exist.
+
+**What needs to be decided before shipping:**
+1. Are the engine-built ru-texts copy-acceptable as-is, or should the
+   server replace them with curated product copy keyed by `warning_code`?
+2. Should the warning show on both `fit_all` and `fit_partial`, or be
+   suppressed when fit isn't perfect anyway (overlap with no-fit messaging)?
+3. UX of the `!` badge on the scheme block — final design or first-pass?
+
+**Suggested next step:** revisit together with the result-page copy pass.
+Until then, server simply doesn't expose the field; renderer no-ops on the
+empty array.
+
 ## Codex workflow rule
 
 After every completed iteration:
