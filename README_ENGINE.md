@@ -343,6 +343,39 @@ never receives the array even when warnings exist.
 Until then, server simply doesn't expose the field; renderer no-ops on the
 empty array.
 
+### BL-08: In-block layout visualization (cells / slots / lanes)
+
+**Status:** open — current renderer draws each `assigned_zone` as a flat
+colored rectangle with a category label. The internal division pattern
+(cells grid, slot rows, multi-lane splits, dividers) is invisible.
+
+**Why it matters:** the engine already decides exactly how the zone is
+divided (`division_type`, `calculation_mode`, `calculated_cols`,
+`calculated_rows`, `lanes_needed`, `split_lane_zone`, `slot_lane_gap_cm`).
+Showing it on the scheme would make «bras: 4 lanes × 2 cups», «socks: 4×4
+cells», «open box for tights» visually obvious — closes the gap between
+the algorithm's intent and the user's expectation of what they'll be
+buying/folding into.
+
+**What needs to be designed:**
+1. Visual language per `division_type`:
+   - `cells`: grid lines (`calculated_cols × calculated_rows`)
+   - `slots`: parallel vertical bars (one per item, gap = `slot_lane_gap_cm`)
+     with multi-lane case (`lanes_needed > 1`) drawn as N adjacent stacks
+   - `open`: no internal lines, maybe a subtle "box" outline
+   - `dividers`: vertical dividers at calculated positions
+2. Server contract: which fields move into the public `scheme.assigned_zones[]`
+   (currently we expose only x/y/w/d/h). At minimum need
+   `division_type`, `calculated_cols`, `calculated_rows`, `lanes_needed`.
+3. Scale handling: lines/cells should remain readable on the smallest blocks
+   (eg. 25×20cm zones); below some threshold, fall back to a number badge.
+4. Interaction: hover/tap → tooltip with the exact internal counts
+   («4 ряда × 5 ячеек = 20 пар»).
+
+**Suggested next step:** design after the catalog/affiliate ship (Stage 1
+complete). Tight rendering loop here is medium-effort; backend exposure of
+internal layout fields is the simpler half.
+
 ## Codex workflow rule
 
 After every completed iteration:

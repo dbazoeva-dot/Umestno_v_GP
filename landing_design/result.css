@@ -208,6 +208,10 @@
 .u-res-block.is-reserve.is-vlabel .u-res-block__cat{ transform: rotate(-90deg); }
 .u-res-block{
   position: relative; overflow: hidden;
+  /* container-type: чтобы шрифт ниже мог считаться от размера БЛОКА,
+     а не от размера схемы — иначе на маленьких блоках "Колготки / чулки"
+     вылазит за границу */
+  container-type: inline-size;
   border-radius: 1.4cqw;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 0.6cqw; text-align: center; padding: 1.4cqw;
@@ -238,9 +242,14 @@
   z-index: 1;
 }
 .u-res-block__n,
-.u-res-block__cat{ position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3; }
-.u-res-block__n{ font-size: clamp(11px, 2cqw, 22px); font-weight: 500; letter-spacing: 0; text-transform: none; }
-.u-res-block__cat{ font-size: clamp(11px, 2cqw, 22px); font-weight: 500; }
+.u-res-block__cat{
+  position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3;
+  /* перенос длинных слов («Колготки», «Бюстгальтеры») в узких блоках */
+  overflow-wrap: anywhere; word-break: break-word; max-width: 100%;
+}
+/* cqi — % от собственной ширины блока (см. container-type выше) */
+.u-res-block__n{ font-size: clamp(9px, 10cqi, 18px); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.u-res-block__cat{ font-size: clamp(9px, 10cqi, 20px); font-weight: 500; }
 .u-res-block.b1{ grid-column: 1 / -1; grid-row: 1; background-color: #EBDFC4; }
 .u-res-block.b2{ grid-column: 1; grid-row: 2; background-color: #A6B38C; }
 .u-res-block.b3{ grid-column: 2; grid-row: 2; background-color: #EDEAE1; }
