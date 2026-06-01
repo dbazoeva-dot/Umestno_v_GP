@@ -229,8 +229,14 @@
         credentials: 'same-origin'
       })
         .then(function (r) {
-          if (!r.ok) throw new Error('http ' + r.status);
-          return r.json();
+          if (r.ok) return r.json();
+          // Парсим тело, чтобы достать error-код (rate_limited / consent_required / …)
+          return r.json().catch(function () { return {}; }).then(function (body) {
+            var e = new Error('http_' + r.status);
+            e.status = r.status;
+            e.body = body || {};
+            throw e;
+          });
         })
         .then(function (data) {
           if (!data || !data.token) throw new Error('bad_response');
@@ -241,7 +247,7 @@
         .catch(function (err) {
           cta.dataset.loading = '';
           cta.classList.remove('is-loading');
-          showCalcError('Не получилось рассчитать. Проверьте подключение и попробуйте ещё раз.');
+          showCalcError(humanizeCalcError(err));
           console.error('[calculate] failed', err);
         });
     });
@@ -282,6 +288,20 @@
     if (!p.priority) return 'Выберите приоритет (удобно / вместительно / экономично).';
     if (!p.consent_oferta) return 'Подтвердите согласие с офертой, чтобы продолжить.';
     return null;
+  }
+
+  function humanizeCalcError(err) {
+    var code = err && err.body && err.body.error;
+    if (code === 'rate_limited') {
+      var perMin = err.body.scope === 'per_minute';
+      return perMin
+        ? 'Слишком много запросов за минуту. Попробуйте ещё раз через минуту.'
+        : 'Превышен часовой лимит запросов. Попробуйте позже.';
+    }
+    if (code === 'forbidden_origin') return 'Запрос отклонён. Попробуйте перезагрузить страницу.';
+    if (code === 'consent_required') return 'Подтвердите согласие с офертой, чтобы продолжить.';
+    if (code === 'invalid_request')  return 'Проверьте, что все поля формы заполнены корректно.';
+    return 'Не получилось рассчитать. Проверьте подключение и попробуйте ещё раз.';
   }
 
   function showCalcError(msg) {

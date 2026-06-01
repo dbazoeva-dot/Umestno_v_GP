@@ -38,12 +38,34 @@ export function originCheck(env: Env) {
 // Хранилище — в памяти процесса; при рестарте Node счётчики сбрасываются.
 // Если когда-нибудь поднимем несколько Node-инстансов — придётся
 // переехать на Redis (RateLimitRedis).
+//
+// ADMIN_IPS (опционально в .env) — список IP через запятую, которые
+// полностью обходят лимит. Нужно для нашего же тестирования с прода
+// (нажимать форму 30+ раз за час — нормально для отладки).
+//
+// Учти: rate-limit берёт req.ip, поэтому trust proxy в index.ts
+// обязателен — иначе все запросы выглядят как с 127.0.0.1.
+
+function parseAdminIPs(): Set<string> {
+  const raw = process.env.ADMIN_IPS;
+  if (!raw) return new Set();
+  return new Set(
+    raw.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
+}
+
+const ADMIN_IPS = parseAdminIPs();
+const skipForAdmins = (req: Request) => ADMIN_IPS.has(req.ip ?? "");
+
 export const calculateLimiterPerMinute = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: { ok: false, error: "rate_limited", scope: "per_minute" },
+  skip: skipForAdmins,
 });
 
 export const calculateLimiterPerHour = rateLimit({
@@ -52,4 +74,5 @@ export const calculateLimiterPerHour = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { ok: false, error: "rate_limited", scope: "per_hour" },
+  skip: skipForAdmins,
 });
