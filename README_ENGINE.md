@@ -376,6 +376,37 @@ buying/folding into.
 complete). Tight rendering loop here is medium-effort; backend exposure of
 internal layout fields is the simpler half.
 
+### BL-09: Affiliate URL coverage audit + normalization
+
+**Status:** open — non-code task; result-page already links cards to
+`sku.product_url` directly, regardless of affiliate status.
+
+**Problem:** the `sku.product_url` column in production is partially
+populated with affiliate links and partially with non-affiliate (plain
+marketplace search results or Yandex CPC tracking URLs that don't earn us
+commission). One example: `UM-SKU-034` points at
+`market.yandex.ru/card/...?sponsored=1&cpc=...` — the `cpc` token is
+Yandex's own click-tracking from search, not our affiliate ID; clicks
+through it monetize Yandex Direct, not us.
+
+**Why deferred:** writing the auditor / migrator is straightforward, but
+the gate is *business*: signing up for affiliate programs (WB Партнёры,
+Ozon Партнёры, Yandex.Market Affiliate / Admitad), getting a `partner_id`
+/ `subid` per platform, and re-deriving partner URLs from the public
+product page. Until those accounts exist, there's nothing to migrate to.
+
+**Suggested next step:**
+1. Pick programs and register: WB Партнёры, Ozon Партнёры, Admitad (covers
+   Yandex, AliExpress, etc.).
+2. Once partner IDs are known, write a script that walks `sku.product_url`,
+   parses the marketplace and product ID, rebuilds the partner URL with
+   our `subid` (use `configuration_id` template — needs server-side
+   substitution if subid must be per-click).
+3. Schedule periodic re-audit (links rot; affiliate URLs sometimes expire).
+
+Until done: MVP ships with mixed coverage. Clicks still work, monetization
+is partial.
+
 ## Codex workflow rule
 
 After every completed iteration:

@@ -80,7 +80,7 @@
   - `sku.product_title`
   - количество ячеек/слотов (`capacity_units`) и rigidity (через label) → строка «11 слотов · полужёсткий»
   - размер «32 × 30 × 12 см»
-  - кнопка «Купить» → ведёт на `/api/sku/click/:sku_id/:platform?config_id=...`
+  - вся карточка — `<a href={sku.product_url} target="_blank" rel="noopener nofollow sponsored">` (если product_url не null); без отдельной кнопки «Купить»
 
 ### `no-fit/index.html` → POST `/api/no-fit-email` (Стадия 2)
 - email
@@ -242,11 +242,12 @@ interface ResultResponse {
     content_type: string;
     block_index: number;
     sku: {
-      sku_id: string;           // нужен для ссылки на /api/sku/click
+      sku_id: string;
       product_title: string;
-      image_url: string;        // собирается на сервере (IMAGE_BASE_URL + key + .webp)
+      product_url: string | null; // ссылка на товар (может быть партнёрской); фронт оборачивает карточку в <a>
+      image_url: string;          // собирается на сервере (IMAGE_BASE_URL + key + .webp)
       width_cm: number; depth_cm: number; height_cm: number;
-      capacity_units: number;   // для строки «11 слотов»
+      capacity_units: number;     // для строки «11 слотов»
       rigidity: "soft" | "semi_rigid" | "rigid";  // для строки «полужёсткий»
       division_type: "cells" | "slots" | "open" | "dividers";  // для подписи «органайзер со слотами»
       color_group?: string;
@@ -256,17 +257,19 @@ interface ResultResponse {
 ```
 
 Что **не** передаётся в `matches[].sku` (специально):
-- `product_url` — публичную ссылку на товар отдаём только через
-  `/api/sku/click/:sku_id/:platform` (трекаем affiliate)
 - `match_status`, `match_kind`, `units_needed`, `packs_needed`,
   `set_quantity` — внутренние результаты матчера; фронту для рендера
   карточки не нужны
 
-### GET `/api/sku/click/:sku_id/:platform?config_id=…`
+### ~~GET `/api/sku/click/:sku_id/:platform?config_id=…`~~ — снято
 
-Серверный редирект 302 на маркетплейс. Тело ответа клиенту неважно
-(браузер сразу переходит по Location). На сервере пишем запись в
-`affiliate_clicks`.
+Изначально планировался серверный редирект для click-логирования и
+подстановки subid. Решение пересмотрено: на MVP отдаём `product_url`
+прямо в `matches[].sku`, фронт делает обычный `<a target="_blank">`,
+без сервера в цепочке. Часть ссылок в каталоге уже партнёрские
+(monetization идёт через них), часть — публичные (без monetization).
+Аудит/долив партнёрских URL — задача каталога, не серверная: см.
+`BL-09` (TODO: завести в README_ENGINE.md или отдельном backlog'е).
 
 ---
 
@@ -282,7 +285,6 @@ interface ResultResponse {
 - `access_frequency`, `preferred_rigidity`, `item_gap`, `side_clear`, `fb_clear`, `h_clear`, `needs_item_gap`
 - `unit_w_cm`, `unit_d_cm`, `unit_h_cm` (внутренние)
 - `scheme_id`, любые внутренние ID
-- Affiliate-URL'ы маркетплейсов (только через `/api/sku/click/`)
 - Полный `engine_output` jsonb (он живёт только в БД для дебага)
 
 ---
@@ -381,7 +383,7 @@ user_agent). Без этого — 400 Bad Request.
 | 1.5a | configure-форма: 21 категория, динамические объёмы | ✓ ГОТОВО |
 | 1.5a-submit | configure-форма: submit-обработчик → POST /api/calculate | ✓ ГОТОВО |
 | 1.5b | result.html → fetch → render через `result-render.js` (упрощённый renderWhy/renderFolding) | ✓ ГОТОВО |
-| 1.5c | `GET /api/sku/click/:sku/:platform` + кнопки «Купить» | ⏳ ПЛАН |
+| 1.5c | `GET /api/sku/click/:sku/:platform` + кнопки «Купить» | ✗ СНЯТО (см. ниже) |
 | 1.5d | nginx-config: проксировать `/api/*` на Node | ✓ ГОТОВО |
 | 1.5e | systemd-unit для Node, чтобы сервер пережил перезапуск VPS | ⏳ ПЛАН |
 

@@ -44,6 +44,7 @@ interface PublicMatch {
   sku: {
     sku_id: string;
     product_title: string;
+    product_url: string | null;
     image_url: string | null;
     width_cm: number;
     depth_cm: number;
@@ -147,6 +148,7 @@ export function resultHandler(pool: Pool, env: Env) {
       block_index: number;
       sku_id: string;
       product_title: string;
+      product_url: string | null;
       image_s3_key: string | null;
       width_cm: string;
       depth_cm: string;
@@ -157,7 +159,7 @@ export function resultHandler(pool: Pool, env: Env) {
       color_group: string | null;
     }>(
       `SELECT cs.zone_id, cs.content_type, cs.block_index,
-              s.sku_id, s.product_title, s.image_s3_key,
+              s.sku_id, s.product_title, s.product_url, s.image_s3_key,
               s.width_cm, s.depth_cm, s.height_cm,
               s.capacity_units, s.rigidity, s.division_type, s.color_group
          FROM configuration_skus cs
@@ -174,6 +176,7 @@ export function resultHandler(pool: Pool, env: Env) {
       sku: {
         sku_id:         r.sku_id,
         product_title:  r.product_title,
+        product_url:    r.product_url,
         image_url:      buildImageUrl(env, r.image_s3_key),
         width_cm:       parseFloat(r.width_cm),
         depth_cm:       parseFloat(r.depth_cm),

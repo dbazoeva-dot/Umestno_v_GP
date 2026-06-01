@@ -239,6 +239,19 @@
       if (RIGIDITY_RU[sku.rigidity]) subParts.push(RIGIDITY_RU[sku.rigidity]);
       var sizes = [sku.width_cm, sku.depth_cm, sku.height_cm].map(cm).join(' × ') + ' см';
 
+      // Карточка — целиком кликабельная (если есть product_url): обёртка
+      // <a target="_blank" rel="noopener nofollow sponsored">. Если URL
+      // нет — оставляем <article>, не падаем.
+      var cardInner =
+        '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
+        '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
+        '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
+        (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
+        '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>';
+      var card = sku.product_url
+        ? '<a class="u-res-prod-card u-res-prod-card--link" href="' + esc(sku.product_url) + '" target="_blank" rel="noopener nofollow sponsored" data-ym-goal="sku_click_' + esc(sku.sku_id || '') + '">' + cardInner + '</a>'
+        : '<article class="u-res-prod-card">' + cardInner + '</article>';
+
       var block = document.createElement('div');
       block.className = 'u-res-prod-block';
       block.innerHTML =
@@ -246,15 +259,7 @@
           '<span class="u-res-prod-block__n">Блок ' + n + '</span>' +
           '<span class="u-res-prod-block__cat">' + esc(label(ct)) + '</span>' +
         '</div>' +
-        '<div class="u-res-prod-cards">' +
-          '<article class="u-res-prod-card">' +
-            '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
-            '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
-            '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
-            (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
-            '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>' +
-          '</article>' +
-        '</div>';
+        '<div class="u-res-prod-cards">' + card + '</div>';
       root.appendChild(block);
     });
   }

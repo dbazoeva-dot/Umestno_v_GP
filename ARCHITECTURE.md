@@ -28,7 +28,7 @@ SKU-органайзеры с маркетплейсов. Доход — affilia
   1.5a configure: 21 категория из UMESTNO_CONTENT      ✓ готово
   1.5a-submit: form submit → POST /api/calculate       ⏳ план (после 1.5b)
   1.5b result.html: динамический рендер из API         ✓ готово
-  1.5c /api/sku/click/:sku/:platform                   ⏳ план
+  1.5c /api/sku/click/:sku/:platform                   ✗ снято — карточки кликаются на product_url напрямую
   1.5d nginx /api/* → Node                             ✓ готово
   1.5e systemd-unit для Node                           ⏳ план
 
