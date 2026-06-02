@@ -20,10 +20,22 @@
 
 ```
 /configure → POST /api/calculate
-  → fit_all      → POST /api/order/create → YooKassa → webhook → email → /result/[token]
-  → fit_partial
-  → fit_none     → /no-fit (собрать email)
+  ├── fit_all          → POST создаёт YooKassa-платёж → редирект на YooKassa
+  │                      → юзер оплачивает → /result/?t=TOKEN
+  │                      → /result/ поллит /api/result/:token (раз в 2 сек)
+  │                      → webhook от YooKassa → /api/yookassa/webhook → orders.status='paid'
+  │                      → /result/ рендерит схему
+  │
+  ├── fit_partial      → /no-fit/?t=TOKEN  (оплату не предлагаем)
+  ├── fit_none         → /no-fit/?t=TOKEN  (оплату не предлагаем)
+  └── no_scheme        → /no-fit/?t=TOKEN  (оплату не предлагаем)
+
+dev-режим разработчика (PAYMENT_REQUIRED=false):
+  fit_all → orders.status='sent_free' сразу → редирект на /result/?t=TOKEN
+  (без YooKassa)
 ```
+
+Подробности модели данных и lifecycle заказа — в [docs/data-model.md](./docs/data-model.md).
 
 ## Архитектура
 
