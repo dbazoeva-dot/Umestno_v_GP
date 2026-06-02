@@ -183,18 +183,49 @@
 
 | Случай | `base_price_kop` | `discount_kop` | `amount_kop` | `status` | `promo_code_id` |
 |---|---|---|---|---|---|
-| dev / `PAYMENT_REQUIRED=false` | 14900 | 14900 | 0 | `sent_free` | NULL |
-| paid без промо | 14900 | 0 | 14900 | `paid` | NULL |
-| paid + промо -20% | 14900 | 2980 | 11920 | `paid` | uuid скидочного промо |
-| paid + промо free (для своих) | 14900 | 14900 | 0 | `paid` | uuid free-промо |
+| dev (`PAYMENT_REQUIRED=false`), fit_all | 14900 | 14900 | 0 | `sent_free` | NULL |
+| fit_all + оплачено без промо | 14900 | 0 | 14900 | `paid` | NULL |
+| fit_all + промо -20% оплачено | 14900 | 2980 | 11920 | `paid` | uuid |
+| fit_all + free-промо оплачено | 14900 | 14900 | 0 | `paid` | uuid |
+| fit_all + юзер закрыл вкладку до оплаты | 14900 | 0 | 14900 | `created` навсегда | NULL |
+| fit_partial / fit_none / no_scheme | 14900 | 0 | 14900 | `created` навсегда | NULL |
 
 **Логика:**
-- `base_price_kop` всегда фиксируется в момент создания заказа из `PRICE_KOP` в .env (соответствует оферте).
-- Если применён промокод — `discount_kop` рассчитывается на момент применения, `amount_kop = base - discount`.
-- Если `amount_kop = 0` (полный free-промо или sent_free) — YooKassa не дёргается, сервер сразу пишет `status='paid'` (или `sent_free` для dev режима).
-- `sent_free` — единственный статус, который сейчас выставляется автоматически без промокода. После релиза переделывается, см. BL-13.
+- `base_price_kop` всегда фиксируется в момент создания заказа из `PRICE_KOP` в .env (соответствует оферте). **Записывается независимо от `fit_status`** — нужно для аналитики упущенного дохода.
+- `discount_kop` — разница между «полной ценой» и «к оплате», независимо от причины. Промокод — одна из причин (`promo_code_id IS NOT NULL`), `sent_free` — другая (`promo_code_id IS NULL`, причина = pre-launch giveaway).
+- `amount_kop = base_price_kop - discount_kop`. Сюда смотрит YooKassa.
+- Для `fit_all`: сервер создаёт платёж в YooKassa **сразу при сабмите формы**, возвращает `payment_url` фронту. Висящие pending-платежи YooKassa чистит сама (24ч TTL).
+- Для `fit_partial`/`fit_none`/`no_scheme`: сервер YooKassa **не дёргает**, `status='created'` остаётся навсегда. `amount_kop=14900` фиксируется чтобы вёрнуть аналитику «упущенный доход» (см. ниже).
+- Если `amount_kop=0` (full discount via free-промо): YooKassa не дёргается, сразу `status='paid'`. Для `sent_free` тоже без YooKassa.
 
-**Аналитика разделяет «нулевые» по причине:**
+**Аналитика упущенного дохода (важно для бизнес-решений):**
+```sql
+-- Реальный доход за месяц
+SELECT SUM(amount_kop)/100.0 AS revenue_rub FROM orders
+WHERE status='paid' AND amount_kop > 0
+  AND paid_at > now() - interval '30 days';
+
+-- Потеряли из-за fit_partial (схема почти получилась — есть смысл докручивать движок)
+SELECT SUM(amount_kop)/100.0 AS lost_partial FROM orders
+WHERE status='created' AND fit_status='fit_partial';
+
+-- Потеряли из-за fit_none/no_scheme (честно не смогли — нужен расширенный каталог)
+SELECT SUM(amount_kop)/100.0 AS lost_no_fit FROM orders
+WHERE status='created' AND fit_status IN ('fit_none','no_scheme');
+
+-- Брошенные корзины (fit_all но юзер не заплатил — нужно UX/email-напоминалки)
+SELECT SUM(amount_kop)/100.0 AS abandoned FROM orders
+WHERE status='created' AND fit_status IN ('fit_all','fit_all_after_adjustment');
+```
+
+Бизнес-смысл разбивки:
+- **Lost partial** → инвестиция в движок (улучшение алгоритма, частичные схемы по сниженной цене)
+- **Lost no_fit** → инвестиция в каталог (партнёрства с маркетплейсами, расширение storage_unit_profile)
+- **Abandoned** → UX-проблема (улучшать payment-flow, email-напоминалки)
+
+**При retention-scrub через 3 года финансовые поля остаются** (`base_price_kop`, `discount_kop`, `amount_kop`, `status`, `paid_at`, `created_at`, `fit_status`). Историческая аналитика упущенного дохода доступна на любом горизонте.
+
+**Аналитика разделяет «нулевые amount» по причине:**
 ```sql
 -- Воспользовались free-промо (для своих)
 WHERE status='paid' AND amount_kop=0 AND promo_code_id IS NOT NULL;
