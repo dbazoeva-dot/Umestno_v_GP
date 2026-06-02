@@ -421,7 +421,8 @@ is partial.
 
 ### BL-10: Promo code system (Stage 3+ dependency)
 
-**Status:** scoped — структура БД согласована, реализация — после
+**Status:** scoped — структура БД ✓ готова (миграции 0003+0004),
+реализация (валидация, применение в /api/calculate, фронт) — после
 публичного запуска (Стадия 3+).
 
 **Цель:** дать в БД мульти-формат промокодов, валидируемых на сервере,
@@ -463,24 +464,11 @@ is partial.
   но эффекта нет; UX-решение — игнорировать или возвращать ошибку
   «промокоды доступны в продовом режиме» — TBD.
 
-**Schema (миграция `0004_promo_codes.sql`, после `0003_orders_central.sql`):**
-```sql
-CREATE TABLE promo_codes (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  code            text NOT NULL UNIQUE,
-  discount_type   text NOT NULL CHECK (discount_type IN ('percent','fixed','free')),
-  discount_value  int NOT NULL,
-  max_uses        int,
-  uses_count      int NOT NULL DEFAULT 0,
-  valid_from      timestamptz,
-  valid_until     timestamptz,
-  notes           text,
-  is_active       bool NOT NULL DEFAULT true,
-  created_at      timestamptz NOT NULL DEFAULT now()
-);
-```
-Колонки `orders.promo_code_id` и `orders.discount_kop` — уже в
-`0003_orders_central.sql` (см. `docs/data-model.md`).
+**Schema:** ✓ применена.
+- Таблица `promo_codes` — миграция `0004_promo_codes_and_orders_index.sql`
+- `orders.promo_code_id` (FK на `promo_codes(id)`) — добавлен 0004 поверх
+  колонки из 0003
+- `orders.discount_kop` (NOT NULL DEFAULT 0) — добавлен 0003
 
 `discount_kop` денормализован намеренно: если parent `promo_codes`
 строка позже редактируется (изменили rate, деактивировали) — исторический
