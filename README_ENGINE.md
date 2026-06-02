@@ -409,8 +409,11 @@ product page. Until those accounts exist, there's nothing to migrate to.
    Yandex, AliExpress, etc.).
 2. Once partner IDs are known, write a script that walks `sku.product_url`,
    parses the marketplace and product ID, rebuilds the partner URL with
-   our `subid` (use `configuration_id` template — needs server-side
-   substitution if subid must be per-click).
+   our `subid` (use `orders.id` template — needs server-side
+   substitution if subid must be per-click). Note: per новой модели
+   данных `orders.id` — это commercial entity, она и нужна для
+   атрибуции; `configuration_id` (старый план) был техническим
+   идентификатором и не отражал коммерческой цепочки.
 3. Schedule periodic re-audit (links rot; affiliate URLs sometimes expire).
 
 Until done: MVP ships with mixed coverage. Clicks still work, monetization
