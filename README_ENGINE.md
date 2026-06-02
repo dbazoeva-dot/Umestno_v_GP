@@ -419,66 +419,95 @@ product page. Until those accounts exist, there's nothing to migrate to.
 Until done: MVP ships with mixed coverage. Clicks still work, monetization
 is partial.
 
-### BL-10: Promo code system (Stage 3 dependency)
+### BL-10: Promo code system (Stage 3+ dependency)
 
-**Status:** scoped — database design agreed, business design (which codes,
-when, what discounts) — owned by product. Implementation deferred until
-Stage 3 (YooKassa integration), because promo codes are no-op in the
-dev-bypass mode (`PAYMENT_REQUIRED=false`, `orders.status='sent_free'`
-regardless).
+**Status:** scoped — структура БД согласована, реализация — после
+публичного запуска (Стадия 3+).
 
-**Scenarios to support (all three):**
-- **(a) Discount codes** — `EARLYBIRD20` = -20%, `NY2026` = -50 ₽, with
-  expiration and usage caps.
-- **(b) Free codes for friends/testers** — `FRIENDS` = 100% off,
-  `orders.status='sent_free'`, bypasses YooKassa entirely. Useful as a
-  permanent backdoor for known users even after `PAYMENT_REQUIRED=true`.
-- **(c) Tracking codes** — `ALEX2026` = 0% discount but logs the source
-  in `orders.promo_code_id`. UTM-equivalent but in our own DB.
+**Цель:** дать в БД мульти-формат промокодов, валидируемых на сервере,
+с применением скидки к заказу. Конкретные коды (имена, проценты,
+условия) — **операционные данные в `promo_codes`**, не в репо.
 
-**Schema (migration `0003_promo_codes.sql`, to be written):**
+**Типы скидок (`discount_type`):**
+- `percent` — процент от `base_price_kop`. Поле `discount_value` — проценты 0–100.
+- `fixed` — фиксированная скидка в копейках. `discount_value` — копейки.
+- `free` — 100% скидка. `amount_kop` итоговый = 0, YooKassa не вызывается, `orders.status='paid'` сразу.
 
+**Дополнительные механики (поля `promo_codes`):**
+- `max_uses` — лимит применений (NULL = безлимит). `uses_count` инкрементируется при каждом успешном применении.
+- `valid_from` / `valid_until` — окно действия (NULL — без ограничений).
+- `is_active` — глобальный on/off.
+- `notes` — внутренние пометки оператора (зачем код заведён).
+
+Этого достаточно для разных бизнес-сценариев: одноразовые персональные
+коды, массовые скидочные на период, ограниченные первыми N покупателями,
+постоянные «для своих», трекинговые с `discount_value=0` (для атрибуции
+источника без скидки). **Заводятся через DBeaver/админку в `promo_codes`
+руками** или импортом — в репо не указываются.
+
+**Эффект на `orders`:**
+- При сабмите формы юзер опционально вводит промокод (через UI на
+  `/configure/` или `/result/` — TBD при имплементации).
+- `POST /api/calculate` валидирует код server-side: активен,
+  не истёк, не исчерпан. Применяет к `discount_kop`,
+  считает `amount_kop = base_price_kop - discount_kop`,
+  инкрементирует `promo_codes.uses_count`.
+- Если `amount_kop == 0` (полный free-промо) — YooKassa не вызывается,
+  сервер сразу ставит `orders.status='paid'`, `paid_at=now()`.
+- Если `amount_kop > 0` — YooKassa создаётся со сниженной суммой, дальше
+  обычный paywall-флоу.
+- В заказе сохраняется `promo_code_id` (FK) и `discount_kop` (snapshot —
+  если код потом отредактируют, исторический discount остаётся).
+- Промо **не применяется** в dev-режиме (`PAYMENT_REQUIRED=false`) —
+  там status уже `sent_free` независимо от кода. Юзер ввести может,
+  но эффекта нет; UX-решение — игнорировать или возвращать ошибку
+  «промокоды доступны в продовом режиме» — TBD.
+
+**Schema (миграция `0004_promo_codes.sql`, после `0003_orders_central.sql`):**
 ```sql
 CREATE TABLE promo_codes (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  code            text NOT NULL UNIQUE,         -- 'FRIENDS', 'EARLYBIRD20'
+  code            text NOT NULL UNIQUE,
   discount_type   text NOT NULL CHECK (discount_type IN ('percent','fixed','free')),
-  discount_value  int NOT NULL,                 -- % or kopecks; 100 for 'free'
-  max_uses        int,                          -- NULL = unlimited
+  discount_value  int NOT NULL,
+  max_uses        int,
   uses_count      int NOT NULL DEFAULT 0,
   valid_from      timestamptz,
   valid_until     timestamptz,
-  notes           text,                         -- internal: why created
+  notes           text,
   is_active       bool NOT NULL DEFAULT true,
   created_at      timestamptz NOT NULL DEFAULT now()
 );
-
-ALTER TABLE orders
-  ADD COLUMN promo_code_id uuid REFERENCES promo_codes(id),
-  ADD COLUMN discount_kop  int NOT NULL DEFAULT 0;
 ```
+Колонки `orders.promo_code_id` и `orders.discount_kop` — уже в
+`0003_orders_central.sql` (см. `docs/data-model.md`).
 
-`discount_kop` is denormalized on purpose: if the parent `promo_codes`
-row is later edited (rate change, deactivation), historical orders keep
-their original discount. Same pattern as `configuration_skus.set_quantity_snap`.
+`discount_kop` денормализован намеренно: если parent `promo_codes`
+строка позже редактируется (изменили rate, деактивировали) — исторический
+discount в `orders` остаётся. Тот же паттерн что у
+`configuration_skus.set_quantity_snap`.
 
-**Endpoints (to be written in Stage 3):**
+**Эндпоинты (в реализации Стадии 3+):**
 - `POST /api/promo/validate` — `{code} → {valid, discount_type, discount_value, message?}`.
-  Returns 400 with reason if expired/exhausted/inactive/not-found.
-- `POST /api/order/create` — accepts optional `promo_code`, re-validates
-  server-side, computes discount, sets `orders.amount_kop` and
-  `discount_kop`. If discount_type='free' → `orders.status='sent_free'`
-  immediately, no YooKassa call.
+  Возвращает 400 с причиной если протух / исчерпан / inactive / not-found.
+  Используется фронтом для live-валидации при вводе кода.
+- Применение промо — внутри `POST /api/calculate` (фронт передаёт `promo_code` в теле),
+  сервер ещё раз валидирует и применяет.
 
-**Frontend (Stage 3):**
-- Form on `/result/` near email submit: `[input promo code] → live validation`
-- Show `«Скидка X% / -Y ₽ → итого Z ₽»`
+**Frontend (Стадия 3+):**
+- Поле ввода промокода в `/configure/` (рядом с CTA «Получить расчёт»)
+  или на отдельной payment-странице — TBD.
+- Live-валидация: при потере фокуса дёрнуть `POST /api/promo/validate`,
+  показать «Скидка X% / -Y ₽ → итого Z ₽» или ошибку.
 
-**Open product decisions (Dzera owns):**
-- Naming convention (descriptive vs short vs gift-card-style random)
-- Initial set of codes for soft launch
-- Whether codes are case-sensitive (recommend no — store and compare in lowercase)
-- One code per order, or can stack? (recommend one — stacking gets messy fast)
+**Открытые вопросы (для будущего, не сейчас):**
+- Регистр-независимое сравнение кодов (`LOWER(code)`) — в SQL или в коде?
+- Один код на заказ или можно складывать (stacking)? Рекомендация — один.
+- Лимит применений «на email» (отдельная таблица `promo_code_usages` с FK
+  на orders + email)? Сейчас только общий `uses_count`. Если потребуется
+  «каждый юзер использует код один раз» — нужна отдельная таблица.
+- Кто заводит коды — DBeaver/SQL руками или нужна простая админка?
+  На MVP — через БД. Позже — встроенная админка или NocoDB поверх БД.
 
 ### BL-11: `fit_partial` — что показывать пользователю
 
