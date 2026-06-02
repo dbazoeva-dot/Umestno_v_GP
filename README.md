@@ -66,21 +66,46 @@ PostgreSQL — конфигурации, заказы, согласия, пла�
 
 - Движок (`runUmestnoEngine`) и SKU каталог — **только на сервере**, не выходят на фронт.
 - Сервер на Node — потому что движок на TypeScript.
-- Серверная часть (API, БД, платежи, письма, PDF) — **этап 2**; сейчас в репозитории только фронт + движок.
+**Состояние реализации:**
+- **Стадия 1** (расчёт + сохранение в БД) — ✓ готово, на VPS под systemd
+  (calculate, result, healthz, security-middleware).
+- **Стадия 2** (email + PDF + согласия) — в работе. На сервере есть
+  `INSERT consents` в `/api/calculate`; остальное (PDF-рендер,
+  `/api/order/email`, emails-worker) ещё не написано.
+- **Стадия 3** (YooKassa) — после Стадии 2. Согласована модель данных
+  (см. [docs/data-model.md](./docs/data-model.md)), реализации ещё нет.
+- Подмодули `server/integrations/` (yookassa, unisender, pdf) появятся
+  по мере того как будем писать.
 
 ## Структура репозитория
 
 ```
-engine/            — движок расчёта схем хранения (TypeScript)
-  libraries/       — библиотеки A–E (volumeToCount, storageUnitProfile, skuCatalog…)
-  sku/             — matchSkus
-  scripts/         — buildSkuDb.py, exportSkuTs.py
-  db/              — schema.sql, sku_catalog.db
-index.html         — лендинг
-landing_design/    — стили и скрипты витрины (result.css, result-render.js…)
-result/            — страница результата (статическая)
-configure/, no-fit/ — конфигуратор и страница «не подошло»
-(server/           — Node API: планируется, этап 2)
+engine/                — движок расчёта схем хранения (TypeScript)
+  libraries/           — библиотеки A–E (volumeToCount, storageUnitProfile, skuCatalog…)
+  sku/                 — matchSkus
+  scripts/             — buildSkuDb.py, exportSkuTs.py, loadSkuToPostgres.py
+  db/                  — schema.sql, sku_catalog.db
+
+server/                — Node API (Express + pg, TypeScript)
+  index.ts             — entry-point + GET /api/healthz
+  api/                 — endpoint handlers (calculate, result, ...)
+  catalog/             — loadCatalogFromDb
+  config/              — env-парсинг (dotenv)
+  db/                  — pg pool
+  middleware/          — security (rate-limit, Origin check)
+  test/                — manual smoke tests
+  (integrations/       — yookassa, unisender, pdf-рендер — Стадии 2/3, ещё не написано)
+
+db/migrations/         — SQL миграции (0001 init, 0002 sku affiliate; 0003 orders_central — в плане)
+deploy/                — systemd unit + инструкция по обновлению API
+
+index.html             — лендинг
+landing_design/        — стили и скрипты витрины (result.css, result-render.js, content-labels.js, calc.css...)
+result/                — страница результата (статическая, рендерится из API + Puppeteer для PDF)
+configure/, no-fit/    — конфигуратор и страница «не подошло»
+oferta/, privacy/      — юридические документы (статика)
+blog/                  — журнал статей
+docs/                  — внутренние документы (data-model.md, api-contract.md, vps-state.md, ...)
 ```
 
 ## Внешние сервисы
