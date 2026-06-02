@@ -55,17 +55,28 @@
 ## Жизненный цикл заказа (paywall-модель)
 
 **Принцип:** `/result/` — это **платный контент**. Полная схема, таблица
-размеров, фолдинг, подбор SKU — отдаются только после `orders.status='paid'`
-(или эквивалентного `'sent_free'` на free-MVP, см. ниже).
+размеров, фолдинг — отдаются только после `orders.status='paid'`.
+
+**Фиксация терминологии (раз и навсегда):** на проде `PAYMENT_REQUIRED=true`
+**всегда**. Paywall — это **единственная** боевая модель.
+`PAYMENT_REQUIRED=false` и связанный статус `'sent_free'` существуют
+**исключительно как dev-обход** для локальной разработки, чтобы инженер
+мог гонять `/api/calculate` и `/result/` без поднятой YooKassa-интеграции.
+Это **не продуктовая фича**, не «бесплатная раздача», не «free-MVP» — это
+техническая возможность не подключать платёжный провайдер в dev-окружении.
+После того как YooKassa-код будет написан и оттестирован, в проде значение
+`PAYMENT_REQUIRED` будет жёстко `true` и никогда обратно не переключится.
+В исторических заказах статус `sent_free` может остаться как след
+dev-периода до публичного запуска (см. BL-13).
 
 **Переключатель `PAYMENT_REQUIRED` в .env:**
-- `PAYMENT_REQUIRED=true` (Стадия 3 и далее) — настоящий гейт через YooKassa.
+- `PAYMENT_REQUIRED=true` (прод) — настоящий гейт через YooKassa.
   После `/api/calculate` юзер с `fit_all` отправляется на оплату. До оплаты
   `/api/result/:token` возвращает 402 Payment Required.
-- `PAYMENT_REQUIRED=false` (free-MVP, текущий режим) — сервер при создании
-  заказа с `fit_all` сразу выставляет `status='sent_free'`. Юзер попадает
-  прямо на `/result/`, проходит гейт «бесплатно». Архитектура та же, разница —
-  одна ветвь в коде «выставляем paid или sent_free».
+- `PAYMENT_REQUIRED=false` (dev-режим разработчика, **только локально**) — сервер
+  при создании заказа с `fit_all` сразу выставляет `status='sent_free'`,
+  юзер проходит гейт без оплаты. Архитектура та же, разница — одна ветвь
+  в коде «выставляем paid или sent_free».
 
 ```
 1. Юзер заполняет /configure/, жмёт «Получить расчёт»
@@ -78,14 +89,14 @@
         - fit_status (копия из движка)
         - amount_kop = прайс при fit_all, 0 иначе
         - status:
-          • fit_all + PAYMENT_REQUIRED=false → 'sent_free' (free MVP)
+          • fit_all + PAYMENT_REQUIRED=false → 'sent_free' (dev-режим)
           • fit_all + PAYMENT_REQUIRED=true  → 'created' (ждём оплату)
           • не fit_all                       → 'created' (платить нечего)
      d) INSERT consents (consent_type='oferta', order_id=новый)
      e) INSERT configuration_skus (по каждой подобранной SKU)
    → Возвращает {token, fit_status, can_pay}
      - can_pay = (fit_status in ('fit_all','fit_all_after_adjustment') AND PAYMENT_REQUIRED)
-     - на free MVP can_pay=false всегда (оплачивать нечего, уже sent_free)
+     - в dev-режиме can_pay=false всегда (оплачивать нечего, уже sent_free)
 
 2a. fit_all + PAYMENT_REQUIRED=true (paywall режим):
     → can_pay=true → фронт ведёт на платежную страницу (или сразу на YooKassa)
@@ -100,7 +111,7 @@
     → если кликает в /result/?t=TOKEN → GET /api/result/:token возвращает 402 Payment Required
     → фронт показывает payment-prompt вместо схемы («оплатите 149 ₽ чтобы увидеть результат»)
 
-2c. fit_all + PAYMENT_REQUIRED=false (free MVP, текущий режим):
+2c. fit_all + PAYMENT_REQUIRED=false (dev-режим разработчика, только локально):
     → can_pay=false, status='sent_free' уже выставлен в шаге 1
     → юзер сразу редиректится на /result/?t=TOKEN
     → GET /api/result/:token: status='sent_free' → ОК → отдаёт полный payload
@@ -137,7 +148,7 @@
   }
   ```
 - `GET /api/pdf/:token` — тот же гейт.
-- На free-MVP гейт всегда пропускает (потому что `status='sent_free'`), но
+- В dev-режиме гейт всегда пропускает (потому что `status='sent_free'`), но
   **архитектурно код одинаковый для обоих режимов**. Переключение через
   `.env` без правок кода.
 
@@ -159,7 +170,7 @@
 | `fit_status` | text NOT NULL CHECK (...) | копия из конфигурации: `fit_all` / `fit_partial` / `fit_none` / `no_scheme` / `fit_all_after_adjustment`. Денормализовано для быстрых выборок «сколько fit_all за неделю» без JOIN. |
 | `email` | text | NULL пока юзер не оставил почту. После — заполняется. |
 | `phone` | text | NULL. Зарезервировано на будущее (если когда-нибудь добавим). |
-| `status` | text NOT NULL DEFAULT 'created' CHECK (...) | `created` / `pending` / `paid` / `failed` / `refunded` / `sent_free`. `sent_free` — транзитный статус для pre-launch периода (`PAYMENT_REQUIRED=false`), после релиза переделывается, см. BL-13. |
+| `status` | text NOT NULL DEFAULT 'created' CHECK (...) | `created` / `pending` / `paid` / `failed` / `refunded` / `sent_free`. `sent_free` — статус **только для dev-обхода** (`PAYMENT_REQUIRED=false`, локальная разработка без YooKassa). В проде никогда не выставляется. После запуска переделывается, см. BL-13. |
 | `base_price_kop` | int NOT NULL | цена по оферте на момент создания заказа (snapshot). Если оферта потом поменяет цену, в исторических заказах остаётся та что была при заказе. |
 | `discount_kop` | int NOT NULL DEFAULT 0 | скидка в копейках (через `promo_code_id` сейчас, в будущем — другие механики). |
 | `amount_kop` | int NOT NULL DEFAULT 0 | к оплате после скидки = `base_price_kop - discount_kop`. Сюда смотрит YooKassa-интеграция. Если 0 (full discount via free-промо) — YooKassa не дёргается, сразу `status='paid'`. |
@@ -192,7 +203,7 @@
 
 **Логика:**
 - `base_price_kop` всегда фиксируется в момент создания заказа из `PRICE_KOP` в .env (соответствует оферте). **Записывается независимо от `fit_status`** — нужно для аналитики упущенного дохода.
-- `discount_kop` — разница между «полной ценой» и «к оплате», независимо от причины. Промокод — одна из причин (`promo_code_id IS NOT NULL`), `sent_free` — другая (`promo_code_id IS NULL`, причина = pre-launch giveaway).
+- `discount_kop` — разница между «полной ценой» и «к оплате», независимо от причины. Промокод — одна из причин (`promo_code_id IS NOT NULL`), `sent_free` — другая (`promo_code_id IS NULL`, причина = dev-обход).
 - `amount_kop = base_price_kop - discount_kop`. Сюда смотрит YooKassa.
 - Для `fit_all`: сервер создаёт платёж в YooKassa **сразу при сабмите формы**, возвращает `payment_url` фронту. Висящие pending-платежи YooKassa чистит сама (24ч TTL).
 - Для `fit_partial`/`fit_none`/`no_scheme`: сервер YooKassa **не дёргает**, `status='created'` остаётся навсегда. `amount_kop=14900` фиксируется чтобы вёрнуть аналитику «упущенный доход» (см. ниже).

@@ -420,8 +420,9 @@ is partial.
 
 **Status:** scoped — database design agreed, business design (which codes,
 when, what discounts) — owned by product. Implementation deferred until
-Stage 3 (YooKassa integration), because promo codes are no-op on the
-free MVP path (`orders.status='sent_free'` regardless).
+Stage 3 (YooKassa integration), because promo codes are no-op in the
+dev-bypass mode (`PAYMENT_REQUIRED=false`, `orders.status='sent_free'`
+regardless).
 
 **Scenarios to support (all three):**
 - **(a) Discount codes** — `EARLYBIRD20` = -20%, `NY2026` = -50 ₽, with
@@ -512,9 +513,10 @@ email». Юзер не понимает, что у него **почти** по�
    с одинаковым шаблоном для fit_none и fit_partial, или разный
    email-шаблон под каждый случай?
 
-**Когда решать:** до запуска Стадии 3 (платный путь). На free-MVP
-текущее поведение терпимо — никто не теряет деньги, просто UX
-неоптимальный.
+**Когда решать:** до публичного запуска (Стадия 3 — YooKassa). В
+dev-режиме разработчика (`PAYMENT_REQUIRED=false`) текущее поведение
+для fit_partial терпимо — никто не теряет деньги, просто UX
+неоптимальный для эмуляции продового сценария.
 
 **Связано с:** BL-07 (content_warnings — другие предупреждения),
 docs/api-contract.md решение №8 (актуальное «жёстко на no-fit»).
@@ -564,33 +566,37 @@ when the catalog is just starting.
 посмотреть в Метрике сколько раз стрелял `calc_request_blocked`,
 тогда уже решать стоит ли тратить силы на обходы.
 
-### BL-13: Переделать механику dev-заказов (`sent_free`) после релиза
+### BL-13: Переделать механику dev-обхода (`sent_free`) после релиза
 
-**Status:** open — текущая реализация транзитная, оставлена для
-pre-launch периода чтобы тестовые заказы вообще проходили без YooKassa.
+**Status:** open — `sent_free` сейчас транзитная реализация для dev-режима
+разработчика, чтобы инженер мог гонять флоу без поднятой YooKassa.
 
-**Текущее поведение (до релиза, `PAYMENT_REQUIRED=false`):** сервер
+**Текущее поведение (dev-режим, `PAYMENT_REQUIRED=false`):** сервер
 при `INSERT orders` для `fit_all` сразу выставляет `status='sent_free'`,
-`amount_kop=0`. YooKassa не дёргается. Юзер получает результат
-бесплатно. В enum `orders.status` присутствует значение `'sent_free'`,
-которое после релиза станет «легаси-категорией» — для аналитики
-исторических заказов.
+`amount_kop=0`. YooKassa не дёргается. В проде `PAYMENT_REQUIRED=true`
+всегда, `sent_free` для новых заказов не выставляется. В исторических
+данных `sent_free` может оставаться как след dev-периода до запуска
+(`paywall` модель — единственная боевая, см. `docs/data-model.md`,
+секция «Жизненный цикл»).
 
-**Проблема:** после переключения `PAYMENT_REQUIRED=true` и публичного
-запуска — `sent_free` теряет смысл как режим продакшна. Но возможность
-«дать заказ бесплатно» нам потенциально всё ещё нужна для:
+**Проблема:** статус `sent_free` создаёт «лишнюю» ветку в логике
+гейтинга `/api/result/:token` и `/api/pdf/:token`, причём эта ветка
+существует **только ради dev-удобства**. Это смешение dev-инфраструктуры
+с бизнес-логикой.
+
+Также «дать заказ бесплатно вне dev» нам потенциально нужно для:
 - внутреннего тестирования (свои IP, staging-окружение)
 - ситуаций поддержки («у клиента не сработала оплата, дайте ему доступ»)
 - демо для партнёров
 
 **Варианты на ревизию (после релиза):**
-1. **Удалить `sent_free` из enum**, переделать pre-launch заказы на
-   автоматически применяемый системный промокод `PRE_LAUNCH_FREE`
-   (записан в `promo_codes` с `discount_type='free'`, applied при
+1. **Удалить `sent_free` из enum**, переделать dev-обход на
+   автоматически применяемый системный промокод `DEV_BYPASS` (записан
+   в `promo_codes` с `discount_type='free'`, applied при
    `PAYMENT_REQUIRED=false`). Это унифицирует логику «бесплатно» под
    один механизм (promo).
 2. **Оставить `sent_free`**, но использовать только для админов /
-   support-overrides. Pre-launch заказы перевести на автопромо как в (1).
+   support-overrides. Dev-обход перевести на автопромо как в (1).
 3. **ADMIN_IPS-style whitelist** на платёжный шаг — добавленные IP
    обходят оплату с `status='paid', amount_kop=0`. Промо не используется.
 
