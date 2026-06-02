@@ -52,47 +52,94 @@
 - promo_code_usages (применённый промокод — будущее)
 ```
 
-## Жизненный цикл заказа
+## Жизненный цикл заказа (paywall-модель)
+
+**Принцип:** `/result/` — это **платный контент**. Полная схема, таблица
+размеров, фолдинг, подбор SKU — отдаются только после `orders.status='paid'`
+(или эквивалентного `'sent_free'` на free-MVP, см. ниже).
+
+**Переключатель `PAYMENT_REQUIRED` в .env:**
+- `PAYMENT_REQUIRED=true` (Стадия 3 и далее) — настоящий гейт через YooKassa.
+  После `/api/calculate` юзер с `fit_all` отправляется на оплату. До оплаты
+  `/api/result/:token` возвращает 402 Payment Required.
+- `PAYMENT_REQUIRED=false` (free-MVP, текущий режим) — сервер при создании
+  заказа с `fit_all` сразу выставляет `status='sent_free'`. Юзер попадает
+  прямо на `/result/`, проходит гейт «бесплатно». Архитектура та же, разница —
+  одна ветвь в коде «выставляем paid или sent_free».
 
 ```
 1. Юзер заполняет /configure/, жмёт «Получить расчёт»
    → POST /api/calculate
    → Сервер:
-     a) выполняет движок → результат
-     b) INSERT configurations (input_payload, engine_output, fit_status)
+     a) выполняет движок → scheme_payload, fit_status
+     b) INSERT configurations
      c) INSERT orders с FK на configuration:
-        status='created', email=NULL, amount_kop=0
-        token (URL-friendly), fit_status (копия из движка для аналитики)
+        - token (URL-friendly), session_id, ip, user_agent
+        - fit_status (копия из движка)
+        - amount_kop = прайс при fit_all, 0 иначе
+        - status:
+          • fit_all + PAYMENT_REQUIRED=false → 'sent_free' (free MVP)
+          • fit_all + PAYMENT_REQUIRED=true  → 'created' (ждём оплату)
+          • не fit_all                       → 'created' (платить нечего)
      d) INSERT consents (consent_type='oferta', order_id=новый)
-     e) INSERT configuration_skus по каждой подобранной SKU
-   → Возвращает {token, fit_status}
-   → Фронт редиректит на /result/?t=TOKEN (если fit_all) или /no-fit/?t=TOKEN
+     e) INSERT configuration_skus (по каждой подобранной SKU)
+   → Возвращает {token, fit_status, can_pay}
+     - can_pay = (fit_status in ('fit_all','fit_all_after_adjustment') AND PAYMENT_REQUIRED)
+     - на free MVP can_pay=false всегда (оплачивать нечего, уже sent_free)
 
-2. Юзер на /result/:
-   ── а) ничего не делает / закрывает вкладку
-     → orders.status='created' навсегда. Висит в воронке как «дошёл до результата».
-   ── б) скачивает PDF (бесплатно)
-     → GET /api/pdf/:token
-     → Сервер UPDATE orders SET status='sent_free', sent_at=now()
-        (если уже sent_free — оставляем, повторное скачивание норма)
-   ── в) вводит email и жмёт «Отправить»
-     → POST /api/order/email
-     → INSERT consents (consent_type='pd', order_id=...)
-     → UPDATE orders SET email=?, status='sent_free' (на free-MVP)
-     → INSERT emails_outbox (template='result', payload содержит token)
-     → Воркер раз в минуту берёт emails_outbox, шлёт через Unisender
-   ── г) (Стадия 3) жмёт «Оплатить»
-     → POST /api/order/pay
-     → UPDATE orders SET status='pending', amount_kop=149_00
-     → Создаём платёж в YooKassa
-     → По вебхуку YooKassa: INSERT payments, UPDATE orders SET status='paid', paid_at=now()
-     → Триггер: INSERT emails_outbox с PDF
+2a. fit_all + PAYMENT_REQUIRED=true (paywall режим):
+    → can_pay=true → фронт ведёт на платежную страницу (или сразу на YooKassa)
+    → POST /api/order/pay → создаём платёж в YooKassa, status='pending', возвращаем payment_url
+    → юзер платит → YooKassa webhook → INSERT payments + UPDATE orders SET status='paid', paid_at=now()
+    → юзер редиректится на /result/?t=TOKEN
+    → GET /api/result/:token проверяет status='paid' (или 'sent_free') → ОК → отдаёт полный payload
+    → /result/ рендерится: схема, таблица, фолдинг, кнопки «Скачать PDF» и «Email»
 
-3. Юзер на /no-fit/ (fit_partial/fit_none/no_scheme):
-   → orders.status='created', orders.fit_status показывает что именно случилось
-   → если оставил email — UPDATE orders SET email=?, INSERT consents (pd)
-     INSERT emails_outbox (template='no-fit-followup')
+2b. fit_all + PAYMENT_REQUIRED=true, юзер НЕ платит:
+    → status остаётся 'created' (или 'pending' если начал но не закончил)
+    → если кликает в /result/?t=TOKEN → GET /api/result/:token возвращает 402 Payment Required
+    → фронт показывает payment-prompt вместо схемы («оплатите 149 ₽ чтобы увидеть результат»)
+
+2c. fit_all + PAYMENT_REQUIRED=false (free MVP, текущий режим):
+    → can_pay=false, status='sent_free' уже выставлен в шаге 1
+    → юзер сразу редиректится на /result/?t=TOKEN
+    → GET /api/result/:token: status='sent_free' → ОК → отдаёт полный payload
+    → юзер видит результат без всякой оплаты
+
+3. fit_partial / fit_none / no_scheme:
+   → can_pay=false (платить за неполный результат нельзя)
+   → фронт редиректит на /no-fit/?t=TOKEN
+   → orders.status остаётся 'created' навсегда, amount_kop=0
+   → /no-fit/ показывает «не подобрали» + опц. форма email для follow-up
+   → денег не берём ни в каком режиме
+
+4. Email follow-up (любой сценарий, в т.ч. no-fit):
+   → юзер вводит email на /result/ или /no-fit/
+   → POST /api/order/email
+   → INSERT consents (consent_type='pd', order_id=...)
+   → UPDATE orders SET email=?
+   → INSERT emails_outbox с шаблоном по сценарию ('result' / 'no-fit-followup')
+   → воркер раз в минуту отправляет через Unisender
+
+5. PDF (только если status in ('paid','sent_free')):
+   → GET /api/pdf/:token
+   → если status не в ('paid','sent_free') → 402 Payment Required
+   → если да → рендерим PDF через Puppeteer
+   → UPDATE orders SET sent_at=now() (для первого скачивания)
 ```
+
+**Важное следствие для серверного кода:**
+
+- `GET /api/result/:token` теперь не просто читает БД, а **гейтится**:
+  ```ts
+  if (!['paid', 'sent_free'].includes(orders.status)) {
+    return res.status(402).json({ ok: false, error: 'payment_required' });
+  }
+  ```
+- `GET /api/pdf/:token` — тот же гейт.
+- На free-MVP гейт всегда пропускает (потому что `status='sent_free'`), но
+  **архитектурно код одинаковый для обоих режимов**. Переключение через
+  `.env` без правок кода.
 
 ---
 
@@ -260,16 +307,30 @@ JOIN: `orders → configurations → configuration_skus → sku`.
 
 - **`calculate.ts`**: вместо `INSERT configurations + INSERT consents (configuration_id)` теперь:
   - `INSERT configurations RETURNING id`
-  - `INSERT orders (configuration_id, token, fit_status, session_id, ip, user_agent) RETURNING id`
+  - `INSERT orders (configuration_id, token, fit_status, session_id, ip, user_agent, status, amount_kop) RETURNING id`
+    где `status` зависит от `fit_status × PAYMENT_REQUIRED` (см. лайфсайкл выше)
   - `INSERT consents (order_id, ...)`
   - `INSERT configuration_skus (configuration_id, ...)` — без изменений
-  - Возвращать `{token, fit_status, order_id}` (новое поле order_id опционально, но возможно понадобится фронту)
+  - Возвращать `{token, fit_status, can_pay, amount_kop}` (фронту нужно решать куда вести: result / pay / no-fit)
 
-- **`result.ts`**: лукапить через `orders.token`, не `configurations.token`. JOIN'ом получать `engine_output`, `input_payload`, `assigned_zones`, итд.
+- **`result.ts`**: лукапить через `orders.token`, не `configurations.token`.
+  **Новое — payment gate:** если `orders.status NOT IN ('paid','sent_free')` → 402 Payment Required
+  с телом `{ok:false, error:'payment_required', payment_url:'/pay/?t=TOKEN', amount_kop:14900}`.
+  Иначе — JOIN'ом получаем `engine_output`, `input_payload`, рендерим как сейчас.
 
-- **новый `/api/order/email`** (Стадия 2): UPDATE orders SET email=?, INSERT consents (consent_type='pd'), INSERT emails_outbox.
+- **новый `/api/order/pay`** (Стадия 3, paywall): создаёт платёж в YooKassa,
+  UPDATE orders SET status='pending', возвращает `{payment_url}` для редиректа.
 
-- **новый `/api/pdf/:token`** (Стадия 2): UPDATE orders SET status='sent_free', sent_at=now() при первом скачивании.
+- **новый `/api/yookassa/webhook`** (Стадия 3): принимает webhook от YooKassa,
+  INSERT payments, UPDATE orders SET status='paid', paid_at=now(),
+  триггерит INSERT emails_outbox с PDF.
+
+- **новый `/api/order/email`** (Стадия 2): UPDATE orders SET email=?,
+  INSERT consents (consent_type='pd'), INSERT emails_outbox.
+
+- **новый `/api/pdf/:token`** (Стадия 2): тот же payment gate что у /api/result/:token.
+  Если прошёл — рендерит PDF через Puppeteer, UPDATE orders SET sent_at=now()
+  (если первое скачивание).
 
 ### Изменения фронта:
 
@@ -279,22 +340,43 @@ JOIN: `orders → configurations → configuration_skus → sku`.
 
 ## Открытые вопросы перед миграцией
 
-1. **`orders.fit_status` — что писать при `no_scheme`?** В текущей CHECK
-   стоит `'fit_all','fit_partial','fit_none','no_scheme'`. Добавим
-   `'fit_all_after_adjustment'` (engine может это вернуть)?
+1. **`orders.fit_status` enum:** в текущей CHECK стоит
+   `'fit_all','fit_partial','fit_none','no_scheme'`. Добавляем
+   `'fit_all_after_adjustment'` (движок такое тоже возвращает)?
 
-2. **`orders.amount_kop` — какая стоимость на free MVP?** Сейчас 0.
-   Когда включаем оплату (Стадия 3) — куда писать прайс? В новую таблицу
-   `pricing` или хардкодить в коде?
+2. **`orders.amount_kop` на free MVP:** ноль или прайс «как будто оплачено»?
+   Логичнее ноль (юзер ничего не платил), но тогда метрика «средний чек»
+   на ранних юзерах будет 0. Может писать прайс и помечать через `status='sent_free'`,
+   чтобы из аналитики легко отделить?
 
-3. **Можно ли удалять старые `orders`?** Через год после `created_at`,
-   например, без оплаты. Скорее всего да, но это политика хранения PII —
-   нужно подумать вместе с юридическим (152-ФЗ).
+3. **Источник прайса:**
+   - (a) Хардкод в `.env` (`PRICE_KOP=14900`)
+   - (b) Отдельная таблица `pricing` (более гибко, AB-тесты, скидки по регионам)
+   - (c) В `pricing_rules` с условиями (промокоды, региональные)
+   
+   На MVP проще (a). Стадия 3 — (b). Когда подключаем промокоды (BL-10) — (c).
 
-4. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
-   Если юзер делает 5 заказов с одним email, `last_order_id` должен
-   указывать на последний. Триггер на orders.email или ручное UPDATE в
-   код /api/order/email?
+4. **Что возвращает `/api/result/:token` при `status='created'`** (paywall не пройден)?
+   - 402 + `{error:'payment_required', payment_url:'...'}` — фронт сам решает что показать
+   - Минимальные данные: только `fit_status`, размеры ящика, без схемы и SKU
+   - Полный 403/404 «ничего нет» — жёстко, может быть запутывающе
+   
+   Моё мнение — (a) с `payment_url` который фронт открывает.
+
+5. **Что показывает `/result/?t=TOKEN` если ещё не оплачено?**
+   - Тизер схемы (размытая картинка, чтобы было понятно «там есть результат») + кнопка оплаты
+   - Просто кнопка оплаты с текстом
+   - Редирект на отдельную страницу `/pay/?t=TOKEN`
+   
+   Это UX-вопрос продакта.
+
+6. **Удаление старых неоплаченных `orders`:**
+   Через год после `created_at`, без email и без оплаты — можно удалять?
+   Это PII-политика, нужно решение по 152-ФЗ. Скорее всего да.
+
+7. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
+   Если юзер делает 5 заказов с одним email, поле должно указывать
+   на последний. Триггер на UPDATE orders.email или ручное в коде?
 
 ---
 
@@ -303,14 +385,35 @@ JOIN: `orders → configurations → configuration_skus → sku`.
 Эти запросы должны работать «из коробки» по новой модели:
 
 ```sql
--- Воронка за неделю
+-- Полная воронка за неделю
 SELECT
   COUNT(*) FILTER (WHERE created_at > now() - interval '7 days') AS total_orders,
-  COUNT(*) FILTER (WHERE fit_status = 'fit_all') AS got_result,
-  COUNT(*) FILTER (WHERE fit_status IN ('fit_none','no_scheme','fit_partial')) AS no_result,
+  COUNT(*) FILTER (WHERE fit_status IN ('fit_all','fit_all_after_adjustment')) AS got_full_result,
+  COUNT(*) FILTER (WHERE fit_status = 'fit_partial') AS partial_fit,
+  COUNT(*) FILTER (WHERE fit_status IN ('fit_none','no_scheme')) AS no_result,
   COUNT(*) FILTER (WHERE email IS NOT NULL) AS gave_email,
-  COUNT(*) FILTER (WHERE status = 'paid') AS paid
-FROM orders;
+  COUNT(*) FILTER (WHERE status = 'pending') AS started_payment,
+  COUNT(*) FILTER (WHERE status = 'paid') AS paid,
+  COUNT(*) FILTER (WHERE status = 'sent_free') AS sent_free
+FROM orders
+WHERE created_at > now() - interval '7 days';
+
+-- Конверсия по этапам воронки (для дашборда)
+WITH funnel AS (
+  SELECT
+    COUNT(*) AS submitted,
+    COUNT(*) FILTER (WHERE fit_status IN ('fit_all','fit_all_after_adjustment')) AS got_result,
+    COUNT(*) FILTER (WHERE status IN ('pending','paid')) AS started_pay,
+    COUNT(*) FILTER (WHERE status = 'paid') AS paid
+  FROM orders
+  WHERE created_at > now() - interval '30 days'
+)
+SELECT
+  submitted,
+  ROUND(got_result::numeric / submitted * 100, 1) AS pct_got_result,
+  ROUND(started_pay::numeric / NULLIF(got_result, 0) * 100, 1) AS pct_started_payment,
+  ROUND(paid::numeric / NULLIF(started_pay, 0) * 100, 1) AS pct_paid_of_started
+FROM funnel;
 
 -- Какие конфигурации чаще всего дают fit_none (для расширения каталога)
 SELECT input_payload->>'storage_category', COUNT(*)
