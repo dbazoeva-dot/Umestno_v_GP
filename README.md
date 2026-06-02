@@ -49,13 +49,19 @@ dev-режим разработчика (PAYMENT_REQUIRED=false):
 Статический фронт (этот репозиторий: /, /configure, /no-fit, /result)
   ↓ fetch
 Node API (сервер)
-  ├── /api/calculate       — движок + SKU matching + INSERT configurations
-  ├── /api/order/create    — INSERT orders + YooKassa createPayment
-  ├── /api/payment/webhook — UPDATE status=paid + email + CRM
-  ├── /api/result/[token]  — схема + органайзеры
-  └── /api/pdf/[token]     — PDF на бэке
+  ├── /api/healthz          — GET: проверка живости (status, env, catalog_size)
+  ├── /api/calculate        — POST: движок + SKU match + INSERT configurations + orders
+  │                           + INSERT consents (oferta) + при fit_all создаёт YooKassa-платёж
+  │                           → {token, fit_status, can_pay, payment_url}
+  ├── /api/result/:token    — GET: схема + органайзеры. ГЕЙТИТСЯ по orders.status:
+  │                           paid/sent_free → 200 с данными; иначе → 402 payment_required
+  ├── /api/pdf/:token       — GET: PDF на бэке через Puppeteer. Тот же гейт что у /api/result
+  ├── /api/order/email      — POST: дополняет orders.email + INSERT consents (pd)
+  │                           + INSERT emails_outbox (отправка через Unisender, асинк)
+  └── /api/yookassa/webhook — POST: подтверждение от YooKassa → INSERT payments
+                                + UPDATE orders.status='paid'
         ↓
-PostgreSQL — конфигурации, заказы, SKU каталог
+PostgreSQL — конфигурации, заказы, согласия, платежи, SKU каталог
 ```
 
 - Движок (`runUmestnoEngine`) и SKU каталог — **только на сервере**, не выходят на фронт.
