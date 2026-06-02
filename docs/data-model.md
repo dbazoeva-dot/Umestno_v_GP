@@ -159,11 +159,12 @@
 | `fit_status` | text NOT NULL CHECK (...) | копия из конфигурации: `fit_all` / `fit_partial` / `fit_none` / `no_scheme` / `fit_all_after_adjustment`. Денормализовано для быстрых выборок «сколько fit_all за неделю» без JOIN. |
 | `email` | text | NULL пока юзер не оставил почту. После — заполняется. |
 | `phone` | text | NULL. Зарезервировано на будущее (если когда-нибудь добавим). |
-| `status` | text NOT NULL DEFAULT 'created' CHECK (...) | `created` / `sent_free` / `pending` / `paid` / `failed` / `refunded` |
-| `amount_kop` | int NOT NULL DEFAULT 0 | цена для этого конкретного заказа в копейках (после применения промокода) |
+| `status` | text NOT NULL DEFAULT 'created' CHECK (...) | `created` / `pending` / `paid` / `failed` / `refunded` / `sent_free`. `sent_free` — транзитный статус для pre-launch периода (`PAYMENT_REQUIRED=false`), после релиза переделывается, см. BL-13. |
+| `base_price_kop` | int NOT NULL | цена по оферте на момент создания заказа (snapshot). Если оферта потом поменяет цену, в исторических заказах остаётся та что была при заказе. |
+| `discount_kop` | int NOT NULL DEFAULT 0 | скидка в копейках (через `promo_code_id` сейчас, в будущем — другие механики). |
+| `amount_kop` | int NOT NULL DEFAULT 0 | к оплате после скидки = `base_price_kop - discount_kop`. Сюда смотрит YooKassa-интеграция. Если 0 (full discount via free-промо) — YooKassa не дёргается, сразу `status='paid'`. |
 | `promo_code_id` | uuid REFERENCES promo_codes(id) | NULL если без промокода. (Таблица появится в Стадии 3 — BL-10.) |
-| `discount_kop` | int NOT NULL DEFAULT 0 | сколько скостили промокодом (для исторической точности) |
-| `paid_at` | timestamptz | когда YooKassa подтвердила оплату |
+| `paid_at` | timestamptz | когда YooKassa подтвердила оплату (или сервер сам выставил при `amount_kop=0`) |
 | `sent_at` | timestamptz | когда первый раз отправили PDF (на email или скачали) |
 | `refunded_at` | timestamptz | если был возврат |
 
@@ -177,6 +178,33 @@
 
 Лайфхак для воронки: вся аналитика делается по `orders` без JOIN'ов
 (благодаря денормализованному `fit_status`).
+
+**Модель ценообразования — сценарии:**
+
+| Случай | `base_price_kop` | `discount_kop` | `amount_kop` | `status` | `promo_code_id` |
+|---|---|---|---|---|---|
+| dev / `PAYMENT_REQUIRED=false` | 14900 | 14900 | 0 | `sent_free` | NULL |
+| paid без промо | 14900 | 0 | 14900 | `paid` | NULL |
+| paid + промо -20% | 14900 | 2980 | 11920 | `paid` | uuid скидочного промо |
+| paid + промо free (для своих) | 14900 | 14900 | 0 | `paid` | uuid free-промо |
+
+**Логика:**
+- `base_price_kop` всегда фиксируется в момент создания заказа из `PRICE_KOP` в .env (соответствует оферте).
+- Если применён промокод — `discount_kop` рассчитывается на момент применения, `amount_kop = base - discount`.
+- Если `amount_kop = 0` (полный free-промо или sent_free) — YooKassa не дёргается, сервер сразу пишет `status='paid'` (или `sent_free` для dev режима).
+- `sent_free` — единственный статус, который сейчас выставляется автоматически без промокода. После релиза переделывается, см. BL-13.
+
+**Аналитика разделяет «нулевые» по причине:**
+```sql
+-- Воспользовались free-промо (для своих)
+WHERE status='paid' AND amount_kop=0 AND promo_code_id IS NOT NULL;
+
+-- Pre-launch раздача (dev режим)
+WHERE status='sent_free';
+
+-- Реальные оплаты
+WHERE status='paid' AND amount_kop > 0;
+```
 
 ### `configurations` (технический след)
 
@@ -414,39 +442,30 @@ backup-доступ если письмо ушло в спам, возможно
 
 ---
 
+## Закрытые вопросы (решения зафиксированы)
+
+- **Q1. `orders.fit_status` enum** — пять значений: `'fit_all', 'fit_all_after_adjustment', 'fit_partial', 'fit_none', 'no_scheme'`. В воронке `fit_all` и `fit_all_after_adjustment` группируются как «успех» (юзеру предлагаем оплату), остальные — на /no-fit/.
+- **Q2. Ценообразование** — три поля: `base_price_kop` (snapshot из оферты на момент заказа), `discount_kop` (через `promo_code` сейчас, другие механики позже), `amount_kop = base - discount` (к оплате). Транзитный `sent_free` для pre-launch остаётся (см. BL-13).
+- **Q3. Источник прайса** — на MVP `PRICE_KOP` в `.env` синхронно с текстом оферты. При изменении цены — правится оба места + перезапуск Node. Будущая таблица `pricing` с эффективными датами — Стадия 4+.
+- **Q6 (retention)** — см. секцию «Retention и анонимизация» выше (3 года, monthly cron, scrub без DELETE).
+
 ## Открытые вопросы перед миграцией
 
-1. **`orders.fit_status` enum:** в текущей CHECK стоит
-   `'fit_all','fit_partial','fit_none','no_scheme'`. Добавляем
-   `'fit_all_after_adjustment'` (движок такое тоже возвращает)?
-
-2. **`orders.amount_kop` на free MVP:** ноль или прайс «как будто оплачено»?
-   Логичнее ноль (юзер ничего не платил), но тогда метрика «средний чек»
-   на ранних юзерах будет 0. Может писать прайс и помечать через `status='sent_free'`,
-   чтобы из аналитики легко отделить?
-
-3. **Источник прайса:**
-   - (a) Хардкод в `.env` (`PRICE_KOP=14900`)
-   - (b) Отдельная таблица `pricing` (более гибко, AB-тесты, скидки по регионам)
-   - (c) В `pricing_rules` с условиями (промокоды, региональные)
-   
-   На MVP проще (a). Стадия 3 — (b). Когда подключаем промокоды (BL-10) — (c).
-
-4. **Что возвращает `/api/result/:token` при `status='created'`** (paywall не пройден)?
+1. **Что возвращает `/api/result/:token` при `status='created'`** (paywall не пройден)?
    - 402 + `{error:'payment_required', payment_url:'...'}` — фронт сам решает что показать
    - Минимальные данные: только `fit_status`, размеры ящика, без схемы и SKU
    - Полный 403/404 «ничего нет» — жёстко, может быть запутывающе
    
    Моё мнение — (a) с `payment_url` который фронт открывает.
 
-5. **Что показывает `/result/?t=TOKEN` если ещё не оплачено?**
+2. **Что показывает `/result/?t=TOKEN` если ещё не оплачено?**
    - Тизер схемы (размытая картинка, чтобы было понятно «там есть результат») + кнопка оплаты
    - Просто кнопка оплаты с текстом
    - Редирект на отдельную страницу `/pay/?t=TOKEN`
    
    Это UX-вопрос продакта.
 
-6. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
+3. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
    Если юзер делает 5 заказов с одним email, поле должно указывать
    на последний. Триггер на UPDATE orders.email или ручное в коде?
 
