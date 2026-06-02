@@ -1,12 +1,12 @@
 // POST /api/calculate
 //
 // Принимает форму конфигуратора → гонит engine + matchSkus →
-// сохраняет результат в configurations + configuration_skus →
-// в одной транзакции пишет согласие с офертой в consents →
-// возвращает token для перехода на /result/[token].
+// в одной транзакции сохраняет configurations + orders +
+// consents (oferta) + configuration_skus → возвращает token и
+// (при fit_all в paywall-режиме) payment_url для редиректа на YooKassa.
 //
-// Контракт запроса задаётся фронтом из configure/index.html.
-// consent_oferta: true обязателен (api-contract.md решение №6).
+// Модель данных — docs/data-model.md, раздел «Жизненный цикл заказа».
+// Контракт запроса — фронт из configure/index.html (calc.js).
 
 import { randomBytes } from "crypto";
 import type { Request, Response } from "express";
@@ -14,11 +14,18 @@ import type { Pool } from "pg";
 import { runUmestnoEngine } from "../../engine/index.js";
 import { defaultLibraries } from "../../engine/libraries/defaultLibraries.js";
 import type { SkuCatalogRow, FitStatus } from "../../engine/types.js";
+import type { Env } from "../config/env.js";
 
 // Текущая версия оферты. Меняется при редактировании самой оферты —
 // при изменении завести новый код ('oferta_v2', …), старые согласия
 // остаются с прежней версией для аудита.
 const OFERTA_VERSION = "oferta_v1";
+
+// Какие fit_status считаются «успехом» — за них берём деньги.
+type SuccessStatus = "fit_all" | "fit_all_after_adjustment";
+function isSuccess(fs: FitStatus | "no_scheme"): fs is SuccessStatus {
+  return fs === "fit_all" || fs === "fit_all_after_adjustment";
+}
 
 interface CalculateRequest {
   drawer_width_cm: number;
@@ -35,6 +42,11 @@ interface CalculateRequest {
 interface CalculateResponse {
   token: string;
   fit_status: FitStatus | "no_scheme";
+  /** true если фронт должен повести юзера на оплату (paywall + fit_all). */
+  can_pay: boolean;
+  /** URL для редиректа на YooKassa. null если не нужно оплачивать
+   *  (dev-режим, или fit_status не успешный). */
+  payment_url: string | null;
 }
 
 function makeToken(): string {
@@ -54,14 +66,13 @@ function validateRequest(body: unknown): body is CalculateRequest {
   return true;
 }
 
-export function calculateHandler(pool: Pool, getCatalog: () => SkuCatalogRow[]) {
+export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCatalogRow[]) {
   return async (req: Request, res: Response) => {
     if (!validateRequest(req.body)) {
       return res.status(400).json({ ok: false, error: "invalid_request" });
     }
     const body = req.body as CalculateRequest;
     if (body.consent_oferta !== true) {
-      // отдельный код, чтобы фронт мог показать релевантную ошибку
       return res.status(400).json({ ok: false, error: "consent_required" });
     }
 
@@ -89,33 +100,76 @@ export function calculateHandler(pool: Pool, getCatalog: () => SkuCatalogRow[]) 
     const token = makeToken();
     const fitStatus: FitStatus | "no_scheme" = result.scheme_payload?.fit_status ?? "no_scheme";
 
+    // Решаем коммерческое поведение: status / amount_kop / discount_kop.
+    // См. таблицу сценариев в docs/data-model.md.
+    const basePriceKop = env.PRICE_KOP;
+    let status: string;
+    let discountKop: number;
+    let amountKop: number;
+
+    if (isSuccess(fitStatus)) {
+      if (env.PAYMENT_REQUIRED) {
+        // Paywall: ждём оплату через YooKassa.
+        status = "created";
+        discountKop = 0;
+        amountKop = basePriceKop;
+      } else {
+        // Dev-режим разработчика: status='sent_free' сразу, юзер видит результат.
+        status = "sent_free";
+        discountKop = basePriceKop;
+        amountKop = 0;
+      }
+    } else {
+      // fit_partial / fit_none / no_scheme — оплату не предлагаем,
+      // status остаётся 'created' навсегда. amount_kop=base_price_kop
+      // фиксируем для аналитики упущенного дохода (см. data-model.md).
+      status = "created";
+      discountKop = 0;
+      amountKop = basePriceKop;
+    }
+
     // ip — реальный клиентский (с учётом trust proxy='loopback' в index.ts),
-    // user_agent — из заголовка; оба для аудита согласий.
+    // user_agent — из заголовка; оба для аудита согласий и 152-ФЗ.
     const ip = req.ip ?? null;
     const userAgent = req.get("user-agent") ?? null;
 
     const client = await pool.connect();
+    let orderId: string;
     try {
       await client.query("BEGIN");
 
-      const inserted = await client.query<{ id: string }>(
-        `INSERT INTO configurations (session_id, input_payload, engine_output, fit_status, token)
-         VALUES ($1, $2, $3, $4, $5)
+      // 1. Технический след движка
+      const configResult = await client.query<{ id: string }>(
+        `INSERT INTO configurations (input_payload, engine_output, fit_status)
+         VALUES ($1, $2, $3)
          RETURNING id`,
-        [body.session_id ?? null, body, result, fitStatus, token],
+        [body, result, fitStatus],
       );
-      const configId = inserted.rows[0].id;
+      const configId = configResult.rows[0].id;
 
-      // 152-ФЗ: журналируем согласие с офертой. email тут ещё неизвестен
-      // (юзер впишет его позже на result-странице) — оставляем NULL,
-      // потом связываем по configuration_id если согласимся на ПД.
+      // 2. Коммерческая сущность — заказ
+      const orderResult = await client.query<{ id: string }>(
+        `INSERT INTO orders (
+           configuration_id, token, session_id, ip, user_agent,
+           fit_status, base_price_kop, discount_kop, amount_kop, status
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         RETURNING id`,
+        [
+          configId, token, body.session_id ?? null, ip, userAgent,
+          fitStatus, basePriceKop, discountKop, amountKop, status,
+        ],
+      );
+      orderId = orderResult.rows[0].id;
+
+      // 3. Согласие с офертой — журнал 152-ФЗ
       await client.query(
-        `INSERT INTO consents (email, configuration_id, consent_type, consent_version, ip, user_agent)
-         VALUES (NULL, $1, 'oferta', $2, $3, $4)`,
-        [configId, OFERTA_VERSION, ip, userAgent],
+        `INSERT INTO consents (order_id, consent_type, consent_version, ip, user_agent)
+         VALUES ($1, 'oferta', $2, $3, $4)`,
+        [orderId, OFERTA_VERSION, ip, userAgent],
       );
 
-      // Если схема построена — пишем выбранные SKU по каждой зоне
+      // 4. Подобранные SKU по зонам (если схема построена)
       if (result.scheme_payload && result.debug.sku_matching_result) {
         const matches = result.debug.sku_matching_result;
         for (let i = 0; i < matches.length; i++) {
@@ -161,7 +215,19 @@ export function calculateHandler(pool: Pool, getCatalog: () => SkuCatalogRow[]) 
       client.release();
     }
 
-    const response: CalculateResponse = { token, fit_status: fitStatus };
+    // can_pay = надо отвести юзера на оплату YooKassa
+    // payment_url = null пока YooKassa-интеграция не написана.
+    // Когда напишем (Стадия 3) — здесь создаём платёж в YooKassa и
+    // возвращаем реальный URL.
+    const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
+    const paymentUrl: string | null = null;
+
+    const response: CalculateResponse = {
+      token,
+      fit_status: fitStatus,
+      can_pay: canPay,
+      payment_url: paymentUrl,
+    };
     res.json(response);
   };
 }

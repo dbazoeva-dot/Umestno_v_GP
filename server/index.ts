@@ -59,7 +59,7 @@ app.post(
   originCheck(env),
   calculateLimiterPerMinute,
   calculateLimiterPerHour,
-  calculateHandler(pool, () => catalogCache),
+  calculateHandler(pool, env, () => catalogCache),
 );
 
 // ── 1.4 — чтение сохранённого расчёта для рендера result-страницы ─

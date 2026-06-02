@@ -139,6 +139,10 @@ function clampScheme(raw: unknown, inputDrawer: PublicInput["drawer"]): PublicSc
   };
 }
 
+// Статусы заказа, при которых юзер имеет доступ к Результату.
+// Всё остальное (created, pending, failed, refunded) → 402 Payment Required.
+const ACCESS_STATUSES = new Set(["paid", "sent_free"]);
+
 export function resultHandler(pool: Pool, env: Env) {
   return async (req: Request, res: Response) => {
     const { token } = req.params;
@@ -146,22 +150,53 @@ export function resultHandler(pool: Pool, env: Env) {
       return res.status(400).json({ ok: false, error: "invalid_token" });
     }
 
-    const cfg = await pool.query<{
-      id: string;
-      input_payload: unknown;
-      engine_output: { scheme_payload?: unknown } | null;
+    // Лукап через orders.token (token переехал из configurations в orders
+    // в миграции 0003_orders_central.sql).
+    const orderQ = await pool.query<{
+      order_id: string;
+      configuration_id: string;
+      status: string;
       fit_status: string;
       created_at: Date;
+      base_price_kop: number;
+      amount_kop: number;
+      input_payload: unknown;
+      engine_output: { scheme_payload?: unknown } | null;
     }>(
-      `SELECT id, input_payload, engine_output, fit_status, created_at
-       FROM configurations WHERE token = $1`,
+      `SELECT o.id AS order_id,
+              o.configuration_id,
+              o.status,
+              o.fit_status,
+              o.created_at,
+              o.base_price_kop,
+              o.amount_kop,
+              c.input_payload,
+              c.engine_output
+         FROM orders o
+         JOIN configurations c ON c.id = o.configuration_id
+        WHERE o.token = $1`,
       [token],
     );
-    if (cfg.rowCount === 0) {
+    if (orderQ.rowCount === 0) {
       return res.status(404).json({ ok: false, error: "not_found" });
     }
-    const row = cfg.rows[0];
+    const row = orderQ.rows[0];
 
+    // Payment gate: пускаем только оплаченные заказы (и sent_free для
+    // dev-режима, см. docs/data-model.md). Иначе — 402.
+    if (!ACCESS_STATUSES.has(row.status)) {
+      return res.status(402).json({
+        ok: false,
+        error: "payment_required",
+        // payment_url пока null — YooKassa-интеграция ещё не написана.
+        // Когда напишем (Стадия 3), сюда вернётся реальный URL платежа.
+        payment_url: null,
+        amount_kop: row.amount_kop,
+        base_price_kop: row.base_price_kop,
+      });
+    }
+
+    // Заказ оплачен (или sent_free в dev) — отдаём полный payload.
     const matchesQ = await pool.query<{
       zone_id: string | null;
       content_type: string | null;
@@ -188,7 +223,7 @@ export function resultHandler(pool: Pool, env: Env) {
          JOIN sku s ON s.sku_id = cs.sku_id
         WHERE cs.configuration_id = $1
         ORDER BY cs.block_index`,
-      [row.id],
+      [row.configuration_id],
     );
 
     const matches: PublicMatch[] = matchesQ.rows.map((r) => ({
