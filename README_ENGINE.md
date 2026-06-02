@@ -419,11 +419,23 @@ product page. Until those accounts exist, there's nothing to migrate to.
 Until done: MVP ships with mixed coverage. Clicks still work, monetization
 is partial.
 
-### BL-10: Promo code system (Stage 3+ dependency)
+### BL-10: Promo code system (Stage 3)
 
-**Status:** scoped — структура БД ✓ готова (миграции 0003+0004),
-реализация (валидация, применение в /api/calculate, фронт) — после
-публичного запуска (Стадия 3+).
+**Status:** schema ✓ готова, application-уровень — **в работе Стадии 3**.
+
+**Чеклист (что закрыто / что осталось):**
+
+| Подсистема | Статус | Где |
+|---|---|---|
+| Таблица `promo_codes` | ✓ готова | миграция 0004 |
+| Колонка `orders.promo_code_id` + FK | ✓ готова | миграции 0003 + 0004 |
+| Колонка `orders.discount_kop` | ✓ готова | миграция 0003 |
+| Эндпоинт `POST /api/promo/validate` | ✗ | Стадия 3, не написано |
+| Применение промо в `POST /api/calculate` | ✗ | Стадия 3, не написано |
+| Скип YooKassa при `amount_kop=0` через free-промо | ✗ | Стадия 3 (после интеграции с YooKassa) |
+| Поле «Промокод» на форме / странице оплаты | ✗ | Стадия 3, фронт |
+| Live-валидация при вводе кода | ✗ | Стадия 3, фронт |
+| Админский интерфейс для заведения кодов | ✗ | пока через DBeaver/SQL руками |
 
 **Цель:** дать в БД мульти-формат промокодов, валидируемых на сервере,
 с применением скидки к заказу. Конкретные коды (имена, проценты,
