@@ -87,11 +87,18 @@ dev-периода до публичного запуска (см. BL-13).
      c) INSERT orders с FK на configuration:
         - token (URL-friendly), session_id, ip, user_agent
         - fit_status (копия из движка)
-        - amount_kop = прайс при fit_all, 0 иначе
+        - base_price_kop = PRICE_KOP из .env (всегда, snapshot оферты)
+        - discount_kop:
+          • PAYMENT_REQUIRED=false (dev) → = base_price_kop (полная скидка)
+          • в проде                       → 0 (промокоды появятся в Стадии 4+)
+        - amount_kop = base_price_kop - discount_kop
         - status:
           • fit_all + PAYMENT_REQUIRED=false → 'sent_free' (dev-режим)
           • fit_all + PAYMENT_REQUIRED=true  → 'created' (ждём оплату)
           • не fit_all                       → 'created' (платить нечего)
+                                                amount_kop остаётся 14900
+                                                для аналитики упущенного
+                                                дохода (см. шаг 3)
      d) INSERT consents (consent_type='oferta', order_id=новый)
      e) INSERT configuration_skus (по каждой подобранной SKU)
    → Возвращает {token, fit_status, can_pay}
@@ -120,9 +127,16 @@ dev-периода до публичного запуска (см. BL-13).
 3. fit_partial / fit_none / no_scheme:
    → can_pay=false (платить за неполный результат нельзя)
    → фронт редиректит на /no-fit/?t=TOKEN
-   → orders.status остаётся 'created' навсегда, amount_kop=0
+   → orders.status остаётся 'created' навсегда
+   → orders.base_price_kop=14900, discount_kop=0, amount_kop=14900
+     (фиксируем «полную цену» для аналитики упущенного дохода:
+     SUM(amount_kop) WHERE status='created' AND fit_status='fit_partial'
+     показывает сколько потенциально потеряли. См. секцию orders ниже.)
+   → YooKassa-платёж НЕ создаётся
    → /no-fit/ показывает «не подобрали» + опц. форма email для follow-up
-   → денег не берём ни в каком режиме
+   → реальных денег с юзера не берём ни в каком режиме (orders.status
+     никогда не станет 'paid'); amount_kop здесь — только snapshot
+     для аналитики
 
 4. Email follow-up (любой сценарий, в т.ч. no-fit):
    → юзер вводит email на /result/ или /no-fit/
@@ -394,8 +408,8 @@ FROM subscribers s WHERE s.email = $1;
 
 - **`calculate.ts`**: вместо `INSERT configurations + INSERT consents (configuration_id)` теперь:
   - `INSERT configurations RETURNING id`
-  - `INSERT orders (configuration_id, token, fit_status, session_id, ip, user_agent, status, amount_kop) RETURNING id`
-    где `status` зависит от `fit_status × PAYMENT_REQUIRED` (см. лайфсайкл выше)
+  - `INSERT orders (configuration_id, token, fit_status, session_id, ip, user_agent, status, base_price_kop, discount_kop, amount_kop) RETURNING id`
+    где `status` и `discount_kop` зависят от `fit_status × PAYMENT_REQUIRED` (см. лайфсайкл выше)
   - `INSERT consents (order_id, ...)`
   - `INSERT configuration_skus (configuration_id, ...)` — без изменений
   - Возвращать `{token, fit_status, can_pay, amount_kop}` (фронту нужно решать куда вести: result / pay / no-fit)
