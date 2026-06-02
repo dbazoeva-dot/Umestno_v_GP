@@ -338,6 +338,82 @@ JOIN: `orders → configurations → configuration_skus → sku`.
 
 ---
 
+## Retention и анонимизация (решено)
+
+Через **3 года после `created_at`** ежемесячный cron анонимизирует
+данные, **не удаляя строк**. Это сохраняет ссылочную целостность (FK не
+ломаются), воронку и аналитику работают на любом горизонте, а PII
+утекает из «холодных» данных.
+
+**Что чистится в `configurations`** (через 3 года):
+```sql
+UPDATE configurations
+SET input_payload = '{}'::jsonb,
+    engine_output  = '{}'::jsonb
+WHERE created_at < now() - interval '3 years'
+  AND input_payload != '{}'::jsonb;  -- идемпотентность
+```
+Остаются: `id`, `created_at`, `fit_status` — для воронки и FK.
+
+**Что чистится в `orders`** (через 3 года):
+```sql
+UPDATE orders
+SET email = NULL,
+    ip = NULL,
+    user_agent = NULL,
+    session_id = NULL,
+    phone = NULL
+WHERE created_at < now() - interval '3 years'
+  AND email IS NOT NULL;
+```
+Остаются: `id`, `token`, `created_at`, `configuration_id`, `fit_status`,
+`status`, `amount_kop`, `paid_at`, `sent_at`, `discount_kop`, `promo_code_id`
+— для воронки, бухучёта (НК РФ 5 лет — мы перекрываем 3 годами PII +
+структура остаётся ещё долго) и FK.
+
+**Что чистится в `consents`** (через 3 года, симметрично с orders):
+```sql
+UPDATE consents
+SET email = NULL,
+    ip = NULL,
+    user_agent = NULL
+WHERE granted_at < now() - interval '3 years'
+  AND email IS NOT NULL;
+```
+Остаются: `id`, `order_id`, `consent_type`, `consent_version`,
+`granted_at`, `revoked_at` — аудит-цепочка «такой-то заказ имел такое-то
+согласие версии v1 в такой-то момент» остаётся, но без личной привязки.
+Можно отвечать на проверки 152-ФЗ, можно собирать статистику «сколько
+народу подписало oferta_v1».
+
+**Что делает `/api/result/:token` и `/api/pdf/:token` на скрабнутом
+расчёте:**
+```
+HTTP 410 Gone
+{
+  "ok": false,
+  "error": "expired",
+  "message": "Извините, срок хранения расчёта составляет 3 года. Пожалуйста, сделайте новый."
+}
+```
+Фронт показывает соответствующий текст + кнопку «Новый расчёт» на главную.
+Это симметрично для прямого визита `/result/?t=OLD_TOKEN` и для попытки
+скачать PDF по старому токену.
+
+**`/result/` остаётся живой страницей** (не уходим на model «PDF only via
+email»). UX-аргументы: моментальное подтверждение в браузере после оплаты,
+backup-доступ если письмо ушло в спам, возможность поделиться URL.
+Стоимость рендера копеечная (одна SQL-выборка на просмотр).
+
+**Реализация:**
+- cron-job: `db/jobs/anonymize_retired.sql` (TBD), вызывается раз в месяц
+  через `pg_cron` или внешний планировщик
+- на MVP не нужен (нет данных старше 3 лет). За 6 месяцев до момента
+  когда первые записи достигнут 3 лет — настроить, см. напоминалку в
+  `README.md` → «Через 2.5 года от первого реального юзера…»
+
+---
+
 ## Открытые вопросы перед миграцией
 
 1. **`orders.fit_status` enum:** в текущей CHECK стоит
@@ -370,11 +446,7 @@ JOIN: `orders → configurations → configuration_skus → sku`.
    
    Это UX-вопрос продакта.
 
-6. **Удаление старых неоплаченных `orders`:**
-   Через год после `created_at`, без email и без оплаты — можно удалять?
-   Это PII-политика, нужно решение по 152-ФЗ. Скорее всего да.
-
-7. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
+6. **`subscribers.last_order_id` — обновлять при каждом новом заказе?**
    Если юзер делает 5 заказов с одним email, поле должно указывать
    на последний. Триггер на UPDATE orders.email или ручное в коде?
 
