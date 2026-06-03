@@ -34,9 +34,9 @@ export interface SkuMatch {
   no_match_log?: NoMatchLogEntry;
 }
 
-interface LaneGeom { lane_w: number; lane_d: number; lane_h: number; cap_per_lane: number; units_needed: number }
+export interface LaneGeom { lane_w: number; lane_d: number; lane_h: number; cap_per_lane: number; units_needed: number }
 
-function laneGeometryFromZone(zone: PlacedZone): LaneGeom {
+export function laneGeometryFromZone(zone: PlacedZone): LaneGeom {
   const lanes = zone.split_used && zone.lanes_needed && zone.lanes_needed > 1 ? zone.lanes_needed : 1;
   const cap = lanes > 1 && zone.items_per_lane?.length ? Math.max(...zone.items_per_lane) : zone.count;
   const gap = lanes > 1 ? zone.slot_lane_gap_cm ?? 0 : 0;
@@ -56,31 +56,63 @@ function fitsFootprint(sku: SkuCatalogRow, lane_w: number, lane_d: number, lane_
   return normal || rotated;
 }
 
+// Granular cell predicates — single source of truth shared by the base
+// filter, the composed-from-slots path, and the diagnostic funnel. Compare
+// SKU cell to the EFFECTIVE cell (unit + item_gap), not the raw unit: the
+// tolerances ±3 / ±1.5 are meant around the realistic cell size that
+// includes finger-room/packing margin, not the bare item footprint.
+function cellWidthOk(sku: SkuCatalogRow, eff_w: number): boolean {
+  return Math.abs((sku.cell_width_cm ?? sku.width_cm) - eff_w) <= TOL.cellW;
+}
+function cellDepthOk(sku: SkuCatalogRow, eff_d: number): boolean {
+  return Math.abs((sku.cell_depth_cm ?? sku.depth_cm) - eff_d) <= TOL.cellD;
+}
+function heightOk(sku: SkuCatalogRow, unit_h: number): boolean {
+  return sku.height_cm >= unit_h - TOL.hUnder && sku.height_cm <= unit_h + TOL.hOver;
+}
 function fitsCellSize(sku: SkuCatalogRow, eff_w: number, eff_d: number, unit_h: number): boolean {
-  const cw = sku.cell_width_cm ?? sku.width_cm;
-  const cd = sku.cell_depth_cm ?? sku.depth_cm;
-  // Compare SKU cell to EFFECTIVE cell (unit + item_gap), not raw unit.
-  // The tolerances ±3 / ±1.5 are meant around the realistic cell size that
-  // includes finger-room/packing margin, not the bare item footprint.
-  if (Math.abs(cw - eff_w) > TOL.cellW) return false;
-  if (Math.abs(cd - eff_d) > TOL.cellD) return false;
-  if (sku.height_cm < unit_h - TOL.hUnder || sku.height_cm > unit_h + TOL.hOver) return false;
-  return true;
+  return cellWidthOk(sku, eff_w) && cellDepthOk(sku, eff_d) && heightOk(sku, unit_h);
 }
 
-function effectiveCellDims(zone: PlacedZone): { eff_w: number; eff_d: number } {
+export function effectiveCellDims(zone: PlacedZone): { eff_w: number; eff_d: number } {
   const gap = zone.needs_item_gap ? (zone.item_gap ?? 0) : 0;
   return { eff_w: zone.unit_w_cm + gap, eff_d: zone.unit_d_cm + gap };
 }
 
-function passesBaseFilter(sku: SkuCatalogRow, divType: DivisionType, geom: LaneGeom, zone: PlacedZone): boolean {
-  if (sku.availability_status === "out_of_stock") return false;
-  if (sku.division_type !== divType) return false;
-  if ((sku.capacity_units ?? 0) < geom.cap_per_lane) return false;
+export interface FilterGate { name: string; test: (sku: SkuCatalogRow) => boolean }
+
+// Ordered base-filter gates. The native filter is exactly «every gate
+// passes», so this list is the single source of truth for both matching and
+// diagnostics — a funnel counting per-gate survivors cannot drift from the
+// real matcher because they call the same predicates.
+export function baseFilterGates(divType: DivisionType, geom: LaneGeom, zone: PlacedZone): FilterGate[] {
   const { eff_w, eff_d } = effectiveCellDims(zone);
-  if (!fitsCellSize(sku, eff_w, eff_d, zone.unit_h_cm)) return false;
-  if (!fitsFootprint(sku, geom.lane_w, geom.lane_d, geom.lane_h)) return false;
-  return true;
+  const unit_h = zone.unit_h_cm;
+  return [
+    { name: "in_stock",      test: (s) => s.availability_status !== "out_of_stock" },
+    { name: "division_type", test: (s) => s.division_type === divType },
+    { name: "capacity",      test: (s) => (s.capacity_units ?? 0) >= geom.cap_per_lane },
+    { name: "cell_width",    test: (s) => cellWidthOk(s, eff_w) },
+    { name: "cell_depth",    test: (s) => cellDepthOk(s, eff_d) },
+    { name: "height",        test: (s) => heightOk(s, unit_h) },
+    { name: "footprint",     test: (s) => fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
+  ];
+}
+
+export interface FunnelStage { gate: string; survived: number; dropped: number }
+
+// Replays the gate list sequentially over the catalog, recording how many
+// SKUs each gate drops. Sequential (not independent) counts: each stage runs
+// on the survivors of the previous one — exactly how `every` short-circuits.
+export function runFilterFunnel(catalog: SkuCatalogRow[], gates: FilterGate[]): { stages: FunnelStage[]; survivors: SkuCatalogRow[] } {
+  let survivors = catalog;
+  const stages: FunnelStage[] = [];
+  for (const gate of gates) {
+    const before = survivors.length;
+    survivors = survivors.filter((s) => gate.test(s));
+    stages.push({ gate: gate.name, survived: survivors.length, dropped: before - survivors.length });
+  }
+  return { stages, survivors };
 }
 
 // Sort priority kind (lower = better)
@@ -130,7 +162,8 @@ function splitBySetQuantity(list: SkuCatalogRow[], N: number): { clean: SkuCatal
 }
 
 function tryNativeMatch(zone: PlacedZone, geom: LaneGeom, divType: DivisionType, catalog: SkuCatalogRow[], colorPreference: string): SkuCatalogRow[] {
-  const base = catalog.filter((sku) => passesBaseFilter(sku, divType, geom, zone));
+  const gates = baseFilterGates(divType, geom, zone);
+  const base = catalog.filter((sku) => gates.every((g) => g.test(sku)));
   const { clean, dirty } = splitBySetQuantity(base, geom.units_needed);
   const cleanSorted = sortCandidates(clean, geom.units_needed, zone.preferred_rigidity, colorPreference);
   if (cleanSorted.length > 0) return cleanSorted;

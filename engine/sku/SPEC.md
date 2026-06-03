@@ -218,6 +218,34 @@ CREATE TABLE sku_no_match_log (
 3. Пустая рыночная ниша → отметить для контентной/продуктовой
    стратегии.
 
+## Диагностика подбора («воронка отсева»)
+
+`engine/sku/explainSkuMatch.ts` — чистая функция `explainZone(zone, catalog)`.
+Переиспользует те же `baseFilterGates`, что и боевой матчер (без дрейфа
+логики), и показывает, сколько SKU отсеивается на каждом этапе фильтра.
+Отвечает на «почему мало подбирается» (какой gate — узкое место) и «почему
+не тот органайзер» (что реально пережило фильтр).
+
+Важно: воронка считает только **базовые ворота**. Пост-фильтр `set_quantity`
+(правило #1) идёт после — если база пропустила N, а `matchSkus` отдал 0
+кандидатов, отсев именно там (набор больше N либо не делит нацело).
+
+Два запуска:
+
+```bash
+# Локально, на каталоге из xlsx (без БД) — прогон по сценариям:
+python3 engine/scripts/extractSkuCatalog.py E_SKU_catalog_v0106.xlsx > /tmp/catalog.json
+npm run build
+CATALOG=/tmp/catalog.json node dist/engine/test/diagSkuFunnel.js
+
+# На VPS, реплей конкретного заказа по токену из result-страницы (t=...):
+PGPASSWORD=... node dist/server/test/replaySkuMatch.js <token>
+```
+
+`replaySkuMatch` дополнительно ловит **рассинхрон**: размеры кандидата в
+снапшоте `engine_output` vs текущая таблица `sku` (result-страница рисует
+живые размеры, а `configuration_skus` хранит только `sku_id`).
+
 ## Структура выдачи (на одну зону)
 
 ```ts
