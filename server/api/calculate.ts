@@ -15,6 +15,7 @@ import { runUmestnoEngine } from "../../engine/index.js";
 import { defaultLibraries } from "../../engine/libraries/defaultLibraries.js";
 import type { SkuCatalogRow, FitStatus } from "../../engine/types.js";
 import type { Env } from "../config/env.js";
+import { createPayment } from "../integrations/yookassa.js";
 
 // Текущая версия оферты. Меняется при редактировании самой оферты —
 // при изменении завести новый код ('oferta_v2', …), старые согласия
@@ -215,12 +216,44 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       client.release();
     }
 
-    // can_pay = надо отвести юзера на оплату YooKassa
-    // payment_url = null пока YooKassa-интеграция не написана.
-    // Когда напишем (Стадия 3) — здесь создаём платёж в YooKassa и
-    // возвращаем реальный URL.
+    // can_pay = надо отвести юзера на оплату YooKassa.
+    // Для fit_all + paywall режима создаём платёж сразу — фронт
+    // редиректит юзера на payment_url. Дальше юзер вернётся на
+    // /result/?t=TOKEN, где сработает поллинг до status='paid'.
     const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
-    const paymentUrl: string | null = null;
+    let paymentUrl: string | null = null;
+
+    if (canPay) {
+      try {
+        const payment = await createPayment({
+          amount_kop: amountKop,
+          return_url: `${env.SITE_BASE_URL}/result/?t=${encodeURIComponent(token)}`,
+          description: `Уместно — схема хранения, заказ ${orderId.slice(0, 8)}`,
+          metadata: { order_token: token, order_id: orderId },
+          // token — наш идемпотентный ID; за одну попытку сабмита формы
+          // создаётся ровно один YooKassa-платёж. Если фронт случайно
+          // повторит запрос с тем же телом — YooKassa вернёт тот же
+          // платёж, дубля не будет.
+          idempotence_key: token,
+        });
+        paymentUrl = payment.confirmation?.confirmation_url ?? null;
+        // Запоминаем yookassa_id чтобы потом сматчить webhook и
+        // активной проверкой через getPayment(). Статус 'pending' уже
+        // выставлен внутри транзакции выше.
+        if (paymentUrl) {
+          await pool.query(
+            `UPDATE orders SET status = 'pending' WHERE id = $1`,
+            [orderId],
+          );
+        }
+      } catch (e) {
+        console.error("[yookassa] createPayment failed", e);
+        // Откатывать заказ не будем — он валиден, просто платёж не
+        // создался. Юзер увидит {can_pay: true, payment_url: null} и
+        // фронт покажет ошибку «Не удалось перейти к оплате».
+        // Состояние можно дочинить позже вручную.
+      }
+    }
 
     const response: CalculateResponse = {
       token,

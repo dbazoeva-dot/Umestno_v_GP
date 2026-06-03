@@ -22,6 +22,9 @@ export interface Env {
   /** Цена услуги в копейках (snapshot оферты). Должна совпадать с текстом
    *  оферты на сайте. При изменении — синхронно править .env и /oferta/. */
   PRICE_KOP: number;
+  /** Базовый URL сайта — для return_url в YooKassa-платеже. На проде
+   *  https://umestno-home.ru, в dev — http://localhost:8000 или подобное. */
+  SITE_BASE_URL: string;
 }
 
 export function loadEnv(): Env {
@@ -32,5 +35,6 @@ export function loadEnv(): Env {
     NODE_ENV: nodeEnv,
     PAYMENT_REQUIRED: process.env.PAYMENT_REQUIRED === "true",
     PRICE_KOP: parseInt(process.env.PRICE_KOP ?? "14900", 10),
+    SITE_BASE_URL: process.env.SITE_BASE_URL ?? "https://umestno-home.ru",
   };
 }

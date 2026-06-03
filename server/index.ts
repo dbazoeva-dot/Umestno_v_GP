@@ -9,6 +9,7 @@ import { createPool } from "./db/pool.js";
 import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
 import { calculateHandler } from "./api/calculate.js";
 import { resultHandler } from "./api/result.js";
+import { yookassaWebhookHandler } from "./api/yookassa.js";
 import {
   originCheck,
   calculateLimiterPerMinute,
@@ -65,6 +66,13 @@ app.post(
 // ── 1.4 — чтение сохранённого расчёта для рендера result-страницы ─
 
 app.get("/api/result/:token", resultHandler(pool, env));
+
+// ── 3.x — YooKassa webhook: подтверждение оплаты ────────────
+// Без originCheck/rate-limit — этот endpoint вызывает ЮКасса со своих
+// IP, мы не можем им навязать Origin-заголовок. Идемпотентность по
+// yookassa_id + активная сверка через getPayment() защищают от подделок.
+
+app.post("/api/yookassa/webhook", yookassaWebhookHandler(pool));
 
 // ── обработчик ошибок последним ─────────────────────────────
 
