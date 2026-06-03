@@ -92,10 +92,11 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     description: p.description,
     metadata: p.metadata,
     // 54-ФЗ: «Чеки от ЮКассы» включены, поэтому шлём receipt с позициями.
-    // customer намеренно НЕ передаём — ЮКасса сама спросит email у покупателя
-    // на своей checkout-странице и пробьёт чек после оплаты.
+    // Передаём customer пустым объектом — пробуем заставить ЮКассу
+    // спросить email у покупателя на своей checkout-странице.
     // vat_code=1 — ИП на УСН без НДС.
     receipt: {
+      customer: {},
       items: [
         {
           description: p.description,
@@ -109,6 +110,9 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
   };
 
+  // Лог сырого тела запроса для диагностики (временно, пока отлаживаем receipt).
+  console.log("[yookassa] request body:", JSON.stringify(body));
+
   const res = await fetch(`${YOOKASSA_API_BASE}/payments`, {
     method: "POST",
     headers: {
@@ -119,11 +123,12 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     body: JSON.stringify(body),
   });
 
+  const responseText = await res.text();
+  console.log("[yookassa] response status:", res.status, "body:", responseText);
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`YooKassa createPayment failed: ${res.status} ${text}`);
+    throw new Error(`YooKassa createPayment failed: ${res.status} ${responseText}`);
   }
-  return (await res.json()) as YooKassaPayment;
+  return JSON.parse(responseText) as YooKassaPayment;
 }
 
 /** GET /payments/{id} — посмотреть текущий статус платежа. */
