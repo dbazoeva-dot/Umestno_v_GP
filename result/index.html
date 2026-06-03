@@ -398,12 +398,17 @@
       return;
     }
 
-    // Поллинг: при 402 (оплата ещё не подтверждена YooKassa webhook'ом)
-    // ждём до 30 секунд (15 попыток * 2 сек), показывая лоадер.
+    // Состояния /result/:
+    //   • виджет ЮКассы (когда есть confirmation_token и юзер ещё не платил)
+    //   • лоадер «Подтверждаем оплату…» (после успеха в виджете, ждём webhook)
+    //   • готовая схема (status='paid' / 'sent_free')
+    //   • таймаут (webhook не пришёл за 30 сек после виджет.success)
     var POLL_INTERVAL_MS = 2000;
     var POLL_MAX_ATTEMPTS = 15;
     var attempts = 0;
     var loaderShown = false;
+    var widgetShown = false;
+    var widgetInstance = null;
 
     function showLoader() {
       if (loaderShown) return;
@@ -422,6 +427,7 @@
     function hideLoader() {
       var loader = document.getElementById('u-pay-loader');
       if (loader) loader.remove();
+      loaderShown = false;
     }
 
     function showPaymentTimeout() {
@@ -438,27 +444,108 @@
       document.body.appendChild(box);
     }
 
+    function showWidgetError(msg) {
+      var box = document.createElement('div');
+      box.style.cssText = 'position:fixed;inset:0;background:rgba(255,253,249,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;text-align:center;padding:20px;font-family:var(--f-sans,sans-serif);';
+      box.innerHTML =
+        '<h2 style="font-family:var(--f-display,serif);font-size:24px;font-weight:500;color:#3A382F;margin:0 0 12px">Не удалось загрузить оплату</h2>' +
+        '<p style="font-size:14px;color:#7A6F58;margin:0 0 20px;max-width:420px;line-height:1.5">' + (msg || 'Возможно, виджет ЮКассы блокирует антивирус или расширение браузера. Попробуйте другой браузер или вернитесь к расчёту.') + '</p>' +
+        '<a href="/configure/" style="padding:10px 20px;background:#A6B38C;color:white;border-radius:8px;font-size:14px;text-decoration:none">К новому расчёту</a>';
+      document.body.appendChild(box);
+    }
+
+    // Подгружаем скрипт виджета ЮКассы один раз. Возвращает Promise.
+    var widgetScriptPromise = null;
+    function loadWidgetScript() {
+      if (widgetScriptPromise) return widgetScriptPromise;
+      widgetScriptPromise = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://yookassa.ru/checkout-widget/v1/checkout-widget.js';
+        s.async = true;
+        s.onload = function () { resolve(); };
+        s.onerror = function () { reject(new Error('widget_script_load_failed')); };
+        document.head.appendChild(s);
+      });
+      return widgetScriptPromise;
+    }
+
+    function renderWidget(confirmationToken) {
+      if (widgetShown) return;
+      widgetShown = true;
+      // Создаём контейнер поверх страницы, чтобы юзер не отвлекался на
+      // фоновую вёрстку результата (схема ещё не показывается).
+      var overlay = document.createElement('div');
+      overlay.id = 'u-pay-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:#FFFDF9;z-index:9998;overflow-y:auto;padding:40px 20px;font-family:var(--f-sans,sans-serif);';
+      overlay.innerHTML =
+        '<div style="max-width:520px;margin:0 auto">' +
+          '<h1 style="font-family:var(--f-display,serif);font-size:28px;font-weight:500;color:#3A382F;margin:0 0 8px;text-align:center">Оплата схемы хранения</h1>' +
+          '<p style="font-size:14px;color:#7A6F58;margin:0 0 24px;text-align:center;line-height:1.5">Введите e-mail для чека и оплатите 149 ₽ — после этого схема откроется здесь.</p>' +
+          '<div id="u-pay-widget"></div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+
+      loadWidgetScript().then(function () {
+        if (!window.YooMoneyCheckoutWidget) {
+          throw new Error('widget_not_loaded');
+        }
+        widgetInstance = new window.YooMoneyCheckoutWidget({
+          confirmation_token: confirmationToken,
+          error_callback: function (e) {
+            console.error('[yookassa-widget] error', e);
+          },
+        });
+        widgetInstance.on('success', function () {
+          // ЮКасса прислала оплату → удаляем виджет, показываем лоадер
+          // «подтверждаем», стартуем поллинг до status='paid'.
+          try { widgetInstance.destroy(); } catch (e) {}
+          var ov = document.getElementById('u-pay-overlay');
+          if (ov) ov.remove();
+          attempts = 0;
+          showLoader();
+          setTimeout(attempt, POLL_INTERVAL_MS);
+        });
+        widgetInstance.render('u-pay-widget');
+      }).catch(function (e) {
+        console.error('[yookassa-widget] failed to render', e);
+        var ov = document.getElementById('u-pay-overlay');
+        if (ov) ov.remove();
+        showWidgetError();
+      });
+    }
+
     function attempt() {
       fetch('/api/result/' + encodeURIComponent(token), { credentials: 'same-origin' })
         .then(function (r) {
           if (r.status === 404) { location.replace('/no-fit/'); return null; }
-          // 402 = оплата ещё не подтверждена — поллим дальше
           if (r.status === 402) {
-            showLoader();
-            attempts++;
-            if (attempts >= POLL_MAX_ATTEMPTS) {
-              showPaymentTimeout();
-              return null;
-            }
-            setTimeout(attempt, POLL_INTERVAL_MS);
-            return null;
+            return r.json().then(function (body) { return { _402: true, body: body }; });
           }
           if (!r.ok) throw new Error('http ' + r.status);
           return r.json();
         })
         .then(function (payload) {
           if (!payload) return;
-          // fit_partial/fit_none/no_scheme выкидываем на /no-fit/.
+          // 402: либо рендерим виджет (если есть token), либо поллим
+          // (если token нет — значит виджет уже отработал, ждём webhook).
+          if (payload._402) {
+            var ct = payload.body && payload.body.confirmation_token;
+            if (ct && !widgetShown) {
+              renderWidget(ct);
+              return;
+            }
+            // Поллинг после успеха виджета — ждём пока webhook
+            // переведёт заказ в 'paid'.
+            showLoader();
+            attempts++;
+            if (attempts >= POLL_MAX_ATTEMPTS) {
+              showPaymentTimeout();
+              return;
+            }
+            setTimeout(attempt, POLL_INTERVAL_MS);
+            return;
+          }
+          // 200: либо схема готова, либо это fit_partial/no_scheme.
           var fit = payload.fit_status;
           var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
           if (!ok) {

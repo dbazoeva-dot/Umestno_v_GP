@@ -3,7 +3,7 @@
 // Принимает форму конфигуратора → гонит engine + matchSkus →
 // в одной транзакции сохраняет configurations + orders +
 // consents (oferta) + configuration_skus → возвращает token и
-// (при fit_all в paywall-режиме) payment_url для редиректа на YooKassa.
+// (при fit_all в paywall-режиме) confirmation_token для виджета ЮКассы.
 //
 // Модель данных — docs/data-model.md, раздел «Жизненный цикл заказа».
 // Контракт запроса — фронт из configure/index.html (calc.js).
@@ -38,23 +38,15 @@ interface CalculateRequest {
   color_preference?: string;
   session_id?: string;
   consent_oferta: true;
-  /** Email покупателя — для фискального чека ЮКассы и доставки PDF. */
-  email: string;
 }
-
-// Простая валидация email: «что-то@что-то.что-то», достаточная для отсева
-// очевидно битых вводов. Жёсткая проверка не нужна — ЮКасса всё равно
-// отвергнет невалидный, и юзер увидит ошибку.
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 interface CalculateResponse {
   token: string;
   fit_status: FitStatus | "no_scheme";
-  /** true если фронт должен повести юзера на оплату (paywall + fit_all). */
+  /** true если фронт должен поднять виджет оплаты (paywall + fit_all). */
   can_pay: boolean;
-  /** URL для редиректа на YooKassa. null если не нужно оплачивать
-   *  (dev-режим, или fit_status не успешный). */
-  payment_url: string | null;
+  /** Токен для embedded-виджета ЮКассы. null если оплата не нужна. */
+  confirmation_token: string | null;
 }
 
 function makeToken(): string {
@@ -71,8 +63,6 @@ function validateRequest(body: unknown): body is CalculateRequest {
   if (typeof b.storage_category !== "string") return false;
   if (!Array.isArray(b.items) || b.items.length === 0) return false;
   if (typeof b.priority !== "string") return false;
-  // ТЕСТ №5: email временно не валидируем — проверяем гипотезу что
-  // ЮКасса соберёт его на checkout без customer в receipt.
   return true;
 }
 
@@ -85,8 +75,6 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     if (body.consent_oferta !== true) {
       return res.status(400).json({ ok: false, error: "consent_required" });
     }
-    // ТЕСТ №5: email временно опционален.
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : null;
 
     // Передаём актуальный каталог в engine через libraries (не мутируя
     // глобальный defaultLibraries — это важно для конкурентных запросов).
@@ -229,16 +217,17 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
 
     // can_pay = надо отвести юзера на оплату YooKassa.
     // Для fit_all + paywall режима создаём платёж сразу — фронт
-    // редиректит юзера на payment_url. Дальше юзер вернётся на
-    // /result/?t=TOKEN, где сработает поллинг до status='paid'.
+    // фронт инициализирует виджет ЮКассы с этим токеном на /result/.
+    // Виджет сам соберёт email и карту, после оплаты дёрнет нашу
+    // callback-функцию; параллельно прилетит webhook payment.succeeded.
     const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
-    let paymentUrl: string | null = null;
+    let confirmationToken: string | null = null;
+    let yookassaId: string | null = null;
 
     if (canPay) {
       try {
         const payment = await createPayment({
           amount_kop: amountKop,
-          return_url: `${env.SITE_BASE_URL}/result/?t=${encodeURIComponent(token)}`,
           description: "Формирование персональной схемы хранения для выдвижного ящика",
           metadata: { order_token: token, order_id: orderId },
           // token — наш идемпотентный ID; за одну попытку сабмита формы
@@ -246,25 +235,22 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
           // повторит запрос с тем же телом — YooKassa вернёт тот же
           // платёж, дубля не будет.
           idempotence_key: token,
-          // ТЕСТ №5: customer_email не передаём — receipt.customer убран.
-          customer_email: email ?? undefined,
         });
-        paymentUrl = payment.confirmation?.confirmation_url ?? null;
-        // Запоминаем yookassa_id чтобы потом сматчить webhook и
-        // активной проверкой через getPayment(). Статус 'pending' уже
-        // выставлен внутри транзакции выше.
-        if (paymentUrl) {
+        confirmationToken = payment.confirmation?.confirmation_token ?? null;
+        yookassaId = payment.id;
+        // Запоминаем yookassa_id чтобы потом сматчить webhook и активной
+        // проверкой через getPayment(). Статус 'pending' — ждём оплату.
+        if (confirmationToken) {
           await pool.query(
-            `UPDATE orders SET status = 'pending' WHERE id = $1`,
-            [orderId],
+            `UPDATE orders SET status = 'pending', yookassa_id = $1 WHERE id = $2`,
+            [yookassaId, orderId],
           );
         }
       } catch (e) {
         console.error("[yookassa] createPayment failed", e);
-        // Откатывать заказ не будем — он валиден, просто платёж не
-        // создался. Юзер увидит {can_pay: true, payment_url: null} и
-        // фронт покажет ошибку «Не удалось перейти к оплате».
-        // Состояние можно дочинить позже вручную.
+        // Откатывать заказ не будем — он валиден, просто платёж не создался.
+        // Юзер увидит {can_pay: true, confirmation_token: null} и фронт
+        // покажет ошибку «Не удалось загрузить виджет оплаты».
       }
     }
 
@@ -272,7 +258,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       token,
       fit_status: fitStatus,
       can_pay: canPay,
-      payment_url: paymentUrl,
+      confirmation_token: confirmationToken,
     };
     res.json(response);
   };

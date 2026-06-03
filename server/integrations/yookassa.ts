@@ -24,7 +24,10 @@ export interface YooKassaPayment {
   amount: { value: string; currency: string };
   confirmation?: {
     type: string;
+    /** Для type="redirect". */
     confirmation_url?: string;
+    /** Для type="embedded" — токен для виджета на фронте. */
+    confirmation_token?: string;
     return_url?: string;
   };
   metadata?: Record<string, string>;
@@ -36,16 +39,12 @@ export interface YooKassaPayment {
 export interface CreatePaymentParams {
   /** Сумма в копейках (например 14900 = 149.00 ₽). */
   amount_kop: number;
-  /** Куда вернуть юзера после оплаты на стороне ЮКассы. */
-  return_url: string;
   /** Описание для юзера (показывается в чеке ЮКассы). */
   description: string;
   /** Произвольные пары — вернутся в webhook, по ним матчим заказ. */
   metadata: Record<string, string>;
   /** Уникальный ID идемпотентности — наш token от заказа. */
   idempotence_key: string;
-  /** Email покупателя для 54-ФЗ чека. На время теста без customer — необязателен. */
-  customer_email?: string;
 }
 
 function loadCredentials(): YooKassaCredentials {
@@ -77,7 +76,9 @@ function kopToRub(amountKop: number): string {
   return `${rub}.${String(kop).padStart(2, "0")}`;
 }
 
-/** POST /payments — создать новый платёж. */
+/** POST /payments — создать новый платёж под embedded-виджет.
+ *  Виджет на фронте подхватит confirmation_token, сам покажет форму
+ *  карты и поле email; email уйдёт в чек ЮКассы автоматически. */
 export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPayment> {
   const creds = loadCredentials();
   const amountValue = kopToRub(p.amount_kop);
@@ -88,15 +89,15 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
     capture: true, // авто-капчуем сразу после авторизации (один шаг)
     confirmation: {
-      type: "redirect",
-      return_url: p.return_url,
+      // embedded: фронт получит confirmation_token и отрендерит
+      // виджет ЮКассы. Email и карта — внутри виджета.
+      type: "embedded",
     },
     description: p.description,
     metadata: p.metadata,
-    // ТЕСТ №5: receipt с items, БЕЗ ключа customer вообще.
-    // Гипотеза: если customer полностью отсутствует, ЮКасса спросит
-    // email у покупателя сама на checkout-странице. Если нет — пойдём
-    // делать виджет (BL-14).
+    // 54-ФЗ: «Чеки от ЮКассы» включены. receipt.customer не передаём —
+    // виджет соберёт email/phone сам и положит их в чек.
+    // vat_code=1 — ИП на УСН без НДС.
     receipt: {
       items: [
         {
@@ -111,8 +112,6 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
   };
 
-  console.log("[yookassa] TEST5 request body:", JSON.stringify(body));
-
   const res = await fetch(`${YOOKASSA_API_BASE}/payments`, {
     method: "POST",
     headers: {
@@ -123,12 +122,11 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     body: JSON.stringify(body),
   });
 
-  const responseText = await res.text();
-  console.log("[yookassa] TEST5 response:", res.status, responseText);
   if (!res.ok) {
-    throw new Error(`YooKassa createPayment failed: ${res.status} ${responseText}`);
+    const text = await res.text();
+    throw new Error(`YooKassa createPayment failed: ${res.status} ${text}`);
   }
-  return JSON.parse(responseText) as YooKassaPayment;
+  return (await res.json()) as YooKassaPayment;
 }
 
 /** GET /payments/{id} — посмотреть текущий статус платежа. */

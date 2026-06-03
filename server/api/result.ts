@@ -13,6 +13,7 @@
 import type { Request, Response } from "express";
 import type { Pool } from "pg";
 import type { Env } from "../config/env.js";
+import { getPayment } from "../integrations/yookassa.js";
 
 interface PublicInput {
   drawer: { w_cm: number; d_cm: number; h_cm: number };
@@ -160,6 +161,7 @@ export function resultHandler(pool: Pool, env: Env) {
       created_at: Date;
       base_price_kop: number;
       amount_kop: number;
+      yookassa_id: string | null;
       input_payload: unknown;
       engine_output: { scheme_payload?: unknown } | null;
     }>(
@@ -170,6 +172,7 @@ export function resultHandler(pool: Pool, env: Env) {
               o.created_at,
               o.base_price_kop,
               o.amount_kop,
+              o.yookassa_id,
               c.input_payload,
               c.engine_output
          FROM orders o
@@ -183,14 +186,28 @@ export function resultHandler(pool: Pool, env: Env) {
     const row = orderQ.rows[0];
 
     // Payment gate: пускаем только оплаченные заказы (и sent_free для
-    // dev-режима, см. docs/data-model.md). Иначе — 402.
+    // dev-режима, см. docs/data-model.md). Иначе — 402 с токеном
+    // виджета ЮКассы, чтобы фронт мог отрендерить форму оплаты.
     if (!ACCESS_STATUSES.has(row.status)) {
+      let confirmationToken: string | null = null;
+      if (row.yookassa_id) {
+        try {
+          const payment = await getPayment(row.yookassa_id);
+          // confirmation_token валиден пока платёж в pending; после
+          // succeeded или canceled — будет null, фронт уйдёт в поллинг.
+          if (payment.status === "pending") {
+            confirmationToken = payment.confirmation?.confirmation_token ?? null;
+          }
+        } catch (e) {
+          console.error("[yookassa] getPayment failed", e);
+          // Сервис ЮКассы недоступен — фронт покажет ошибку «Не удалось
+          // загрузить виджет». Не валим запрос, просто отдаём 402 без токена.
+        }
+      }
       return res.status(402).json({
         ok: false,
         error: "payment_required",
-        // payment_url пока null — YooKassa-интеграция ещё не написана.
-        // Когда напишем (Стадия 3), сюда вернётся реальный URL платежа.
-        payment_url: null,
+        confirmation_token: confirmationToken,
         amount_kop: row.amount_kop,
         base_price_kop: row.base_price_kop,
       });

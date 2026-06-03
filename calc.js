@@ -242,18 +242,10 @@
           if (!data || !data.token) throw new Error('bad_response');
           var fit = data.fit_status;
           var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
-
-          // Paywall + fit_all: сервер уже создал YooKassa-платёж и
-          // вернул payment_url. Редиректим юзера в YooKassa.
-          // После оплаты YooKassa вернёт его на /result/?t=TOKEN.
-          if (ok && data.can_pay && data.payment_url) {
-            location.href = data.payment_url;
-            return;
-          }
-
-          // Dev-режим (или paywall если payment_url не пришёл — fallback):
-          // - fit_all → /result/?t=TOKEN (там либо схема, либо paywall-gate)
-          // - не fit_all → /no-fit/?t=TOKEN
+          // Всегда уходим на /result/ для fit_all (там виджет ЮКассы или
+          // готовая схема) и на /no-fit/ для остальных исходов. Сам
+          // confirmation_token /result/ запросит у /api/result заново —
+          // не таскаем его в URL.
           var path = ok ? '/result/' : '/no-fit/';
           location.href = path + '?t=' + encodeURIComponent(data.token);
         })
