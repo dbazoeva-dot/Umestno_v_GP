@@ -26,6 +26,23 @@
     sport_tops:    'sport_tops.webp'
   };
 
+  // Палитра блоков — совпадает с BLOCK_COLORS в result-render.js (= .b1..b4).
+  var BLOCK_COLORS = ['#EBDFC4', '#A6B38C', '#EDEAE1', '#DDC59B'];
+
+  // bestReserve — выбираем самый крупный reserve_zone (по площади), при
+  // условии что обе стороны >= RESERVE_MIN_SIDE. Та же логика что в
+  // result-render.js; дублируем потому что наружу она не экспортирована.
+  var RESERVE_MIN_SIDE = 8;
+  function bestReserve(rects) {
+    var best = null, bestArea = 0;
+    (rects || []).forEach(function (r) {
+      if (Math.min(r.w_cm, r.d_cm) < RESERVE_MIN_SIDE) return;
+      var area = r.w_cm * r.d_cm;
+      if (area > bestArea) { best = r; bestArea = area; }
+    });
+    return best;
+  }
+
   var params = new URLSearchParams(location.search);
   var token = params.get('t') || params.get('token');
 
@@ -69,15 +86,26 @@
     setText('drawer',
       fmtCm(drawer.w_cm) + ' × ' + fmtCm(drawer.d_cm) + ' × ' + fmtCm(drawer.h_cm) + ' см');
 
-    // таблица блоков
+    // таблица блоков — номер в цветном кружке, как на /result/. Резерв
+    // (если есть) показываем последней строкой с прочерком вместо номера.
     var label = (window.UMESTNO_CONTENT && UMESTNO_CONTENT.label) || function (s) { return s; };
     var rowsHtml = zones.map(function (z, i) {
+      var color = BLOCK_COLORS[i % BLOCK_COLORS.length];
+      var num = '<span class="pdf-blocks__num" style="background:' + color + '">' + (i + 1) + '</span>';
       return '<tr>' +
-        '<td>' + (i + 1) + '</td>' +
+        '<td>' + num + '</td>' +
         '<td>' + esc(label(z.content_type)) + '</td>' +
         '<td>' + fmtCm(z.assigned_w_cm) + ' × ' + fmtCm(z.assigned_d_cm) + ' × ' + fmtCm(z.assigned_h_cm) + ' см</td>' +
       '</tr>';
     }).join('');
+    var reserve = bestReserve(scheme.reserve_zones || []);
+    if (reserve) {
+      rowsHtml += '<tr>' +
+        '<td><span class="pdf-blocks__num pdf-blocks__num--reserve">—</span></td>' +
+        '<td>Резерв (свободное место)</td>' +
+        '<td>' + fmtCm(reserve.w_cm) + ' × ' + fmtCm(reserve.d_cm) + ' см</td>' +
+      '</tr>';
+    }
     setHTML('blocks-tbody', rowsHtml);
 
     // Схема — переиспользуем рендер с /result/. Он сам разбирается с
@@ -124,8 +152,8 @@
         : '';
       foldCards.push(
         '<div class="pdf-folding-card">' +
-          '<div class="pdf-folding-card__img">' + imgHtml + '</div>' +
           '<div class="pdf-folding-card__title">' + esc(label(ct)) + '</div>' +
+          '<div class="pdf-folding-card__img">' + imgHtml + '</div>' +
           '<p class="pdf-folding-card__steps">' + esc(tip) + '</p>' +
         '</div>'
       );

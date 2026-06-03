@@ -27,77 +27,47 @@ html, body {
 
 .pdf-page { max-width: 100%; }
 
-/* ── Шапка ───────────────────────────────────────────── */
+/* ── Шапка (минимум: лого + дата) ────────────────────── */
 .pdf-header {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: flex-start;
-  gap: 10mm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 8mm;
   margin-bottom: 10mm;
   border-bottom: 1px solid var(--u-line-2, #E0D9CD);
 }
-.pdf-header__logo {
-  height: 18mm; width: auto;
-  /* небольшой сдвиг к baseline, чтобы лого визуально «садился» по нижней
-     линии вместе с правой колонкой */
-  margin-top: 2mm;
-}
-.pdf-header__meta { text-align: right; }
-.pdf-header__eyebrow {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 8pt;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--u-sage-d, #7D8C72);
-  margin-bottom: 2mm;
-}
-.pdf-header__title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 22pt;
-  font-weight: 500;
-  color: var(--u-ink, #3A382F);
-  margin: 0;
-  line-height: 1.1;
-}
+.pdf-header__logo { height: 18mm; width: auto; }
 .pdf-header__date {
-  margin-top: 3mm;
-  font-size: 9pt;
+  font-size: 9.5pt;
   color: var(--u-ink-3, #9A8F7C);
 }
 
-/* ── Eyebrow + заголовок секции ─────────────────────── */
+/* ── Eyebrow как ЕДИНСТВЕННЫЙ заголовок секции ──────── */
 .pdf-eyebrow {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 8pt;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--u-sage-d, #7D8C72);
-  margin-bottom: 3mm;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17pt;
+  font-weight: 500;
+  color: var(--u-ink, #3A382F);
+  margin: 0 0 6mm;
+  line-height: 1.15;
+  /* левая декоративная риска — короткая, акцентного цвета */
+  display: flex;
+  align-items: center;
+  gap: 4mm;
 }
 .pdf-eyebrow::before {
   content: '';
   display: inline-block;
-  width: 5mm; height: 1px;
+  width: 8mm; height: 1px;
   background: var(--u-sage-d, #7D8C72);
-  vertical-align: middle;
-  margin-right: 3mm;
+  flex: 0 0 auto;
 }
 .pdf-section {
   margin-bottom: 12mm;
 }
 .pdf-section + .pdf-section {
-  /* тонкий разделитель между блоками — но не первый */
   padding-top: 12mm;
   border-top: 1px solid var(--u-line-2, #E0D9CD);
-}
-.pdf-section__h {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16pt;
-  font-weight: 500;
-  color: var(--u-ink, #3A382F);
-  margin: 0 0 6mm;
-  line-height: 1.15;
 }
 
 /* ── Схема (переиспользуем .u-res-scheme из result.css) ─
@@ -154,10 +124,24 @@ html, body {
 }
 .pdf-blocks td:first-child {
   width: 14mm;
-  color: var(--u-sage-d, #7D8C72);
+}
+/* Цветной круг с номером блока — палитра совпадает с .b1..b4 в result.css
+   (BLOCK_COLORS в result-render.js). Резерв — без заливки, прочерк. */
+.pdf-blocks__num {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 8mm; height: 8mm;
+  border-radius: 50%;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10pt;
   font-weight: 600;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 12pt;
+  color: var(--u-ink, #3A382F);
+}
+.pdf-blocks__num--reserve {
+  background: transparent;
+  border: 1px dashed var(--u-line, #D0C9BD);
+  color: var(--u-ink-3, #9A8F7C);
+  font-weight: 400;
 }
 .pdf-blocks td:nth-child(2) {
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -190,22 +174,36 @@ html, body {
   color: #6A5A2A;
 }
 
-/* ── Складывание: 2 в ряд, картинка сверху крупная ─── */
+/* ── Складывание: 2 в ряд, заголовок сверху, картинка под ним ──
+   У каждой карточки тонкая рамка + внутренний padding, чтобы это
+   воспринималось как «плашка», а не свободный набор элементов. */
 .pdf-folding {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 13mm 10mm; /* row gap ~13мм = ~50px при 96dpi */
+  gap: 13mm 8mm; /* row gap ~50px при 96dpi */
 }
 .pdf-folding-card {
   display: flex; flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  padding: 5mm 5mm 6mm;
+  border: 1px solid var(--u-line-2, #E0D9CD);
+  border-radius: 3mm;
+  background: #FFFFFF;
   page-break-inside: avoid;
+}
+.pdf-folding-card__title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14pt;
+  font-weight: 500;
+  margin: 0 0 4mm;
+  color: var(--u-ink, #3A382F);
+  line-height: 1.15;
 }
 .pdf-folding-card__img {
   width: 100%;
   aspect-ratio: 4 / 3;
   background: var(--u-warm, #FAF5EA);
-  border-radius: 3mm;
+  border-radius: 2mm;
   margin-bottom: 4mm;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
@@ -214,13 +212,6 @@ html, body {
   width: 100%; height: 100%;
   object-fit: contain;
   display: block;
-}
-.pdf-folding-card__title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14pt;
-  font-weight: 500;
-  margin-bottom: 2mm;
-  color: var(--u-ink, #3A382F);
 }
 .pdf-folding-card__steps {
   font-size: 10pt;

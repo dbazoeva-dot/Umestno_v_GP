@@ -28,7 +28,7 @@
 <!-- Стили визуализации схемы (.u-res-scheme / .u-res-block) -->
 <link rel="stylesheet" href="../landing_design/result.css?v=18" />
 <!-- Поверх — собственные стили PDF-документа -->
-<link rel="stylesheet" href="pdf.css?v=3" />
+<link rel="stylesheet" href="pdf.css?v=4" />
 </head>
 <body>
 
@@ -37,17 +37,12 @@
   <!-- ── Шапка ─────────────────────────────────────────── -->
   <header class="pdf-header">
     <img class="pdf-header__logo" src="../landing_design/assets/pdf-logo.svg" alt="Уместно" />
-    <div class="pdf-header__meta">
-      <div class="pdf-header__eyebrow">Персональный расчёт</div>
-      <h1 class="pdf-header__title">Ваша схема хранения</h1>
-      <div class="pdf-header__date" data-pdf="date">—</div>
-    </div>
+    <div class="pdf-header__date" data-pdf="date">—</div>
   </header>
 
-  <!-- ── Схема (первой, до таблицы — как просила Дзера) ───── -->
+  <!-- ── Схема ─────────────────────────────────────────── -->
   <section class="pdf-section">
-    <div class="pdf-eyebrow">схема хранения</div>
-    <h2 class="pdf-section__h">Расположение в вашем ящике</h2>
+    <div class="pdf-eyebrow">Ваша схема хранения</div>
     <div class="u-res-scheme" data-pdf="scheme">
       <div class="u-res-scheme__inner">
         <!-- заполняется renderScheme() из result-render.js -->
@@ -55,10 +50,9 @@
     </div>
   </section>
 
-  <!-- ── Размеры (ящик + таблица блоков) ─────────────────── -->
+  <!-- ── Размеры зон (ящик + таблица блоков + резерв) ──── -->
   <section class="pdf-section">
-    <div class="pdf-eyebrow">размеры</div>
-    <h2 class="pdf-section__h">Ящик и блоки</h2>
+    <div class="pdf-eyebrow">Размеры зон</div>
     <div class="pdf-drawer">
       <span class="pdf-drawer__label">Внутренние размеры ящика</span>
       <span class="pdf-drawer__value" data-pdf="drawer">— × — × — см</span>
@@ -67,21 +61,19 @@
       <thead>
         <tr><th>Блок</th><th>Что хранить</th><th>Размер (Ш × Г × В)</th></tr>
       </thead>
-      <tbody data-pdf="blocks-tbody"><!-- заполняется в pdf-render.js --></tbody>
+      <tbody data-pdf="blocks-tbody"><!-- заполняется в pdf-render.js, включая резерв --></tbody>
     </table>
   </section>
 
   <!-- ── Warnings (только если есть) ─────────────────────── -->
   <section class="pdf-section" data-pdf="warnings-section" hidden>
-    <div class="pdf-eyebrow">обратите внимание</div>
-    <h2 class="pdf-section__h">Нюанс по высоте</h2>
+    <div class="pdf-eyebrow">Будьте внимательны</div>
     <div class="pdf-warnings" data-pdf="warnings"><!-- pdf-render.js --></div>
   </section>
 
   <!-- ── Складывание ─────────────────────────────────────── -->
   <section class="pdf-section pdf-section--folding">
-    <div class="pdf-eyebrow">как сложить</div>
-    <h2 class="pdf-section__h">Памятка по укладке</h2>
+    <div class="pdf-eyebrow">Как правильно сложить вещи</div>
     <div class="pdf-folding" data-pdf="folding"><!-- pdf-render.js --></div>
   </section>
 
@@ -101,6 +93,6 @@
 
 <script src="../landing_design/content-labels.js?v=10"></script>
 <script src="../landing_design/result-render.js?v=15"></script>
-<script src="pdf-render.js?v=2"></script>
+<script src="pdf-render.js?v=3"></script>
 </body>
 </html>
