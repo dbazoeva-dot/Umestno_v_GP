@@ -225,56 +225,76 @@
   };
   var RIGIDITY_RU = { soft: 'мягкий', semi_rigid: 'полужёсткий', rigid: 'жёсткий' };
 
-  // «Подходящие органайзеры» — один блок на каждый подобранный SKU.
-  // Группировки нет: на этапе MVP backend пишет ровно один топ-матч на зону.
+  // «Подходящие органайзеры» — блок на каждую зону схемы. В каждом блоке
+  // либо карточка SKU (если матчер нашёл подходящий товар), либо
+  // empty-state с фразой «к сожалению, не нашли — подбирайте сами по
+  // размерам».
   //
-  // Пустой каталог-под-эти-размеры (matches=[]) — реальный кейс, пока
-  // каталог не покрывает все комбинации блоков. Тогда переписываем
-  // заголовок и пояснение секции на честный empty-state, а плашку про
-  // «Изображения товаров — ориентировочные…» прячем (она бессмысленна,
-  // когда товаров нет вообще).
+  // Итерируемся по scheme.assigned_zones, а не по payload.matches, потому
+  // что matches содержит ТОЛЬКО успешные подборы — no_match-зоны в нём
+  // отсутствуют. Зоны же дают весь список блоков (он же — в таблице
+  // «Размеры блоков»). Сопоставляем зону с матчем по zone_id.
   function renderMatches(payload) {
     var root = document.querySelector('[data-matches]');
     if (!root) return;
     var matches = payload.matches || [];
+    var scheme = payload.scheme || payload.scheme_payload;
+    var zones = (scheme && scheme.assigned_zones) || [];
     root.innerHTML = '';
 
     var section = root.closest('.u-res-section');
-    var titleEl = section ? section.querySelector('.u-res-h h2') : null;
-    var leadEl  = section ? section.querySelector('.u-res-h p')  : null;
     var noteEl  = section ? section.querySelector('.u-res-note') : null;
 
-    if (matches.length === 0) {
-      if (titleEl) titleEl.textContent = 'Точных вариантов в нашем каталоге пока нет';
-      if (leadEl)  leadEl.textContent  = 'Ориентируйтесь на размеры блоков выше — подходящие контейнеры можно подобрать в любом магазине по габаритам и назначению зоны.';
-      if (noteEl)  noteEl.hidden = true;
+    // Никаких зон (no_scheme) — секции тут вообще не место.
+    if (zones.length === 0) {
+      if (noteEl) noteEl.hidden = true;
       return;
     }
 
-    if (noteEl) noteEl.hidden = false;
+    var matchByZone = {};
+    matches.forEach(function (m) {
+      if (m.zone_id) matchByZone[m.zone_id] = m;
+    });
 
-    matches.forEach(function (m, i) {
-      var ct = m.content_type;
-      var sku = m.sku || {};
-      var n = (m.block_index != null ? m.block_index : i) + 1;
-      var stems = UNIT_STEMS[sku.division_type];
-      var subParts = [];
-      if (stems && sku.capacity_units) subParts.push(sku.capacity_units + ' ' + pluralRu(sku.capacity_units, stems));
-      if (RIGIDITY_RU[sku.rigidity]) subParts.push(RIGIDITY_RU[sku.rigidity]);
-      var sizes = [sku.width_cm, sku.depth_cm, sku.height_cm].map(cm).join(' × ') + ' см';
+    // Плашка «изображения товаров — ориентировочные» актуальна только
+    // когда есть хотя бы одна реальная карточка с картинкой; для
+    // полностью пустого подбора она вводит в заблуждение.
+    if (noteEl) noteEl.hidden = matches.length === 0;
 
-      // Карточка — целиком кликабельная (если есть product_url): обёртка
-      // <a target="_blank" rel="noopener nofollow sponsored">. Если URL
-      // нет — оставляем <article>, не падаем.
-      var cardInner =
-        '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
-        '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
-        '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
-        (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
-        '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>';
-      var card = sku.product_url
-        ? '<a class="u-res-prod-card u-res-prod-card--link" href="' + esc(sku.product_url) + '" target="_blank" rel="noopener nofollow sponsored" data-ym-goal="sku_click_' + esc(sku.sku_id || '') + '">' + cardInner + '</a>'
-        : '<article class="u-res-prod-card">' + cardInner + '</article>';
+    zones.forEach(function (zone, i) {
+      var n = i + 1;
+      var ct = zone.content_type;
+      var m = matchByZone[zone.zone_id];
+
+      var cardHtml;
+      if (m && m.sku && m.sku.sku_id) {
+        var sku = m.sku;
+        var stems = UNIT_STEMS[sku.division_type];
+        var subParts = [];
+        if (stems && sku.capacity_units) subParts.push(sku.capacity_units + ' ' + pluralRu(sku.capacity_units, stems));
+        if (RIGIDITY_RU[sku.rigidity]) subParts.push(RIGIDITY_RU[sku.rigidity]);
+        var sizes = [sku.width_cm, sku.depth_cm, sku.height_cm].map(cm).join(' × ') + ' см';
+
+        // Карточка — целиком кликабельная (если есть product_url): обёртка
+        // <a target="_blank" rel="noopener nofollow sponsored">. Если URL
+        // нет — оставляем <article>, не падаем.
+        var cardInner =
+          '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
+          '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
+          '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
+          (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
+          '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>';
+        cardHtml = sku.product_url
+          ? '<a class="u-res-prod-card u-res-prod-card--link" href="' + esc(sku.product_url) + '" target="_blank" rel="noopener nofollow sponsored" data-ym-goal="sku_click_' + esc(sku.sku_id || '') + '">' + cardInner + '</a>'
+          : '<article class="u-res-prod-card">' + cardInner + '</article>';
+      } else {
+        // Пустая карточка — каталог не покрывает эти размеры. Текст
+        // — копирайт Дзеры, не редактируем сами.
+        cardHtml =
+          '<article class="u-res-prod-card u-res-prod-card--empty">' +
+            '<p class="u-res-prod-card__empty-msg">К сожалению, в текущем каталоге подходящих органайзеров мы не нашли. Вы можете подобрать самостоятельно по размерам выше или использовать собственные.</p>' +
+          '</article>';
+      }
 
       var block = document.createElement('div');
       block.className = 'u-res-prod-block';
@@ -283,7 +303,7 @@
           '<span class="u-res-prod-block__n">Блок ' + n + '</span>' +
           '<span class="u-res-prod-block__cat">' + esc(label(ct)) + '</span>' +
         '</div>' +
-        '<div class="u-res-prod-cards">' + card + '</div>';
+        '<div class="u-res-prod-cards">' + cardHtml + '</div>';
       root.appendChild(block);
     });
   }
