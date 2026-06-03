@@ -221,32 +221,73 @@ html, body {
   margin: 0;
 }
 
-/* ── Подвал ─────────────────────────────────────────── */
+/* ── Коммерческий подвал ────────────────────────────── */
 .pdf-footer {
   margin-top: 14mm;
-  padding-top: 5mm;
+  padding-top: 6mm;
   border-top: 1px solid var(--u-line-2, #E0D9CD);
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2mm 6mm;
-  font-size: 8.5pt;
-  color: var(--u-ink-3, #9A8F7C);
-  line-height: 1.6;
+  gap: 3mm 10mm;
+  align-items: start;
 }
-.pdf-footer__brand,
-.pdf-footer__contact { display: flex; flex-direction: column; }
-.pdf-footer__contact { text-align: right; }
-.pdf-footer__bold {
-  font-weight: 600;
+.pdf-footer__cta {
+  display: flex; flex-direction: column; gap: 1.5mm;
+}
+.pdf-footer__cta-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 13pt; font-weight: 500;
+  color: var(--u-ink, #3A382F);
+  line-height: 1.2;
+}
+.pdf-footer__cta-sub {
+  font-size: 9pt;
+  color: var(--u-ink-2, #6A6258);
+  line-height: 1.5;
+  max-width: 100mm;
+}
+.pdf-footer__links {
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 3mm;
+  text-align: right;
+}
+.pdf-footer__url {
+  font-size: 9pt;
   color: var(--u-ink-2, #6A6258);
 }
-.pdf-footer__token {
+.pdf-footer__url-key {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--u-sage-d, #7D8C72);
+  margin-right: 2mm;
+}
+.pdf-footer__url-val {
+  font-weight: 500;
+  color: var(--u-ink, #3A382F);
+}
+.pdf-footer__socials {
+  display: flex; gap: 3mm; align-items: center;
+}
+.pdf-footer__socials a {
+  width: 7mm; height: 7mm;
+  border-radius: 50%;
+  background: var(--u-warm, #FAF5EA);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--u-sage-d, #7D8C72);
+  text-decoration: none;
+}
+.pdf-footer__order {
   grid-column: 1 / -1;
-  margin-top: 2mm;
-  padding-top: 2mm;
+  margin-top: 4mm;
+  padding-top: 3mm;
   border-top: 1px dashed var(--u-line-2, #E0D9CD);
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 7.5pt;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--u-ink-3, #9A8F7C);
 }
 

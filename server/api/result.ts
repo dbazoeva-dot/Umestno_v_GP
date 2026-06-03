@@ -65,6 +65,8 @@ interface PublicMatch {
 
 interface ResultResponse {
   token: string;
+  /** UUID заказа — для «Номера заказа» в PDF/документах саппорта. */
+  order_id: string;
   fit_status: string;
   created_at: string;
   input: PublicInput;
@@ -251,6 +253,7 @@ export function resultHandler(pool: Pool, env: Env) {
 
     const response: ResultResponse = {
       token,
+      order_id:    row.order_id,
       fit_status:  row.fit_status,
       created_at:  row.created_at.toISOString(),
       input,

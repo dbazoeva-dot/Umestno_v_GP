@@ -78,9 +78,11 @@
     var drawer = (scheme.drawer) || (payload.input && payload.input.drawer) || {};
     var zones  = scheme.assigned_zones || [];
 
-    // дата + номер расчёта
+    // дата + номер заказа (первые 8 hex-знаков uuid → короткий
+    // человеческий идентификатор, как у курьерских сервисов)
     setText('date', fmtDate(payload.created_at));
-    setText('token-line', token ? 'Номер расчёта: ' + token : '');
+    var orderShort = payload.order_id ? payload.order_id.split('-')[0].toUpperCase() : '—';
+    setText('order-number', 'Номер заказа: № ' + orderShort);
 
     // размеры ящика
     setText('drawer',
