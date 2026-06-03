@@ -100,18 +100,17 @@ html, body {
   line-height: 1.15;
 }
 
-/* ── Схема (переиспользуем .u-res-scheme из result.css) ─ */
+/* ── Схема (переиспользуем .u-res-scheme из result.css) ─
+   На сайте scheme.width = min(100cqw, calc(100cqh * --ar)) — контейнер-
+   юниты. В PDF без предка с container-type cqw/cqh сваливаются на
+   viewport, и схема разрастается на всю страницу. Поэтому жёстко
+   задаём высоту, ширина подгоняется через aspect-ratio. */
 .u-res-scheme {
-  /* На сайте схема в карточке с тенью. В PDF — спокойнее, без тени,
-     чтобы не было «вырвиглазно». */
-  background: var(--u-warm, #FAF5EA);
-  border-radius: 4mm;
-  padding: 6mm;
+  height: 80mm !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 auto;
   box-shadow: none;
-}
-/* Высота схемы должна вписываться в страницу — пусть будет ~85мм макс */
-.u-res-scheme__inner {
-  max-height: 95mm;
 }
 
 /* ── Ящик ──────────────────────────────────────────── */
