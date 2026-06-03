@@ -71,7 +71,8 @@ function validateRequest(body: unknown): body is CalculateRequest {
   if (typeof b.storage_category !== "string") return false;
   if (!Array.isArray(b.items) || b.items.length === 0) return false;
   if (typeof b.priority !== "string") return false;
-  if (typeof b.email !== "string" || !EMAIL_RE.test(b.email.trim())) return false;
+  // ТЕСТ №5: email временно не валидируем — проверяем гипотезу что
+  // ЮКасса соберёт его на checkout без customer в receipt.
   return true;
 }
 
@@ -84,7 +85,8 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     if (body.consent_oferta !== true) {
       return res.status(400).json({ ok: false, error: "consent_required" });
     }
-    const email = body.email.trim().toLowerCase();
+    // ТЕСТ №5: email временно опционален.
+    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : null;
 
     // Передаём актуальный каталог в engine через libraries (не мутируя
     // глобальный defaultLibraries — это важно для конкурентных запросов).
@@ -244,7 +246,8 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
           // повторит запрос с тем же телом — YooKassa вернёт тот же
           // платёж, дубля не будет.
           idempotence_key: token,
-          customer_email: email,
+          // ТЕСТ №5: customer_email не передаём — receipt.customer убран.
+          customer_email: email ?? undefined,
         });
         paymentUrl = payment.confirmation?.confirmation_url ?? null;
         // Запоминаем yookassa_id чтобы потом сматчить webhook и
