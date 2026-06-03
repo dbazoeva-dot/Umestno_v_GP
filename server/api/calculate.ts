@@ -196,10 +196,55 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
             units_needed?: number;
             packs_needed?: number;
             candidates?: Array<{ sku_id?: string; set_quantity?: number }>;
+            no_match_log?: {
+              zone_id?: string;
+              content_type?: string;
+              division_type?: string;
+              zone_w_cm?: number;
+              zone_d_cm?: number;
+              zone_h_cm?: number;
+              unit_w_cm?: number;
+              unit_d_cm?: number;
+              unit_h_cm?: number;
+              units_needed?: number;
+              preferred_rigidity?: string;
+            };
           };
           const top = m.candidates?.[0];
           const matchStatus = m.match_status ?? "no_match";
-          if (matchStatus === "no_match" || !top?.sku_id) continue;
+
+          // Если матч не нашёлся — пишем в sku_no_match_log, чтобы потом
+          // приоритизировать расширение каталога (см. таблицу в 0001 +
+          // engine/sku/SPEC.md). Без этой записи мы теряем сигнал «куда
+          // докачать SKU», а юзер видит пустые «Подходящие органайзеры».
+          if (matchStatus === "no_match" || !top?.sku_id) {
+            const nm = m.no_match_log;
+            if (nm) {
+              await client.query(
+                `INSERT INTO sku_no_match_log
+                   (configuration_id, zone_id, content_type, division_type,
+                    zone_w_cm, zone_d_cm, zone_h_cm,
+                    unit_w_cm, unit_d_cm, unit_h_cm,
+                    units_needed, preferred_rigidity)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+                [
+                  configId,
+                  nm.zone_id ?? null,
+                  nm.content_type ?? null,
+                  nm.division_type ?? null,
+                  nm.zone_w_cm ?? null,
+                  nm.zone_d_cm ?? null,
+                  nm.zone_h_cm ?? null,
+                  nm.unit_w_cm ?? null,
+                  nm.unit_d_cm ?? null,
+                  nm.unit_h_cm ?? null,
+                  nm.units_needed ?? null,
+                  nm.preferred_rigidity ?? null,
+                ],
+              );
+            }
+            continue;
+          }
 
           await client.query(
             `INSERT INTO configuration_skus

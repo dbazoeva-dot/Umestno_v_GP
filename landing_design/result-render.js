@@ -227,11 +227,32 @@
 
   // «Подходящие органайзеры» — один блок на каждый подобранный SKU.
   // Группировки нет: на этапе MVP backend пишет ровно один топ-матч на зону.
+  //
+  // Пустой каталог-под-эти-размеры (matches=[]) — реальный кейс, пока
+  // каталог не покрывает все комбинации блоков. Тогда переписываем
+  // заголовок и пояснение секции на честный empty-state, а плашку про
+  // «Изображения товаров — ориентировочные…» прячем (она бессмысленна,
+  // когда товаров нет вообще).
   function renderMatches(payload) {
     var root = document.querySelector('[data-matches]');
     if (!root) return;
     var matches = payload.matches || [];
     root.innerHTML = '';
+
+    var section = root.closest('.u-res-section');
+    var titleEl = section ? section.querySelector('.u-res-h h2') : null;
+    var leadEl  = section ? section.querySelector('.u-res-h p')  : null;
+    var noteEl  = section ? section.querySelector('.u-res-note') : null;
+
+    if (matches.length === 0) {
+      if (titleEl) titleEl.textContent = 'Точных вариантов в нашем каталоге пока нет';
+      if (leadEl)  leadEl.textContent  = 'Ориентируйтесь на размеры блоков выше — подходящие контейнеры можно подобрать в любом магазине по габаритам и назначению зоны.';
+      if (noteEl)  noteEl.hidden = true;
+      return;
+    }
+
+    if (noteEl) noteEl.hidden = false;
+
     matches.forEach(function (m, i) {
       var ct = m.content_type;
       var sku = m.sku || {};
