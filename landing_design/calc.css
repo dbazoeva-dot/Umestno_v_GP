@@ -458,7 +458,9 @@
 .u-calc__pri-body{ display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .u-calc__pri-body .ttl{
   font-family: var(--f-display);
-  font-size: var(--fs-lg);
+  /* fs-md (17px) вместо fs-lg (20px) — чтобы «Вместительно» помещался
+     в равноширокий столбец на промежуточных разрешениях без переноса. */
+  font-size: var(--fs-md);
   font-weight: 500;
   letter-spacing: var(--tr-snug);
 }
