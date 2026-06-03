@@ -8,7 +8,7 @@
 // SDK ЮКассы не используем (лишняя зависимость) — встроенный fetch
 // в Node 18+ покрывает всё что нужно.
 
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 
 const YOOKASSA_API_BASE = "https://api.yookassa.ru/v3";
 
@@ -65,12 +65,7 @@ function authHeader(creds: YooKassaCredentials): string {
 
 /** Создаёт UUID v4 (для Idempotence-Key, если наш token не подходит). */
 export function newIdempotenceKey(): string {
-  const b = randomBytes(16);
-  // Установить версию v4 и вариант RFC 4122
-  b[6] = (b[6] & 0x0f) | 0x40;
-  b[8] = (b[8] & 0x3f) | 0x80;
-  const h = b.toString("hex");
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+  return randomUUID();
 }
 
 /** Конвертация копеек в строку «149.00» для YooKassa amount.value. */
