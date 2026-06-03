@@ -78,9 +78,10 @@ function kopToRub(amountKop: number): string {
 /** POST /payments — создать новый платёж. */
 export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPayment> {
   const creds = loadCredentials();
+  const amountValue = kopToRub(p.amount_kop);
   const body = {
     amount: {
-      value: kopToRub(p.amount_kop),
+      value: amountValue,
       currency: "RUB",
     },
     capture: true, // авто-капчуем сразу после авторизации (один шаг)
@@ -90,6 +91,22 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
     description: p.description,
     metadata: p.metadata,
+    // 54-ФЗ: «Чеки от ЮКассы» включены, поэтому шлём receipt с позициями.
+    // customer намеренно НЕ передаём — ЮКасса сама спросит email у покупателя
+    // на своей checkout-странице и пробьёт чек после оплаты.
+    // vat_code=1 — ИП на УСН без НДС.
+    receipt: {
+      items: [
+        {
+          description: p.description,
+          quantity: "1.00",
+          amount: { value: amountValue, currency: "RUB" },
+          vat_code: 1,
+          payment_subject: "service",
+          payment_mode: "full_payment",
+        },
+      ],
+    },
   };
 
   const res = await fetch(`${YOOKASSA_API_BASE}/payments`, {
