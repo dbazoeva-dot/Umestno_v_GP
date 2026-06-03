@@ -190,6 +190,10 @@
           <ul class="u-res-warn"></ul>
         </section>
 
+        <!-- Дублёр блока «Сохраните схему» в правой колонке — также
+             скрыт до этапа 2 (PDF + email-доставка). Кнопки в сайдбаре
+             на странице сейчас всё равно бы не работали — поэтому
+             убираем их визуально, чтобы не путать юзера.
         <section class="u-res-save-mini">
           <a class="u-btn u-btn--sage u-btn--lg" href="#" data-ym-goal="pdf_download">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
@@ -211,6 +215,7 @@
             <p class="u-res-mail__done" hidden>Спасибо! Пришлём схему на указанный адрес.</p>
           </div>
         </section>
+        -->
 
       </div>
     </div>
@@ -280,6 +285,11 @@
     </div>
 
     <!-- ── Save ─────────────────────────────────────────────── -->
+    <!-- Временно скрыто до этапа 2 (PDF-генерация + email-доставка).
+         Сейчас обе кнопки — заглушки без бэкенда: PDF не формируется,
+         форма «Отправить себе на почту» не шлёт письма. Возвращаем
+         блок когда подключим Puppeteer и Unisender (см. README_ENGINE,
+         планы по этапу 2). См. также BL-?? в backlog'е если заведём.
     <section class="u-res-save">
       <div class="u-res-save__copy">
         <h2>Сохраните схему</h2>
@@ -307,6 +317,7 @@
         </div>
       </div>
     </section>
+    -->
 
     <!-- ── Bottom CTA ───────────────────────────────────────── -->
     <section class="u-res-final">
