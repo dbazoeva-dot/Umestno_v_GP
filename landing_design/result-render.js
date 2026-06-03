@@ -266,6 +266,14 @@
       var ct = zone.content_type;
       var m = matchByZone[zone.zone_id];
 
+      // Подзаголовок блока (из BLOCK_DESC). Если есть SKU и у неё
+      // division_type — берём соответствующую формулировку (cells/slots →
+      // primary, open → open). Для пустых блоков по умолчанию используем
+      // primary (движок всегда планирует с primary-варианта).
+      var divisionType = (m && m.sku && m.sku.division_type) || 'cells';
+      var desc = (window.UMESTNO_CONTENT && UMESTNO_CONTENT.blockDesc(ct, divisionType)) || '';
+      var descHtml = desc ? '<div class="u-res-prod-block__desc">' + esc(desc) + '</div>' : '';
+
       var cardHtml;
       if (m && m.sku && m.sku.sku_id) {
         var sku = m.sku;
@@ -302,6 +310,7 @@
         '<div class="u-res-prod-block__intro">' +
           '<span class="u-res-prod-block__n">Блок ' + n + '</span>' +
           '<span class="u-res-prod-block__cat">' + esc(label(ct)) + '</span>' +
+          descHtml +
         '</div>' +
         '<div class="u-res-prod-cards">' + cardHtml + '</div>';
       root.appendChild(block);
