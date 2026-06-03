@@ -1,32 +1,15 @@
 /*
- * PDF-стили для документа «Схема хранения». Оптимизировано под A4 портрет.
+ * PDF-стили для документа «Схема хранения». A4 портрет.
  *
- * Логика размеров:
- *   - Puppeteer уважает @page { size: A4; margin: 15mm } → реально печатное
- *     поле 180 × 267 мм.
- *   - Внутри .pdf-page всё в мм/pt — не в px — чтобы при разных DPI всё
- *     сохраняло пропорции.
- *   - Цвета и шрифты — те же что на сайте (фирстиль), но контрастнее для
- *     печати (более тёмный цвет основного текста).
- *
- * Anti-pattern, которого избегаем: page-break-inside: avoid на всём подряд.
- * Из-за этого Chrome может оставлять пустую страницу. Применяем только к
- * атомарным карточкам (folding-card, warning-item).
+ * Логика подачи: каждая секция — «слайд презентации» с eyebrow'ом и
+ * заголовком, между секциями — большие отступы + тонкая разделительная
+ * линия. Без фоновых текстур. Schemа визуализации — те же DIV-блоки
+ * что на /result/, через переиспользование result.css.
  */
 
 @page {
   size: A4 portrait;
-  margin: 15mm;
-}
-
-:root {
-  --pdf-ink:        #2A2820;
-  --pdf-ink-2:      #6A6258;
-  --pdf-ink-3:      #9A8F7C;
-  --pdf-line:       #E0D9CD;
-  --pdf-warn-bg:    #FAF1DA;
-  --pdf-warn-ink:   #6A5A2A;
-  --pdf-accent:     #7D8C72;
+  margin: 14mm 16mm;
 }
 
 * { box-sizing: border-box; }
@@ -34,150 +17,255 @@
 html, body {
   margin: 0; padding: 0;
   background: #FFFFFF;
-  color: var(--pdf-ink);
+  color: var(--u-ink, #3A382F);
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 10pt;
-  line-height: 1.45;
+  line-height: 1.5;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-.pdf-page {
-  /* Не задаём фиксированную ширину — Chrome печатает по @page-margin.
-     В preview-режиме (открыть /pdf/?t=... в браузере) визуально получим
-     контент во всю ширину окна; это нормально, реальный лейаут — PDF. */
-  max-width: 100%;
-}
+.pdf-page { max-width: 100%; }
 
 /* ── Шапка ───────────────────────────────────────────── */
 .pdf-header {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  padding-bottom: 6mm; margin-bottom: 8mm;
-  border-bottom: 1px solid var(--pdf-line);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: flex-start;
+  gap: 10mm;
+  padding-bottom: 8mm;
+  margin-bottom: 10mm;
+  border-bottom: 1px solid var(--u-line-2, #E0D9CD);
 }
-.pdf-header__logo { height: 16mm; width: auto; }
+.pdf-header__logo {
+  height: 18mm; width: auto;
+  /* небольшой сдвиг к baseline, чтобы лого визуально «садился» по нижней
+     линии вместе с правой колонкой */
+  margin-top: 2mm;
+}
 .pdf-header__meta { text-align: right; }
+.pdf-header__eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--u-sage-d, #7D8C72);
+  margin-bottom: 2mm;
+}
 .pdf-header__title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16pt; font-weight: 500; color: var(--pdf-ink);
+  font-size: 22pt;
+  font-weight: 500;
+  color: var(--u-ink, #3A382F);
+  margin: 0;
   line-height: 1.1;
 }
 .pdf-header__date {
-  margin-top: 2mm;
-  font-size: 9pt; color: var(--pdf-ink-3);
+  margin-top: 3mm;
+  font-size: 9pt;
+  color: var(--u-ink-3, #9A8F7C);
 }
 
-/* ── Секции ──────────────────────────────────────────── */
-.pdf-section { margin-bottom: 8mm; }
+/* ── Eyebrow + заголовок секции ─────────────────────── */
+.pdf-eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--u-sage-d, #7D8C72);
+  margin-bottom: 3mm;
+}
+.pdf-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 5mm; height: 1px;
+  background: var(--u-sage-d, #7D8C72);
+  vertical-align: middle;
+  margin-right: 3mm;
+}
+.pdf-section {
+  margin-bottom: 12mm;
+}
+.pdf-section + .pdf-section {
+  /* тонкий разделитель между блоками — но не первый */
+  padding-top: 12mm;
+  border-top: 1px solid var(--u-line-2, #E0D9CD);
+}
 .pdf-section__h {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14pt; font-weight: 500; color: var(--pdf-ink);
-  margin: 0 0 4mm; line-height: 1.15;
+  font-size: 16pt;
+  font-weight: 500;
+  color: var(--u-ink, #3A382F);
+  margin: 0 0 6mm;
+  line-height: 1.15;
 }
 
-/* ── Размеры ящика ───────────────────────────────────── */
+/* ── Схема (переиспользуем .u-res-scheme из result.css) ─ */
+.u-res-scheme {
+  /* На сайте схема в карточке с тенью. В PDF — спокойнее, без тени,
+     чтобы не было «вырвиглазно». */
+  background: var(--u-warm, #FAF5EA);
+  border-radius: 4mm;
+  padding: 6mm;
+  box-shadow: none;
+}
+/* Высота схемы должна вписываться в страницу — пусть будет ~85мм макс */
+.u-res-scheme__inner {
+  max-height: 95mm;
+}
+
+/* ── Ящик ──────────────────────────────────────────── */
 .pdf-drawer {
   display: flex; gap: 4mm; align-items: baseline;
-  margin-bottom: 4mm;
+  margin-bottom: 5mm;
 }
 .pdf-drawer__label {
-  font-size: 9pt; color: var(--pdf-ink-2);
-  text-transform: uppercase; letter-spacing: 0.06em;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8.5pt;
+  color: var(--u-ink-2, #6A6258);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .pdf-drawer__value {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 13pt; font-weight: 500; color: var(--pdf-ink);
+  font-size: 14pt;
+  font-weight: 500;
+  color: var(--u-ink, #3A382F);
 }
 
 /* ── Таблица блоков ──────────────────────────────────── */
 .pdf-blocks {
-  width: 100%; border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
   font-size: 10pt;
 }
 .pdf-blocks th, .pdf-blocks td {
-  text-align: left; padding: 2mm 3mm;
-  border-bottom: 1px solid var(--pdf-line);
+  text-align: left;
+  padding: 3mm 4mm 3mm 0;
+  border-bottom: 1px solid var(--u-line-2, #E0D9CD);
 }
 .pdf-blocks th {
-  font-size: 8.5pt; font-weight: 500;
-  color: var(--pdf-ink-2); text-transform: uppercase; letter-spacing: 0.05em;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8pt;
+  font-weight: 500;
+  color: var(--u-ink-3, #9A8F7C);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom-color: var(--u-line, #D0C9BD);
 }
-.pdf-blocks td:first-child { width: 14mm; color: var(--pdf-accent); font-weight: 500; }
-.pdf-blocks td:last-child  { width: 50mm; font-family: 'JetBrains Mono', monospace; font-size: 9pt; color: var(--pdf-ink-2); }
-
-/* ── Схема ──────────────────────────────────────────── */
-.pdf-scheme {
-  width: 100%; min-height: 60mm;
-  background: #F8F5EE;
-  border-radius: 2mm;
-  padding: 5mm;
-  display: flex; align-items: center; justify-content: center;
+.pdf-blocks td:first-child {
+  width: 14mm;
+  color: var(--u-sage-d, #7D8C72);
+  font-weight: 600;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12pt;
 }
-.pdf-scheme svg { max-width: 100%; height: auto; display: block; }
+.pdf-blocks td:nth-child(2) {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12pt;
+}
+.pdf-blocks td:last-child {
+  width: 55mm;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9pt;
+  color: var(--u-ink-2, #6A6258);
+  text-align: right;
+}
 
 /* ── Warnings ───────────────────────────────────────── */
-.pdf-warnings { display: flex; flex-direction: column; gap: 3mm; }
+.pdf-warnings { display: flex; flex-direction: column; gap: 4mm; }
 .pdf-warning-item {
-  background: var(--pdf-warn-bg);
-  color: var(--pdf-warn-ink);
-  padding: 3mm 4mm;
+  background: #F8EFD8;
+  color: #6A5A2A;
+  padding: 4mm 5mm;
   border-radius: 2mm;
-  font-size: 9.5pt; line-height: 1.5;
+  font-size: 10pt;
+  line-height: 1.55;
   page-break-inside: avoid;
 }
-.pdf-warning-item__title {
-  font-weight: 600; margin-bottom: 1mm;
+.pdf-warning-item__cat {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 12pt;
+  font-weight: 600;
+  margin-bottom: 1.5mm;
+  color: #6A5A2A;
 }
 
-/* ── Складывание ────────────────────────────────────── */
+/* ── Складывание: 2 в ряд, картинка сверху крупная ─── */
 .pdf-folding {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5mm 6mm;
+  gap: 13mm 10mm; /* row gap ~13мм = ~50px при 96dpi */
 }
 .pdf-folding-card {
-  display: flex; gap: 4mm; align-items: flex-start;
-  padding: 3mm 0;
+  display: flex; flex-direction: column;
+  align-items: flex-start;
   page-break-inside: avoid;
 }
 .pdf-folding-card__img {
-  width: 28mm; height: 28mm; flex: 0 0 auto;
-  border-radius: 2mm; overflow: hidden;
-  background: #F8F5EE;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--u-warm, #FAF5EA);
+  border-radius: 3mm;
+  margin-bottom: 4mm;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
 }
 .pdf-folding-card__img img {
-  width: 100%; height: 100%; object-fit: contain; display: block;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
 }
-.pdf-folding-card__b { flex: 1 1 auto; }
-.pdf-folding-card__cat {
+.pdf-folding-card__title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 11pt; font-weight: 500;
-  margin-bottom: 1mm; color: var(--pdf-ink);
+  font-size: 14pt;
+  font-weight: 500;
+  margin-bottom: 2mm;
+  color: var(--u-ink, #3A382F);
 }
 .pdf-folding-card__steps {
-  font-size: 9pt; color: var(--pdf-ink-2);
-  line-height: 1.5; margin: 0;
+  font-size: 10pt;
+  color: var(--u-ink-2, #6A6258);
+  line-height: 1.55;
+  margin: 0;
 }
 
 /* ── Подвал ─────────────────────────────────────────── */
 .pdf-footer {
-  margin-top: 10mm; padding-top: 4mm;
-  border-top: 1px solid var(--pdf-line);
-  font-size: 8pt; color: var(--pdf-ink-3);
-  line-height: 1.5;
+  margin-top: 14mm;
+  padding-top: 5mm;
+  border-top: 1px solid var(--u-line-2, #E0D9CD);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2mm 6mm;
+  font-size: 8.5pt;
+  color: var(--u-ink-3, #9A8F7C);
+  line-height: 1.6;
 }
-.pdf-footer__line { margin: 0; }
-.pdf-footer__token { margin-top: 1.5mm; font-family: 'JetBrains Mono', monospace; }
+.pdf-footer__brand,
+.pdf-footer__contact { display: flex; flex-direction: column; }
+.pdf-footer__contact { text-align: right; }
+.pdf-footer__bold {
+  font-weight: 600;
+  color: var(--u-ink-2, #6A6258);
+}
+.pdf-footer__token {
+  grid-column: 1 / -1;
+  margin-top: 2mm;
+  padding-top: 2mm;
+  border-top: 1px dashed var(--u-line-2, #E0D9CD);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 7.5pt;
+  color: var(--u-ink-3, #9A8F7C);
+}
 
-/* Preview в браузере (когда открываем /pdf/?t=... напрямую):
-   добавим лёгкую тень и центрирование, чтобы видеть «лист» наглядно. */
+/* ── Preview в браузере (без печати) ─────────────────── */
 @media screen {
-  body { background: #EEE9DF; padding: 12mm 0; }
+  body { background: #ECE7DC; padding: 14mm 0; }
   .pdf-page {
     background: #FFFFFF;
     margin: 0 auto;
-    padding: 15mm;
+    padding: 14mm 16mm;
     max-width: 210mm;
     min-height: 297mm;
     box-shadow: 0 4mm 18mm rgba(0,0,0,0.08);
