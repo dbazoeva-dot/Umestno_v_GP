@@ -78,9 +78,10 @@ function kopToRub(amountKop: number): string {
 /** POST /payments — создать новый платёж. */
 export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPayment> {
   const creds = loadCredentials();
+  const amountValue = kopToRub(p.amount_kop);
   const body = {
     amount: {
-      value: kopToRub(p.amount_kop),
+      value: amountValue,
       currency: "RUB",
     },
     capture: true, // авто-капчуем сразу после авторизации (один шаг)
@@ -90,7 +91,27 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
     description: p.description,
     metadata: p.metadata,
+    // 54-ФЗ: «Чеки от ЮКассы» включены, поэтому шлём receipt с позициями.
+    // Передаём customer пустым объектом — пробуем заставить ЮКассу
+    // спросить email у покупателя на своей checkout-странице.
+    // vat_code=1 — ИП на УСН без НДС.
+    receipt: {
+      customer: {},
+      items: [
+        {
+          description: p.description,
+          quantity: "1.00",
+          amount: { value: amountValue, currency: "RUB" },
+          vat_code: 1,
+          payment_subject: "service",
+          payment_mode: "full_payment",
+        },
+      ],
+    },
   };
+
+  // Лог сырого тела запроса для диагностики (временно, пока отлаживаем receipt).
+  console.log("[yookassa] request body:", JSON.stringify(body));
 
   const res = await fetch(`${YOOKASSA_API_BASE}/payments`, {
     method: "POST",
@@ -102,11 +123,12 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     body: JSON.stringify(body),
   });
 
+  const responseText = await res.text();
+  console.log("[yookassa] response status:", res.status, "body:", responseText);
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`YooKassa createPayment failed: ${res.status} ${text}`);
+    throw new Error(`YooKassa createPayment failed: ${res.status} ${responseText}`);
   }
-  return (await res.json()) as YooKassaPayment;
+  return JSON.parse(responseText) as YooKassaPayment;
 }
 
 /** GET /payments/{id} — посмотреть текущий статус платежа. */
