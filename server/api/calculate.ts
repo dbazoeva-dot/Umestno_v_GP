@@ -38,15 +38,22 @@ interface CalculateRequest {
   color_preference?: string;
   session_id?: string;
   consent_oferta: true;
+  /** Email покупателя — для фискального чека ЮКассы (54-ФЗ). */
+  email: string;
+  /** Согласие на обработку ПДн (152-ФЗ). Без него email не принимаем. */
+  consent_personal_data: true;
 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PRIVACY_VERSION = "privacy_v1";
 
 interface CalculateResponse {
   token: string;
   fit_status: FitStatus | "no_scheme";
-  /** true если фронт должен поднять виджет оплаты (paywall + fit_all). */
+  /** true если фронт должен повести юзера на оплату (paywall + fit_all). */
   can_pay: boolean;
-  /** Токен для embedded-виджета ЮКассы. null если оплата не нужна. */
-  confirmation_token: string | null;
+  /** URL для редиректа на checkout-страницу ЮКассы. null если оплата не нужна. */
+  payment_url: string | null;
 }
 
 function makeToken(): string {
@@ -63,6 +70,7 @@ function validateRequest(body: unknown): body is CalculateRequest {
   if (typeof b.storage_category !== "string") return false;
   if (!Array.isArray(b.items) || b.items.length === 0) return false;
   if (typeof b.priority !== "string") return false;
+  if (typeof b.email !== "string" || !EMAIL_RE.test(b.email.trim())) return false;
   return true;
 }
 
@@ -73,8 +81,12 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     }
     const body = req.body as CalculateRequest;
     if (body.consent_oferta !== true) {
-      return res.status(400).json({ ok: false, error: "consent_required" });
+      return res.status(400).json({ ok: false, error: "consent_oferta_required" });
     }
+    if (body.consent_personal_data !== true) {
+      return res.status(400).json({ ok: false, error: "consent_pd_required" });
+    }
+    const email = body.email.trim().toLowerCase();
 
     // Передаём актуальный каталог в engine через libraries (не мутируя
     // глобальный defaultLibraries — это важно для конкурентных запросов).
@@ -147,28 +159,29 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       );
       const configId = configResult.rows[0].id;
 
-      // 2. Коммерческая сущность — заказ. email сюда не пишем сейчас —
-      // в widget-флоу его собирает ЮКасса, и мы достанем его из
-      // payment.receipt.customer.email при webhook'е payment.succeeded.
+      // 2. Коммерческая сущность — заказ
       const orderResult = await client.query<{ id: string }>(
         `INSERT INTO orders (
            configuration_id, token, session_id, ip, user_agent,
-           fit_status, base_price_kop, discount_kop, amount_kop, status
+           fit_status, base_price_kop, discount_kop, amount_kop, status, email
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING id`,
         [
           configId, token, body.session_id ?? null, ip, userAgent,
-          fitStatus, basePriceKop, discountKop, amountKop, status,
+          fitStatus, basePriceKop, discountKop, amountKop, status, email,
         ],
       );
       orderId = orderResult.rows[0].id;
 
-      // 3. Согласие с офертой — журнал 152-ФЗ
+      // 3. Согласия — журнал 152-ФЗ. Оферта + обработка ПДн фиксируются
+      // отдельными записями с разными версиями, чтобы при будущем
+      // обновлении любого документа можно было разделить согласия по времени.
       await client.query(
-        `INSERT INTO consents (order_id, consent_type, consent_version, ip, user_agent)
-         VALUES ($1, 'oferta', $2, $3, $4)`,
-        [orderId, OFERTA_VERSION, ip, userAgent],
+        `INSERT INTO consents (order_id, email, consent_type, consent_version, ip, user_agent)
+         VALUES ($1, $2, 'oferta', $3, $4, $5),
+                ($1, $2, 'pd',     $6, $4, $5)`,
+        [orderId, email, OFERTA_VERSION, ip, userAgent, PRIVACY_VERSION],
       );
 
       // 4. Подобранные SKU по зонам (если схема построена)
@@ -218,18 +231,17 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     }
 
     // can_pay = надо отвести юзера на оплату YooKassa.
-    // Для fit_all + paywall режима создаём платёж сразу — фронт
-    // фронт инициализирует виджет ЮКассы с этим токеном на /result/.
-    // Виджет сам соберёт email и карту, после оплаты дёрнет нашу
-    // callback-функцию; параллельно прилетит webhook payment.succeeded.
+    // Создаём платёж сразу, возвращаем payment_url для редиректа.
+    // Юзер платит на checkout ЮКассы, возвращается на /result/?t=TOKEN,
+    // где поллинг ждёт webhook payment.succeeded → status='paid'.
     const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
-    let confirmationToken: string | null = null;
-    let yookassaId: string | null = null;
+    let paymentUrl: string | null = null;
 
     if (canPay) {
       try {
         const payment = await createPayment({
           amount_kop: amountKop,
+          return_url: `${env.SITE_BASE_URL}/result/?t=${encodeURIComponent(token)}`,
           description: "Формирование персональной схемы хранения для выдвижного ящика",
           metadata: { order_token: token, order_id: orderId },
           // token — наш идемпотентный ID; за одну попытку сабмита формы
@@ -237,22 +249,28 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
           // повторит запрос с тем же телом — YooKassa вернёт тот же
           // платёж, дубля не будет.
           idempotence_key: token,
+          customer_email: email,
         });
-        confirmationToken = payment.confirmation?.confirmation_token ?? null;
-        yookassaId = payment.id;
-        // Запоминаем yookassa_id чтобы потом сматчить webhook и активной
-        // проверкой через getPayment(). Статус 'pending' — ждём оплату.
-        if (confirmationToken) {
+        paymentUrl = payment.confirmation?.confirmation_url ?? null;
+        // Запоминаем yookassa_id в таблице payments — она хранит историю
+        // платежных попыток (на случай ретраев и возвратов). orders.status
+        // переводим в 'pending' — ждём webhook'а от ЮКассы.
+        if (paymentUrl) {
           await pool.query(
-            `UPDATE orders SET status = 'pending', yookassa_id = $1 WHERE id = $2`,
-            [yookassaId, orderId],
+            `INSERT INTO payments (order_id, yookassa_id, yookassa_status, amount_kop)
+             VALUES ($1, $2, $3, $4)`,
+            [orderId, payment.id, payment.status, amountKop],
+          );
+          await pool.query(
+            `UPDATE orders SET status = 'pending' WHERE id = $1`,
+            [orderId],
           );
         }
       } catch (e) {
         console.error("[yookassa] createPayment failed", e);
         // Откатывать заказ не будем — он валиден, просто платёж не создался.
-        // Юзер увидит {can_pay: true, confirmation_token: null} и фронт
-        // покажет ошибку «Не удалось загрузить виджет оплаты».
+        // Юзер увидит {can_pay: true, payment_url: null} и фронт покажет
+        // ошибку «Не удалось перейти к оплате». Состояние дочиним вручную.
       }
     }
 
@@ -260,7 +278,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       token,
       fit_status: fitStatus,
       can_pay: canPay,
-      confirmation_token: confirmationToken,
+      payment_url: paymentUrl,
     };
     res.json(response);
   };

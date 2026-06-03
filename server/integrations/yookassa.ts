@@ -39,12 +39,16 @@ export interface YooKassaPayment {
 export interface CreatePaymentParams {
   /** Сумма в копейках (например 14900 = 149.00 ₽). */
   amount_kop: number;
-  /** Описание для юзера (показывается в чеке ЮКассы). */
+  /** Куда вернуть юзера после оплаты на checkout-странице ЮКассы. */
+  return_url: string;
+  /** Описание для юзера (показывается на checkout и в чеке). */
   description: string;
   /** Произвольные пары — вернутся в webhook, по ним матчим заказ. */
   metadata: Record<string, string>;
   /** Уникальный ID идемпотентности — наш token от заказа. */
   idempotence_key: string;
+  /** Email покупателя — обязателен по 54-ФЗ (попадёт в чек). */
+  customer_email: string;
 }
 
 function loadCredentials(): YooKassaCredentials {
@@ -76,9 +80,9 @@ function kopToRub(amountKop: number): string {
   return `${rub}.${String(kop).padStart(2, "0")}`;
 }
 
-/** POST /payments — создать новый платёж под embedded-виджет.
- *  Виджет на фронте подхватит confirmation_token, сам покажет форму
- *  карты и поле email; email уйдёт в чек ЮКассы автоматически. */
+/** POST /payments — создать новый платёж под redirect-флоу.
+ *  Юзер уйдёт на checkout ЮКассы по confirmation_url, после оплаты
+ *  вернётся на return_url. customer.email обязателен (54-ФЗ). */
 export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPayment> {
   const creds = loadCredentials();
   const amountValue = kopToRub(p.amount_kop);
@@ -89,16 +93,16 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
     capture: true, // авто-капчуем сразу после авторизации (один шаг)
     confirmation: {
-      // embedded: фронт получит confirmation_token и отрендерит
-      // виджет ЮКассы. Email и карта — внутри виджета.
-      type: "embedded",
+      type: "redirect",
+      return_url: p.return_url,
     },
     description: p.description,
     metadata: p.metadata,
-    // 54-ФЗ: «Чеки от ЮКассы» включены. receipt.customer не передаём —
-    // виджет соберёт email/phone сам и положит их в чек.
-    // vat_code=1 — ИП на УСН без НДС.
+    // 54-ФЗ: «Чеки от ЮКассы» включены — receipt обязателен с customer.
+    // vat_code=1 — ИП на УСН без НДС. payment_subject=service потому что
+    // продаём услугу (см. определение в оферте, §1 и п. 2.1).
     receipt: {
+      customer: { email: p.customer_email },
       items: [
         {
           description: p.description,

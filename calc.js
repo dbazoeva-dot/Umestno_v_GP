@@ -204,10 +204,13 @@
       .catch(function (e) { console.warn('[prefill] failed', e); });
   })();
 
-  /* ── Submit: POST /api/calculate → редирект по fit_status ── */
-  // CTA остаётся <a href="../no-fit/"> как fallback: если JS не загрузился
-  // или сломался, клик уведёт на /no-fit/ (безопасный исход). Тут мы
-  // перехватываем клик, гоним POST и редиректим по результату.
+  /* ── Submit: показать модалку email → POST /api/calculate → редирект ──
+   *
+   * Раньше /configure/ сразу слал /api/calculate. Теперь email и согласие
+   * с Политикой обработки ПДн собираются модалкой ПЕРЕД отправкой формы —
+   * чтобы в /api/calculate уже уйти с заполненным customer.email для
+   * фискального чека ЮКассы и записать оба согласия (оферта + ПДн).
+   */
   var cta = document.querySelector('.u-calc__cta');
   if (cta) {
     cta.addEventListener('click', function (e) {
@@ -218,16 +221,21 @@
       var err = validatePayload(payload);
       if (err) { showCalcError(err); return; }
 
-      cta.dataset.loading = '1';
-      cta.classList.add('is-loading');
       hideCalcError();
+      openEmailModal(payload);
+    });
+  }
 
-      fetch('/api/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        credentials: 'same-origin'
-      })
+  function submitCalculation(payload) {
+    cta.dataset.loading = '1';
+    cta.classList.add('is-loading');
+
+    fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      credentials: 'same-origin'
+    })
         .then(function (r) {
           if (r.ok) return r.json();
           // Парсим тело, чтобы достать error-код (rate_limited / consent_required / …)
@@ -242,10 +250,18 @@
           if (!data || !data.token) throw new Error('bad_response');
           var fit = data.fit_status;
           var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
-          // Всегда уходим на /result/ для fit_all (там виджет ЮКассы или
-          // готовая схема) и на /no-fit/ для остальных исходов. Сам
-          // confirmation_token /result/ запросит у /api/result заново —
-          // не таскаем его в URL.
+
+          // Paywall + fit_all: сервер уже создал YooKassa-платёж и вернул
+          // payment_url. Редиректим юзера в ЮКассу; после оплаты вернётся
+          // на /result/?t=TOKEN, где поллинг ждёт webhook'а.
+          if (ok && data.can_pay && data.payment_url) {
+            location.href = data.payment_url;
+            return;
+          }
+
+          // Dev-режим (или fit_partial / no_scheme):
+          // - fit_all → /result/?t=TOKEN
+          // - не fit_all → /no-fit/?t=TOKEN
           var path = ok ? '/result/' : '/no-fit/';
           location.href = path + '?t=' + encodeURIComponent(data.token);
         })
@@ -269,7 +285,96 @@
           showCalcError(humanizeCalcError(err));
           console.error('[calculate] failed', err);
         });
+  }
+
+  /* ── Модалка ввода email ───────────────────────────────────
+   * Появляется по клику на «Получить расчёт». Юзер вводит email,
+   * ставит галочку на ПДн → submitCalculation с расширенным payload'ом.
+   * Закрытие — Esc, клик по фону, или крестик. */
+  function openEmailModal(basePayload) {
+    var existing = document.getElementById('u-email-modal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'u-email-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(58,56,47,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;font-family:var(--f-sans,sans-serif);';
+
+    modal.innerHTML =
+      '<div role="dialog" aria-modal="true" aria-labelledby="u-email-modal-title" ' +
+           'style="background:#FFFDF9;border-radius:14px;max-width:440px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.18);position:relative">' +
+        '<button type="button" data-close aria-label="Закрыть" ' +
+                'style="position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:#7A6F58;font-size:22px;line-height:1;padding:4px 8px">×</button>' +
+        '<h2 id="u-email-modal-title" ' +
+            'style="font-family:var(--f-display,serif);font-size:22px;font-weight:500;color:#3A382F;margin:0 0 8px">Куда отправить чек и схему</h2>' +
+        '<p style="font-size:13px;color:#7A6F58;margin:0 0 18px;line-height:1.45">Почта нужна для направления чека и итогового результата. Никакого спама.</p>' +
+        '<form data-email-form novalidate>' +
+          '<input type="email" data-email-input required autocomplete="email" inputmode="email" ' +
+                 'placeholder="you@example.com" aria-label="E-mail" ' +
+                 'style="width:100%;padding:11px 13px;border:1px solid #DDC59B;border-radius:8px;font-size:15px;color:#3A382F;background:#FFFDF9;box-sizing:border-box;margin-bottom:14px;font-family:inherit" />' +
+          '<div class="u-consent" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:18px">' +
+            '<input type="checkbox" data-pd-checkbox id="u-pd-consent" required style="margin-top:3px;flex-shrink:0" />' +
+            '<label for="u-pd-consent" style="font-size:13px;color:#7A6F58;line-height:1.4;cursor:pointer">' +
+              'Я соглашаюсь на обработку персональных данных в соответствии с ' +
+              '<a href="../privacy/" target="_blank" rel="noopener" style="color:#7D8C72;text-decoration:underline">Политикой конфиденциальности</a>.' +
+            '</label>' +
+          '</div>' +
+          '<p data-email-error hidden style="color:#B36A4A;font-size:13px;margin:0 0 12px;line-height:1.4"></p>' +
+          '<button type="submit" class="u-btn u-btn--accent u-btn--lg" style="width:100%;background-color:rgb(125,140,114)">Продолжить</button>' +
+        '</form>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    var form = modal.querySelector('[data-email-form]');
+    var emailInput = modal.querySelector('[data-email-input]');
+    var pdCheckbox = modal.querySelector('[data-pd-checkbox]');
+    var errEl = modal.querySelector('[data-email-error]');
+
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
+    function clearErr() { if (errEl) { errEl.hidden = true; errEl.textContent = ''; } }
+
+    function close() {
+      document.removeEventListener('keydown', onKeydown);
+      modal.remove();
+    }
+    function onKeydown(ev) {
+      if (ev.key === 'Escape') close();
+    }
+    document.addEventListener('keydown', onKeydown);
+
+    modal.addEventListener('click', function (ev) {
+      if (ev.target === modal) close();           // клик по затемнённому фону
+      if (ev.target.matches('[data-close]')) close(); // крестик
     });
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      clearErr();
+      var email = (emailInput.value || '').trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        showErr('Введите корректный e-mail.');
+        emailInput.focus();
+        return;
+      }
+      if (!pdCheckbox.checked) {
+        showErr('Нужно согласие на обработку персональных данных, чтобы прислать чек.');
+        return;
+      }
+      var fullPayload = Object.assign({}, basePayload, {
+        email: email,
+        consent_personal_data: true,
+      });
+      close();
+      submitCalculation(fullPayload);
+    });
+
+    // Фокус на email-поле через тик после рендера — чтобы клавиатура
+    // на мобиле раскрылась сразу.
+    setTimeout(function () { try { emailInput.focus(); } catch (e) {} }, 50);
   }
 
   // Алиас фронт↔движок (см. content-labels.js строка 4). Только socks
@@ -318,7 +423,8 @@
         : 'Превышен часовой лимит запросов. Попробуйте позже.';
     }
     if (code === 'forbidden_origin') return 'Запрос отклонён. Попробуйте перезагрузить страницу.';
-    if (code === 'consent_required') return 'Подтвердите согласие с офертой, чтобы продолжить.';
+    if (code === 'consent_required' || code === 'consent_oferta_required') return 'Подтвердите согласие с офертой, чтобы продолжить.';
+    if (code === 'consent_pd_required') return 'Подтвердите согласие на обработку персональных данных.';
     if (code === 'invalid_request')  return 'Проверьте, что все поля формы заполнены корректно.';
     return 'Не получилось рассчитать. Проверьте подключение и попробуйте ещё раз.';
   }
