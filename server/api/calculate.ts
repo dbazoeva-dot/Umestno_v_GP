@@ -38,7 +38,14 @@ interface CalculateRequest {
   color_preference?: string;
   session_id?: string;
   consent_oferta: true;
+  /** Email покупателя — для фискального чека ЮКассы и доставки PDF. */
+  email: string;
 }
+
+// Простая валидация email: «что-то@что-то.что-то», достаточная для отсева
+// очевидно битых вводов. Жёсткая проверка не нужна — ЮКасса всё равно
+// отвергнет невалидный, и юзер увидит ошибку.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 interface CalculateResponse {
   token: string;
@@ -64,6 +71,7 @@ function validateRequest(body: unknown): body is CalculateRequest {
   if (typeof b.storage_category !== "string") return false;
   if (!Array.isArray(b.items) || b.items.length === 0) return false;
   if (typeof b.priority !== "string") return false;
+  if (typeof b.email !== "string" || !EMAIL_RE.test(b.email.trim())) return false;
   return true;
 }
 
@@ -76,6 +84,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     if (body.consent_oferta !== true) {
       return res.status(400).json({ ok: false, error: "consent_required" });
     }
+    const email = body.email.trim().toLowerCase();
 
     // Передаём актуальный каталог в engine через libraries (не мутируя
     // глобальный defaultLibraries — это важно для конкурентных запросов).
@@ -152,13 +161,13 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       const orderResult = await client.query<{ id: string }>(
         `INSERT INTO orders (
            configuration_id, token, session_id, ip, user_agent,
-           fit_status, base_price_kop, discount_kop, amount_kop, status
+           fit_status, base_price_kop, discount_kop, amount_kop, status, email
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING id`,
         [
           configId, token, body.session_id ?? null, ip, userAgent,
-          fitStatus, basePriceKop, discountKop, amountKop, status,
+          fitStatus, basePriceKop, discountKop, amountKop, status, email,
         ],
       );
       orderId = orderResult.rows[0].id;
@@ -235,6 +244,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
           // повторит запрос с тем же телом — YooKassa вернёт тот же
           // платёж, дубля не будет.
           idempotence_key: token,
+          customer_email: email,
         });
         paymentUrl = payment.confirmation?.confirmation_url ?? null;
         // Запоминаем yookassa_id чтобы потом сматчить webhook и

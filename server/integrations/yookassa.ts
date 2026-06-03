@@ -44,6 +44,8 @@ export interface CreatePaymentParams {
   metadata: Record<string, string>;
   /** Уникальный ID идемпотентности — наш token от заказа. */
   idempotence_key: string;
+  /** Email покупателя — обязателен для 54-ФЗ чека (попадёт в receipt.customer.email). */
+  customer_email: string;
 }
 
 function loadCredentials(): YooKassaCredentials {
@@ -91,13 +93,11 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
     description: p.description,
     metadata: p.metadata,
-    // 54-ФЗ: «Чеки от ЮКассы» включены, поэтому шлём receipt с позициями.
-    // ТЕСТ #4: жёстко зашитый служебный email, чтобы убедиться что путь
-    // «email в receipt → редирект на checkout ЮКассы → чек на email» работает.
-    // После теста заменим на email из формы (план A).
-    // vat_code=1 — ИП на УСН без НДС.
+    // 54-ФЗ: «Чеки от ЮКассы» включены — receipt обязателен.
+    // customer.email берём из формы (его пишет покупатель), на него
+    // ЮКасса пришлёт фискальный чек. vat_code=1 — ИП на УСН без НДС.
     receipt: {
-      customer: { email: "info@umestno-home.ru" },
+      customer: { email: p.customer_email },
       items: [
         {
           description: p.description,
@@ -111,9 +111,6 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     },
   };
 
-  // Лог сырого тела запроса для диагностики (временно, пока отлаживаем receipt).
-  console.log("[yookassa] request body:", JSON.stringify(body));
-
   const res = await fetch(`${YOOKASSA_API_BASE}/payments`, {
     method: "POST",
     headers: {
@@ -124,12 +121,11 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     body: JSON.stringify(body),
   });
 
-  const responseText = await res.text();
-  console.log("[yookassa] response status:", res.status, "body:", responseText);
   if (!res.ok) {
-    throw new Error(`YooKassa createPayment failed: ${res.status} ${responseText}`);
+    const text = await res.text();
+    throw new Error(`YooKassa createPayment failed: ${res.status} ${text}`);
   }
-  return JSON.parse(responseText) as YooKassaPayment;
+  return (await res.json()) as YooKassaPayment;
 }
 
 /** GET /payments/{id} — посмотреть текущий статус платежа. */
