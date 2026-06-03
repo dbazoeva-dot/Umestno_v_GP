@@ -228,7 +228,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
         const payment = await createPayment({
           amount_kop: amountKop,
           return_url: `${env.SITE_BASE_URL}/result/?t=${encodeURIComponent(token)}`,
-          description: `Уместно — схема хранения, заказ ${orderId.slice(0, 8)}`,
+          description: "Формирование персональной схемы хранения для выдвижного ящика",
           metadata: { order_token: token, order_id: orderId },
           // token — наш идемпотентный ID; за одну попытку сабмита формы
           // создаётся ровно один YooKassa-платёж. Если фронт случайно
