@@ -92,11 +92,12 @@ export async function createPayment(p: CreatePaymentParams): Promise<YooKassaPay
     description: p.description,
     metadata: p.metadata,
     // 54-ФЗ: «Чеки от ЮКассы» включены, поэтому шлём receipt с позициями.
-    // Передаём customer пустым объектом — пробуем заставить ЮКассу
-    // спросить email у покупателя на своей checkout-странице.
+    // ТЕСТ #4: жёстко зашитый служебный email, чтобы убедиться что путь
+    // «email в receipt → редирект на checkout ЮКассы → чек на email» работает.
+    // После теста заменим на email из формы (план A).
     // vat_code=1 — ИП на УСН без НДС.
     receipt: {
-      customer: {},
+      customer: { email: "info@umestno-home.ru" },
       items: [
         {
           description: p.description,
