@@ -42,23 +42,24 @@ html, body {
   color: var(--u-ink-3, #9A8F7C);
 }
 
-/* ── Eyebrow как ЕДИНСТВЕННЫЙ заголовок секции ──────── */
+/* ── Eyebrow — единственный заголовок секции. Стиль ровно
+   как у site eyebrow: моноширинный, smallcaps, акцентный цвет. */
 .pdf-eyebrow {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 17pt;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 8.5pt;
   font-weight: 500;
-  color: var(--u-ink, #3A382F);
-  margin: 0 0 6mm;
-  line-height: 1.15;
-  /* левая декоративная риска — короткая, акцентного цвета */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--u-sage-d, #7D8C72);
+  margin: 0 0 5mm;
   display: flex;
   align-items: center;
-  gap: 4mm;
+  gap: 3mm;
 }
 .pdf-eyebrow::before {
   content: '';
   display: inline-block;
-  width: 8mm; height: 1px;
+  width: 5mm; height: 1px;
   background: var(--u-sage-d, #7D8C72);
   flex: 0 0 auto;
 }
