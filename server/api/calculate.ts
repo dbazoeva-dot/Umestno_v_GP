@@ -147,17 +147,19 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       );
       const configId = configResult.rows[0].id;
 
-      // 2. Коммерческая сущность — заказ
+      // 2. Коммерческая сущность — заказ. email сюда не пишем сейчас —
+      // в widget-флоу его собирает ЮКасса, и мы достанем его из
+      // payment.receipt.customer.email при webhook'е payment.succeeded.
       const orderResult = await client.query<{ id: string }>(
         `INSERT INTO orders (
            configuration_id, token, session_id, ip, user_agent,
-           fit_status, base_price_kop, discount_kop, amount_kop, status, email
+           fit_status, base_price_kop, discount_kop, amount_kop, status
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING id`,
         [
           configId, token, body.session_id ?? null, ip, userAgent,
-          fitStatus, basePriceKop, discountKop, amountKop, status, email,
+          fitStatus, basePriceKop, discountKop, amountKop, status,
         ],
       );
       orderId = orderResult.rows[0].id;
