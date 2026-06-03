@@ -420,7 +420,10 @@
 
 /* priority */
 .u-calc__priority{
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  /* minmax(0, 1fr) вместо 1fr: иначе длинное слово в одной карточке
+     ("Вместительно") расширяет свой столбец и сжимает остальные —
+     визуально получается, что карточки разной ширины. */
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
 }
 .u-calc__pri-btn{
   display: flex; align-items: flex-start; gap: 12px;
