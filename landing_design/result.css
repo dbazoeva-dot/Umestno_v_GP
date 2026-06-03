@@ -385,14 +385,15 @@ a.u-res-prod-card:focus{ outline: none; transform: translateY(-1px); }
 .u-res-prod-card__n{ font-family: var(--f-display); font-size: var(--fs-md); font-weight: 500; color: var(--u-ink); line-height: 1.15; }
 .u-res-prod-card__sub{ font-size: var(--fs-xs); color: var(--u-ink-2); }
 .u-res-prod-card__sz{ font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--u-ink-3); margin-top: 2px; }
-/* Пустая карточка (каталог не покрывает блок) — визуально приглушённая,
-   без hover-эффекта. Сообщение тянется на всю ширину одного блока. */
+/* Пустая карточка (каталог не покрывает блок) — без рамки и фона,
+   только текст. Не должна визуально конкурировать с реальными
+   карточками товаров в соседних блоках. */
 .u-res-prod-card--empty{
   width: auto; max-width: 540px; flex: 1 1 280px;
-  background: var(--u-warm); border-style: dashed;
-  justify-content: center; min-height: 100px;
+  background: transparent; border: none; padding: 0;
+  justify-content: center;
 }
-.u-res-prod-card--empty:hover{ box-shadow: none; border-color: var(--u-line-2); }
+.u-res-prod-card--empty:hover{ box-shadow: none; transform: none; }
 .u-res-prod-card__empty-msg{
   margin: 0; font-size: var(--fs-sm); line-height: var(--lh-base);
   color: var(--u-ink-2); text-align: left;
