@@ -34,6 +34,11 @@ function getBrowser(): Promise<Browser> {
     browserPromise = puppeteer.launch({
       headless: true,
       ...(execPath ? { executablePath: execPath } : {}),
+      // systemd с ProtectHome=yes маскирует $HOME=/root для сервиса, и
+      // chrome_crashpad_handler падает «--database is required» потому что
+      // не может вычислить путь к своей БД. Явно подсовываем Chrome'у HOME
+      // в писаемое место — он положит туда свои crashpad/cache/etc.
+      env: { ...process.env, HOME: "/var/cache/puppeteer" },
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -42,10 +47,6 @@ function getBrowser(): Promise<Browser> {
         "--disable-dev-shm-usage",
         // На сервере нет GPU — headless рендерит на CPU.
         "--disable-gpu",
-        // Без $HOME (ProtectHome=yes в systemd) crashpad не находит куда
-        // писать свою БД и падает с «--database is required». Гасим репортер
-        // и явно указываем user-data-dir в писаемое место.
-        "--disable-crash-reporter",
         "--user-data-dir=/var/cache/puppeteer/user-data",
       ],
     });
