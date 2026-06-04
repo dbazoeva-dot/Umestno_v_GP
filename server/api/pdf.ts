@@ -26,8 +26,14 @@ const ACCESS_STATUSES = new Set(["paid", "sent_free"]);
 let browserPromise: Promise<Browser> | null = null;
 function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
+    // Если задан PUPPETEER_EXECUTABLE_PATH — берём бинарник напрямую,
+    // в обход resolver'а Puppeteer'а (полезно когда Chrome лежит вне
+    // дефолтного ~/.cache/puppeteer, или Puppeteer почему-то его не
+    // находит из-за HOME / drop-in env).
+    const execPath = process.env.PUPPETEER_EXECUTABLE_PATH;
     browserPromise = puppeteer.launch({
       headless: true,
+      ...(execPath ? { executablePath: execPath } : {}),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
