@@ -1,23 +1,27 @@
 /*
- * pdf-render.js
+ * pdf-render.js — наполняет шаблон /pdf/index.html (дизайн v3) данными
+ * из GET /api/result/:token.
  *
- * Заполняет шаблон /pdf/index.html данными из GET /api/result/:token.
- * Используется и Puppeteer'ом (для PDF-рендера на сервере), и в браузере
- * как preview-режим.
+ * Что заполняем:
+ *   - masthead: номер заказа + дата
+ *   - схема: вызываем UMESTNO.renderScheme — рисует .u-res-block внутри
+ *     .u-res-scheme__inner, которая лежит внутри .scheme__plate
+ *   - размеры ящика + спек-таблица блоков с цветными номерами + резерв
+ *   - warnings (страница 2): если есть compressed_storage / deformation_risk
+ *   - складывание: одна карточка на категорию (без дублей), цвет номера
+ *     совпадает с цветом блока на схеме; картинка из folding/*.webp где
+ *     есть, иначе только заголовок
+ *   - runhead (стр. 2) + ftband row 2: номер заказа
  *
- * Схему НЕ рендерим самостоятельно — переиспользуем UMESTNO.renderScheme
- * из landing_design/result-render.js. Это даёт тот же визуал что на
- * сайте + автоматически работает merge-логика reserve_zones (через
- * bestReserve внутри renderScheme).
- *
- * Картинки фолдинга в landing_design/assets/folding/ есть только для
- * panties / boxers / socks / sport_tops. Для остальных категорий
- * карточка показывается без картинки — только заголовок и текст.
+ * Когда DOM готов — ставит data-pdf-ready="1" на <html>. Puppeteer
+ * ждёт этот атрибут перед снятием PDF (см. waitForFunction в pdf.ts).
  */
 
 (function () {
   'use strict';
 
+  // Картинки фолдинга в landing_design/assets/folding/.
+  // Для остальных категорий fold-card рисуется БЕЗ картинки (только head).
   var FOLDING_IMAGES = {
     panties:       'panties.webp',
     boxers:        'boxers.webp',
@@ -26,12 +30,13 @@
     sport_tops:    'sport_tops.webp'
   };
 
-  // Палитра блоков — совпадает с BLOCK_COLORS в result-render.js (= .b1..b4).
+  // Цветовая палитра зон — совпадает с BLOCK_COLORS в result-render.js
+  // (= .b1..b4 в результирующей схеме на сайте).
   var BLOCK_COLORS = ['#EBDFC4', '#A6B38C', '#EDEAE1', '#DDC59B'];
 
-  // bestReserve — выбираем самый крупный reserve_zone (по площади), при
-  // условии что обе стороны >= RESERVE_MIN_SIDE. Та же логика что в
-  // result-render.js; дублируем потому что наружу она не экспортирована.
+  // bestReserve — выбираем самый крупный reserve_zone (по площади),
+  // при условии что обе стороны >= 8 см. Логика из result-render.js;
+  // дублируем потому что наружу она не экспортирована.
   var RESERVE_MIN_SIDE = 8;
   function bestReserve(rects) {
     var best = null, bestArea = 0;
@@ -46,13 +51,13 @@
   var params = new URLSearchParams(location.search);
   var token = params.get('t') || params.get('token');
 
-  function setText(selector, value) {
-    document.querySelectorAll('[data-pdf="' + selector + '"]').forEach(function (el) {
+  function setText(slot, value) {
+    document.querySelectorAll('[data-pdf="' + slot + '"]').forEach(function (el) {
       el.textContent = value;
     });
   }
-  function setHTML(selector, html) {
-    document.querySelectorAll('[data-pdf="' + selector + '"]').forEach(function (el) {
+  function setHTML(slot, html) {
+    document.querySelectorAll('[data-pdf="' + slot + '"]').forEach(function (el) {
       el.innerHTML = html;
     });
   }
@@ -65,8 +70,9 @@
     if (!iso) return '';
     var d = new Date(iso);
     if (isNaN(d.getTime())) return '';
-    var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' г.';
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    return dd + '.' + mm + '.' + d.getFullYear();
   }
   function fmtCm(n) {
     if (n == null) return '—';
@@ -78,45 +84,46 @@
     var drawer = (scheme.drawer) || (payload.input && payload.input.drawer) || {};
     var zones  = scheme.assigned_zones || [];
 
-    // дата + номер заказа (первые 8 hex-знаков uuid → короткий
-    // человеческий идентификатор, как у курьерских сервисов)
-    setText('date', fmtDate(payload.created_at));
+    // Номер заказа — короткий 8-hex код, как у курьерских сервисов
     var orderShort = payload.order_id ? payload.order_id.split('-')[0].toUpperCase() : '—';
-    setText('order-number', 'Номер заказа: № ' + orderShort);
+    setText('order-num', '№ ' + orderShort);
+    setText('runhead-order', 'ЗАКАЗ № ' + orderShort);
+    setText('ftband-order', 'Заказ № ' + orderShort);
 
-    // размеры ящика
+    // Дата (формат 28.05.2026 — как в дизайн-образце)
+    setText('date', fmtDate(payload.created_at));
+
+    // Размеры ящика
     setText('drawer',
       fmtCm(drawer.w_cm) + ' × ' + fmtCm(drawer.d_cm) + ' × ' + fmtCm(drawer.h_cm) + ' см');
 
-    // таблица блоков — номер в цветном кружке, как на /result/. Резерв
-    // (если есть) показываем последней строкой с прочерком вместо номера.
+    // Спек-таблица: один .brow на каждую assigned_zone, потом (опц.) .brow--rs.
     var label = (window.UMESTNO_CONTENT && UMESTNO_CONTENT.label) || function (s) { return s; };
     var rowsHtml = zones.map(function (z, i) {
       var color = BLOCK_COLORS[i % BLOCK_COLORS.length];
-      var num = '<span class="pdf-blocks__num" style="background:' + color + '">' + (i + 1) + '</span>';
-      return '<tr>' +
-        '<td>' + num + '</td>' +
-        '<td>' + esc(label(z.content_type)) + '</td>' +
-        '<td>' + fmtCm(z.assigned_w_cm) + ' × ' + fmtCm(z.assigned_d_cm) + ' × ' + fmtCm(z.assigned_h_cm) + ' см</td>' +
-      '</tr>';
+      return '<div class="brow">' +
+        '<span class="brow__num" style="background:' + color + '">' + (i + 1) + '</span>' +
+        '<span class="brow__name">' + esc(label(z.content_type)) + '</span>' +
+        '<span class="brow__dim">' + fmtCm(z.assigned_w_cm) + ' × ' + fmtCm(z.assigned_d_cm) + ' × ' + fmtCm(z.assigned_h_cm) + ' см</span>' +
+      '</div>';
     }).join('');
     var reserve = bestReserve(scheme.reserve_zones || []);
     if (reserve) {
-      rowsHtml += '<tr>' +
-        '<td><span class="pdf-blocks__num pdf-blocks__num--reserve">—</span></td>' +
-        '<td>Резерв (свободное место)</td>' +
-        '<td>' + fmtCm(reserve.w_cm) + ' × ' + fmtCm(reserve.d_cm) + ' см</td>' +
-      '</tr>';
+      rowsHtml += '<div class="brow brow--rs">' +
+        '<span class="brow__num brow__num--rs">—</span>' +
+        '<span class="brow__name">Резерв · свободное место</span>' +
+        '<span class="brow__dim">' + fmtCm(reserve.w_cm) + ' × ' + fmtCm(reserve.d_cm) + ' см</span>' +
+      '</div>';
     }
-    setHTML('blocks-tbody', rowsHtml);
+    setHTML('blocks-rows', rowsHtml);
 
     // Схема — переиспользуем рендер с /result/. Он сам разбирается с
-    // assigned_zones и reserve_zones (плюс bestReserve мёрджит).
+    // assigned_zones и reserve_zones (плюс bestReserve мёрджит резерв).
     if (window.UMESTNO && typeof UMESTNO.renderScheme === 'function') {
       UMESTNO.renderScheme(scheme, drawer);
     }
 
-    // warnings
+    // Warnings (страница 2, если есть)
     var warnings = (scheme.content_warnings || []).filter(function (w) {
       return w && (w.warning_code === 'compressed_storage' || w.warning_code === 'deformation_risk');
     });
@@ -130,39 +137,45 @@
         var msg = (window.UMESTNO_CONTENT && UMESTNO_CONTENT.warningText)
           ? UMESTNO_CONTENT.warningText(w.warning_code, w.content_type)
           : '';
-        return '<div class="pdf-warning-item">' +
-                 '<div class="pdf-warning-item__cat">' + esc(catLabel) + '</div>' +
-                 '<div>' + esc(msg) + '</div>' +
+        return '<div class="warn">' +
+                 '<span class="warn__dot">!</span>' +
+                 '<div>' +
+                   '<div class="warn__cat">' + esc(catLabel) + '</div>' +
+                   '<p class="warn__msg">' + esc(msg) + '</p>' +
+                 '</div>' +
                '</div>';
       }).join('');
       setHTML('warnings', wHtml);
     }
 
-    // Складывание — карточка на каждую категорию-зону, без дублей.
-    // Структура: картинка сверху (большая), под ней заголовок, текст.
-    var foldTip = (window.UMESTNO_CONTENT && UMESTNO_CONTENT.foldTip) || function () { return ''; };
+    // Складывание: одна .fold-card на каждую уникальную категорию из зон.
+    // Цвет номера = цвет блока (берём первое появление в зонах). Картинку
+    // показываем только для категорий из FOLDING_IMAGES; для остальных
+    // оставляем .fold-card без картинки (head + рамка-разделитель).
     var seen = {};
     var foldCards = [];
-    zones.forEach(function (z) {
+    zones.forEach(function (z, i) {
       var ct = z.content_type;
       if (!ct || seen[ct]) return;
       seen[ct] = true;
-      var tip = foldTip(ct);
+      var color = BLOCK_COLORS[i % BLOCK_COLORS.length];
       var imgFile = FOLDING_IMAGES[ct];
       var imgHtml = imgFile
-        ? '<img src="../landing_design/assets/folding/' + esc(imgFile) + '" alt="" />'
+        ? '<div class="fold-card__img"><img src="../landing_design/assets/folding/' + esc(imgFile) + '" alt="" /></div>'
         : '';
       foldCards.push(
-        '<div class="pdf-folding-card">' +
-          '<div class="pdf-folding-card__title">' + esc(label(ct)) + '</div>' +
-          '<div class="pdf-folding-card__img">' + imgHtml + '</div>' +
-          '<p class="pdf-folding-card__steps">' + esc(tip) + '</p>' +
+        '<div class="fold-card">' +
+          '<div class="fold-card__head">' +
+            '<span class="fold-card__n" style="background:' + color + '">' + (i + 1) + '</span>' +
+            '<span class="fold-card__title">' + esc(label(ct)) + '</span>' +
+          '</div>' +
+          imgHtml +
         '</div>'
       );
     });
     setHTML('folding', foldCards.join(''));
 
-    // Сигнал Puppeteer'у что рендер закончен (можно вызывать page.pdf())
+    // Сигнал Puppeteer'у что DOM готов и можно снимать PDF.
     document.documentElement.setAttribute('data-pdf-ready', '1');
   }
 
