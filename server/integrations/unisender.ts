@@ -58,9 +58,9 @@ export async function sendEmail(p: SendEmailParams): Promise<SendEmailResult> {
 
   // Реальная отправка через Unisender REST API. Метод sendEmail принимает
   // form-data POST. Поля: api_key, email, sender_name, sender_email,
-  // subject, body, list_id (для транзакционных не требуется, но Unisender
-  // иногда просит — оставим зарезервированно). attachment передаётся как
-  // base64 в поле attachments[имя_файла].
+  // subject, body (только HTML — отдельной текстовой версии метод не
+  // поддерживает, в отличие от Расширенного API UniGo). attachment передаётся
+  // как base64 в поле attachments[имя_файла].
   const form = new URLSearchParams();
   form.set("format", "json");
   form.set("api_key", apiKey);
@@ -69,7 +69,6 @@ export async function sendEmail(p: SendEmailParams): Promise<SendEmailResult> {
   form.set("sender_email", SENDER_EMAIL);
   form.set("subject", p.subject);
   form.set("body", p.bodyHtml);
-  if (p.bodyText) form.set("text_body", p.bodyText);
   if (p.attachment) {
     form.set(`attachments[${p.attachment.filename}]`, p.attachment.contentBase64);
   }
