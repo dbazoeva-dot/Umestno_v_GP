@@ -716,6 +716,65 @@ checkout-странице ЮКассы другое.
 
 **Зависимости:** YooKassa-интеграция работает, paywall в бою.
 
+### BL-16: UTM-трекинг источников трафика → `orders`
+
+**Status:** open — Стадия 3 (маркетинг). Делать перед первым платным
+трафиком; пока рекламы нет, накопления данных тоже нет, но
+инфраструктура должна быть готова к моменту запуска кампаний.
+
+**Контекст:** Сейчас Яндекс.Метрика ловит UTM-параметры на визитах
+(стандартно), но мы не связываем их с заказами в нашей БД. Это значит
+мы можем сказать «было 1000 визитов с `utm_source=instagram`», но
+не «было 12 оплаченных заказов с этого источника на 1788 ₽». Для
+любого маркетингового анализа (CAC, ROI кампаний, какой канал
+работает) нужно связывание UTM → заказ.
+
+В опросе после оплаты вопрос «откуда узнали о нас?» сознательно НЕ
+ставим — он субъективный и шумный (юзеры не помнят / выбирают «гугл»
+по умолчанию). UTM объективнее.
+
+**Что нужно:**
+
+1. **Миграция** `0006_orders_utm.sql` — добавить колонки в `orders`:
+   - `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` (все `text`, nullable)
+   - `referrer text` — заголовок `Referer` на случай прямого захода без UTM
+
+2. **Фронт** (один общий скрипт, который грузим на лендинг + `/configure/`):
+   при загрузке любой страницы — читаем `utm_*` параметры из URL,
+   складываем в `sessionStorage` (ключи `umestno_utm_*`). Если параметров
+   нет — используем уже сохранённое значение (если есть). Так данные
+   переживают переходы лендинг → `/configure/` → оплата.
+
+3. **`/api/calculate`** — принимает `utm_*` поля в POST-body, кладёт в
+   соответствующие колонки `orders`. Referer берём из заголовка
+   `req.get('referer')`.
+
+4. **SQL-аналитика** (примеры в `docs/operations.md` потом):
+
+   ```sql
+   -- Заказы и выручка по utm_source за последний месяц
+   SELECT utm_source, COUNT(*) AS orders, SUM(amount_kop)/100.0 AS revenue_rub
+     FROM orders
+    WHERE status = 'paid' AND created_at >= now() - interval '30 days'
+    GROUP BY utm_source
+    ORDER BY revenue_rub DESC NULLS LAST;
+
+   -- Конверсия по UTM-кампании
+   SELECT utm_campaign,
+          COUNT(*) FILTER (WHERE status = 'paid') AS paid,
+          COUNT(*) AS total,
+          ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'paid') / NULLIF(COUNT(*),0), 2) AS cr_pct
+     FROM orders
+    WHERE created_at >= now() - interval '30 days'
+    GROUP BY utm_campaign
+    ORDER BY paid DESC;
+   ```
+
+**Когда делать:** перед первой платной кампанией (соцсети, контекст,
+блогеры). Без этого деньги в рекламу = слепые цифры.
+
+**Зависимости:** нет — независимо от чего-либо ещё.
+
 ## Codex workflow rule
 
 After every completed iteration:
