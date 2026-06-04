@@ -9,6 +9,7 @@ import { createPool } from "./db/pool.js";
 import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
 import { calculateHandler } from "./api/calculate.js";
 import { resultHandler } from "./api/result.js";
+import { pdfHandler } from "./api/pdf.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
 import {
   originCheck,
@@ -66,6 +67,13 @@ app.post(
 // ── 1.4 — чтение сохранённого расчёта для рендера result-страницы ─
 
 app.get("/api/result/:token", resultHandler(pool, env));
+
+// ── 2.x — PDF-рендер «Схема хранения» через Puppeteer ──────
+// Payment gate такой же, как у /api/result. Готовые PDF кэшируем
+// в /var/www/umestno/storage/pdfs/{token}.pdf — повторные запросы
+// идут с диска без Puppeteer.
+
+app.get("/api/pdf/:token", pdfHandler(pool, env));
 
 // ── 3.x — YooKassa webhook: подтверждение оплаты ────────────
 // Без originCheck/rate-limit — этот endpoint вызывает ЮКасса со своих

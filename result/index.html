@@ -190,32 +190,14 @@
           <ul class="u-res-warn"></ul>
         </section>
 
-        <!-- Дублёр блока «Сохраните схему» в правой колонке — также
-             скрыт до этапа 2 (PDF + email-доставка). Кнопки в сайдбаре
-             на странице сейчас всё равно бы не работали — поэтому
-             убираем их визуально, чтобы не путать юзера.
+        <!-- Дублёр кнопки PDF в правой sticky-колонке. Email-блок отключён
+             до подключения Unisender; вернём когда заработает доставка. -->
         <section class="u-res-save-mini">
-          <a class="u-btn u-btn--sage u-btn--lg" href="#" data-ym-goal="pdf_download">
+          <a class="u-btn u-btn--sage u-btn--lg" data-pdf-link href="#" data-ym-goal="pdf_download">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
             Скачать схему PDF
           </a>
-          <div class="u-res-mail">
-            <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-mail-toggle data-ym-goal="email_send_click">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
-              Отправить на почту
-            </button>
-            <form class="u-res-mail__form" hidden data-mail-form data-ym-goal-submit="email_submit_result">
-              <input type="email" required placeholder="you@example.com" aria-label="Ваш e-mail" />
-              <div class="u-consent">
-                <input type="checkbox" required />
-                <label>Я соглашаюсь на обработку персональных данных в соответствии с <a href="../privacy/" target="_blank" rel="noopener">Политикой конфиденциальности</a>.</label>
-              </div>
-              <button type="submit" class="u-btn u-btn--sage u-btn--lg">Отправить</button>
-            </form>
-            <p class="u-res-mail__done" hidden>Спасибо! Пришлём схему на указанный адрес.</p>
-          </div>
         </section>
-        -->
 
       </div>
     </div>
@@ -285,39 +267,22 @@
     </div>
 
     <!-- ── Save ─────────────────────────────────────────────── -->
-    <!-- Временно скрыто до этапа 2 (PDF-генерация + email-доставка).
-         Сейчас обе кнопки — заглушки без бэкенда: PDF не формируется,
-         форма «Отправить себе на почту» не шлёт письма. Возвращаем
-         блок когда подключим Puppeteer и Unisender (см. README_ENGINE,
-         планы по этапу 2). См. также BL-?? в backlog'е если заведём.
+    <!-- Кнопка PDF подключена к /api/pdf/:token (Puppeteer рендерит /pdf/?t=…).
+         Блок «Отправить на почту» отключён до подключения Unisender + email-
+         воркера (домен на 30-дневной блокировке у Unisender). Когда email-
+         доставка заработает, вернём этот пункт и подвяжем к /api/order/email. -->
     <section class="u-res-save">
       <div class="u-res-save__copy">
         <h2>Сохраните схему</h2>
         <p>Файл останется у вас: можно открыть перед покупкой органайзеров или во время раскладки ящика.</p>
       </div>
       <div class="u-res-save__actions">
-        <a class="u-btn u-btn--sage u-btn--lg" href="#" data-ym-goal="pdf_download">
+        <a class="u-btn u-btn--sage u-btn--lg" data-pdf-link href="#" data-ym-goal="pdf_download">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
           Скачать схему PDF
         </a>
-        <div class="u-res-mail">
-          <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-mail-toggle data-ym-goal="email_send_click">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
-            Отправить себе на почту
-          </button>
-          <form class="u-res-mail__form" hidden data-mail-form data-ym-goal-submit="email_submit_result">
-            <input type="email" required placeholder="you@example.com" aria-label="Ваш e-mail" />
-            <div class="u-consent">
-              <input type="checkbox" required />
-              <label>Я соглашаюсь на обработку персональных данных в соответствии с <a href="../privacy/" target="_blank" rel="noopener">Политикой конфиденциальности</a>.</label>
-            </div>
-            <button type="submit" class="u-btn u-btn--sage u-btn--lg">Отправить</button>
-          </form>
-          <p class="u-res-mail__done" hidden>Спасибо! Пришлём схему на указанный адрес.</p>
-        </div>
       </div>
     </section>
-    -->
 
     <!-- ── Bottom CTA ───────────────────────────────────────── -->
     <section class="u-res-final">
@@ -382,6 +347,16 @@
   (function () {
     var params = new URLSearchParams(location.search);
     var token = params.get('t') || params.get('token');
+
+    // Подвязываем кнопки «Скачать PDF» к /api/pdf/:token. Делается
+    // как можно раньше, чтобы клик работал даже пока поллинг крутится
+    // (на оплаченном заказе скачивание сработает; на неоплаченном —
+    // эндпойнт сам вернёт 402, и браузер просто не скачает файл).
+    if (token) {
+      document.querySelectorAll('[data-pdf-link]').forEach(function (a) {
+        a.href = '/api/pdf/' + encodeURIComponent(token);
+      });
+    }
 
     function fillChips(input) {
       if (!input) return;
