@@ -40,6 +40,13 @@ function getBrowser(): Promise<Browser> {
         // /dev/shm на маленьких VPS обычно ~64МБ, Chrome падает с ENOMEM
         // если рендерит сложную страницу — лучше использовать tmpfs/diск.
         "--disable-dev-shm-usage",
+        // На сервере нет GPU — headless рендерит на CPU.
+        "--disable-gpu",
+        // Без $HOME (ProtectHome=yes в systemd) crashpad не находит куда
+        // писать свою БД и падает с «--database is required». Гасим репортер
+        // и явно указываем user-data-dir в писаемое место.
+        "--disable-crash-reporter",
+        "--user-data-dir=/var/cache/puppeteer/user-data",
       ],
     });
     browserPromise
