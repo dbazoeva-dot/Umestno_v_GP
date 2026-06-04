@@ -11,6 +11,7 @@ import { calculateHandler } from "./api/calculate.js";
 import { resultHandler } from "./api/result.js";
 import { pdfHandler } from "./api/pdf.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
+import { startMailerWorker } from "./workers/mailer.js";
 import {
   originCheck,
   calculateLimiterPerMinute,
@@ -93,6 +94,9 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 async function main() {
   await warmupCatalog();
+  // Email-воркер. Если UNISENDER_API_KEY не задан — крутится вхолостую,
+  // письма просто копятся в emails_outbox как 'queued'.
+  startMailerWorker(pool);
   app.listen(env.PORT, "127.0.0.1", () => {
     console.log(`[api] umestno listening on http://127.0.0.1:${env.PORT}  (env=${env.NODE_ENV})`);
   });
