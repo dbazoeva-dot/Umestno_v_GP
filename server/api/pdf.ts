@@ -100,7 +100,13 @@ export function pdfHandler(pool: Pool, env: Env) {
     }
 
     const shortId = order.id.split("-")[0].toUpperCase();
-    const filename = `umestno-${shortId}.pdf`;
+    // Content-Disposition с UTF-8 именем по RFC 5987. filename=… —
+    // ASCII-фолбэк для совсем старых клиентов; filename*=UTF-8'' —
+    // современные браузеры берут это поле и показывают кириллицу.
+    const filenameUtf8 = `Уместно. Схема хранения №${shortId}.pdf`;
+    const filenameAscii = `umestno-${shortId}.pdf`;
+    const contentDisposition =
+      `attachment; filename="${filenameAscii}"; filename*=UTF-8''${encodeURIComponent(filenameUtf8)}`;
     const filePath = path.join(PDF_STORAGE_DIR, `${token}.pdf`);
 
     await fs.mkdir(PDF_STORAGE_DIR, { recursive: true });
@@ -109,7 +115,7 @@ export function pdfHandler(pool: Pool, env: Env) {
     try {
       const cached = await fs.readFile(filePath);
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.setHeader("Content-Disposition", contentDisposition);
       return res.send(cached);
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -122,7 +128,7 @@ export function pdfHandler(pool: Pool, env: Env) {
       const buf = await renderPdf(env, token);
       await fs.writeFile(filePath, buf);
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.setHeader("Content-Disposition", contentDisposition);
       res.send(buf);
     } catch (e) {
       console.error("[pdf] render failed", e);
