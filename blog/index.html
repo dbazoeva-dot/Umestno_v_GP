@@ -1,29 +1,26 @@
 <!doctype html>
-<html lang="ru" data-fontpair="garamond">
+<html lang="ru" data-fontpair="garamond" data-accent="sage">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="canonical" href="https://umestno-home.ru/blog/" />
 <title>Журнал | Уместно — про порядок, пространство и хранение</title>
-<meta name="description" content="Журнал Уместно — статьи об организации хранения, проектировании пространства и работе с вещами. Принципы, конкретные приёмы, истории." />
+<meta name="description" content="Журнал Уместно — спокойные тексты про порядок без фанатизма: как хранить вещи так, чтобы каждое утро начиналось без поисков." />
+<meta name="theme-color" content="#FFFDF9" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://umestno-home.ru/blog/" />
 <meta property="og:title" content="Журнал | Уместно — про порядок, пространство и хранение" />
-<meta property="og:description" content="Журнал Уместно — статьи об организации хранения, проектировании пространства и работе с вещами. Принципы, конкретные приёмы, истории." />
+<meta property="og:description" content="Спокойные тексты про порядок без фанатизма: как хранить вещи так, чтобы каждое утро начиналось без поисков." />
 <meta property="og:image" content="https://umestno-home.ru/landing_design/assets/og-cover.webp" />
 <meta property="og:image:type" content="image/webp" />
 <meta property="og:image:width" content="1672" />
 <meta property="og:image:height" content="941" />
-<meta name="theme-color" content="#FFFDF9" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Журнал | Уместно" />
-<meta property="og:description" content="Статьи об организации хранения и работе с пространством." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../landing_design/styles.css" />
 <link rel="stylesheet" href="../landing.css" />
-<link rel="stylesheet" href="../landing_design/blog.css?v=1" />
+<link rel="stylesheet" href="../landing_design/blog.css?v=2" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -66,64 +63,131 @@
 </header>
 
 <!-- ─────────────────────────────────────────────────────────
-     ЛИСТИНГ ЖУРНАЛА.
-     Каждая статья — отдельная папка `/blog/<slug>/` с index.html
-     внутри. Ниже руками поддерживаем два списка:
-       1) featured — самая свежая/главная (одна).
-       2) grid — все остальные карточки.
-     Шаблон статьи: /blog/_template/index.html
-     Инструкция: см. раздел «Журнал — как добавить статью» в README.
+     ЛИСТИНГ ЖУРНАЛА (новый дизайн).
+     Каждая статья — отдельная папка `/blog/<slug>/` с index.html.
+     Руками поддерживаем: featured (одна) + сетку карточек.
+     Карточки 02–07 — заглушки будущих статей (href="#"), заполняем
+     по мере выхода материалов. Шаблон статьи: /blog/_template/.
 ───────────────────────────────────────────────────────── -->
-<main class="u-blog">
-  <div class="u-container">
+<main>
+  <!-- ── Journal masthead ────────────────────────────────────────── -->
+  <section class="j-mast">
+    <div class="u-container">
+      <div class="j-mast__topline">
+        <div class="j-mast__eyebrow"><span class="rule"></span>Журнал «Уместно»</div>
+        <div class="j-mast__issue">
+          <span>Выпуск <b>№&nbsp;1</b></span><span class="dot">·</span>
+          <span>Июнь 2026</span><span class="dot">·</span>
+          <span>про порядок и хранение</span>
+        </div>
+      </div>
+      <div class="j-mast__inner">
+        <h1>Дом, где<br>всё <em>на месте</em></h1>
+        <p class="j-mast__lede">Спокойные тексты про порядок без фанатизма: как хранить вещи так, чтобы каждое утро начиналось без поисков.</p>
+      </div>
+    </div>
+  </section>
 
-    <section class="u-blog-hero">
-      <div class="u-blog__kicker">N° 01 · Журнал</div>
-      <h1 class="u-blog-hero__title">Про порядок, пространство и хранение</h1>
-      <p class="u-blog-hero__lede">Конкретные приёмы и идеи о том, как сделать ящики и шкафы удобнее в быту — без долгих ремонтов и магазинной охоты.</p>
-    </section>
+  <!-- ── Featured spread ─────────────────────────────────────────── -->
+  <section class="u-container">
+    <article class="j-feature">
+      <div class="j-feature__media">
+        <span class="j-feature__badge">Выбор редакции</span>
+        <a href="./kak-navesti-poryadok-v-komode/" data-ym-goal="blog_article_open" aria-hidden="true" tabindex="-1">
+          <img src="../assets/images/blog/komod-cover.webp" alt="" loading="eager" decoding="async" />
+        </a>
+      </div>
+      <div class="j-feature__body">
+        <span class="j-feature__cat">Комод</span>
+        <h2 class="j-feature__title"><a href="./kak-navesti-poryadok-v-komode/" data-ym-goal="blog_article_open">Как навести <em>порядок</em> в комоде</a></h2>
+        <p class="j-feature__excerpt">Носки смешиваются с бельём, стопки расползаются, а красивые органайзеры не всегда спасают. Разбираем, как подойти к ящику как к маленькой системе хранения — с зонами, размерами и местом для каждой категории вещей.</p>
+        <div class="j-feature__meta">
+          <span>Комод</span><span class="sep"></span><span>8 мин чтения</span>
+        </div>
+        <a class="j-feature__more" href="./kak-navesti-poryadok-v-komode/" data-ym-goal="blog_article_open">Читать материал <span class="arr">→</span></a>
+      </div>
+    </article>
+  </section>
 
-    <!-- featured (одна, самая важная) -->
-    <section class="u-blog-featured">
-      <a class="u-blog-featured__img" href="./kak-organizovat-yashik/" aria-hidden="true" data-ym-goal="blog_article_open">
-        <img src="../assets/images/blog/cover-organize-drawer.webp" alt="" loading="lazy" decoding="async" />
+  <!-- ── Rubrics + grid ──────────────────────────────────────────── -->
+  <section class="u-container u-section--decor" data-chapter="02" data-chapter-label="Свежее в журнале">
+    <nav class="j-rubrics">
+      <span class="j-rubrics__lbl">Рубрики</span>
+      <a class="j-rubric is-active" href="#">Все</a>
+      <a class="j-rubric" href="#">Шкаф</a>
+      <a class="j-rubric" href="#">Комод</a>
+      <a class="j-rubric" href="#">Органайзеры</a>
+      <a class="j-rubric" href="#">Складывание</a>
+      <a class="j-rubric" href="#">Сервис</a>
+    </nav>
+
+    <div class="j-grid">
+      <!-- 02 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">02</span><img src="../assets/images/blog/shkaf-poryadok.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Шкаф</div>
+        <h3 class="j-card__title">Порядок в шкафу: как разложить вещи так, чтобы всё было видно и не перемешивалось</h3>
+        <div class="j-card__meta"><span>Шкаф</span><span class="sep"></span><span>7 мин</span></div>
       </a>
-      <div class="u-blog-featured__body">
-        <div class="u-blog__kicker">Гайд</div>
-        <h2 class="u-blog-featured__title"><a href="./kak-organizovat-yashik/" data-ym-goal="blog_article_open">Как организовать ящик: 5 шагов от хаоса к порядку</a></h2>
-        <p class="u-blog-featured__lede">Простая последовательность — от того, как измерить ящик и решить, что в нём будет жить, до того, как удержать порядок через месяц после уборки.</p>
-        <div class="u-blog__meta">
-          <span>26 мая 2026</span><span>7 минут чтения</span>
+      <!-- 03 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">03</span><img src="../assets/images/blog/organizaciya-doma.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Дом</div>
+        <h3 class="j-card__title">Организация пространства в доме: как сделать хранение удобным, а не просто красивым</h3>
+        <div class="j-card__meta"><span>Дом</span><span class="sep"></span><span>9 мин</span></div>
+      </a>
+      <!-- 04 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">04</span><img src="../assets/images/blog/organayzer-belya.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Органайзер для белья в комод: как выбрать размер, секции и высоту</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>6 мин</span></div>
+      </a>
+      <!-- 05 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">05</span><img src="../assets/images/blog/razdeliteli-yaschikov.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Разделители для ящиков: когда они помогают, а когда превращаются в ручной «Тетрис»</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>5 мин</span></div>
+      </a>
+      <!-- 06 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">06</span><img src="../assets/images/blog/kak-slozhit-veschi.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Складывание</div>
+        <h3 class="j-card__title">Как компактно сложить бельё, майки, джинсы и свитеры для хранения в шкафу и комоде</h3>
+        <div class="j-card__meta"><span>Складывание</span><span class="sep"></span><span>10 мин</span></div>
+      </a>
+      <!-- 07 — будущая статья -->
+      <a class="j-card" href="#">
+        <div class="j-card__media"><span class="j-card__num">07</span><img src="../assets/images/blog/kak-rabotaet-umestno.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Сервис</div>
+        <h3 class="j-card__title">Как работает «Уместно»: схема хранения для ящика по вашим размерам</h3>
+        <div class="j-card__meta"><span>Сервис</span><span class="sep"></span><span>4 мин</span></div>
+      </a>
+    </div>
+
+    <!-- ── Final CTA band (терракотовый «остров») ─────────────────── -->
+    <section class="u-finalcta u-finalcta--fade j-cta">
+      <div class="u-finalcta__inner">
+        <div class="u-finalcta__art">
+          <img src="../assets/images/Final%20CTA.webp" alt="Ящик комода с органайзерами и аккуратно сложенными вещами" />
+        </div>
+        <div class="u-finalcta__copy">
+          <span class="j-cta__eyebrow">Схема хранения</span>
+          <h3>Получите долгосрочный <em>порядок</em> и удобное хранение в своём ящике</h3>
+          <p>Начните с любого сценария, чтобы понять, насколько это быстро. Полная схема расчёта за 149 ₽, без подписок.</p>
+          <div class="u-finalcta__row">
+            <a class="u-btn u-btn--accent u-btn--lg" href="../configure/" data-ym-goal="cta_blog_index">Начать подбор →</a>
+            <div class="j-cta__trust">
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>149 ₽ один раз</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Без подписок</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Файл на почту</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-
-    <hr class="u-blog__rule" />
-
-    <!-- grid — остальные статьи -->
-    <section class="u-blog-grid" aria-label="Все статьи">
-      <!-- Когда статей будет ≥ 2, добавляй карточки сюда. Шаблон одной карточки —
-           см. ниже (закомментировано). Сейчас одна заглушка-«скоро». -->
-      <article class="u-blog-card">
-        <div class="u-blog-card__img" aria-hidden="true"></div>
-        <div class="u-blog__kicker">Скоро</div>
-        <h3 class="u-blog-card__title">Следующая статья — в подготовке</h3>
-        <p class="u-blog-card__lede">Скоро здесь появятся материалы о складывании, выборе органайзеров и психологии порядка.</p>
-      </article>
-      <!--
-      <article class="u-blog-card">
-        <a class="u-blog-card__img" href="./slug-novoi-stati/">
-          <img src="../assets/images/blog/cover-slug.webp" alt="" loading="lazy" />
-        </a>
-        <div class="u-blog__kicker">Категория</div>
-        <h3 class="u-blog-card__title"><a href="./slug-novoi-stati/">Заголовок статьи</a></h3>
-        <p class="u-blog-card__lede">Краткое описание в 1–2 предложения.</p>
-        <div class="u-blog__meta"><span>Дата</span><span>N минут чтения</span></div>
-      </article>
-      -->
-    </section>
-
-  </div>
+  </section>
 </main>
 
 <!-- ── Shared footer ──────────────────────────────────────── -->
