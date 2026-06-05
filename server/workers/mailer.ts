@@ -20,6 +20,14 @@ const EMAIL_WORKER_INTERVAL_MS = 30_000;
 const EMAIL_BATCH_SIZE = 10;
 const PDF_STORAGE_DIR = "/var/www/umestno/storage/pdfs";
 
+// MVP-режим: вместо отправки клиенту шлём готовое письмо себе
+// на info@, потом пересылаем клиенту вручную. Причина — Unisender
+// на free-тарифе принимает отправку только на подтверждённые email,
+// а добавлять каждого клиента в подтверждённые невозможно. Когда
+// подключим платный тариф — выпиливаем эту ветку, шлём напрямую
+// на row.to_email.
+const FORWARD_TO_EMAIL = process.env.FORWARD_TO_EMAIL ?? "info@umestno-home.ru";
+
 interface OutboxRow {
   id: string;
   to_email: string;
@@ -79,15 +87,32 @@ async function buildEmail(row: OutboxRow): Promise<{
       ? `\nМы развиваем «Уместно» как сервис для удобного и эстетичного хранения, поэтому будем благодарны, если после просмотра вы пройдёте короткий опрос.\n\nОн займёт 2–3 минуты и поможет нам понять, что можно сделать ещё понятнее и полезнее. Для нас это очень ценно.\n\n${surveyUrl}\n`
       : "";
 
+    // Шапка для пересылки — видна только Дзере в info@. Удаляется перед
+    // тем как переслать клиенту (Forward в mail.ru → редактируй → Send).
+    const shortId = row.payload?.order_id?.split("-")[0]?.toUpperCase() ?? "—";
+    const adminHeaderHtml =
+      `<div style="background:#FBF3E4;border:1px solid #E5D9C0;border-radius:6px;padding:12px 16px;margin:0 0 16px;font-family:sans-serif;font-size:13px;color:#6A5A2A">` +
+        `<div style="font-weight:600;margin-bottom:4px">📨 ПЕРЕСЛАТЬ КЛИЕНТУ — удали этот блок перед отправкой</div>` +
+        `<div>Адресат: <b>${row.to_email}</b></div>` +
+        `<div>Заказ: <b>№ ${shortId}</b></div>` +
+      `</div>`;
+    const adminHeaderText =
+      `── ПЕРЕСЛАТЬ КЛИЕНТУ (удали этот блок перед отправкой) ──\n` +
+      `Адресат: ${row.to_email}\n` +
+      `Заказ: № ${shortId}\n` +
+      `─────────────────────────────────────────────────────\n\n`;
+
     return {
-      subject: "Ваша схема хранения готова",
+      subject: `→ ${row.to_email} · Уместно. Схема хранения готова`,
       bodyHtml:
+        adminHeaderHtml +
         `<p>Здравствуйте!</p>` +
         `<p>${fileLine}</p>` +
         surveyBlockHtml +
         `<p>Спасибо, что выбрали нас.</p>` +
         `<p>Команда «Уместно»</p>`,
       bodyText:
+        adminHeaderText +
         `Здравствуйте!\n\n` +
         `${fileLineText}\n` +
         surveyBlockText +
@@ -120,8 +145,13 @@ async function processOnce(pool: Pool) {
         continue;
       }
 
+      // MVP-режим: шлём НЕ на email клиента, а на info@ (FORWARD_TO_EMAIL).
+      // Дзера видит готовое письмо, чистит шапку-инструкцию и пересылает
+      // клиенту вручную через Forward в mail.ru. Email клиента уже зашит
+      // в built.subject и built.bodyHtml/bodyText (admin header), чтоб
+      // не потерялся при пересылке.
       const result = await sendEmail({
-        to: row.to_email,
+        to: FORWARD_TO_EMAIL,
         subject: built.subject,
         bodyHtml: built.bodyHtml,
         bodyText: built.bodyText,
