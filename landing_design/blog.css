@@ -218,7 +218,7 @@ image-slot::part(empty){
   font-family: var(--f-mono); font-size: var(--fs-2xs);
   letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-accent);
 }
-.j-cta .u-finalcta__copy h3{ font-size: clamp(28px, 3vw, 44px); letter-spacing: var(--tr-tight); max-width: 18ch; }
+.j-cta .u-finalcta__copy h3{ font-size: clamp(28px, 3vw, 44px); letter-spacing: var(--tr-tight); max-width: 26ch; text-wrap: balance; }
 .j-cta .u-finalcta__copy h3 em{
   font-style: normal; font-weight: inherit; color: var(--u-accent);
 }
