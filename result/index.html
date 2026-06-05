@@ -190,12 +190,19 @@
           <ul class="u-res-warn"></ul>
         </section>
 
-        <!-- Дублёр кнопки PDF в правой sticky-колонке. Email-блок отключён
-             до подключения Unisender; вернём когда заработает доставка. -->
+        <!-- Дублёр действий в правой sticky-колонке (видно из любого
+             места страницы без прокрутки). Email-кнопка не открывает
+             форму прямо здесь — кликом скроллит к основной секции
+             «Сохраните схему» внизу, чтобы пользоваться единым стейтом
+             формы (она там полнее с лейблами и подсказками). -->
         <section class="u-res-save-mini">
           <a class="u-btn u-btn--sage u-btn--lg" data-pdf-link href="#" data-ym-goal="pdf_download">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
             Скачать схему PDF
+          </a>
+          <a class="u-btn u-btn--ghost u-btn--lg" href="#u-res-save-main" data-ym-goal="email_send_click">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            Отправить на почту
           </a>
         </section>
 
@@ -270,7 +277,7 @@
     <!-- Кнопка PDF → /api/pdf/:token (Puppeteer).
          Форма email → POST /api/order/:token/send-email (см. orderSendEmail.ts).
          Письмо уходит ТОЛЬКО по явному клику клиента (не из webhook'а). -->
-    <section class="u-res-save">
+    <section class="u-res-save" id="u-res-save-main">
       <div class="u-res-save__copy">
         <h2>Сохраните схему</h2>
         <p>Файл останется у вас: можно открыть перед покупкой органайзеров или во время раскладки ящика.</p>
