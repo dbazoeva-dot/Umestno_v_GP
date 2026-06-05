@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../../landing_design/styles.css" />
 <link rel="stylesheet" href="../../landing.css" />
-<link rel="stylesheet" href="../../landing_design/blog.css?v=4" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=5" />
 
 <script type="application/ld+json">
 {
@@ -383,6 +383,45 @@
     if(current && map[current]) map[current].classList.add('is-active');
   }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
   heads.forEach(function(h){ io.observe(h); });
+})();
+</script>
+<script>
+/* Кнопки «Поделиться» — проставляем ссылки шеринга из текущего URL */
+(function(){
+  var url = location.href.split('#')[0];
+  var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
+  var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media);
+  var intents = {
+    'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
+    'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + t + (media ? '&media=' + m : '')
+  };
+  document.querySelectorAll('.p-share a').forEach(function(a){
+    var label = a.getAttribute('aria-label') || '';
+    if (intents[label]) {
+      a.href = intents[label]; a.target = '_blank'; a.rel = 'noopener';
+    } else if (label.indexOf('Скопировать') === 0) {
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var feedback = function(){
+          var prev = a.getAttribute('aria-label');
+          a.setAttribute('aria-label', 'Ссылка скопирована');
+          a.classList.add('is-copied');
+          setTimeout(function(){ a.setAttribute('aria-label', prev); a.classList.remove('is-copied'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(feedback, feedback);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (_) {}
+          document.body.removeChild(ta); feedback();
+        }
+      });
+    }
+  });
 })();
 </script>
 </body>

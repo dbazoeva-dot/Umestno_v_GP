@@ -330,7 +330,8 @@ image-slot::part(empty){
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--u-ink-2); transition: color .15s ease, border-color .15s ease, background-color .15s ease;
 }
-.p-share a:hover{ color: #fff; background: var(--u-accent); border-color: var(--u-accent); }
+.p-share a:hover,
+.p-share a.is-copied{ color: #fff; background: var(--u-accent); border-color: var(--u-accent); }
 @media (max-width: 640px){ .p-byline{ flex-direction: column; align-items: flex-start; } }
 
 /* hero image */
