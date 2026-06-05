@@ -200,10 +200,10 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
             Скачать схему PDF
           </a>
-          <a class="u-btn u-btn--ghost u-btn--lg" href="#u-res-save-main" data-ym-goal="email_send_click">
+          <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-mail-open data-ym-goal="email_send_click">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
             Отправить на почту
-          </a>
+          </button>
         </section>
 
       </div>
@@ -505,11 +505,24 @@
       var doneEl    = document.querySelector('[data-mail-done]');
       if (!toggleBtn || !form) return;
 
-      toggleBtn.addEventListener('click', function () {
+      function openForm() {
         form.hidden = false;
         toggleBtn.hidden = true;
-        try { input.focus(); } catch (e) {}
-      });
+        try { input.focus({ preventScroll: true }); } catch (e) {}
+      }
+
+      toggleBtn.addEventListener('click', openForm);
+
+      // Дубль-кнопка в правом sticky-сайдбаре: скроллим к секции и
+      // сразу раскрываем форму — без двух кликов.
+      var sideOpen = document.querySelector('[data-mail-open]');
+      if (sideOpen) {
+        sideOpen.addEventListener('click', function () {
+          var target = document.getElementById('u-res-save-main');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          openForm();
+        });
+      }
 
       function showErr(msg) {
         if (!errEl) return;
