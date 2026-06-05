@@ -251,10 +251,25 @@
           var fit = data.fit_status;
           var ok = fit === 'fit_all' || fit === 'fit_all_after_adjustment';
 
+          // Метрика-цели по результату /api/calculate:
+          //   calc_submitted — успешный сабмит (получили token + fit_status)
+          //   fit_all / fit_partial / no_scheme — разбивка по исходу
+          if (window.UMESTNO_TRACK) {
+            try {
+              window.UMESTNO_TRACK('calc_submitted');
+              if (ok)                       window.UMESTNO_TRACK('fit_all');
+              else if (fit === 'fit_partial') window.UMESTNO_TRACK('fit_partial');
+              else                          window.UMESTNO_TRACK('no_scheme');
+            } catch (_) {}
+          }
+
           // Paywall + fit_all: сервер уже создал YooKassa-платёж и вернул
           // payment_url. Редиректим юзера в ЮКассу; после оплаты вернётся
           // на /result/?t=TOKEN, где поллинг ждёт webhook'а.
           if (ok && data.can_pay && data.payment_url) {
+            if (window.UMESTNO_TRACK) {
+              try { window.UMESTNO_TRACK('payment_redirect_yookassa'); } catch (_) {}
+            }
             location.href = data.payment_url;
             return;
           }
@@ -294,6 +309,10 @@
   function openEmailModal(basePayload) {
     var existing = document.getElementById('u-email-modal');
     if (existing) existing.remove();
+
+    if (window.UMESTNO_TRACK) {
+      try { window.UMESTNO_TRACK('email_modal_open'); } catch (_) {}
+    }
 
     var modal = document.createElement('div');
     modal.id = 'u-email-modal';
@@ -368,6 +387,9 @@
         email: email,
         consent_personal_data: true,
       });
+      if (window.UMESTNO_TRACK) {
+        try { window.UMESTNO_TRACK('email_modal_submit'); } catch (_) {}
+      }
       close();
       submitCalculation(fullPayload);
     });
