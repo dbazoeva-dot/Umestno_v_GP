@@ -636,8 +636,8 @@ image-slot::part(empty){
   .p-pull{ margin: 32px 0; padding-left: 22px; }
   .p-pull p{ font-size: clamp(20px, 5.5vw, 26px); }
 
-  /* TOC: compact horizontal scroll row */
-  .p-toc{ gap: 6px 14px; margin-bottom: 30px; }
+  /* TOC: на телефоне — по одному пункту в строке (не парами) */
+  .p-toc{ flex-direction: column; flex-wrap: nowrap; gap: 2px; margin-bottom: 30px; }
   .p-toc a{ font-size: var(--fs-xs); }
 
   /* related grid */
