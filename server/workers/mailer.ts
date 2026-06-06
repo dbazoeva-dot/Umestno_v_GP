@@ -36,6 +36,9 @@ interface OutboxRow {
   to_email: string;
   template: string;
   payload: { order_token?: string; order_id?: string };
+  /** FK на orders.id, хранится отдельной колонкой (не только в payload).
+   *  Используется для номера заказа в письме — надёжнее чем payload. */
+  order_id: string | null;
 }
 
 /** Шаблоны писем. На MVP — один шаблон 'result' для оплаченного заказа.
@@ -55,25 +58,24 @@ async function buildEmail(row: OutboxRow): Promise<{
     // отправляем без вложения (юзер скачает по ссылке). Когда подключим
     // принудительный рендер из воркера — добавим тут вызов rendePdf.
     //
-    // Unisender режет attachment размером >1 МБ (это размер тела
-    // form-data, т.е. base64-кодированный). Чтобы письма с тяжёлыми
-    // PDF не падали с "exceeded the maximum allowed value (1048576)",
-    // если base64 превышает безопасный порог — снимаем вложение и
-    // переключаемся на текст со ссылкой.
+    // SMTP через mail.ru держит вложения до 20 МБ, поэтому даже
+    // тяжёлые PDF (со множеством зон / иллюстраций SKU) уходят
+    // вложением. Лимит ставим с запасом — 18 МБ raw → ~24 МБ
+    // base64-чёрного-ящика nodemailer'а; mail.ru мерит исходный
+    // размер, так что raw-проверка точнее.
+    const shortId = (row.order_id ?? row.payload?.order_id)?.split("-")[0]?.toUpperCase() ?? "";
     let attachment: { filename: string; contentBase64: string; contentType: string } | undefined;
     try {
       const pdfPath = path.join(PDF_STORAGE_DIR, `${token}.pdf`);
       const buf = await fs.readFile(pdfPath);
-      const base64 = buf.toString("base64");
-      if (base64.length > 1_000_000) {
-        console.log("[mailer] PDF too big for Unisender attachment, sending link only:", {
-          token, pdf_bytes: buf.length, base64_bytes: base64.length,
+      if (buf.length > 18 * 1024 * 1024) {
+        console.log("[mailer] PDF too big for SMTP attachment, sending link only:", {
+          token, pdf_bytes: buf.length,
         });
       } else {
-        const shortId = row.payload?.order_id?.split("-")[0]?.toUpperCase() ?? "";
         attachment = {
           filename: shortId ? `Уместно. Схема хранения №${shortId}.pdf` : "Уместно. Схема хранения.pdf",
-          contentBase64: base64,
+          contentBase64: buf.toString("base64"),
           contentType: "application/pdf",
         };
       }
@@ -103,32 +105,33 @@ async function buildEmail(row: OutboxRow): Promise<{
       ? `\nМы развиваем «Уместно» как сервис для удобного и эстетичного хранения, поэтому будем благодарны, если после просмотра вы пройдёте короткий опрос.\n\nОн займёт 2–3 минуты и поможет нам понять, что можно сделать ещё понятнее и полезнее. Для нас это очень ценно.\n\n${surveyUrl}\n`
       : "";
 
-    // Шапка для пересылки — видна только Дзере в info@. Удаляется перед
-    // тем как переслать клиенту (Forward в mail.ru → редактируй → Send).
-    const shortId = row.payload?.order_id?.split("-")[0]?.toUpperCase() ?? "—";
-    const adminHeaderHtml =
-      `<div style="background:#FBF3E4;border:1px solid #E5D9C0;border-radius:6px;padding:12px 16px;margin:0 0 16px;font-family:sans-serif;font-size:13px;color:#6A5A2A">` +
-        `<div style="font-weight:600;margin-bottom:4px">📨 ПЕРЕСЛАТЬ КЛИЕНТУ — удали этот блок перед отправкой</div>` +
-        `<div>Адресат: <b>${row.to_email}</b></div>` +
-        `<div>Заказ: <b>№ ${shortId}</b></div>` +
-      `</div>`;
-    const adminHeaderText =
-      `── ПЕРЕСЛАТЬ КЛИЕНТУ (удали этот блок перед отправкой) ──\n` +
-      `Адресат: ${row.to_email}\n` +
-      `Заказ: № ${shortId}\n` +
-      `─────────────────────────────────────────────────────\n\n`;
+    // Subject и body — сразу клиентского вида (тема и тело такие же,
+    // как увидит покупатель). Чтобы Дзера видела куда форвардить —
+    // одна короткая серая строка в самом верху письма; в mail.ru
+    // удаляется одним нажатием Backspace перед Forward.
+    const subjectCustomer = shortId
+      ? `Уместно. Схема хранения готова №${shortId}`
+      : `Уместно. Схема хранения готова`;
+    const forwardHintHtml =
+      `<p style="margin:0 0 16px;font-family:sans-serif;font-size:12px;color:#999">` +
+        `→ Переслать на: <b>${row.to_email}</b>` +
+        (shortId ? ` · № ${shortId}` : "") +
+        ` <span style="color:#bbb">(удали эту строку перед отправкой)</span>` +
+      `</p>`;
+    const forwardHintText =
+      `→ Переслать на: ${row.to_email}${shortId ? ` · № ${shortId}` : ""} (удали эту строку перед отправкой)\n\n`;
 
     return {
-      subject: `→ ${row.to_email} · Уместно. Схема хранения готова`,
+      subject: subjectCustomer,
       bodyHtml:
-        adminHeaderHtml +
+        forwardHintHtml +
         `<p>Здравствуйте!</p>` +
         `<p>${fileLine}</p>` +
         surveyBlockHtml +
         `<p>Спасибо, что выбрали нас.</p>` +
         `<p>Команда «Уместно»</p>`,
       bodyText:
-        adminHeaderText +
+        forwardHintText +
         `Здравствуйте!\n\n` +
         `${fileLineText}\n` +
         surveyBlockText +
@@ -142,7 +145,7 @@ async function buildEmail(row: OutboxRow): Promise<{
 
 async function processOnce(pool: Pool) {
   const q = await pool.query<OutboxRow>(
-    `SELECT id, to_email, template, payload
+    `SELECT id, to_email, template, payload, order_id
        FROM emails_outbox
       WHERE status = 'queued'
       ORDER BY queued_at
