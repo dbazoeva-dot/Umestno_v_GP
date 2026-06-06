@@ -591,8 +591,10 @@ image-slot::part(empty){
    MOBILE
    ════════════════════════════════════════════════════════════════════ */
 @media (max-width: 680px){
-  /* kill the doubled side space: container centring margin + gutter */
-  :root{ --container: 100vw; --gutter: 20px; }
+  /* kill the doubled side space: container centring margin + gutter.
+     100% (не 100vw!) — иначе контейнер шире вьюпорта на ширину
+     вертикального скроллбара → горизонтальный скролл всей страницы. */
+  :root{ --container: 100%; --gutter: 20px; }
 
   /* ── article hero ── */
   .p-wrap{ padding-top: 18px; }
