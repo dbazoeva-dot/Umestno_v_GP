@@ -51,16 +51,29 @@ async function buildEmail(row: OutboxRow): Promise<{
     // Подтягиваем PDF из кэша, если уже отрендерен; если нет — пока
     // отправляем без вложения (юзер скачает по ссылке). Когда подключим
     // принудительный рендер из воркера — добавим тут вызов rendePdf.
+    //
+    // Unisender режет attachment размером >1 МБ (это размер тела
+    // form-data, т.е. base64-кодированный). Чтобы письма с тяжёлыми
+    // PDF не падали с "exceeded the maximum allowed value (1048576)",
+    // если base64 превышает безопасный порог — снимаем вложение и
+    // переключаемся на текст со ссылкой.
     let attachment: { filename: string; contentBase64: string; contentType: string } | undefined;
     try {
       const pdfPath = path.join(PDF_STORAGE_DIR, `${token}.pdf`);
       const buf = await fs.readFile(pdfPath);
-      const shortId = row.payload?.order_id?.split("-")[0]?.toUpperCase() ?? "";
-      attachment = {
-        filename: shortId ? `Уместно. Схема хранения №${shortId}.pdf` : "Уместно. Схема хранения.pdf",
-        contentBase64: buf.toString("base64"),
-        contentType: "application/pdf",
-      };
+      const base64 = buf.toString("base64");
+      if (base64.length > 1_000_000) {
+        console.log("[mailer] PDF too big for Unisender attachment, sending link only:", {
+          token, pdf_bytes: buf.length, base64_bytes: base64.length,
+        });
+      } else {
+        const shortId = row.payload?.order_id?.split("-")[0]?.toUpperCase() ?? "";
+        attachment = {
+          filename: shortId ? `Уместно. Схема хранения №${shortId}.pdf` : "Уместно. Схема хранения.pdf",
+          contentBase64: base64,
+          contentType: "application/pdf",
+        };
+      }
     } catch (e) {
       // PDF ещё не закэширован — отправим без вложения, со ссылкой.
       console.log("[mailer] no cached PDF for token, sending link only:", token);
