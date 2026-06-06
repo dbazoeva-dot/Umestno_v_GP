@@ -596,6 +596,19 @@ image-slot::part(empty){
      вертикального скроллбара → горизонтальный скролл всей страницы. */
   :root{ --container: 100%; --gutter: 20px; }
 
+  /* ── anti horizontal-scroll safety net (mobile) ───────────────────
+     Гарантия: ничего не шире вьюпорта. Медиа-блоки жёстко зажаты в
+     ширину контейнера и не могут распереть грид; main клипует любой
+     остаточный горизонтальный вынос (что бы его ни вызывало). */
+  html, body{ overflow-x: hidden; max-width: 100%; }
+  main{ max-width: 100%; overflow-x: clip; }
+  .u-container{ max-width: 100%; }
+  .j-feature, .j-grid, .p-masthead, .p-layout{ min-width: 0; max-width: 100%; }
+  .j-feature__media, .j-card__media, .p-masthead__media, .p-figure__media{
+    width: 100%; max-width: 100%; min-width: 0;
+  }
+  .j-feature__media img, .j-card__media img, .p-masthead__media img{ max-width: 100%; }
+
   /* ── article hero ── */
   .p-wrap{ padding-top: 18px; }
   .p-breadcrumb{ margin-bottom: 20px; font-size: 10px; }
