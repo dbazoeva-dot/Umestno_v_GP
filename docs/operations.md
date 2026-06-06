@@ -78,3 +78,19 @@ SELECT status, COUNT(*) AS n, SUM(amount_kop) / 100.0 AS sum_rub
  GROUP BY status
  ORDER BY n DESC;
 ```
+
+---
+
+## Админки внешних сервисов
+
+Где залогиниться, чтобы попасть в админ-панели внешних сервисов. Сами пароли — не здесь (в Bitwarden / диспетчере паролей).
+
+| Сервис | URL админки | Под какой учёткой | Что там делать |
+|---|---|---|---|
+| **VK Workspace / Mail.ru для бизнеса** (домен umestno-home.ru) | https://biz.mail.ru/ | `dzerissimo@gmail.com` | Управление ящиками домена (info@, help@), редирект, DNS-подсказки |
+| Mail.ru почта info@ (сам ящик) | https://e.mail.ru/ | `info@umestno-home.ru` | Чтение/отправка писем, SMTP-пароли приложений |
+| YooKassa | https://yookassa.ru/my/ | ? | Платежи, чеки 54-ФЗ, профиль ИП |
+| Unisender (legacy, выпиливаем) | https://cp.unisender.com/ | ? | На этапе миграции на SMTP mail.ru |
+| Yandex Metrika | https://metrika.yandex.ru/ | ? | Счётчик 105180427, цели, воронки |
+| Pinterest Business | https://business.pinterest.com/ | ? | Домен верифицирован, пины |
+| Регистратор домена umestno-home.ru | (уточнить) | ? | NS, MX, TXT-записи (SPF/DKIM/DMARC) |
