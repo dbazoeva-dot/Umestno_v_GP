@@ -7,14 +7,17 @@
 // можно переотправить вручную, поставив status обратно в 'queued').
 //
 // Воркер запускается из server/index.ts после прогрева каталога.
-// Если UNISENDER_API_KEY не задан в .env, sendEmail вернёт «no_api_key»
+// Если SMTP_PASS не задан в .env, sendEmail вернёт «no_smtp_pass»
 // и строка остаётся 'queued' — воркер крутится вхолостую, копит письма,
-// после подключения ключа всё разъедется само.
+// после подключения пароля приложения всё разъедется само.
 
 import type { Pool } from "pg";
 import { promises as fs } from "fs";
 import path from "path";
-import { sendEmail } from "../integrations/unisender.js";
+// SMTP через info@umestno-home.ru (VK Workspace). Раньше был Unisender,
+// съехали из-за list_id, 1 МБ лимита и брендинга в письме —
+// см. server/integrations/smtp.ts.
+import { sendEmail } from "../integrations/smtp.js";
 
 const EMAIL_WORKER_INTERVAL_MS = 30_000;
 const EMAIL_BATCH_SIZE = 10;
@@ -179,10 +182,10 @@ async function processOnce(pool: Pool) {
           [row.id, result.provider_id ?? null],
         );
         console.log("[mailer] sent:", { id: row.id, to: row.to_email, provider_id: result.provider_id });
-      } else if (result.error === "no_api_key") {
+      } else if (result.error === "no_smtp_pass") {
         // Холостой режим — не меняем статус, строка остаётся queued
-        // до момента когда появится UNISENDER_API_KEY.
-        // Логируется отправляется внутри sendEmail() — здесь без шума.
+        // до момента когда появится SMTP_PASS.
+        // Лог отправляется внутри sendEmail() — здесь без шума.
       } else {
         await pool.query(
           `UPDATE emails_outbox SET status = 'failed', error = $2 WHERE id = $1`,
