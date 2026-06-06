@@ -87,8 +87,10 @@ SELECT status, COUNT(*) AS n, SUM(amount_kop) / 100.0 AS sum_rub
 
 | Сервис | URL админки | Под какой учёткой | Что там делать |
 |---|---|---|---|
-| **VK Workspace / Mail.ru для бизнеса** (домен umestno-home.ru) | https://biz.mail.ru/ | `dzerissimo@gmail.com` | Управление ящиками домена (info@, help@), редирект, DNS-подсказки |
+| **VK Workspace / Mail.ru для бизнеса** (домен umestno-home.ru) | https://biz.mail.ru/ | `dzerissimo@gmail.com` | Управление ящиками домена, редирект, DNS-подсказки |
 | Mail.ru почта info@ (сам ящик) | https://e.mail.ru/ | `info@umestno-home.ru` | Чтение/отправка писем, SMTP-пароли приложений |
+| Mail.ru почта help@ (саппорт клиентов) | https://e.mail.ru/ | `help@umestno-home.ru` | Входящие от клиентов с CTA-блока в письмах и на сайте |
+| Mail.ru почта partners@ (партнёрские запросы) | https://e.mail.ru/ | `partners@umestno-home.ru` | Входящие от потенциальных партнёров |
 | YooKassa | https://yookassa.ru/my/ | ? | Платежи, чеки 54-ФЗ, профиль ИП |
 | Unisender (legacy, выпиливаем) | https://cp.unisender.com/ | ? | На этапе миграции на SMTP mail.ru |
 | Yandex Metrika | https://metrika.yandex.ru/ | ? | Счётчик 105180427, цели, воронки |
