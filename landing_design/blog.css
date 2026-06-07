@@ -235,7 +235,7 @@ image-slot::part(empty){
 /* ════════════════════════════════════════════════════════════════════
    ARTICLE (single post)
    ════════════════════════════════════════════════════════════════════ */
-.p-wrap{ padding-top: clamp(28px, 3vw, 48px); }
+.p-wrap{ padding-top: clamp(28px, 3vw, 48px); max-width: 1200px; margin-inline: auto; }
 
 .p-breadcrumb{
   display: flex; align-items: center; gap: 12px;
@@ -285,7 +285,7 @@ image-slot::part(empty){
 .p-head__cat::after{ content:""; width: 32px; height: 1px; background: var(--u-accent); }
 .p-masthead__text h1{
   font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: clamp(46px, 3.7vw, 56px); line-height: 1.0;
+  font-size: 50px; line-height: 1.04;
   letter-spacing: -0.02em; margin: 0; color: var(--u-ink); text-wrap: balance;
 }
 .p-masthead__text h1 em{
