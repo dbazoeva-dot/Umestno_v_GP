@@ -271,7 +271,7 @@ image-slot::part(empty){
 }
 .p-masthead__media{
   position: relative; border-radius: var(--r-lg); overflow: hidden;
-  background: var(--u-warm); min-height: 420px;
+  background: var(--u-warm); min-height: 420px; margin: 0;  /* сброс дефолтного margin у <figure> — иначе вылет вправо на мобиле */
   box-shadow: 0 30px 64px -34px rgba(80,60,40,.3), 0 0 0 1px rgba(80,60,40,0.05);
 }
 .p-masthead__media image-slot{ width: 100%; height: 100%; }
