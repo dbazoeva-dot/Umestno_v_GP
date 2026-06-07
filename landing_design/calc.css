@@ -471,6 +471,49 @@
   line-height: 1.4;
 }
 
+/* промокод — раскрывашка над основной кнопкой */
+.u-promo{ margin: 10px 0 4px; }
+.u-promo__toggle{
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: 0; padding: 6px 0; cursor: pointer;
+  font-family: var(--f-sans); font-size: var(--fs-sm);
+  color: var(--u-sage-d); text-decoration: underline;
+  text-decoration-style: dotted; text-underline-offset: 3px;
+}
+.u-promo__toggle:hover{ color: var(--u-ink); }
+.u-promo__toggle svg{ color: var(--u-sage-d); flex: 0 0 auto; }
+.u-promo__panel{ margin-top: 10px; max-width: 360px; }
+.u-promo__panel[hidden]{ display: none; }
+.u-promo__row{ position: relative; display: flex; align-items: stretch; }
+.u-promo__input{
+  flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 36px 0 14px;
+  border: 1px solid var(--u-line-2); background: var(--u-card); border-radius: 10px;
+  font-family: var(--f-sans); font-size: var(--fs-md); color: var(--u-ink);
+  text-transform: uppercase; letter-spacing: 0.04em; outline: none;
+  transition: border-color 120ms ease;
+}
+.u-promo__input:focus{ border-color: var(--u-sage-d); }
+.u-promo__input.is-valid  { border-color: var(--u-sage-d); background: rgba(166,179,140,0.08); }
+.u-promo__input.is-invalid{ border-color: #B36A4A;          background: rgba(179,106,74,0.06); }
+.u-promo__clear{
+  position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+  background: none; border: 0; padding: 4px 6px; cursor: pointer;
+  font-size: 18px; line-height: 1; color: var(--u-ink-3);
+}
+.u-promo__clear:hover{ color: var(--u-ink); }
+.u-promo__msg{
+  margin: 8px 2px 0; font-family: var(--f-sans); font-size: var(--fs-sm);
+  line-height: 1.4; color: var(--u-ink-2);
+}
+.u-promo__msg[hidden]{ display: none; }
+.u-promo__msg.is-ok  { color: var(--u-sage-d); }
+.u-promo__msg.is-err { color: #B36A4A; }
+
+/* зачёркнутая цена в CTA после применения скидки */
+.u-calc__cta [data-cta-price-old]{
+  text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400;
+}
+
 /* actions */
 .u-calc__actions{
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px;

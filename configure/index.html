@@ -45,6 +45,7 @@
           <a href="../#faq">FAQ</a>
         </div>
       </div>
+      <a href="../blog/" class="u-navgroup__top u-nav-journal">Журнал</a>
     </nav>
     <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
       <span></span><span></span><span></span>
@@ -58,6 +59,7 @@
       <a href="../#reviews">Отзывы</a>
       <a href="../#faq">FAQ</a>
     </div>
+    <a href="../blog/" class="u-mnav-top u-nav-journal">Журнал</a>
   </nav>
 </header>
 
@@ -203,9 +205,30 @@
           <label for="u-consent-oferta">Я принимаю условия <a href="../oferta/" target="_blank" rel="noopener">Оферты</a> и понимаю, что схема формируется на основании введённых мной данных.</label>
         </div>
 
+        <!-- Промокод — раскрывашка под основной кнопкой, чтобы не сбивать
+             с пути основной массы юзеров. Live-валидация через
+             POST /api/promo/check; реальное применение — на сабмите формы
+             в POST /api/calculate с полем promo_code. -->
+        <div class="u-promo" data-promo-block>
+          <button type="button" class="u-promo__toggle" data-promo-toggle aria-expanded="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v5a2 2 0 0 1 0 4v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a2 2 0 0 1 0-4z"/><path d="M9 8v8"/></svg>
+            <span>Есть промокод?</span>
+          </button>
+          <div class="u-promo__panel" data-promo-panel hidden>
+            <div class="u-promo__row">
+              <input type="text" class="u-promo__input" data-promo-input
+                     placeholder="Введите код"
+                     autocomplete="off" autocapitalize="characters" spellcheck="false"
+                     aria-label="Промокод" />
+              <button type="button" class="u-promo__clear" data-promo-clear hidden aria-label="Убрать промокод">×</button>
+            </div>
+            <p class="u-promo__msg" data-promo-msg hidden></p>
+          </div>
+        </div>
+
         <div class="u-calc__actions">
           <a href="../no-fit/" class="u-btn u-btn--accent u-btn--lg u-calc__cta" data-ym-goal="cta_configure_pay">
-            <span style="font-size:21px">Получить расчёт — 149&nbsp;₽</span>
+            <span style="font-size:21px" data-cta-label>Получить расчёт — <span data-cta-price>149&nbsp;₽</span></span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
           <a href="../#how" class="u-btn u-btn--ghost u-btn--lg" style="border-width:0 0 1px;font-size:14px;border-radius:0;padding:10px">Посмотреть пример</a>

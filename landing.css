@@ -786,6 +786,10 @@ section[data-screen-label="06 Не просто красиво. Логично"]
 /* desktop dropdown */
 .u-navgroup{ position: relative; }
 .u-navgroup__top{ display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+
+/* «Журнал» в мобильном меню — sage-цветом (десктоп стилизуется
+   общим селектором .u-nav a.u-nav-journal из landing_design/styles.css). */
+.u-mobile-nav a.u-nav-journal{ color: var(--u-sage-d); }
 .u-navgroup__caret{
   width: 0; height: 0;
   border-left: 3.5px solid transparent;

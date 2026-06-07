@@ -7,6 +7,17 @@
   var MAX_ROWS = 4;
   var VOLUME_LEVELS = ['small', 'medium', 'large'];
 
+  // Состояние применённого промокода. Заполняется блоком u-promo
+  // ниже (live-валидация через POST /api/promo/check). Используется
+  // в collectPayload(): если valid=true, отправляется promo_code в
+  // /api/calculate, где сервер ещё раз валидирует и применяет.
+  // Базовая цена в копейках — fallback на 14900₽; реальное значение
+  // приходит в ответе /api/promo/check (base_price_kop) при первом
+  // успешном превью. Если юзер не открыл блок промо — цена не
+  // меняется, текст кнопки остаётся «149 ₽».
+  var BASE_PRICE_KOP = 14900;
+  var promoState = { code: null, valid: false, discount_type: null, final_amount_kop: null };
+
   /* ── Choice cards (single-select within each group) ──── */
   document.querySelectorAll('.u-calc__choices').forEach(function (group) {
     group.querySelectorAll('.u-calc__choice').forEach(function (btn) {
@@ -414,7 +425,7 @@
     });
     var pri = document.querySelector('.u-calc__pri-btn[aria-pressed="true"]');
     var consent = document.querySelector('#u-consent-oferta');
-    return {
+    var p = {
       drawer_width_cm: dim('w'),
       drawer_depth_cm: dim('d'),
       drawer_height_cm: dim('h'),
@@ -425,6 +436,11 @@
       priority: pri ? pri.getAttribute('data-priority') : '',
       consent_oferta: !!(consent && consent.checked)
     };
+    // Промокод — только если прошёл live-валидацию через /api/promo/check.
+    // Без этой проверки серверу всё равно отдадим, но фронт не будет
+    // показывать пересчитанную цену пользователю.
+    if (promoState.valid && promoState.code) p.promo_code = promoState.code;
+    return p;
   }
 
   function validatePayload(p) {
@@ -448,6 +464,14 @@
     if (code === 'consent_required' || code === 'consent_oferta_required') return 'Подтвердите согласие с офертой, чтобы продолжить.';
     if (code === 'consent_pd_required') return 'Подтвердите согласие на обработку персональных данных.';
     if (code === 'invalid_request')  return 'Проверьте, что все поля формы заполнены корректно.';
+    if (code === 'invalid_promo_code') {
+      var reason = err.body && err.body.reason;
+      if (reason === 'expired')        return 'Срок действия промокода истёк.';
+      if (reason === 'exhausted')      return 'Лимит использований промокода исчерпан.';
+      if (reason === 'inactive')       return 'Промокод отключён.';
+      if (reason === 'not_yet_valid')  return 'Промокод ещё не действует.';
+      return 'Промокод не найден. Проверьте написание.';
+    }
     return 'Не получилось рассчитать. Проверьте подключение и попробуйте ещё раз.';
   }
 
@@ -499,4 +523,165 @@
     show(0);
     start();
   }
+
+  /* ── Промокод: раскрывашка + live-валидация + пересчёт цены ─
+   * Юзер кликает «Есть промокод?» → раскрывается поле → вводит код →
+   * с debounce 400 мс шлём POST /api/promo/check → красим бордюр поля
+   * (зелёный/красный) + текст под полем + обновляем цену в кнопке.
+   *
+   * Состояние применённого кода живёт в promoState (модульно).
+   * collectPayload() читает оттуда и кладёт promo_code в /api/calculate.
+   * Реальное применение и инкремент uses_count — на бэкенде, в той же
+   * транзакции что INSERT order (см. server/api/calculate.ts).
+   */
+  (function () {
+    var block   = document.querySelector('[data-promo-block]');
+    if (!block) return;
+    var toggle  = block.querySelector('[data-promo-toggle]');
+    var panel   = block.querySelector('[data-promo-panel]');
+    var input   = block.querySelector('[data-promo-input]');
+    var clearBt = block.querySelector('[data-promo-clear]');
+    var msg     = block.querySelector('[data-promo-msg]');
+    var ctaPrice = document.querySelector('[data-cta-price]');
+    if (!toggle || !panel || !input || !ctaPrice) return;
+
+    // Дефолт текста цены — фиксируем чтобы откатить при сбросе.
+    var DEFAULT_PRICE_HTML = ctaPrice.innerHTML;
+
+    function fmtRub(kop) {
+      var rub = Math.round(kop / 100);
+      return rub.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+    }
+
+    function updateCtaPrice(finalKop, type) {
+      if (finalKop === 0) {
+        ctaPrice.innerHTML = '<b>бесплатно</b>';
+      } else if (finalKop < BASE_PRICE_KOP) {
+        ctaPrice.innerHTML =
+          '<span data-cta-price-old>' + fmtRub(BASE_PRICE_KOP) + '</span>' +
+          '<b>' + fmtRub(finalKop) + '</b>';
+      } else {
+        ctaPrice.innerHTML = DEFAULT_PRICE_HTML;
+      }
+      // 'type' пока не используется для отображения, но оставлен на
+      // случай расширения копирайта (например, разные тексты для free/percent).
+      void type;
+    }
+
+    function resetCta() {
+      ctaPrice.innerHTML = DEFAULT_PRICE_HTML;
+    }
+
+    function setValid(data) {
+      promoState = {
+        code: data.code,
+        valid: true,
+        discount_type: data.discount_type,
+        final_amount_kop: data.final_amount_kop,
+      };
+      if (typeof data.base_price_kop === 'number') BASE_PRICE_KOP = data.base_price_kop;
+      input.classList.remove('is-invalid');
+      input.classList.add('is-valid');
+      clearBt.hidden = false;
+      msg.hidden = false;
+      msg.classList.remove('is-err');
+      msg.classList.add('is-ok');
+      if (data.final_amount_kop === 0) {
+        msg.textContent = 'Промокод «' + data.code + '» применён · бесплатно';
+      } else {
+        msg.textContent = 'Промокод «' + data.code + '» применён · ' + fmtRub(data.final_amount_kop);
+      }
+      updateCtaPrice(data.final_amount_kop, data.discount_type);
+
+      if (window.UMESTNO_TRACK) {
+        try { window.UMESTNO_TRACK('promo_applied'); } catch (_) {}
+      }
+    }
+
+    function setInvalid(reason) {
+      promoState = { code: null, valid: false, discount_type: null, final_amount_kop: null };
+      input.classList.remove('is-valid');
+      input.classList.add('is-invalid');
+      clearBt.hidden = false;
+      msg.hidden = false;
+      msg.classList.remove('is-ok');
+      msg.classList.add('is-err');
+      var text = 'Промокод не найден.';
+      if (reason === 'expired')       text = 'Срок действия промокода истёк.';
+      else if (reason === 'exhausted')text = 'Лимит использований исчерпан.';
+      else if (reason === 'inactive') text = 'Промокод отключён.';
+      else if (reason === 'not_yet_valid') text = 'Промокод ещё не начал действовать.';
+      msg.textContent = text;
+      resetCta();
+    }
+
+    function setNeutral() {
+      promoState = { code: null, valid: false, discount_type: null, final_amount_kop: null };
+      input.classList.remove('is-valid', 'is-invalid');
+      clearBt.hidden = !input.value;
+      msg.hidden = true;
+      msg.textContent = '';
+      msg.classList.remove('is-ok', 'is-err');
+      resetCta();
+    }
+
+    var checkTimer = null;
+    var lastSentValue = null;
+
+    function scheduleCheck() {
+      var raw = (input.value || '').trim().toUpperCase();
+      // Подкрашиваем поле живьём только когда пользователь явно изменил
+      // значение — иначе будут «прыгающие» цвета на каждую клавишу.
+      if (raw === lastSentValue) return;
+      // Меньше 3 символов — преждевременно ходить на сервер; чистим
+      // визуальное состояние, но клавиатуру не блокируем.
+      if (raw.length < 3) { setNeutral(); return; }
+
+      if (checkTimer) clearTimeout(checkTimer);
+      checkTimer = setTimeout(function () {
+        lastSentValue = raw;
+        fetch('/api/promo/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: raw }),
+          credentials: 'same-origin'
+        })
+          .then(function (r) { return r.json().catch(function () { return {}; }); })
+          .then(function (data) {
+            // Если пока запрос шёл, пользователь поменял значение —
+            // не накладываем устаревший ответ поверх свежего ввода.
+            var current = (input.value || '').trim().toUpperCase();
+            if (current !== raw) return;
+            if (!data || !data.ok) { setInvalid('not_found'); return; }
+            if (data.valid) setValid(data);
+            else setInvalid(data.reason);
+          })
+          .catch(function (err) {
+            console.warn('[promo/check] failed', err);
+            // Сеть упала — не пугаем юзера красным, оставляем нейтрально.
+            // На сабмите сервер всё равно перепроверит.
+            setNeutral();
+          });
+      }, 400);
+    }
+
+    toggle.addEventListener('click', function () {
+      var open = panel.hidden;
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        try { input.focus(); } catch (e) {}
+      }
+    });
+
+    input.addEventListener('input', scheduleCheck);
+    input.addEventListener('blur', scheduleCheck);
+
+    clearBt.addEventListener('click', function () {
+      input.value = '';
+      lastSentValue = null;
+      setNeutral();
+      try { input.focus(); } catch (e) {}
+    });
+  })();
 })();
