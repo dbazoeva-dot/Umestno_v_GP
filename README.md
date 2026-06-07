@@ -224,7 +224,8 @@ blog/
    - обложку героя `<figure class="p-masthead__media">` — путь к webp в `assets/images/blog/`;
    - содержание (`.p-toc`) — по одной ссылке на каждый `<h2 id="…">`; подсветка активного раздела работает сама;
    - тело статьи внутри `<article class="p-body">`;
-   - в блоке `<script type="application/ld+json">` — те же `headline`, `description`, `image`, `datePublished` (для Яндекса/Google).
+   - в `<head>` под Open Graph — `article:published_time` (дата ГГГГ-ММ-ДД), `article:section` (рубрика), `article:tag` (теги). `og:site_name`/`og:locale` уже проставлены;
+   - два блока `<script type="application/ld+json">`: в `Article` — `headline`, `description`, `image`, `datePublished` + `dateModified`; в `BreadcrumbList` — имя рубрики (поз. 2), заголовок и URL статьи (поз. 3). Всё для Яндекса/Google и Rich Pins.
 3. Добавь карточку в листинг `blog/index.html`: либо как **featured** (новая главная — заменяешь блок `.j-feature`), либо в **сетку** `.j-grid` (добавь `<a class="j-card">` по образцу соседних). Поправь ссылку `href` на `./<slug>/`.
 4. Положи обложку в `assets/images/blog/<имя-файла>.webp`. Внутристатейные картинки — туда же. Соотношения: герой 3:2, featured-обложка 4:5, карточки сетки 4:3, картинки в тексте (`.p-figure`) 3:2.
 5. Добавь URL статьи в `sitemap.xml`. Закоммить → задеплоится.
