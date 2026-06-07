@@ -16,6 +16,12 @@ import { defaultLibraries } from "../../engine/libraries/defaultLibraries.js";
 import type { SkuCatalogRow, FitStatus } from "../../engine/types.js";
 import type { Env } from "../config/env.js";
 import { createPayment } from "../integrations/yookassa.js";
+import {
+  findValidPromoCode,
+  calculateDiscountedAmount,
+  applyPromoCode,
+  type PromoCodeRow,
+} from "../services/promoCodes.js";
 
 // Текущая версия оферты. Меняется при редактировании самой оферты —
 // при изменении завести новый код ('oferta_v2', …), старые согласия
@@ -42,6 +48,10 @@ interface CalculateRequest {
   email: string;
   /** Согласие на обработку ПДн (152-ФЗ). Без него email не принимаем. */
   consent_personal_data: true;
+  /** Опциональный промокод. Если задан и валидный — применяется скидка
+   *  (см. services/promoCodes.ts). Если задан и невалидный — заказ
+   *  не создаётся, фронт показывает ошибку. */
+  promo_code?: string;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -54,6 +64,10 @@ interface CalculateResponse {
   can_pay: boolean;
   /** URL для редиректа на checkout-страницу ЮКассы. null если оплата не нужна. */
   payment_url: string | null;
+  /** Итоговая сумма к оплате в копейках, после применения промокода (если был). */
+  final_amount_kop: number;
+  /** Применённый промокод (для отображения подтверждения и аналитики). */
+  promo_applied: { code: string; discount_type: string } | null;
 }
 
 function makeToken(): string {
@@ -145,10 +159,46 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     const ip = req.ip ?? null;
     const userAgent = req.get("user-agent") ?? null;
 
+    // Промокод применяется только к успешным схемам (fit_all / fit_all_after_adjustment),
+    // когда мы вообще берём деньги. На fit_partial / no_scheme заказ
+    // и так бесплатный/без оплаты — скидка бессмысленна.
+    let appliedPromo: PromoCodeRow | null = null;
+    const promoCodeRaw = typeof body.promo_code === "string" ? body.promo_code.trim() : "";
+
     const client = await pool.connect();
     let orderId: string;
     try {
       await client.query("BEGIN");
+
+      if (promoCodeRaw && isSuccess(fitStatus)) {
+        // Валидация и применение в одной транзакции с INSERT order —
+        // защита от гонки «два юзера применяют последний слот max_uses».
+        const v = await findValidPromoCode(client, promoCodeRaw);
+        if (!v.valid) {
+          await client.query("ROLLBACK");
+          return res.status(400).json({
+            ok: false, error: "invalid_promo_code", reason: v.reason,
+          });
+        }
+        // Атомарный инкремент. Если между проверкой и UPDATE'ом кто-то
+        // успел выбрать последний слот, applyPromoCode вернёт false.
+        const ok = await applyPromoCode(client, v.promo.id);
+        if (!ok) {
+          await client.query("ROLLBACK");
+          return res.status(400).json({
+            ok: false, error: "invalid_promo_code", reason: "exhausted",
+          });
+        }
+        appliedPromo = v.promo;
+        const finalAmount = calculateDiscountedAmount(basePriceKop, v.promo);
+        discountKop = basePriceKop - finalAmount;
+        amountKop = finalAmount;
+        // Если итоговая сумма 0 — пропускаем YooKassa, ставим заказ
+        // сразу в sent_free (тот же flow что dev-режим без paywall).
+        if (amountKop === 0) {
+          status = "sent_free";
+        }
+      }
 
       // 1. Технический след движка
       const configResult = await client.query<{ id: string }>(
@@ -163,13 +213,15 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       const orderResult = await client.query<{ id: string }>(
         `INSERT INTO orders (
            configuration_id, token, session_id, ip, user_agent,
-           fit_status, base_price_kop, discount_kop, amount_kop, status, email
+           fit_status, base_price_kop, discount_kop, amount_kop, status, email,
+           promo_code_id
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          RETURNING id`,
         [
           configId, token, body.session_id ?? null, ip, userAgent,
           fitStatus, basePriceKop, discountKop, amountKop, status, email,
+          appliedPromo?.id ?? null,
         ],
       );
       orderId = orderResult.rows[0].id;
@@ -279,7 +331,10 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     // Создаём платёж сразу, возвращаем payment_url для редиректа.
     // Юзер платит на checkout ЮКассы, возвращается на /result/?t=TOKEN,
     // где поллинг ждёт webhook payment.succeeded → status='paid'.
-    const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
+    //
+    // Если промокод сделал заказ бесплатным (amount_kop=0), оплату
+    // пропускаем — заказ уже в sent_free, фронт сразу ведёт на /result/.
+    const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED && amountKop > 0;
     let paymentUrl: string | null = null;
 
     if (canPay) {
@@ -324,6 +379,10 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       fit_status: fitStatus,
       can_pay: canPay,
       payment_url: paymentUrl,
+      final_amount_kop: amountKop,
+      promo_applied: appliedPromo
+        ? { code: appliedPromo.code, discount_type: appliedPromo.discount_type }
+        : null,
     };
     res.json(response);
   };
