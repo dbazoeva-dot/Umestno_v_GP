@@ -190,31 +190,34 @@ a{ color: inherit; text-decoration: none; }
 .u-logo .m{ color: var(--u-accent); }
 /* SVG-логотип. Высоту задаём явно, ширина подгоняется автоматически
    по соотношению сторон. В подвале (с таглайном) чуть выше. */
-.u-logo__img{ height: 28px; width: auto; display: block; }
-.u-logo__img--tagline{ height: 40px; }
+.u-logo__img{ height: 22px; width: auto; display: block; }
+.u-logo__img--tagline{ height: 36px; }
+
+/* «Журнал» — отдельный левый кластер шапки (между логотипом и
+   продуктовой навигацией). Sage-цвет + один вертикальный разделитель
+   слева (отделяет от логотипа). .u-nav прижимается вправо через
+   margin-left:auto на родителе. */
+.u-nav-journal-side{
+  position: relative;
+  font-family: var(--f-display);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--u-sage-d);
+  padding-left: 24px;
+  margin-left: 4px;
+}
+.u-nav-journal-side:hover{ color: var(--u-sage-d); opacity: 0.78; }
+.u-nav-journal-side::before{
+  content: "";
+  position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+  width: 1px; height: 18px;
+  background: var(--u-line-2);
+}
+.u-header__inner:has(.u-nav-journal-side) .u-nav{ margin-left: auto; }
+
 .u-nav{ display:flex; align-items:center; gap: 36px; }
 .u-nav a{ font-size: var(--fs-sm); color: var(--u-ink-2); font-weight: 500; }
 .u-nav a:hover{ color: var(--u-ink); }
-
-/* «Журнал» — отдельная контент-ось, не часть продуктовой воронки.
-   Выделяем sage-цветом + вертикальными разделительными линиями
-   слева и справа, чтобы глаз сразу видел: это другая сущность. */
-.u-nav a.u-nav-journal{
-  position: relative;
-  color: var(--u-sage-d);
-  padding: 0 22px;
-  margin-left: 6px;
-}
-.u-nav a.u-nav-journal:hover{ color: var(--u-sage-d); opacity: 0.78; }
-.u-nav a.u-nav-journal::before,
-.u-nav a.u-nav-journal::after{
-  content: "";
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 1px; height: 16px;
-  background: var(--u-line-2);
-}
-.u-nav a.u-nav-journal::before{ left: 0; }
-.u-nav a.u-nav-journal::after{  right: 0; }
 
 .u-header__cta{ display:flex; align-items:center; gap: 12px; }
 
