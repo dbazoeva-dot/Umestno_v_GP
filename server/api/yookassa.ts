@@ -111,25 +111,10 @@ export function yookassaWebhookHandler(pool: Pool) {
           [order.id],
         );
 
-        // Кладём письмо в emails_outbox. Воркер (server/workers/mailer.ts)
-        // подхватит и отправит через Unisender. payload содержит токен
-        // заказа — этого хватает чтобы шаблон сам сгенерил тему/тело и
-        // подтянул PDF из /var/www/umestno/storage/pdfs/{token}.pdf.
-        // Если email пустой (странный заказ — оплачен но без email) —
-        // пропускаем, чтобы не нарушить NOT NULL в outbox.
-        if (order.email) {
-          await client.query(
-            `INSERT INTO emails_outbox (to_email, template, payload, order_id)
-             VALUES ($1, 'result', $2, $3)`,
-            [
-              order.email,
-              JSON.stringify({ order_token: orderToken, order_id: order.id }),
-              order.id,
-            ],
-          );
-        } else {
-          console.warn("[yookassa-webhook] order has no email, skipped outbox:", order.id);
-        }
+        // Email-уведомление НЕ отправляем автоматически. Клиент сам
+        // запрашивает отправку на /result/ через кнопку «Отправить на
+        // почту». Это даёт явное согласие на ПДн (152-ФЗ) и снижает
+        // нагрузку на mail.ru-почту админа (info@) в forward-режиме MVP.
 
         await client.query("COMMIT");
         console.log("[yookassa-webhook] order paid:", { order_id: order.id, yookassa_id: yookassaId });

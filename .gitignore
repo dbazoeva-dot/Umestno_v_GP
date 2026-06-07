@@ -2,3 +2,6 @@ dist/
 node_modules/
 .env
 engine/scripts/__pycache__/
+# PDF-кэш — генерится на лету Puppeteer'ом из /pdf/?t=TOKEN.
+# В репо не нужен, на проде живёт в /var/www/umestno/storage/pdfs/.
+storage/

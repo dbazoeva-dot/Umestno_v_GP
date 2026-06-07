@@ -1,20 +1,20 @@
 <!doctype html>
 <!--
-  Шаблон для PDF-документа «Ваша схема хранения от Уместно».
+  Шаблон PDF «Ваша схема хранения». Дизайн v3 «техническая плита ателье»
+  от Claude Design (см. бриф в pdf/HANDOFF.md, если будет вопрос).
 
-  Рендерится Puppeteer'ом при запросе GET /api/pdf/:token (открывает
-  http://127.0.0.1:3000/pdf/?t=TOKEN, ждёт data-pdf-ready, печатает в PDF).
+  Рендерится Puppeteer'ом при GET /api/pdf/:token. Открывает
+  http://127.0.0.1:3000/pdf/?t=TOKEN, ждёт data-pdf-ready=1 после того
+  как pdf-render.js подтянул данные из /api/result/:token и заполнил
+  все data-pdf="…" слоты.
 
-  Состав (зафиксировано с Дзерой):
-    1. Шапка: логотип + дата
-    2. Схема (визуализация — переиспользуем renderScheme из /result/)
-    3. Размеры (ящик + таблица блоков)
-    4. Warnings (если есть)
-    5. Инструкции по складыванию (картинки крупные, 2 в ряд)
-    6. Подвал
-
-  Стили схемы тянем из result.css (.u-res-scheme и .u-res-block) — это
-  даёт точно такую же визуализацию, как на сайте. Поверх — наш pdf.css.
+  Жёсткие правила (см. README дизайна):
+   • A4 portrait, ровно 2 страницы (.sheet × 2, overflow:hidden).
+   • Никаких cqw/cqh — только mm/pt/% (Puppeteer print-mode безопасный).
+   • Eyebrows вместо H2 — единственный «крупный» заголовок только
+     в мастхеде («Результаты расчёта» — мелкий моноширинный).
+   • Цвета зон --b1..--b4 совпадают по всему документу (схема ↔ таблица
+     ↔ карточки складывания). JS подставляет их inline в style.
 -->
 <html lang="ru">
 <head>
@@ -22,84 +22,122 @@
 <title>Схема хранения — Уместно</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <!-- Базовые переменные сайта (цвета, типографика) — нужны для result.css -->
 <link rel="stylesheet" href="../landing_design/styles.css" />
-<!-- Стили визуализации схемы (.u-res-scheme / .u-res-block) -->
+<!-- Стили визуализации схемы (.u-res-scheme / .u-res-block) — переиспользуем
+     рендер с /result/, чтобы PDF-схема была идентична веб-схеме. -->
 <link rel="stylesheet" href="../landing_design/result.css?v=18" />
-<!-- Поверх — собственные стили PDF-документа -->
-<link rel="stylesheet" href="pdf.css?v=6" />
+<!-- Поверх — стили нового дизайна документа -->
+<link rel="stylesheet" href="pdf.css?v=8" />
 </head>
 <body>
 
-<main class="pdf-page">
+<!-- ════════════ СТРАНИЦА 1 ════════════ -->
+<section class="sheet">
+  <div class="spine">
+    <div class="spine__brand"><b>Уместно</b> · схема хранения</div>
+    <div class="spine__tick"></div>
+    <div class="spine__page">стр. <b>01</b> / 02</div>
+  </div>
+  <div class="col">
+    <div class="masthead">
+      <div class="masthead__top">
+        <img class="brand-logo" src="../landing_design/assets/logo-wordmark-tagline.svg" alt="Уместно — порядок, уют, спокойствие" />
+        <div class="masthead__meta">
+          <div><span class="k">Заказ</span><span class="v" data-pdf="order-num">№&nbsp;—</span></div>
+          <div><span class="k">Дата</span><span class="v" data-pdf="date">—</span></div>
+        </div>
+      </div>
+      <div class="masthead__kick">Результаты расчёта</div>
+      <p class="masthead__lede">Мы рассчитали, как разложить вещи в Вашем ящике. Рады быть Вам полезными.</p>
+    </div>
 
-  <!-- ── Шапка ─────────────────────────────────────────── -->
-  <header class="pdf-header">
-    <img class="pdf-header__logo" src="../landing_design/assets/pdf-logo.svg" alt="Уместно" />
-    <div class="pdf-header__date" data-pdf="date">—</div>
-  </header>
+    <div class="main">
+      <!-- 01 — Схема -->
+      <div class="seclbl">Ваша схема хранения</div>
+      <div class="scheme">
+        <div class="scheme__plate">
+          <!-- Внутрь сюда renderScheme() (из landing_design/result-render.js)
+               рисует наш стандартный .u-res-scheme — те же блоки и тот же
+               резерв, что юзер видит на странице /result/. -->
+          <div class="u-res-scheme" data-pdf="scheme">
+            <div class="u-res-scheme__inner"></div>
+          </div>
+        </div>
+        <p class="scheme__cap"><b>Илл. 1</b> &nbsp;·&nbsp; вид сверху на ящик; цифры зон совпадают с таблицей ниже</p>
+      </div>
 
-  <!-- ── Схема ─────────────────────────────────────────── -->
-  <section class="pdf-section">
-    <div class="pdf-eyebrow">Ваша схема хранения</div>
-    <div class="u-res-scheme" data-pdf="scheme">
-      <div class="u-res-scheme__inner">
-        <!-- заполняется renderScheme() из result-render.js -->
+      <!-- 02 — Габариты -->
+      <div class="seclbl" style="margin-top:7mm">Размеры зон</div>
+      <div class="blocks-panel">
+        <div class="blocks-panel__top">
+          <div class="blocks-panel__lbl">Внутренние размеры ящика</div>
+          <div class="blocks-panel__size"><span class="v" data-pdf="drawer">— × — × — см</span></div>
+        </div>
+        <div class="blocks-panel__head"><span>Блок</span><span>Что хранить</span><span>Размер Ш × Г × В</span></div>
+        <div data-pdf="blocks-rows"><!-- строки заполняет pdf-render.js: .brow + (опц.) .brow--rs --></div>
       </div>
     </div>
-  </section>
 
-  <!-- ── Размеры зон (ящик + таблица блоков + резерв) ──── -->
-  <section class="pdf-section">
-    <div class="pdf-eyebrow">Размеры зон</div>
-    <div class="pdf-drawer">
-      <span class="pdf-drawer__label">Внутренние размеры ящика</span>
-      <span class="pdf-drawer__value" data-pdf="drawer">— × — × — см</span>
+    <div class="runfoot">
+      <div class="runfoot__mark"><b>umestno-home.ru</b></div>
+      <div>Схема хранения · 2026</div>
     </div>
-    <table class="pdf-blocks">
-      <thead>
-        <tr><th>Блок</th><th>Что хранить</th><th>Размер (Ш × Г × В)</th></tr>
-      </thead>
-      <tbody data-pdf="blocks-tbody"><!-- заполняется в pdf-render.js, включая резерв --></tbody>
-    </table>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Warnings (только если есть) ─────────────────────── -->
-  <section class="pdf-section" data-pdf="warnings-section" hidden>
-    <div class="pdf-eyebrow">Будьте внимательны</div>
-    <div class="pdf-warnings" data-pdf="warnings"><!-- pdf-render.js --></div>
-  </section>
-
-  <!-- ── Складывание ─────────────────────────────────────── -->
-  <section class="pdf-section pdf-section--folding">
-    <div class="pdf-eyebrow">Как правильно сложить вещи</div>
-    <div class="pdf-folding" data-pdf="folding"><!-- pdf-render.js --></div>
-  </section>
-
-  <!-- ── Коммерческий подвал ─────────────────────────────── -->
-  <footer class="pdf-footer">
-    <div class="pdf-footer__cta">
-      <div class="pdf-footer__cta-title">Спасибо, что выбрали Уместно</div>
-      <div class="pdf-footer__cta-sub">В нашем блоге — больше идей по уборке, хранению и красивым ящикам. Заглядывайте, подписывайтесь на соцсети.</div>
+<!-- ════════════ СТРАНИЦА 2 ════════════ -->
+<section class="sheet">
+  <div class="spine">
+    <div class="spine__brand"><b>Уместно</b> · схема хранения</div>
+    <div class="spine__tick"></div>
+    <div class="spine__page">стр. <b>02</b> / 02</div>
+  </div>
+  <div class="col">
+    <div class="runhead">
+      <img class="runhead__logo" src="../landing_design/assets/logo-wordmark.svg" alt="Уместно" />
+      <div class="runhead__meta" data-pdf="runhead-order">ЗАКАЗ № —</div>
     </div>
-    <div class="pdf-footer__links">
-      <div class="pdf-footer__url">
-        <span class="pdf-footer__url-key">блог:</span>
-        <span class="pdf-footer__url-val">umestno-home.ru/blog</span>
+    <div class="main">
+      <!-- Warnings (только если есть) -->
+      <div data-pdf="warnings-section" hidden>
+        <div class="seclbl seclbl--warn">Будьте внимательны</div>
+        <div data-pdf="warnings"><!-- pdf-render.js --></div>
       </div>
-      <div class="pdf-footer__socials">
-        <a href="https://pin.it/hHrmtpWyE" target="_blank" rel="noopener" aria-label="Pinterest"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
-        <a href="#" aria-label="Telegram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
-        <a href="#" aria-label="VK"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+
+      <!-- 03 — Складывание -->
+      <div class="seclbl" style="margin-top:7mm">Как правильно сложить вещи</div>
+      <div class="fold" data-pdf="folding"><!-- pdf-render.js — карточки на каждую категорию из зон --></div>
+    </div>
+
+    <div class="ftband">
+      <div class="ftband__row1">
+        <div>
+          <div class="ftband__cta-title">Спасибо, что выбрали Уместно</div>
+          <p class="ftband__cta-sub">В нашем блоге — больше идей по уборке, хранению и красивым ящикам. Заглядывайте и подписывайтесь на соцсети, чтобы ничего не пропустить.</p>
+        </div>
+        <div class="ftband__socials">
+          <a href="https://pin.it/hHrmtpWyE" aria-label="Pinterest"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+      <div class="ftband__row2">
+        <div><span class="ftband__blog-key">блог:</span><b>umestno-home.ru/blog</b></div>
+        <div data-pdf="ftband-order">Заказ № —</div>
       </div>
     </div>
-    <div class="pdf-footer__order" data-pdf="order-number">Номер заказа: —</div>
-  </footer>
-</main>
+
+    <div class="runfoot">
+      <div class="runfoot__mark"><b>umestno-home.ru</b></div>
+      <div></div>
+    </div>
+  </div>
+</section>
 
 <script src="../landing_design/content-labels.js?v=10"></script>
 <script src="../landing_design/result-render.js?v=15"></script>
-<script src="pdf-render.js?v=4"></script>
+<script src="pdf-render.js?v=5"></script>
 </body>
 </html>

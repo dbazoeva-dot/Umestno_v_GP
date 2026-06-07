@@ -43,6 +43,11 @@ const UNISENDER_API_BASE = "https://api.unisender.com/ru/api";
  *  использовать любой подтверждённый email из кабинета Unisender. */
 const SENDER_EMAIL = process.env.UNISENDER_SENDER_EMAIL ?? "info@umestno-home.ru";
 const SENDER_NAME = process.env.UNISENDER_SENDER_NAME ?? "Уместно";
+/** ID списка контактов в Unisender. Метод sendEmail (классический
+ *  Unisender, не UniGo) обязательно требует list_id — получатель
+ *  автоматически добавляется в этот список. На free-тарифе письма
+ *  уходят только на email'ы, которые УЖЕ подтверждены в этом списке. */
+const LIST_ID = process.env.UNISENDER_LIST_ID;
 
 export async function sendEmail(p: SendEmailParams): Promise<SendEmailResult> {
   const apiKey = process.env.UNISENDER_API_KEY;
@@ -61,6 +66,11 @@ export async function sendEmail(p: SendEmailParams): Promise<SendEmailResult> {
   // subject, body (только HTML — отдельной текстовой версии метод не
   // поддерживает, в отличие от Расширенного API UniGo). attachment передаётся
   // как base64 в поле attachments[имя_файла].
+  if (!LIST_ID) {
+    console.warn("[unisender] UNISENDER_LIST_ID не задан — sendEmail обязательно требует list_id");
+    return { ok: false, error: "no_list_id" };
+  }
+
   const form = new URLSearchParams();
   form.set("format", "json");
   form.set("api_key", apiKey);
@@ -69,6 +79,7 @@ export async function sendEmail(p: SendEmailParams): Promise<SendEmailResult> {
   form.set("sender_email", SENDER_EMAIL);
   form.set("subject", p.subject);
   form.set("body", p.bodyHtml);
+  form.set("list_id", LIST_ID);
   if (p.attachment) {
     form.set(`attachments[${p.attachment.filename}]`, p.attachment.contentBase64);
   }

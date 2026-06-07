@@ -190,13 +190,27 @@
           <ul class="u-res-warn"></ul>
         </section>
 
-        <!-- Дублёр кнопки PDF в правой sticky-колонке. Email-блок отключён
-             до подключения Unisender; вернём когда заработает доставка. -->
+        <!-- Дублёр действий в правой sticky-колонке (видно из любого
+             места страницы без прокрутки). Email и согласие на ПДн уже
+             зафиксированы на шаге калькулятора — повторно ничего не
+             спрашиваем, просто шлём POST и показываем галочку. -->
         <section class="u-res-save-mini">
           <a class="u-btn u-btn--sage u-btn--lg" data-pdf-link href="#" data-ym-goal="pdf_download">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
             Скачать схему PDF
           </a>
+          <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-mail-send data-ym-goal="email_send_click">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            Отправить на почту
+          </button>
+          <p class="u-res-mail__done" hidden data-mail-done>
+            <span class="u-res-mail__done-main">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+              Схема будет у Вас на почте в течение 15 минут.
+            </span>
+            <span class="u-res-mail__done-hint">Если не найдёте во входящих, пожалуйста, проверьте папку «Спам» — иногда письма с новых адресов попадают туда.</span>
+          </p>
+          <p class="u-res-mail__err" hidden data-mail-err></p>
         </section>
 
       </div>
@@ -266,12 +280,13 @@
       </section>
     </div>
 
-    <!-- ── Save ─────────────────────────────────────────────── -->
-    <!-- Кнопка PDF подключена к /api/pdf/:token (Puppeteer рендерит /pdf/?t=…).
-         Блок «Отправить на почту» отключён до подключения Unisender + email-
-         воркера (домен на 30-дневной блокировке у Unisender). Когда email-
-         доставка заработает, вернём этот пункт и подвяжем к /api/order/email. -->
-    <section class="u-res-save">
+    <!-- ── Save: PDF download + send by email on demand ─────── -->
+    <!-- Кнопка PDF → /api/pdf/:token (Puppeteer).
+         Кнопка email → POST /api/order/:token/send-email (см. orderSendEmail.ts).
+         Email и согласие на ПДн уже зафиксированы на шаге калькулятора
+         (orders.email + consents), повторно не спрашиваем. Письмо
+         уходит ТОЛЬКО по явному клику клиента (не из webhook'а). -->
+    <section class="u-res-save" id="u-res-save-main">
       <div class="u-res-save__copy">
         <h2>Сохраните схему</h2>
         <p>Файл останется у вас: можно открыть перед покупкой органайзеров или во время раскладки ящика.</p>
@@ -281,7 +296,16 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
           Скачать схему PDF
         </a>
+        <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-mail-send data-ym-goal="email_send_click">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          Отправить на почту
+        </button>
       </div>
+      <p class="u-res-mail__done" hidden data-mail-done>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
+        Схема будет у Вас на почте в течение 15 минут.
+      </p>
+      <p class="u-res-mail__err" hidden data-mail-err></p>
     </section>
 
     <!-- ── Bottom CTA ───────────────────────────────────────── -->
@@ -412,6 +436,9 @@
 
     function showPaymentTimeout() {
       hideLoader();
+      if (window.UMESTNO_TRACK) {
+        try { window.UMESTNO_TRACK('payment_pending_timeout'); } catch (_) {}
+      }
       var box = document.createElement('div');
       box.style.cssText = 'position:fixed;inset:0;background:rgba(255,253,249,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;text-align:center;padding:20px;font-family:var(--f-sans,sans-serif);';
       box.innerHTML =
@@ -453,6 +480,9 @@
           }
           hideLoader();
           renderPayload(payload);
+          if (window.UMESTNO_TRACK) {
+            try { window.UMESTNO_TRACK('payment_success_shown'); } catch (_) {}
+          }
         })
         .catch(function (e) {
           console.error('[result] load failed', e);
@@ -460,6 +490,65 @@
     }
 
     attempt();
+
+    // ── Кнопка «Отправить на почту» ─────────────────────────
+    // Email и согласие на ПДн уже зафиксированы на шаге калькулятора
+    // (orders.email + consents). Тут просто шлём POST без тела, эндпойнт
+    // сам берёт email из БД и кладёт в emails_outbox. Воркер mailer.ts
+    // отправляет на info@umestno-home.ru (forward-режим, MVP).
+    //
+    // На странице две кнопки [data-mail-send] — в правом sticky-сайдбаре
+    // и в основной секции «Сохраните схему». Каждая обрабатывается
+    // независимо: блокируется только нажатая, но успех/ошибка показывается
+    // в обоих местах (через все [data-mail-done] / [data-mail-err]).
+    (function () {
+      if (!token) return;
+      var buttons = document.querySelectorAll('[data-mail-send]');
+      if (!buttons.length) return;
+      var doneEls = document.querySelectorAll('[data-mail-done]');
+      var errEls  = document.querySelectorAll('[data-mail-err]');
+
+      function showDone() {
+        buttons.forEach(function (b) { b.hidden = true; });
+        errEls.forEach(function (e) { e.hidden = true; e.textContent = ''; });
+        doneEls.forEach(function (d) { d.hidden = false; });
+      }
+      function showErr(msg) {
+        errEls.forEach(function (e) { e.textContent = msg; e.hidden = false; });
+      }
+
+      var sent = false; // идемпотентность на клиенте — не плодим строк в outbox
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (sent) return;
+          sent = true;
+          buttons.forEach(function (b) { b.disabled = true; });
+          fetch('/api/order/' + encodeURIComponent(token) + '/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: '{}',
+            credentials: 'same-origin'
+          })
+            .then(function (r) {
+              if (r.ok) return r.json();
+              return r.json().catch(function () { return {}; }).then(function (b) {
+                var e = new Error('http_' + r.status); e.status = r.status; e.body = b; throw e;
+              });
+            })
+            .then(showDone)
+            .catch(function (err) {
+              sent = false;
+              buttons.forEach(function (b) { b.disabled = false; });
+              var code = err && err.body && err.body.error;
+              if (code === 'payment_required')   showErr('Этот заказ не оплачен.');
+              else if (code === 'not_found')     showErr('Заказ не найден.');
+              else                                showErr('Не удалось отправить. Напишите нам на info@umestno-home.ru.');
+              console.error('[mail] send failed', err);
+            });
+        });
+      });
+    })();
   })();
 </script>
 <script src="../landing_design/metrika.js?v=2" defer></script>

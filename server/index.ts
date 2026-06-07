@@ -10,6 +10,7 @@ import { loadCatalogFromDb } from "./catalog/loadCatalogFromDb.js";
 import { calculateHandler } from "./api/calculate.js";
 import { resultHandler } from "./api/result.js";
 import { pdfHandler } from "./api/pdf.js";
+import { orderSendEmailHandler } from "./api/orderSendEmail.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
 import { startMailerWorker } from "./workers/mailer.js";
 import {
@@ -75,6 +76,13 @@ app.get("/api/result/:token", resultHandler(pool, env));
 // идут с диска без Puppeteer.
 
 app.get("/api/pdf/:token", pdfHandler(pool, env));
+
+// ── 2.x — Отправить схему на email по запросу клиента ──────
+// Юзер на /result/ вводит email + согласие на ПДн, клик «Отправить» →
+// сюда. Проверяем оплачен ли заказ, фиксируем согласие, кладём строку
+// в emails_outbox. Воркер (workers/mailer.ts) подхватывает и шлёт.
+
+app.post("/api/order/:token/send-email", originCheck(env), orderSendEmailHandler(pool));
 
 // ── 3.x — YooKassa webhook: подтверждение оплаты ────────────
 // Без originCheck/rate-limit — этот endpoint вызывает ЮКасса со своих

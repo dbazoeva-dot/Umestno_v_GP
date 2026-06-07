@@ -1,16 +1,26 @@
 <!doctype html>
-<html lang="ru" data-fontpair="garamond">
+<html lang="ru" data-accent="sage">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <!-- ──────────────────────────────────────────────────────────────────
-     ШАБЛОН СТАТЬИ. Скопируй эту папку (`_template/`) → переименуй в slug
-     статьи (только латиница, цифры, дефисы — это станет URL).
-     После — пройдись по всем меткам «[…]» и подставь свой текст.
-     Никаких сборок, фреймворков и магии — обычный HTML.
+     ШАБЛОН СТАТЬИ (новый дизайн «Журнала»). Скопируй эту папку
+     (`_template/`) → переименуй в slug статьи (только латиница, цифры,
+     дефисы — это станет URL). После — пройдись по всем меткам «[…]»
+     и подставь свой текст. Никаких сборок и фреймворков — обычный HTML.
+
+     Сигнатурные блоки статьи (примеры — в тексте ниже):
+       .p-pull      — крупная цитата-врезка (левый акцент-кант).
+       .p-pairs     — две колонки «Хорошо вместе / С осторожностью».
+       .p-note      — предупреждение «!» на тёплой плашке.
+       .p-figure    — картинка в тексте с подписью (3:2).
+       .p-mistakes  — нумерованный анти-список «Частые ошибки».
+       .p-cta       — врезка с ценой 149 ₽ и кнопкой на конфигуратор.
+     Содержание (.p-toc) подсвечивается само по <h2 id="…">.
 ─────────────────────────────────────────────────────────────────── -->
 
+<link rel="canonical" href="https://umestno-home.ru/blog/[slug-статьи]/" />
 <title>[Заголовок статьи] | Журнал Уместно</title>
 <meta name="description" content="[Короткий лид 1–2 предложения для поиска и соцсетей. До ~160 символов.]" />
 <meta name="theme-color" content="#FFFDF9" />
@@ -24,10 +34,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../../landing_design/styles.css" />
 <link rel="stylesheet" href="../../landing.css" />
-<link rel="stylesheet" href="../../landing_design/blog.css?v=1" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=10" />
 
 <!-- Структурированные данные Article для Яндекса/Google -->
 <script type="application/ld+json">
@@ -37,9 +47,10 @@
   "headline": "[Заголовок статьи]",
   "description": "[Короткий лид.]",
   "image": "https://umestno-home.ru/assets/images/blog/[файл-обложки].webp",
-  "datePublished": "2026-05-26",
+  "datePublished": "2026-01-01",
   "author": { "@type": "Organization", "name": "Уместно" },
-  "publisher": { "@type": "Organization", "name": "Уместно" }
+  "publisher": { "@type": "Organization", "name": "Уместно" },
+  "mainEntityOfPage": "https://umestno-home.ru/blog/[slug-статьи]/"
 }
 </script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -83,63 +94,129 @@
   </nav>
 </header>
 
-<main class="u-article">
-  <div class="u-container">
+<main class="p-wrap">
+  <!-- ── Head ───────────────────────────────────────────────────── -->
+  <section class="u-container">
+    <nav class="p-breadcrumb">
+      <a href="../">Журнал</a><span class="sep">→</span>
+      <a href="../">[Рубрика]</a><span class="sep">→</span>
+      <span class="cur">[Короткий заголовок]</span>
+    </nav>
 
-    <a href="../" class="u-article__back">← Все статьи</a>
-
-    <header class="u-article__head">
-      <div class="u-blog__kicker">[Категория, например: Гайд]</div>
-      <h1 class="u-article__title">[Заголовок статьи]</h1>
-      <p class="u-article__lede">[Лид: 1–2 предложения, что в статье и зачем читать.]</p>
-      <div class="u-blog__meta">
-        <span>[Дата публикации, например: 26 мая 2026]</span>
-        <span>[N минут чтения]</span>
+    <div class="p-masthead">
+      <div class="p-masthead__text">
+        <span class="p-head__cat">[Рубрика]</span>
+        <!-- слово в <em> получает фирменное подчёркивание-маркер -->
+        <h1>[Заголовок <em>с акцентом</em>]</h1>
+        <p class="p-lede">[Подзаголовок: 1 предложение о чём статья.]</p>
+        <p class="p-masthead__preview">[Превью-абзац — то, что показывается в листинге журнала. 2–3 предложения.]</p>
       </div>
-    </header>
+      <figure class="p-masthead__media"><img src="../../assets/images/blog/[файл-обложки].webp" alt="[описание обложки]" loading="eager" decoding="async" /></figure>
+    </div>
 
-    <figure class="u-article__hero">
-      <img src="../../assets/images/blog/[файл-обложки].webp" alt="" loading="eager" decoding="async" />
-    </figure>
+    <div class="p-byline">
+      <div class="p-author">
+        <span class="p-author__av">У</span>
+        <span class="p-author__meta"><b>Редакция «Уместно»</b>журнал о хранении</span>
+      </div>
+      <div class="p-meta-facts">
+        <span>[1 января 2026]</span><span class="sep"></span><span>[N] мин чтения</span>
+      </div>
+      <div class="p-share">
+        <span class="p-share__lbl">Поделиться</span>
+        <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+        <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        <a href="#" aria-label="Скопировать ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></a>
+      </div>
+    </div>
+  </section>
 
-    <article class="u-article__body">
-      <!-- Первый абзац = «лид внутри статьи». На него навешивается дроп-капс
-           (первая буква крупная декоративная) — ничего не надо делать руками. -->
-      <p>[Первый абзац — задаёт тон. Должен сразу втягивать в чтение.]</p>
+  <!-- ── Body + TOC ─────────────────────────────────────────────── -->
+  <section class="u-container">
+    <div class="p-layout">
+      <!-- Содержание: по одной ссылке на каждый <h2 id="…"> ниже -->
+      <aside class="p-toc" id="toc">
+        <div class="p-toc__lbl">Содержание</div>
+        <a href="#s1"><span class="n">01</span>[Раздел 1]</a>
+        <a href="#s2"><span class="n">02</span>[Раздел 2]</a>
+        <a href="#s3"><span class="n">03</span>[Раздел 3]</a>
+      </aside>
 
-      <p>[Обычный абзац. Просто пиши как пишется. Жирность — <strong>strong</strong>, курсив — <em>em</em>, ссылка — <a href="../../">внутрь сайта</a>.]</p>
+      <article class="p-body">
+        <p>[Первый абзац — на первой букве автоматически появится дроп-капс.]</p>
 
-      <h2>[Подзаголовок второго уровня]</h2>
-      <p>[Текст под подзаголовком.]</p>
+        <div class="p-pull">
+          <p>[Цитата-врезка: одна ключевая мысль крупным шрифтом.]</p>
+        </div>
 
-      <h3>[Маленький подзаголовок]</h3>
-      <p>[Текст под маленьким подзаголовком.]</p>
+        <h2 id="s1"><span class="h2num">01 — [Метка]</span>[Заголовок раздела]</h2>
+        <p>[Текст раздела.]</p>
+        <ul>
+          <li>[пункт списка;]</li>
+          <li>[пункт списка.]</li>
+        </ul>
 
-      <ul>
-        <li>[Пункт списка]</li>
-        <li>[Пункт списка]</li>
-      </ul>
+        <h2 id="s2"><span class="h2num">02 — [Метка]</span>[Заголовок раздела]</h2>
+        <p>[Текст раздела.]</p>
 
-      <blockquote>
-        [Цитата или ключевая мысль крупно — это блок-цитата, выделяется крупным курсивом.]
-      </blockquote>
+        <!-- предупреждение «!» -->
+        <div class="p-note">
+          <span class="p-note__mark">!</span>
+          <p>[Короткое важное замечание.]</p>
+        </div>
 
-      <figure>
-        <img src="../../assets/images/blog/[картинка-в-статье].webp" alt="" loading="lazy" />
-        <figcaption>[Подпись к картинке]</figcaption>
-      </figure>
+        <!-- картинка в тексте -->
+        <figure class="p-figure">
+          <div class="p-figure__media"><img src="../../assets/images/blog/[файл-картинки].webp" alt="[описание]" loading="lazy" decoding="async" /></div>
+          <figcaption>[Подпись к иллюстрации.]</figcaption>
+        </figure>
 
-      <p>[Заключительный абзац. Что забрать с собой, какой следующий шаг.]</p>
+        <!-- врезка-CTA на конфигуратор (одна на статью) -->
+        <aside class="p-cta">
+          <div>
+            <div class="p-cta__eyebrow">Схема под ваш ящик</div>
+            <h3>[Заголовок призыва]</h3>
+            <p>[1–2 предложения о том, что даёт сервис.]</p>
+          </div>
+          <div class="p-cta__action">
+            <span class="p-cta__price">149 ₽ <small>/ схема</small></span>
+            <a class="u-btn u-btn--sage u-btn--lg" href="../../configure/" data-ym-goal="cta_blog_article">Рассчитать схему</a>
+          </div>
+        </aside>
 
-      <div class="u-article__end" aria-hidden="true"></div>
-    </article>
+        <h2 id="s3"><span class="h2num">03 — Итог</span>[Заголовок раздела]</h2>
+        <p>[Заключение.]</p>
 
-    <footer class="u-article__more">
-      <div class="u-article__more-h">Дальше</div>
-      <a href="../">← Все статьи в журнале</a>
-    </footer>
+        <div class="p-end">
+          <div class="p-end__tags">
+            <a class="p-tag" href="#">[Тег]</a>
+            <a class="p-tag" href="#">[Тег]</a>
+          </div>
+          <div class="p-share">
+            <span class="p-share__lbl">Поделиться</span>
+            <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+            <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
 
-  </div>
+  <!-- ── Related (по желанию: карточки на другие статьи) ─────────── -->
+  <section class="u-container p-related">
+    <div class="p-related__head">
+      <h2>Читать дальше</h2>
+      <span class="num">Ещё в журнале</span>
+    </div>
+    <div class="j-grid">
+      <a class="j-card" href="../[slug-другой-статьи]/">
+        <div class="j-card__media"><img src="../../assets/images/blog/[файл].webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">[Рубрика]</div>
+        <h3 class="j-card__title">[Заголовок другой статьи]</h3>
+        <div class="j-card__meta"><span>[Рубрика]</span><span class="sep"></span><span>[N] мин</span></div>
+      </a>
+    </div>
+  </section>
 </main>
 
 <!-- ── Shared footer ──────────────────────────────────────── -->
@@ -186,5 +263,61 @@
 
 <script src="../../app.js"></script>
 <script src="../../landing_design/metrika.js?v=1" defer></script>
+<script>
+/* TOC scroll-spy — подсветка активного раздела */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.p-toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var heads = Array.prototype.slice.call(document.querySelectorAll('.p-body h2[id]'));
+  if(!('IntersectionObserver' in window) || !heads.length) return;
+  var current = null;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) current = e.target.id; });
+    links.forEach(function(a){ a.classList.remove('is-active'); });
+    if(current && map[current]) map[current].classList.add('is-active');
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  heads.forEach(function(h){ io.observe(h); });
+})();
+</script>
+<script>
+/* Кнопки «Поделиться» — проставляем ссылки шеринга из текущего URL */
+(function(){
+  var url = location.href.split('#')[0];
+  var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
+  var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media);
+  var intents = {
+    'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
+    'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + t + (media ? '&media=' + m : '')
+  };
+  document.querySelectorAll('.p-share a').forEach(function(a){
+    var label = a.getAttribute('aria-label') || '';
+    if (intents[label]) {
+      a.href = intents[label]; a.target = '_blank'; a.rel = 'noopener';
+    } else if (label.indexOf('Скопировать') === 0) {
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var feedback = function(){
+          var prev = a.getAttribute('aria-label');
+          a.setAttribute('aria-label', 'Ссылка скопирована');
+          a.classList.add('is-copied');
+          setTimeout(function(){ a.setAttribute('aria-label', prev); a.classList.remove('is-copied'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(feedback, feedback);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (_) {}
+          document.body.removeChild(ta); feedback();
+        }
+      });
+    }
+  });
+})();
+</script>
 </body>
 </html>
