@@ -234,5 +234,16 @@
 
 <script src="../app.js"></script>
 <script src="../landing_design/metrika.js?v=1" defer></script>
+<script>
+/* Пока фото не загружено — прячем «битую» картинку, остаётся чистая плашка */
+(function(){
+  var sel = '.j-feature__media img, .j-card__media img, .p-masthead__media img, .p-figure__media img';
+  document.querySelectorAll(sel).forEach(function(img){
+    var hide = function(){ img.style.display = 'none'; };
+    if (img.complete && img.naturalWidth === 0) hide();
+    img.addEventListener('error', hide);
+  });
+})();
+</script>
 </body>
 </html>
