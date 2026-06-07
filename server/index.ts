@@ -12,11 +12,13 @@ import { resultHandler } from "./api/result.js";
 import { pdfHandler } from "./api/pdf.js";
 import { orderSendEmailHandler } from "./api/orderSendEmail.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
+import { promoCheckHandler } from "./api/promoCheck.js";
 import { startMailerWorker } from "./workers/mailer.js";
 import {
   originCheck,
   calculateLimiterPerMinute,
   calculateLimiterPerHour,
+  promoCheckLimiter,
 } from "./middleware/security.js";
 import type { SkuCatalogRow } from "../engine/types.js";
 
@@ -76,6 +78,14 @@ app.get("/api/result/:token", resultHandler(pool, env));
 // идут с диска без Puppeteer.
 
 app.get("/api/pdf/:token", pdfHandler(pool, env));
+
+// ── 4.x — Превью промокода для /configure/ ─────────────────
+// Юзер раскрывает «Есть промокод?», вводит код → фронт стучится сюда,
+// мы говорим валидный/нет + итоговая сумма (для отрисовки зачёркнутой
+// старой цены и новой). uses_count тут НЕ инкрементится — это только
+// превью; реально код применяется в /api/calculate при сабмите.
+
+app.post("/api/promo/check", originCheck(env), promoCheckLimiter, promoCheckHandler(pool, env));
 
 // ── 2.x — Отправить схему на email по запросу клиента ──────
 // Юзер на /result/ вводит email + согласие на ПДн, клик «Отправить» →

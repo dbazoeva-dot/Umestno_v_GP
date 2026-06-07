@@ -76,3 +76,18 @@ export const calculateLimiterPerHour = rateLimit({
   message: { ok: false, error: "rate_limited", scope: "per_hour" },
   skip: skipForAdmins,
 });
+
+// Rate-limit на /api/promo/check: до 20 запросов в минуту с одного IP.
+// Эндпойнт читает promo_codes без побочных эффектов, но если кто-то
+// захочет брутфорсить пространство кодов — этот лимит даёт ~28800
+// попыток в сутки с одного IP, что замедляет атаку до бесполезности
+// (наши коды формата DZERA100 / FRIEND-A8KX2 — 12+ символов, перебор
+// нереалистичен даже без лимита, но лишним не будет).
+export const promoCheckLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "rate_limited", scope: "per_minute" },
+  skip: skipForAdmins,
+});
