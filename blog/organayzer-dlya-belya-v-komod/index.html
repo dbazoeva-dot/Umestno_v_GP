@@ -590,11 +590,14 @@
   var pinEl = document.querySelector('.p-masthead__media img[data-pin-description]');
   var pinDesc = pinEl ? pinEl.getAttribute('data-pin-description') : title;
   var pinMedia = (pinEl && pinEl.getAttribute('data-pin-media')) || media;  /* вертикальная картинка для Pinterest */
-  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), p = encodeURIComponent(pinDesc), pm = encodeURIComponent(pinMedia);
+  /* UTM на ссылку пина — чтобы переходы с Pinterest точно считались в Метрике
+     (авто-referrer из приложения Pinterest часто теряется) */
+  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=pinterest&utm_medium=social&utm_campaign=organayzer_belya';
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), p = encodeURIComponent(pinDesc), pm = encodeURIComponent(pinMedia), pu = encodeURIComponent(pinUrl);
   var intents = {
     'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
     'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
-    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + p + (pinMedia ? '&media=' + pm : '')
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + pu + '&description=' + p + (pinMedia ? '&media=' + pm : '')
   };
   document.querySelectorAll('.p-share a').forEach(function(a){
     var label = a.getAttribute('aria-label') || '';
