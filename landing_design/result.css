@@ -391,8 +391,16 @@ a.u-res-prod-card:focus{ outline: none; transform: translateY(-1px); }
 }
 .u-res-prod-card--empty:hover{ box-shadow: none; transform: none; }
 .u-res-prod-card__empty-msg{
-  margin: 0; font-size: var(--fs-sm); line-height: var(--lh-base);
-  color: var(--u-ink-2); text-align: left;
+  margin: 0; font-size: 12px; line-height: 1.5;
+  color: var(--u-ink-3); text-align: left;
+}
+/* Когда в правой колонке только empty-card, прижимаем её к нижней
+   границе строки (по высоте левой intro-колонки). Иначе текст висит
+   у верха, левая колонка под ним тянется ниже — выглядит несогласованно.
+   :has() — стандарт CSS Selectors L4, в 2026 поддерживается всеми
+   браузерами с большим запасом. */
+.u-res-prod-block:has(.u-res-prod-card--empty) .u-res-prod-cards{
+  align-self: end;
 }
 
 /* ── Note plaque ──────────────────────────────────────────────── */
