@@ -27,7 +27,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../../landing_design/styles.css" />
 <link rel="stylesheet" href="../../landing.css" />
-<link rel="stylesheet" href="../../landing_design/blog.css?v=20" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=23" />
+<link rel="stylesheet" href="../../landing_design/blog-fluid.css?v=2" />
 
 <script type="application/ld+json">
 {
@@ -67,6 +68,8 @@
    reading time · share) is pinned to the bottom of the text column so it
    fills the space beside the lower half of the photo. Desktop only — on
    tablet/mobile the byline simply flows after the intro text, untouched. */
+/* Размеры этого блока — в rem, чтобы он зумился вместе с blog-fluid.css.
+   border / box-shadow / пороги @media намеренно в px. */
 @media (min-width: 821px){
   .p-masthead{
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
@@ -78,62 +81,62 @@
     align-self: stretch;   /* фото тянется на высоту текстовой колонки — без пустоты справа */
   }
   .p-masthead .p-byline{
-    margin: auto 0 0; padding-top: 22px;
+    margin: auto 0 0; padding-top: 1.375rem;
     border-top: 1px solid var(--u-line-2);
     width: 100%;
   }
-  /* seam between hero and the article body — same 22px gap from the byline as the line above it */
-  .p-masthead{ padding-bottom: 22px; border-bottom: 1px solid var(--u-line-2); }
+  /* seam between hero and the article body */
+  .p-masthead{ padding-bottom: 1.375rem; border-bottom: 1px solid var(--u-line-2); }
 }
 
 /* ── Checklist card (reused for «коротко» + «карточка товара») ──────── */
 .p-check{
-  margin: 30px 0; padding: clamp(22px, 2.6vw, 32px);
+  margin: 1.875rem 0; padding: 2rem;
   background: var(--u-warm); border-radius: var(--r-lg);
   border: 1px solid var(--u-taupe);
 }
 .p-check__lbl{
   font-family: var(--f-mono); font-size: var(--fs-2xs);
   letter-spacing: var(--tr-widest); text-transform: uppercase;
-  color: var(--u-accent); margin: 0 0 18px;
+  color: var(--u-accent); margin: 0 0 1.125rem;
 }
 .p-body ul.p-check__list{ list-style: none; padding: 0; margin: 0; }
 .p-body ul.p-check__list > li{
-  display: flex; align-items: center; gap: 16px; padding: 16px 0; margin: 0;
+  display: flex; align-items: center; gap: 1rem; padding: 1rem 0; margin: 0;
   border-top: 1px solid rgba(80,60,40,.10);
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.5; color: var(--u-ink);
 }
-.p-body ul.p-check__list > li:first-child{ border-top: none; padding-top: 4px; }
-.p-body ul.p-check__list > li:last-child{ padding-bottom: 4px; }
+.p-body ul.p-check__list > li:first-child{ border-top: none; padding-top: 0.25rem; }
+.p-body ul.p-check__list > li:last-child{ padding-bottom: 0.25rem; }
 .p-body ul.p-check__list > li::before{ content: none; display: none; }
 .p-check__list li b{ font-weight: 600; color: var(--u-ink); }
 .p-check__list li span.k{
   display: block; font-family: var(--f-mono); font-size: var(--fs-2xs);
-  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); margin-top: 4px;
+  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); margin-top: 0.25rem;
 }
 .p-check__tick{
   flex: 0 0 auto;
-  width: 24px; height: 24px; border-radius: 50%;
+  width: 1.5rem; height: 1.5rem; border-radius: 50%;
   background: var(--u-sage-d); color: #fff;
   display: inline-flex; align-items: center; justify-content: center;
 }
 
 /* ── Comparison table — Какой органайзер выбрать под Вашу задачу ─────── */
-.p-compare{ margin: 34px 0 12px; }
+.p-compare{ margin: 2.125rem 0 0.75rem; }
 .p-compare__scroll{ overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--r-md); }
 .p-table{
-  width: 100%; border-collapse: collapse; min-width: 720px;
+  width: 100%; border-collapse: collapse; min-width: 45rem;
   font-family: var(--f-sans); background: var(--u-card);
 }
 .p-table thead th{
   text-align: left; vertical-align: bottom;
   font-family: var(--f-mono); font-size: var(--fs-2xs);
   letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
-  font-weight: 500; padding: 0 18px 14px; border-bottom: 1px solid var(--u-ink);
+  font-weight: 500; padding: 0 1.125rem 0.875rem; border-bottom: 1px solid var(--u-ink);
 }
 .p-table thead th:first-child{ color: var(--u-accent); }
 .p-table tbody td{
-  padding: 18px; vertical-align: top;
+  padding: 1.125rem; vertical-align: top;
   font-size: var(--fs-sm); line-height: 1.45; color: var(--u-ink-2);
   border-bottom: 1px solid var(--u-line-2);
 }
@@ -143,11 +146,11 @@
   line-height: 1.12; color: var(--u-ink); width: 22%;
 }
 .p-table .c-check{ color: var(--u-ink); }
-.c-format__in{ display: flex; align-items: flex-start; gap: 13px; }
+.c-format__in{ display: flex; align-items: flex-start; gap: 0.8125rem; }
 .c-format__ico{
-  flex: 0 0 auto; width: 34px; height: 34px; margin-top: 2px;
+  flex: 0 0 auto; width: 2.125rem; height: 2.125rem; margin-top: 0.125rem;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 9px; background: var(--u-warm);
+  border-radius: 0.5625rem; background: var(--u-warm);
   color: var(--u-sage-dd); border: 1px solid var(--u-taupe);
 }
 .c-format__ico svg{ display: block; }
@@ -156,12 +159,12 @@
 .p-figure__media img{ width: 100%; height: 100%; object-fit: cover; display: block; }
 .p-figure__media--diagram{ background: #FBF6EE; }
 .p-figure__media--diagram svg{ display: block; width: 100%; height: 100%; }
-.p-table .c-check b{ display:block; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-accent); font-weight:500; margin-bottom: 4px; }
+.p-table .c-check b{ display:block; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-accent); font-weight:500; margin-bottom: 0.25rem; }
 .p-table .tag-yes,
 .p-table .tag-no{
-  display: flex; width: max-content; align-items: center; gap: 7px;
+  display: flex; width: max-content; align-items: center; gap: 0.4375rem;
   font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide);
-  text-transform: uppercase; margin-bottom: 8px;
+  text-transform: uppercase; margin-bottom: 0.5rem;
 }
 .p-table .tag-yes{ color: var(--u-sage-dd); }
 .p-table .tag-no{ color: #B6735C; }
@@ -170,7 +173,7 @@
 .p-compare__hint{
   display: none; font-family: var(--f-mono); font-size: var(--fs-2xs);
   letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
-  margin-top: 12px;
+  margin-top: 0.75rem;
 }
 
 @media (max-width: 720px){
@@ -180,38 +183,37 @@
   .p-table, .p-table tbody, .p-table tr, .p-table td{ display: block; width: 100%; }
   .p-table tbody tr{
     background: var(--u-card); border: 1px solid var(--u-line-2);
-    border-radius: var(--r-md); padding: 18px 20px; margin-bottom: 14px;
+    border-radius: var(--r-md); padding: 1.125rem 1.25rem; margin-bottom: 0.875rem;
   }
   .p-table tbody td{ padding: 0; border: none; }
-  .p-table tbody td + td{ margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--u-line); }
-  .p-table .c-format{ width: auto; font-size: var(--fs-xl); margin-bottom: 4px; }
+  .p-table tbody td + td{ margin-top: 0.875rem; padding-top: 0.875rem; border-top: 1px solid var(--u-line); }
+  .p-table .c-format{ width: auto; font-size: var(--fs-xl); margin-bottom: 0.25rem; }
   .p-table td[data-label]:not(.c-format)::before{
     content: attr(data-label); display: block;
     font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide);
-    text-transform: uppercase; color: var(--u-ink-3); margin-bottom: 6px;
+    text-transform: uppercase; color: var(--u-ink-3); margin-bottom: 0.375rem;
   }
   .p-table tbody tr:hover td{ background: transparent; }
 }
 
 /* ── Review-phrases callout (что искать в отзывах) ──────────────────── */
 .p-quotes{
-  margin: 30px 0; padding: clamp(22px, 2.6vw, 30px);
+  margin: 1.875rem 0; padding: 1.875rem;
   border-radius: var(--r-md); background: var(--u-bg); border: 1px solid var(--u-line-2);
 }
 .p-quotes__lbl{
   font-family: var(--f-mono); font-size: var(--fs-2xs);
-  letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-accent); margin: 0 0 16px;
+  letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-accent); margin: 0 0 1rem;
 }
-.p-quotes__chips{ display: flex; flex-wrap: wrap; gap: 10px; }
+.p-quotes__chips{ display: flex; flex-wrap: wrap; gap: 0.625rem; }
 .p-quotes__chips span{
   font-family: var(--f-display); font-style: italic; font-size: var(--fs-lg);
-  color: var(--u-ink); padding: 8px 16px; border-radius: var(--r-pill);
+  color: var(--u-ink); padding: 0.5rem 1rem; border-radius: var(--r-pill);
   background: var(--u-card); border: 1px solid var(--u-line-2);
   white-space: nowrap; line-height: 1.3;
 }
-/* restore the mistake-block padding (my li carries .p-mistake directly, so the
-   template's `.p-body ul.p-mistakes > li{padding:0}` was out-specifying it) */
-.p-body ul.p-mistakes > li.p-mistake{ padding: 26px 0; }
+/* restore the mistake-block padding */
+.p-body ul.p-mistakes > li.p-mistake{ padding: 1.625rem 0; }
 </style>
 </head>
 <body>
@@ -504,7 +506,7 @@
         <h3 class="j-card__title">Как навести порядок в комоде: схема хранения для белья, носков и мелочей</h3>
         <div class="j-card__meta"><span>Комод</span><span class="sep"></span><span>8 мин</span></div>
       </a>
-      <a class="j-card" href="#">
+      <a class="j-card" href="../razdeliteli-dlya-yashchikov/">
         <div class="j-card__media"><img src="../../assets/images/blog/razdeliteli-yaschikov.webp" alt="" loading="lazy" decoding="async"></div>
         <div class="j-card__cat">Органайзеры</div>
         <h3 class="j-card__title">Разделители для ящиков: когда они помогают, а когда превращаются в «Тетрис»</h3>

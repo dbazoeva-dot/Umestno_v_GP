@@ -111,6 +111,14 @@ html,body{
   box-shadow:none;
 }
 
+/* Подписи блоков в схеме. На сайте используется clamp с container query
+   (cqi) — подпись подстраивается под размер блока, что хорошо в адаптивной
+   вёрстке /result/, но в PDF блоки разной площади дают визуально
+   «рассинхронные» подписи. Фиксируем единый pt-кегль для всех. */
+.scheme__plate .u-res-block__n   { font-size: 8pt  !important; }
+.scheme__plate .u-res-block__cat { font-size: 9pt  !important; }
+.scheme__plate .u-res-block.is-reserve .u-res-block__cat { font-size: 7.5pt !important; }
+
 /* ── Спек-таблица ────────────────────────────────────────────────── */
 .blocks-panel{ border:1px solid var(--line-2); border-radius:3mm; overflow:hidden; box-shadow:0 1mm 6mm -5mm rgba(80,60,40,.18); }
 .blocks-panel__top{

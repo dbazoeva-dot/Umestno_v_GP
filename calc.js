@@ -79,13 +79,22 @@
 
     var escape = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
 
+    // Сортируем внутри группы по русскому алфавиту через Intl.Collator —
+    // он корректно обрабатывает кириллицу (Ё, мягкие/твёрдые знаки и т.д.),
+    // в отличие от наивного localeCompare без явной локали. Источник
+    // UMESTNO_CONTENT.items остаётся как есть (порядок может быть любым),
+    // сортировка только для отображения.
+    var ruCollator = new Intl.Collator('ru', { sensitivity: 'base' });
     var typeOptionsHTML = function (selectedId) {
       var html = '<option value="">— выбрать —</option>';
       content.groups.forEach(function (g) {
         html += '<optgroup label="' + escape(g.ru) + '">';
-        content.items.filter(function (it) { return it.group === g.id; }).forEach(function (it) {
-          html += '<option value="' + it.id + '"' + (it.id === selectedId ? ' selected' : '') + '>' + escape(it.ru) + '</option>';
-        });
+        content.items
+          .filter(function (it) { return it.group === g.id; })
+          .sort(function (a, b) { return ruCollator.compare(a.ru, b.ru); })
+          .forEach(function (it) {
+            html += '<option value="' + it.id + '"' + (it.id === selectedId ? ' selected' : '') + '>' + escape(it.ru) + '</option>';
+          });
         html += '</optgroup>';
       });
       return html;
@@ -118,10 +127,36 @@
         if (rm) rm.style.display = rows.length > 1 ? '' : 'none';
       });
       if (addBtn) addBtn.style.display = rows.length < MAX_ROWS ? '' : 'none';
+      refreshTypeAvailability();
+    };
+
+    /* Дубли категорий разрешены (семейные ящики: «Носки мужа» + «Носки
+     * жены», общий ящик), но показываем мелкое предупреждение под
+     * строками — на случай если юзер случайно выбрал одно и то же
+     * дважды и не заметил. Просто информационное, не блокирует сабмит. */
+    var refreshTypeAvailability = function () {
+      var typeSelects = itemsRoot.querySelectorAll('select[data-role="type"]');
+      var counts = {};
+      typeSelects.forEach(function (s) {
+        if (s.value) counts[s.value] = (counts[s.value] || 0) + 1;
+      });
+      var duped = Object.keys(counts).filter(function (k) { return counts[k] > 1; });
+      var hint = document.querySelector('[data-items-dup-hint]');
+      if (!hint) return;
+      if (duped.length === 0) { hint.hidden = true; hint.textContent = ''; return; }
+      var labels = duped.map(function (id) {
+        var item = content.items.filter(function (it) { return it.id === id; })[0];
+        return '«' + (item ? item.ru : id) + '»';
+      });
+      hint.hidden = false;
+      hint.textContent = labels.length === 1
+        ? 'Категория ' + labels[0] + ' выбрана несколько раз — это намеренно?'
+        : 'Категории ' + labels.join(', ') + ' выбраны несколько раз — это намеренно?';
     };
 
     // default 2 rows
     itemsRoot.innerHTML = rowHTML('socks', 'medium') + rowHTML('panties', 'medium');
+    refreshTypeAvailability();
 
     itemsRoot.addEventListener('click', function (e) {
       var rm = e.target.closest('.u-calc__item-rm');
@@ -140,6 +175,7 @@
       var typeId = sel.value;
       qty.innerHTML = qtyOptionsHTML(typeId, prev || 'medium');
       qty.disabled = !typeId || !content.volumeBounds(typeId);
+      refreshTypeAvailability();
     });
     if (addBtn) {
       addBtn.addEventListener('click', function () {
@@ -223,6 +259,22 @@
    * фискального чека ЮКассы и записать оба согласия (оферта + ПДн).
    */
   var cta = document.querySelector('.u-calc__cta');
+
+  /* Сброс is-loading после возврата из bfcache (back-forward cache).
+   * Когда юзер уходит в ЮКассу и жмёт «назад» в браузере, страница
+   * восстанавливается из bfcache ровно в том состоянии, где её
+   * оставили — с залоченной кнопкой (dataset.loading='1'). Это
+   * приводило к UX-багу: невозможно нажать «Получить расчёт» ещё раз
+   * после неудачной/отменённой оплаты. Стандартный паттерн — слушать
+   * pageshow.persisted, событие срабатывает только на bfcache-restore. */
+  window.addEventListener('pageshow', function (ev) {
+    if (!ev.persisted) return;
+    if (cta) {
+      cta.dataset.loading = '';
+      cta.classList.remove('is-loading');
+    }
+  });
+
   if (cta) {
     cta.addEventListener('click', function (e) {
       e.preventDefault();

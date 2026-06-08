@@ -401,6 +401,19 @@
 }
 .u-calc__item-rm:hover{ color: var(--u-accent-d); border-color: var(--u-line-2); }
 
+/* Мелкая подсказка при дубликате категорий: не блокирует сабмит,
+   просто намёк юзеру «ты намеренно?». Стилизуем максимально тихо —
+   не должна перетягивать внимание с основной формы. */
+.u-calc__dup-hint{
+  margin: 8px 2px 0;
+  font-family: var(--f-sans);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--u-ink-3);
+  font-style: italic;
+}
+.u-calc__dup-hint[hidden]{ display: none; }
+
 .u-calc__add{
   align-self: flex-start;
   display: inline-flex; align-items: center; gap: 8px;
