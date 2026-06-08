@@ -14,6 +14,7 @@ import { orderSendEmailHandler } from "./api/orderSendEmail.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
 import { promoCheckHandler } from "./api/promoCheck.js";
 import { startMailerWorker } from "./workers/mailer.js";
+import { startTelegramWorker } from "./workers/telegram.js";
 import {
   originCheck,
   calculateLimiterPerMinute,
@@ -112,9 +113,12 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 async function main() {
   await warmupCatalog();
-  // Email-воркер. Если UNISENDER_API_KEY не задан — крутится вхолостую,
+  // Email-воркер. Если SMTP_PASS не задан — крутится вхолостую,
   // письма просто копятся в emails_outbox как 'queued'.
   startMailerWorker(pool);
+  // Telegram-бот (заглушка). Если TG_BOT_TOKEN не задан — не стартует,
+  // молча выходит. См. server/workers/telegram.ts.
+  startTelegramWorker(pool);
   app.listen(env.PORT, "127.0.0.1", () => {
     console.log(`[api] umestno listening on http://127.0.0.1:${env.PORT}  (env=${env.NODE_ENV})`);
   });
