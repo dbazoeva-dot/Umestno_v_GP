@@ -88,15 +88,25 @@ export interface FilterGate { name: string; test: (sku: SkuCatalogRow) => boolea
 export function baseFilterGates(divType: DivisionType, geom: LaneGeom, zone: PlacedZone): FilterGate[] {
   const { eff_w, eff_d } = effectiveCellDims(zone);
   const unit_h = zone.unit_h_cm;
-  return [
+  const gates: FilterGate[] = [
     { name: "in_stock",      test: (s) => s.availability_status !== "out_of_stock" },
     { name: "division_type", test: (s) => s.division_type === divType },
-    { name: "capacity",      test: (s) => (s.capacity_units ?? 0) >= geom.cap_per_lane },
+  ];
+  // open-секции не имеют ни ячеек, ни заполненного capacity_units — у них
+  // важен только подходящий размер (footprint + height). Гейт capacity опирается
+  // на capacity_units, которого у open в каталоге нет (NULL → 0), поэтому он
+  // рубил ВСЕ open-кандидаты. Для open его не применяем.
+  // (cell_width/cell_depth для open пока остаются — это отдельный шаг.)
+  if (divType !== "open") {
+    gates.push({ name: "capacity", test: (s) => (s.capacity_units ?? 0) >= geom.cap_per_lane });
+  }
+  gates.push(
     { name: "cell_width",    test: (s) => cellWidthOk(s, eff_w) },
     { name: "cell_depth",    test: (s) => cellDepthOk(s, eff_d) },
     { name: "height",        test: (s) => heightOk(s, unit_h) },
     { name: "footprint",     test: (s) => fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
-  ];
+  );
+  return gates;
 }
 
 export interface FunnelStage { gate: string; survived: number; dropped: number }
