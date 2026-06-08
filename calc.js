@@ -130,24 +130,28 @@
       refreshTypeAvailability();
     };
 
-    /* Запрет на выбор одной и той же категории в нескольких строках.
-     * Юзеры случайно дублируют (например, при добавлении новой строки
-     * выпадашка остаётся на «Носки» по умолчанию). Движок такие дубли
-     * не различает и схема получается кривой. Стандартный UX: уже
-     * выбранную категорию дизейблим во всех ОСТАЛЬНЫХ строках. */
+    /* Дубли категорий разрешены (семейные ящики: «Носки мужа» + «Носки
+     * жены», общий ящик), но показываем мелкое предупреждение под
+     * строками — на случай если юзер случайно выбрал одно и то же
+     * дважды и не заметил. Просто информационное, не блокирует сабмит. */
     var refreshTypeAvailability = function () {
       var typeSelects = itemsRoot.querySelectorAll('select[data-role="type"]');
-      var selectedSet = {};
+      var counts = {};
       typeSelects.forEach(function (s) {
-        if (s.value) selectedSet[s.value] = true;
+        if (s.value) counts[s.value] = (counts[s.value] || 0) + 1;
       });
-      typeSelects.forEach(function (s) {
-        var ownValue = s.value;
-        Array.prototype.forEach.call(s.options, function (opt) {
-          if (!opt.value) return; // пропуск «— выбрать —»
-          opt.disabled = !!(selectedSet[opt.value] && opt.value !== ownValue);
-        });
+      var duped = Object.keys(counts).filter(function (k) { return counts[k] > 1; });
+      var hint = document.querySelector('[data-items-dup-hint]');
+      if (!hint) return;
+      if (duped.length === 0) { hint.hidden = true; hint.textContent = ''; return; }
+      var labels = duped.map(function (id) {
+        var item = content.items.filter(function (it) { return it.id === id; })[0];
+        return '«' + (item ? item.ru : id) + '»';
       });
+      hint.hidden = false;
+      hint.textContent = labels.length === 1
+        ? 'Категория ' + labels[0] + ' выбрана несколько раз — это намеренно?'
+        : 'Категории ' + labels.join(', ') + ' выбраны несколько раз — это намеренно?';
     };
 
     // default 2 rows
