@@ -20,7 +20,8 @@ image-slot::part(empty){
 
 /* ── Journal masthead ─────────────────────────────────────────────── */
 .j-mast{
-  padding: clamp(40px, 5vw, 76px) 0 clamp(28px, 3vw, 44px);
+  /* вертикальный ритм по шкале лендинга (.u-section: clamp 56–120) — раньше потолок был низкий (76px) и рано «застревал» */
+  padding: clamp(48px, 5vw, 104px) 0 clamp(28px, 3vw, 48px);
 }
 .j-mast__topline{
   display: flex; align-items: baseline; justify-content: space-between;
@@ -74,7 +75,8 @@ image-slot::part(empty){
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   column-gap: clamp(40px, 5vw, 80px);
   align-items: stretch;
-  padding: clamp(36px, 4vw, 64px) 0 clamp(40px, 5vw, 72px);
+  /* воздух вокруг featured растёт до шкалы лендинга (≈120px), а не упирается в 64–72px */
+  padding: clamp(44px, 5vw, 104px) 0 clamp(52px, 5.5vw, 116px);
 }
 .j-feature__media{
   position: relative;
@@ -152,7 +154,7 @@ image-slot::part(empty){
   display: flex; align-items: center; gap: 0; flex-wrap: wrap;
   border-top: 1px solid var(--u-line-2);
   border-bottom: 1px solid var(--u-line-2);
-  margin-bottom: clamp(40px, 4vw, 64px);
+  margin-bottom: clamp(44px, 5vw, 96px);
 }
 .j-rubrics__lbl{
   font-family: var(--f-mono); font-size: var(--fs-2xs);
