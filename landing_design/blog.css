@@ -46,7 +46,7 @@ image-slot::part(empty){
 .j-mast__eyebrow .rule{ flex: 0 0 48px; height: 1px; background: var(--u-accent); }
 .j-mast h1{
   font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: clamp(56px, 8vw, 132px); line-height: 0.9;
+  font-size: clamp(48px, 6.4vw, 112px); line-height: 0.92;  /* выровнено под шкалу лендинга: vw 6.4 + потолок 112px (как --fs-display), а не 8vw/132px */
   letter-spacing: -0.025em; margin: 0; color: var(--u-ink);
 }
 .j-mast h1 em{
