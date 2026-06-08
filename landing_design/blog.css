@@ -237,16 +237,7 @@ image-slot::part(empty){
 /* ════════════════════════════════════════════════════════════════════
    ARTICLE (single post)
    ════════════════════════════════════════════════════════════════════ */
-.p-wrap{
-  padding-top: clamp(28px, 3vw, 48px); max-width: 1200px; margin-inline: auto;
-  /* «резиновое» тело статьи: размерные токены тянутся с шириной экрана.
-     Scoped на .p-wrap — только статьи (журнал и лендинг не затрагиваются).
-     Весь текст статьи (абзацы, списки, тест, таблица, карточки, лид) масштабируется разом. */
-  --fs-sm: clamp(14px, 1vw, 16px);
-  --fs-md: clamp(16px, 1.15vw, 19px);
-  --fs-lg: clamp(18px, 1.35vw, 22px);
-  --fs-xl: clamp(21px, 1.6vw, 27px);
-}
+.p-wrap{ padding-top: clamp(28px, 3vw, 48px); }
 
 .p-breadcrumb{
   display: flex; align-items: center; gap: 12px;
