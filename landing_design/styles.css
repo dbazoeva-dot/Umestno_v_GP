@@ -197,24 +197,33 @@ a{ color: inherit; text-decoration: none; }
 .u-nav a:hover{ color: var(--u-ink); }
 
 /* «Журнал» — отдельная контент-ось, не часть продуктовой воронки.
-   Выделяем sage-цветом + вертикальными разделительными линиями
-   слева и справа, чтобы глаз сразу видел: это другая сущность. */
+   Тройное выделение: sage-цвет + курсив display-шрифта (editorial-стиль) +
+   маленькая иконка-книжка слева. Один тонкий разделитель слева (border-left)
+   отделяет от «О сервисе», но не зажимает слово рамкой. Отрицательный
+   margin-left компенсирует gap родительского flex, чтобы «Журнал» сидел
+   ближе к «О сервисе», а не в другом конце шапки. */
 .u-nav a.u-nav-journal{
-  position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-left: -18px;
+  padding-left: 14px;
+  border-left: 1px solid var(--u-line-2);
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 500;
   color: var(--u-sage-d);
-  padding: 0 22px;
-  margin-left: 6px;
+  letter-spacing: 0.005em;
 }
 .u-nav a.u-nav-journal:hover{ color: var(--u-sage-d); opacity: 0.78; }
-.u-nav a.u-nav-journal::before,
-.u-nav a.u-nav-journal::after{
+/* Иконка-книжка слева перед словом — editorial-сигнал.
+   Через CSS mask + currentColor, чтобы цвет совпадал с текстом. */
+.u-nav a.u-nav-journal::before{
   content: "";
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 1px; height: 16px;
-  background: var(--u-line-2);
+  width: 14px; height: 14px;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z'/></svg>") center / contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z'/></svg>") center / contain no-repeat;
 }
-.u-nav a.u-nav-journal::before{ left: 0; }
-.u-nav a.u-nav-journal::after{  right: 0; }
 
 .u-header__cta{ display:flex; align-items:center; gap: 12px; }
 
