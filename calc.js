@@ -79,13 +79,22 @@
 
     var escape = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
 
+    // Сортируем внутри группы по русскому алфавиту через Intl.Collator —
+    // он корректно обрабатывает кириллицу (Ё, мягкие/твёрдые знаки и т.д.),
+    // в отличие от наивного localeCompare без явной локали. Источник
+    // UMESTNO_CONTENT.items остаётся как есть (порядок может быть любым),
+    // сортировка только для отображения.
+    var ruCollator = new Intl.Collator('ru', { sensitivity: 'base' });
     var typeOptionsHTML = function (selectedId) {
       var html = '<option value="">— выбрать —</option>';
       content.groups.forEach(function (g) {
         html += '<optgroup label="' + escape(g.ru) + '">';
-        content.items.filter(function (it) { return it.group === g.id; }).forEach(function (it) {
-          html += '<option value="' + it.id + '"' + (it.id === selectedId ? ' selected' : '') + '>' + escape(it.ru) + '</option>';
-        });
+        content.items
+          .filter(function (it) { return it.group === g.id; })
+          .sort(function (a, b) { return ruCollator.compare(a.ru, b.ru); })
+          .forEach(function (it) {
+            html += '<option value="' + it.id + '"' + (it.id === selectedId ? ' selected' : '') + '>' + escape(it.ru) + '</option>';
+          });
         html += '</optgroup>';
       });
       return html;
