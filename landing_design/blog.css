@@ -120,7 +120,7 @@ image-slot::part(empty){
   box-decoration-break: clone; -webkit-box-decoration-break: clone;
 }
 .j-feature__excerpt{
-  font-family: var(--f-sans); font-size: var(--fs-lg); line-height: 1.55;
+  font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.6;
   color: var(--u-ink-2); margin: 0 0 28px; max-width: 46ch;
 }
 .j-feature__meta{
