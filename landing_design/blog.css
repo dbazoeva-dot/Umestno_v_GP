@@ -237,7 +237,16 @@ image-slot::part(empty){
 /* ════════════════════════════════════════════════════════════════════
    ARTICLE (single post)
    ════════════════════════════════════════════════════════════════════ */
-.p-wrap{ padding-top: clamp(28px, 3vw, 48px); max-width: 1200px; margin-inline: auto; }
+.p-wrap{
+  padding-top: clamp(28px, 3vw, 48px); max-width: 1200px; margin-inline: auto;
+  /* «резиновое» тело статьи: размерные токены тянутся с шириной экрана.
+     Scoped на .p-wrap — только статьи (журнал и лендинг не затрагиваются).
+     Весь текст статьи (абзацы, списки, тест, таблица, карточки, лид) масштабируется разом. */
+  --fs-sm: clamp(14px, 1vw, 16px);
+  --fs-md: clamp(16px, 1.15vw, 19px);
+  --fs-lg: clamp(18px, 1.35vw, 22px);
+  --fs-xl: clamp(21px, 1.6vw, 27px);
+}
 
 .p-breadcrumb{
   display: flex; align-items: center; gap: 12px;
@@ -706,15 +715,15 @@ image-slot::part(empty){
 .p-body ol.p-quiz__list > li::before{ content: none; display: none; }
 .p-quiz__q{
   width: 100%; text-align: left; background: transparent; border: 0; cursor: pointer;
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
-  padding: 17px 10px; border-top: 1px solid var(--u-line);
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: clamp(12px, 1vw, 18px);
+  padding: clamp(15px, 1.4vw, 22px) clamp(8px, 0.8vw, 12px); border-top: 1px solid var(--u-line);
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.45; color: var(--u-ink);
   transition: color .15s ease;
 }
 .p-quiz__list li:first-child .p-quiz__q{ border-top: 0; }
 .p-quiz__q .qz-n{ font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--u-ink-3); }
 .p-quiz__q .qz-box{
-  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  width: clamp(26px, 2vw, 32px); height: clamp(26px, 2vw, 32px); border-radius: 8px; flex-shrink: 0;
   border: 1.5px solid var(--u-line-2); background: var(--u-bg);
   display: inline-flex; align-items: center; justify-content: center;
   color: #fff; transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
