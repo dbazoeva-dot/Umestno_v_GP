@@ -223,6 +223,22 @@
    * фискального чека ЮКассы и записать оба согласия (оферта + ПДн).
    */
   var cta = document.querySelector('.u-calc__cta');
+
+  /* Сброс is-loading после возврата из bfcache (back-forward cache).
+   * Когда юзер уходит в ЮКассу и жмёт «назад» в браузере, страница
+   * восстанавливается из bfcache ровно в том состоянии, где её
+   * оставили — с залоченной кнопкой (dataset.loading='1'). Это
+   * приводило к UX-багу: невозможно нажать «Получить расчёт» ещё раз
+   * после неудачной/отменённой оплаты. Стандартный паттерн — слушать
+   * pageshow.persisted, событие срабатывает только на bfcache-restore. */
+  window.addEventListener('pageshow', function (ev) {
+    if (!ev.persisted) return;
+    if (cta) {
+      cta.dataset.loading = '';
+      cta.classList.remove('is-loading');
+    }
+  });
+
   if (cta) {
     cta.addEventListener('click', function (e) {
       e.preventDefault();
