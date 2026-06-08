@@ -673,3 +673,129 @@ image-slot::part(empty){
 .p-figure__media img{
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Компоненты статьи «Разделители для ящиков»: мини-тест, таблица выбора,
+   карточки видов, «сигналы в отзывах». Перенесено из дизайн-файла 1:1.
+   ════════════════════════════════════════════════════════════════════ */
+/* ── interactive mini-test (signature element) ────────────────────── */
+.p-quiz{
+  margin: 36px 0; border-radius: var(--r-lg); overflow: hidden;
+  background: var(--u-card); border: 1px solid var(--u-line-2);
+  box-shadow: 0 24px 54px -34px rgba(80,60,40,.26);
+}
+.p-quiz__head{
+  padding: clamp(22px, 2.6vw, 30px) clamp(22px, 2.6vw, 32px) 20px;
+  background: var(--band, #E7ECDF); border-bottom: 1px solid rgba(80,60,40,.08);
+}
+.p-quiz__kicker{
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-widest); text-transform: uppercase;
+  color: var(--u-sage-dd, #69785F); margin-bottom: 12px;
+}
+.p-quiz__kicker::before{ content:""; width: 26px; height: 1px; background: currentColor; }
+.p-body .p-quiz__head h3{
+  font-family: var(--f-display); font-weight: 500;
+  font-size: clamp(24px, 2.6vw, 32px); line-height: 1.08;
+  letter-spacing: -0.01em; color: var(--u-ink); margin: 0 0 8px;
+}
+.p-quiz__head p{ margin: 0; font-family: var(--f-sans); font-size: var(--fs-sm); color: var(--u-ink-2); }
+.p-quiz__list{ list-style: none; margin: 0 !important; padding: clamp(8px, 1.4vw, 14px) clamp(14px, 2vw, 22px) !important; counter-reset: qz; }
+.p-body ol.p-quiz__list > li{ counter-increment: qz; padding: 0; margin: 0; }
+.p-body ol.p-quiz__list > li::before{ content: none; display: none; }
+.p-quiz__q{
+  width: 100%; text-align: left; background: transparent; border: 0; cursor: pointer;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
+  padding: 17px 10px; border-top: 1px solid var(--u-line);
+  font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.45; color: var(--u-ink);
+  transition: color .15s ease;
+}
+.p-quiz__list li:first-child .p-quiz__q{ border-top: 0; }
+.p-quiz__q .qz-n{ font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--u-ink-3); }
+.p-quiz__q .qz-box{
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  border: 1.5px solid var(--u-line-2); background: var(--u-bg);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
+}
+.p-quiz__q .qz-box svg{ opacity: 0; transform: scale(.6); transition: opacity .16s ease, transform .16s ease; }
+.p-quiz__q:hover{ color: var(--u-sage-dd, #69785F); }
+.p-quiz__q[aria-pressed="true"] .qz-box{ background: var(--u-sage-d); border-color: var(--u-sage-d); }
+.p-quiz__q[aria-pressed="true"] .qz-box svg{ opacity: 1; transform: scale(1); }
+.p-quiz__foot{
+  display: flex; align-items: center; gap: clamp(16px, 2.5vw, 28px); flex-wrap: wrap;
+  padding: clamp(18px, 2.2vw, 24px) clamp(22px, 2.6vw, 32px);
+  border-top: 1px solid var(--u-line-2); background: var(--u-warm);
+}
+.p-quiz__score{
+  flex-shrink: 0; display: flex; align-items: baseline; gap: 4px;
+  font-family: var(--f-display); color: var(--u-ink);
+}
+.p-quiz__score b{ font-size: clamp(34px, 4vw, 46px); font-weight: 500; color: var(--u-accent); line-height: 1; font-variant-numeric: tabular-nums; }
+.p-quiz__score span{ font-family: var(--f-mono); font-size: var(--fs-sm); color: var(--u-ink-3); }
+.p-quiz__verdict{ margin: 0 !important; font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.5; color: var(--u-ink); max-width: 52ch; }
+.p-quiz__verdict b{ color: var(--u-ink); font-weight: 600; }
+
+/* ── decision table ───────────────────────────────────────────────── */
+.p-tablewrap{ margin: 36px 0; overflow-x: auto; border-radius: var(--r-md); border: 1px solid var(--u-line-2); }
+.p-table{ width: 100%; border-collapse: collapse; min-width: 560px; background: var(--u-card); }
+.p-table thead th{
+  text-align: left; padding: 16px 22px; background: var(--u-warm);
+  font-family: var(--f-mono); font-size: var(--fs-2xs); font-weight: 500;
+  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-2);
+  border-bottom: 1px solid var(--u-line-2); white-space: nowrap;
+}
+.p-table tbody td{
+  padding: 16px 22px; border-top: 1px solid var(--u-line);
+  font-family: var(--f-sans); font-size: var(--fs-sm); line-height: 1.5; color: var(--u-ink-2);
+  vertical-align: top;
+}
+.p-table tbody tr:first-child td{ border-top: 0; }
+.p-table tbody td:first-child{ color: var(--u-ink); font-weight: 500; }
+.p-table tbody td:nth-child(2){ color: var(--u-sage-dd, #69785F); font-weight: 600; }
+.p-table tbody tr:hover td{ background: rgba(125,140,114,.045); }
+
+/* ── divider-type cards ───────────────────────────────────────────── */
+.p-types{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 36px 0; }
+.p-type{
+  border: 1px solid var(--u-line-2); border-radius: var(--r-md);
+  padding: 24px clamp(20px, 2vw, 26px); background: var(--u-card);
+  display: flex; flex-direction: column;
+}
+.p-type__name{
+  font-family: var(--f-display); font-weight: 500; font-size: var(--fs-xl);
+  line-height: 1.12; color: var(--u-ink); margin: 0 0 12px;
+}
+.p-body .p-type p{ margin: 0; font-family: var(--f-sans); font-size: var(--fs-sm); line-height: 1.6; color: var(--u-ink-2); }
+.p-type__tag{
+  align-self: flex-start; margin-bottom: 16px;
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-accent);
+  padding: 5px 11px; border: 1px solid var(--u-line-2); border-radius: var(--r-pill);
+}
+@media (max-width: 560px){ .p-types{ grid-template-columns: 1fr; } }
+
+/* ── review-phrases callout (что искать в отзывах) ────────────────── */
+.p-quotes{
+  margin: 30px 0; padding: clamp(22px, 2.6vw, 30px);
+  border-radius: var(--r-md); background: var(--u-bg); border: 1px solid var(--u-line-2);
+}
+.p-quotes__lbl{
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-accent); margin: 0 0 16px;
+}
+.p-quotes__chips{ display: flex; flex-wrap: wrap; gap: 10px; }
+.p-quotes__chips span{
+  font-family: var(--f-display); font-style: italic; font-size: var(--fs-lg);
+  color: var(--u-ink); padding: 8px 16px; border-radius: var(--r-pill);
+  background: var(--u-card); border: 1px solid var(--u-line-2);
+  white-space: nowrap; line-height: 1.3;
+}
+
+@media (max-width: 680px){
+  .p-quiz__q{ font-size: var(--fs-sm); gap: 12px; padding: 15px 4px; }
+  .p-quiz__foot{ gap: 14px; }
+  .p-quiz__verdict{ font-size: var(--fs-sm); }
+  .p-type{ padding: 20px; }
+}
