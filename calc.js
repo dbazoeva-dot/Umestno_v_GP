@@ -127,10 +127,32 @@
         if (rm) rm.style.display = rows.length > 1 ? '' : 'none';
       });
       if (addBtn) addBtn.style.display = rows.length < MAX_ROWS ? '' : 'none';
+      refreshTypeAvailability();
+    };
+
+    /* Запрет на выбор одной и той же категории в нескольких строках.
+     * Юзеры случайно дублируют (например, при добавлении новой строки
+     * выпадашка остаётся на «Носки» по умолчанию). Движок такие дубли
+     * не различает и схема получается кривой. Стандартный UX: уже
+     * выбранную категорию дизейблим во всех ОСТАЛЬНЫХ строках. */
+    var refreshTypeAvailability = function () {
+      var typeSelects = itemsRoot.querySelectorAll('select[data-role="type"]');
+      var selectedSet = {};
+      typeSelects.forEach(function (s) {
+        if (s.value) selectedSet[s.value] = true;
+      });
+      typeSelects.forEach(function (s) {
+        var ownValue = s.value;
+        Array.prototype.forEach.call(s.options, function (opt) {
+          if (!opt.value) return; // пропуск «— выбрать —»
+          opt.disabled = !!(selectedSet[opt.value] && opt.value !== ownValue);
+        });
+      });
     };
 
     // default 2 rows
     itemsRoot.innerHTML = rowHTML('socks', 'medium') + rowHTML('panties', 'medium');
+    refreshTypeAvailability();
 
     itemsRoot.addEventListener('click', function (e) {
       var rm = e.target.closest('.u-calc__item-rm');
@@ -149,6 +171,7 @@
       var typeId = sel.value;
       qty.innerHTML = qtyOptionsHTML(typeId, prev || 'medium');
       qty.disabled = !typeId || !content.volumeBounds(typeId);
+      refreshTypeAvailability();
     });
     if (addBtn) {
       addBtn.addEventListener('click', function () {
