@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../../landing_design/styles.css" />
 <link rel="stylesheet" href="../../landing.css" />
-<link rel="stylesheet" href="../../landing_design/blog.css?v=11" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=20" />
 
 <script type="application/ld+json">
 {
@@ -279,7 +279,7 @@
           </div>
         </div>
       </div>
-      <figure class="p-masthead__media"><img src="../../assets/images/blog/organayzer-belya.webp" alt="Органайзеры для белья в выдвижном ящике комода" loading="eager" decoding="async" /></figure>
+      <figure class="p-masthead__media"><img src="../../assets/images/blog/organayzer-belya.webp" alt="Органайзеры для белья в выдвижном ящике комода" data-pin-description="Покупаете органайзер для белья в комод? В статье разбираем, как выбрать размер, высоту и секции без ошибок. А сервис Уместно поможет рассчитать схему хранения под размеры вашего ящика и подобрать нужные органайзеры на маркетплейсах." loading="eager" decoding="async" /></figure>
     </div>
   </section>
 
@@ -587,11 +587,13 @@
   var url = location.href.split('#')[0];
   var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
   var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
-  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media);
+  var pinEl = document.querySelector('.p-masthead__media img[data-pin-description]');
+  var pinDesc = pinEl ? pinEl.getAttribute('data-pin-description') : title;
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), p = encodeURIComponent(pinDesc);
   var intents = {
     'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
     'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
-    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + t + (media ? '&media=' + m : '')
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + p + (media ? '&media=' + m : '')
   };
   document.querySelectorAll('.p-share a').forEach(function(a){
     var label = a.getAttribute('aria-label') || '';
