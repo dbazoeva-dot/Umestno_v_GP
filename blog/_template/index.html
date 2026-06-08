@@ -304,11 +304,15 @@
   var url = location.href.split('#')[0];
   var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
   var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
-  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media);
+  /* UTM на ссылку пина — переходы с Pinterest считаются в Метрике.
+     utm_campaign берётся из slug статьи автоматически; при желании
+     заменить на читаемое имя — впиши строкой вместо выражения ниже. */
+  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=pinterest&utm_medium=social&utm_campaign=' + (location.pathname.split('/').filter(Boolean).pop() || 'blog');
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), pu = encodeURIComponent(pinUrl);
   var intents = {
     'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
     'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
-    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + u + '&description=' + t + (media ? '&media=' + m : '')
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + pu + '&description=' + t + (media ? '&media=' + m : '')
   };
   document.querySelectorAll('.p-share a').forEach(function(a){
     var label = a.getAttribute('aria-label') || '';
