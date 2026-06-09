@@ -734,6 +734,35 @@
 .u-apology__art > img.twig{ width: 32%; left: -5%; top: -5%; transform: rotate(180deg); }
 /* lower branch: fully inside the panel, flipped horizontally + vertically */
 .u-apology__art > img:first-child{ width: 54%; right: 3%; bottom: 3%; transform: scaleX(-1) scaleY(-1); }
+/* Баннер «согласны на уменьшение?» — показывается на /no-fit/ когда
+   движок предложил конкретное уменьшение объёма категории. Тон тёплый
+   (не «увы»), кнопка «Да» — primary, «Нет» — ghost. Если юзер жмёт
+   «Нет», банер скрывается JS-ом и показывается стандартный apology. */
+.u-apology__suggest{
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 22px 24px; border-radius: var(--r-lg);
+  background: var(--u-sage-l, #E7ECDF);
+  border: 1px solid rgba(80,90,70,.10);
+}
+.u-apology__suggest[hidden]{ display: none; }
+.u-apology__suggest-title{
+  margin: 0; font-family: var(--f-display);
+  font-size: clamp(20px, 2.2vw, 26px); font-weight: 500;
+  color: var(--u-ink); line-height: 1.25;
+}
+.u-apology__suggest-hint{
+  margin: 0; font-size: var(--fs-sm); color: var(--u-ink-2); line-height: 1.45;
+}
+.u-apology__suggest-actions{
+  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px;
+}
+.u-apology__suggest-actions .u-btn{ flex: 0 1 auto; }
+.u-apology__suggest-err{
+  margin: 4px 0 0; font-size: var(--fs-sm); color: #B14B3B; line-height: 1.45;
+}
+.u-apology__suggest-err[hidden]{ display: none; }
+[data-default-flow][hidden]{ display: none; }
+
 .u-apology__body{
   display: flex; flex-direction: column; gap: 22px;
   background: var(--u-card);

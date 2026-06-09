@@ -163,7 +163,7 @@ export function resultHandler(pool: Pool, env: Env) {
       base_price_kop: number;
       amount_kop: number;
       input_payload: unknown;
-      engine_output: { scheme_payload?: unknown } | null;
+      engine_output: { scheme_payload?: unknown; suggestion?: unknown } | null;
     }>(
       `SELECT o.id AS order_id,
               o.configuration_id,
@@ -194,12 +194,17 @@ export function resultHandler(pool: Pool, env: Env) {
     // нет, это пользовательский payload, который сервер просто переиграл.
     if (!ACCESS_STATUSES.has(row.status)) {
       const input = clampInput(row.input_payload);
+      // suggestion (если есть — fit_partial с подбором уменьшения) тоже
+      // отдаём в 402 — для UI на /no-fit/ который показывает «согласны?».
+      const suggestion = row.engine_output?.suggestion ?? null;
       return res.status(402).json({
         ok: false,
         error: "payment_required",
         amount_kop: row.amount_kop,
         base_price_kop: row.base_price_kop,
+        fit_status: row.fit_status,
         input,
+        suggestion,
       });
     }
 

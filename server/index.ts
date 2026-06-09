@@ -13,6 +13,7 @@ import { pdfHandler } from "./api/pdf.js";
 import { orderSendEmailHandler } from "./api/orderSendEmail.js";
 import { yookassaWebhookHandler } from "./api/yookassa.js";
 import { promoCheckHandler } from "./api/promoCheck.js";
+import { acceptSuggestionHandler } from "./api/acceptSuggestion.js";
 import { startMailerWorker } from "./workers/mailer.js";
 import { startTelegramWorker } from "./workers/telegram.js";
 import {
@@ -87,6 +88,19 @@ app.get("/api/pdf/:token", pdfHandler(pool, env));
 // превью; реально код применяется в /api/calculate при сабмите.
 
 app.post("/api/promo/check", originCheck(env), promoCheckLimiter, promoCheckHandler(pool, env));
+
+// ── 4.x — Принять предложение по уменьшению объёма (fit_partial) ─
+// На /no-fit/ юзер видит «уменьшите носки до 16 пар, согласны?» → клик
+// «Да» → создаём новый заказ с уменьшенным input + платёж YooKassa.
+// Используется promoCheckLimiter (20/мин) — лёгкий лимит, защита
+// от случайного спама кнопкой.
+
+app.post(
+  "/api/order/:token/accept-suggestion",
+  originCheck(env),
+  promoCheckLimiter,
+  acceptSuggestionHandler(pool, env, () => catalogCache),
+);
 
 // ── 2.x — Отправить схему на email по запросу клиента ──────
 // Юзер на /result/ вводит email + согласие на ПДн, клик «Отправить» →
