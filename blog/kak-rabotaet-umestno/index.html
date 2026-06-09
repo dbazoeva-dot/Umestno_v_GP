@@ -106,6 +106,9 @@
   /* "проверьте на своём ящике" CTA — sage island + olive-branch decor */
   .p-cta--sage{ position: relative; overflow: hidden; background: #E7ECDF; border-color: transparent; }
   .p-cta--sage > div{ position: relative; z-index: 1; }
+  /* шире заголовок и подпись — не ужимать в узкую колонку */
+  .p-body .p-cta--sage h3{ max-width: none; }
+  .p-cta--sage p{ max-width: none; }
   .p-cta--sage .p-cta__eyebrow{ color: var(--u-sage-dd, #69785F); }
   .p-cta--sage .p-cta__price{ color: var(--u-sage-dd, #69785F); }
   .p-cta__leaf{ position: absolute; z-index: 0; pointer-events: none; user-select: none; }
