@@ -47,7 +47,7 @@ image-slot::part(empty){
 .j-mast__eyebrow .rule{ flex: 0 0 48px; height: 1px; background: var(--u-accent); }
 .j-mast h1{
   font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: clamp(46px, 6.4vw, 96px); line-height: 0.95;  /* потолок 96px = H1 лендинга (--fs-h1); на широком мониторе не разрастается */
+  font-size: clamp(56px, 8vw, 132px); line-height: 0.9;
   letter-spacing: -0.025em; margin: 0; color: var(--u-ink);
 }
 .j-mast h1 em{
@@ -98,7 +98,7 @@ image-slot::part(empty){
 }
 .j-feature__body{
   display: flex; flex-direction: column; justify-content: center;
-  padding: clamp(4px, 1vw, 16px) 0;
+  padding: clamp(8px, 2vw, 32px) 0;
 }
 .j-feature__cat{
   display: inline-flex; align-items: center; gap: 12px;
@@ -122,8 +122,8 @@ image-slot::part(empty){
   box-decoration-break: clone; -webkit-box-decoration-break: clone;
 }
 .j-feature__excerpt{
-  font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.6;
-  color: var(--u-ink-2); margin: 0 0 20px; max-width: 46ch;
+  font-family: var(--f-sans); font-size: var(--fs-lg); line-height: 1.55;
+  color: var(--u-ink-2); margin: 0 0 28px; max-width: 46ch;
 }
 .j-feature__meta{
   display: flex; align-items: center; gap: 16px;
@@ -154,7 +154,7 @@ image-slot::part(empty){
   display: flex; align-items: center; gap: 0; flex-wrap: wrap;
   border-top: 1px solid var(--u-line-2);
   border-bottom: 1px solid var(--u-line-2);
-  margin-bottom: clamp(24px, 2.8vw, 40px);
+  margin-bottom: clamp(40px, 4vw, 64px);
 }
 .j-rubrics__lbl{
   font-family: var(--f-mono); font-size: var(--fs-2xs);
