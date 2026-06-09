@@ -221,7 +221,10 @@
     function fromEngineCt(ct) { return ct === 'socks_regular' ? 'socks' : ct; }
 
     fetch('/api/result/' + encodeURIComponent(token), { credentials: 'same-origin' })
-      .then(function (r) { return r.ok ? r.json() : null; })
+      // Принимаем И 200 (оплаченный заказ), И 402 (payment_required, fit_partial/no_scheme).
+      // input приходит в обоих случаях — это пользовательский ввод, не секрет.
+      // Схему отдаёт только 200 — но нам тут нужен только input для prefill.
+      .then(function (r) { return r.json().catch(function () { return null; }); })
       .then(function (payload) {
         var input = payload && payload.input;
         if (!input) return;

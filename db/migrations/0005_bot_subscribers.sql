@@ -43,4 +43,10 @@ CREATE INDEX bot_subscribers_active
 -- Аналитика «сколько /start в день»
 CREATE INDEX bot_subscribers_first_seen ON bot_subscribers (first_seen_at DESC);
 
+-- Права для приложения (API-сервис подключается как umestno_app, не как
+-- postgres). Без явного GRANT новая таблица будет недоступна — INSERT
+-- упадёт с "permission denied for table bot_subscribers". Поэтому
+-- GRANT включаем прямо в миграцию, чтобы на любом окружении было ровно.
+GRANT SELECT, INSERT, UPDATE, DELETE ON bot_subscribers TO umestno_app;
+
 COMMIT;
