@@ -53,7 +53,10 @@
   border-radius: var(--r-lg); box-shadow: var(--sh-card);
   padding: clamp(22px, 2.4vw, 32px);
 }
-.u-res-card--warm{ background: var(--u-warm); border-color: rgba(80,60,40,.08); box-shadow: none; }
+/* Карточка «Почему эта схема подходит» — светло-шалфеевый фон.
+   Класс называется --warm по историческим причинам, оставляем имя
+   стабильным, меняем только background. */
+.u-res-card--warm{ background: var(--u-sage-l); border-color: rgba(80,90,70,.10); box-shadow: none; }
 /* frameless: no card background/border — just the buttons */
 .u-res-save-mini{ display: flex; flex-direction: column; gap: 12px; padding: 0; background: none; border: 0; box-shadow: none; }
 .u-res-save-mini .u-btn{ width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 10px; }
@@ -196,9 +199,9 @@
 .u-res-block.is-reserve::before,
 .u-res-block.is-reserve::after{ content: none; }
 .u-res-block.is-reserve .u-res-block__cat{
-  font-family: var(--f-mono); font-size: clamp(9px, 1.5cqw, 15px);
+  font-family: var(--f-mono); font-size: clamp(12px, 2.4cqw, 18px);
   letter-spacing: var(--tr-wide); text-transform: uppercase;
-  color: rgba(90,70,45,.62); font-weight: 500; white-space: nowrap;
+  color: rgba(90,70,45,.85); font-weight: 600; white-space: nowrap;
 }
 /* narrow reserve strip → rotate the label 90° */
 .u-res-block.is-reserve.is-vlabel .u-res-block__cat{ transform: rotate(-90deg); }
@@ -239,7 +242,12 @@
 }
 .u-res-block__n,
 .u-res-block__cat{
-  position: relative; z-index: 2; font-family: var(--f-sans); color: #3A382F; line-height: 1.3;
+  position: relative; z-index: 2;
+  /* Manrope явно, не через var(--f-sans). На /result/ установлен
+     data-fontpair="garamond" в html, который переопределяет --f-sans
+     на Inter. Тут хотим именно Manrope (бренд-шрифт). */
+  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  color: #3A382F; line-height: 1.3;
   /* перенос длинных слов («Колготки», «Бюстгальтеры») в узких блоках */
   overflow-wrap: anywhere; word-break: break-word; max-width: 100%;
 }
