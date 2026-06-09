@@ -193,7 +193,7 @@
 /* reserve = free floor: no velvet, just a dashed outline + muted label */
 .u-res-block.is-reserve{
   background: none; box-shadow: none;
-  border: 1.6px dashed rgba(95,72,42,.32);
+  border: 1.8px dashed rgba(95,72,42,.55);
   overflow: visible;
 }
 .u-res-block.is-reserve::before,
@@ -282,7 +282,14 @@
   box-shadow: inset 0 0 0 1px rgba(80,60,40,.10);
   font-family: var(--f-mono); font-size: var(--fs-xs);
 }
-.u-res-table__num--reserve{ background: transparent; box-shadow: inset 0 0 0 1.5px var(--u-line-2); color: var(--u-ink-3); }
+/* Кружок «—» в строке резерва: пунктирная обводка вместо сплошной —
+   визуально перекликается с пунктирным контуром резерва на схеме. */
+.u-res-table__num--reserve{
+  background: transparent;
+  border: 1.5px dashed rgba(95,72,42,.55);
+  box-shadow: none;
+  color: var(--u-ink-3);
+}
 /* colour each number circle like its block on the scheme */
 .u-res-table__row:nth-child(2) .u-res-table__num{ background: #EBDFC4; }
 .u-res-table__row:nth-child(3) .u-res-table__num{ background: #A6B38C; }
