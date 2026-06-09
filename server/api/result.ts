@@ -184,15 +184,22 @@ export function resultHandler(pool: Pool, env: Env) {
     }
     const row = orderQ.rows[0];
 
-    // Payment gate: пускаем только оплаченные заказы (и sent_free для
-    // dev-режима, см. docs/data-model.md). Иначе — 402; фронт показывает
-    // лоадер «Подтверждаем оплату…» и поллит до status='paid'.
+    // Payment gate: схему и матчинг SKU отдаём только за деньги. Иначе — 402;
+    // фронт на /result/ показывает лоадер «Подтверждаем оплату…» и поллит
+    // до status='paid'. См. docs/data-model.md.
+    //
+    // НО: input (ровно то что юзер сам ввёл) отдаём всегда — это нужно
+    // для prefill формы на /configure/?t=TOKEN (после возврата с /no-fit/
+    // через кнопку «Вернуться к расчёту»). Никакой секретности в input
+    // нет, это пользовательский payload, который сервер просто переиграл.
     if (!ACCESS_STATUSES.has(row.status)) {
+      const input = clampInput(row.input_payload);
       return res.status(402).json({
         ok: false,
         error: "payment_required",
         amount_kop: row.amount_kop,
         base_price_kop: row.base_price_kop,
+        input,
       });
     }
 
