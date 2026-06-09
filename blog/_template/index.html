@@ -309,7 +309,7 @@
   /* UTM на ссылку пина — переходы с Pinterest считаются в Метрике.
      utm_campaign берётся из slug статьи автоматически; при желании
      заменить на читаемое имя — впиши строкой вместо выражения ниже. */
-  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=Pinterest&utm_medium=organic&utm_campaign=' + (location.pathname.split('/').filter(Boolean).pop() || 'blog');
+  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=Pinterest&utm_medium=organic&utm_campaign=' + (location.pathname.split('/').filter(Boolean).pop() || 'blog') + '&utm_content=cover';
   var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), pu = encodeURIComponent(pinUrl);
   var intents = {
     'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
