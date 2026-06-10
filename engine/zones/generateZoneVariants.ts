@@ -5,12 +5,18 @@ import { calculateSlotsSplitZone } from "./calculateSlotsSplitZone.js";
 
 const MAX_VARIANTS = 3;
 
-// Вытянутые cells-раскладки с ТОЧНОЙ вместимостью (BL-18): 2×8 (=16), 3×8/2×12 (=24).
-// По surplus они равны компактным 4×4/4×6, поэтому пускать их в общий пул нельзя —
-// иначе мульти-зонный оптимизатор начнёт выбирать их в обычных ящиках и менять
-// привычные схемы. Подключаем их как «спасательные» формы только когда ни одна
-// компактная раскладка (включая поворот) не вписывается в геометрию ящика.
+// Вытянутые cells-раскладки с ТОЧНОЙ вместимостью (BL-18): 2×4 (=8), 2×5 (=10),
+// 2×6 (=12), 2×8 (=16), 3×8/2×12 (=24), 5×10 (=50). По surplus они равны
+// компактным квадратам, поэтому НЕ должны становиться выбором по умолчанию в
+// обычных ящиках. Они доступны упаковщику как кандидаты (нужны для тесной
+// мульти-категорийной укладки), но selectBestCandidate предпочитает раскладки
+// БЕЗ rescue-сеток и берёт их только когда без них fit_all не складывается.
 export const FALLBACK_CELLS = new Set(["cells_2x4", "cells_2x5", "cells_2x6", "cells_2x8", "cells_3x8", "cells_2x12", "cells_5x10"]);
+
+export function isRescueOption(optionId: string | undefined): boolean {
+  if (!optionId) return false;
+  return FALLBACK_CELLS.has(optionId.replace(/_rotated$/, ""));
+}
 
 function footprintFits(zone: CalculatedZone, drawerSize: DrawerSize): boolean {
   return zone.zone_w_cm <= drawerSize.w_cm && zone.zone_d_cm <= drawerSize.d_cm;
@@ -31,11 +37,12 @@ export function generateZoneVariants(requirements: StorageRequirement[], zoneLay
     const candidates = buildCandidates(req, zoneLayoutOptions, drawerSize);
     const valid = candidates.filter((zone) => zone.capacity >= req.count);
     const pool = valid.length > 0 ? valid : candidates;
-    // Geometry-first: вариант, чей след вписывается в ящик, идёт раньше того,
-    // что не вписывается, — чтобы подходящая форма не выпала из окна top-MAX_VARIANTS
-    // до того, как её увидит placement-скоринг. Среди равно (не)вписывающихся
-    // вариантов сохраняется прежний порядок surplus→площадь, поэтому схемы, чьи
-    // лучшие кандидаты и так помещались, не меняются.
+    // Geometry-first: вариант, чей след вписывается в ящик, идёт раньше того, что
+    // не вписывается — подходящая форма не выпадает из окна top-MAX_VARIANTS до
+    // placement-скоринга. Среди равно (не)вписывающихся — прежний порядок
+    // surplus→площадь. Rescue-сетки имеют точную вместимость и малую площадь,
+    // поэтому держатся в окне рядом с компактными; финальный выбор между ними и
+    // компактными делает selectBestCandidate (предпочитает без rescue).
     return pool
       .sort((a, b) =>
         (Number(footprintFits(b, drawerSize)) - Number(footprintFits(a, drawerSize))) ||
@@ -54,7 +61,6 @@ function buildCandidates(req: StorageRequirement, zoneLayoutOptions: ZoneLayoutO
     if (req.count < (option.count_min ?? 0)) continue;
 
     if (option.division_type === "cells") {
-      if (FALLBACK_CELLS.has(option.option_id)) continue; // rescue shapes added below, only if needed
       const cap = option.capacity ?? (option.cols ?? 1) * (option.rows ?? 1);
       if (cap < req.count) continue;
       variants.push(calculateCellsZone(req, option));
@@ -84,30 +90,11 @@ function buildCandidates(req: StorageRequirement, zoneLayoutOptions: ZoneLayoutO
     }
   }
 
-  // Cells rotation (BL-18): fit-aware rotation of the standard grids.
+  // Cells rotation (BL-18): fit-aware rotation of every cells grid (compact and rescue).
   if (req.can_rotate && req.primary_division === "cells") {
     for (const zone of variants.filter((v) => v.calculation_mode === "fixed_grid")) {
       const rotated = rotateCellsForFit(zone, drawerSize);
       if (rotated) variants.push(rotated);
-    }
-  }
-
-  // Rescue elongated cells (BL-18): only when no standard grid — upright or
-  // rotated — fits the drawer footprint. Keeps roomy-drawer schemes on the
-  // compact grids and offers very narrow/deep shapes (3×8, 2×12, 2×8) solely
-  // for non-standard drawers where nothing else fits.
-  if (req.primary_division === "cells" && !variants.some((v) => v.calculation_mode === "fixed_grid" && footprintFits(v, drawerSize))) {
-    for (const option of zoneLayoutOptions) {
-      if (!FALLBACK_CELLS.has(option.option_id)) continue;
-      if (req.count < (option.count_min ?? 0)) continue;
-      const cap = option.capacity ?? (option.cols ?? 1) * (option.rows ?? 1);
-      if (cap < req.count) continue;
-      const zone = calculateCellsZone(req, option);
-      variants.push(zone);
-      if (req.can_rotate) {
-        const rotated = rotateCellsForFit(zone, drawerSize);
-        if (rotated) variants.push(rotated);
-      }
     }
   }
 

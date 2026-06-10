@@ -319,4 +319,16 @@ assert(bl18cTights.result !== null && bl18Zone(bl18cTights, "tights").zone?.opti
 const bl18cJewelry = runUmestnoEngine({ drawer_width_cm: 18, drawer_depth_cm: 70, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "jewelry_small", volume_level: "large" } ], priority: "convenient" });
 assert(bl18cJewelry.result !== null && bl18Zone(bl18cJewelry, "jewelry_small").zone?.option_id === "cells_5x10", "BL-18c rescue: 18×70 jewelry_small (50) should use cells_5x10");
 
-console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 13 BL-18 small-drawer/elongated-cells scenarios + cells factorization-completeness audit");
+// 14. Multi-category tight packing (BL-18): a rescue grid must be reachable for
+//     one category even when its compact grid fits the EMPTY drawer, if that is
+//     the only way both categories fit together. 60×30 socks Много (24) + trusy
+//     Много (16): socks 4×6 rotated (37×25) + panties 2×8 (21×25) = 58×25 ≤ 60×30.
+//     Previously fit_partial because panties' 2×8 was gated off the candidate set.
+const bl18dTight = runUmestnoEngine({ drawer_width_cm: 60, drawer_depth_cm: 30, drawer_height_cm: 10, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" }, { content_type: "panties", volume_level: "large" } ], priority: "convenient" });
+const bl18dSocks = bl18Zone(bl18dTight, "socks_regular");
+const bl18dPanties = bl18Zone(bl18dTight, "panties");
+assert(bl18dTight.result !== null && bl18dSocks.fit_status === "fit_all", "BL-18d tight pack: 60×30 socks+panties large should be fit_all, not fit_partial");
+assert(bl18dSocks.zone?.division_type === "cells" && bl18dPanties.zone?.division_type === "cells", "BL-18d tight pack: both categories must be placed in cells");
+assert((bl18dSocks.zone?.capacity ?? 0) >= 24 && (bl18dPanties.zone?.capacity ?? 0) >= 16, "BL-18d tight pack: both grids must satisfy their counts");
+
+console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 14 BL-18 small-drawer/elongated-cells scenarios + cells factorization-completeness audit");
