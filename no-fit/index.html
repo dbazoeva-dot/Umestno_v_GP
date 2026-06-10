@@ -65,6 +65,27 @@
       </div>
 
       <div class="u-apology__body">
+        <!-- Баннер «согласны на уменьшение?» для fit_partial с suggestion.
+             По умолчанию скрыт. JS ниже дёргает /api/result/:token и,
+             если есть suggestion, раскрывает баннер + скрывает стандартный
+             apology-flow (.u-apology__title, .u-apology__lede и т.д.).
+             На клик «Нет» — обратно: баннер прячется, стандартный показывается.
+             На клик «Да» — POST /api/order/:token/accept-suggestion → редирект. -->
+        <section class="u-apology__suggest" data-suggest hidden>
+          <div class="u-apology__eyebrow">
+            <span class="dot"></span>
+            <span>почти получилось</span>
+          </div>
+          <h2 class="u-apology__suggest-title" data-suggest-title></h2>
+          <p class="u-apology__suggest-hint">Если согласитесь — пересчитаем схему и предложим оплатить.</p>
+          <div class="u-apology__suggest-actions">
+            <button type="button" class="u-btn u-btn--sage u-btn--lg" data-suggest-yes>Да, согласна</button>
+            <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-suggest-no>Нет</button>
+          </div>
+          <p class="u-apology__suggest-err" data-suggest-err hidden></p>
+        </section>
+
+        <div data-default-flow>
         <div class="u-apology__eyebrow">
           <span class="dot"></span>
           <span>результат расчёта</span>
@@ -111,6 +132,7 @@
           </a>
           <span class="u-apology__refund">Оплата не была произведена</span>
         </div>
+        </div><!-- /data-default-flow -->
       </div>
     </section>
   </div>
@@ -159,6 +181,7 @@
 </footer>
 
 <script src="../app.js"></script>
+<script src="../landing_design/content-labels.js?v=10"></script>
 <script>
   // Пробрасываем токен расчёта в линк «Вернуться к расчёту». На /configure/
   // calc.js увидит ?t=… и подтянет input через /api/result/:token, чтобы
@@ -168,11 +191,120 @@
     var token = params.get('t') || params.get('token');
     if (!token) return;
     var back = document.querySelector('.u-apology__back');
-    if (!back) return;
-    var href = back.getAttribute('href') || '';
-    if (href.indexOf('configure') >= 0) {
-      back.setAttribute('href', '../configure/?t=' + encodeURIComponent(token));
+    if (back) {
+      var href = back.getAttribute('href') || '';
+      if (href.indexOf('configure') >= 0) {
+        back.setAttribute('href', '../configure/?t=' + encodeURIComponent(token));
+      }
     }
+  })();
+
+  // Suggestion-баннер для fit_partial: «не помещаются носки, уменьшить
+  // до 16 пар, согласны?». Дёргаем /api/result/:token, ищем suggestion.
+  // Если есть — скрываем дефолтный flow, показываем баннер. На «Да» —
+  // POST /api/order/:token/accept-suggestion → редирект на оплату.
+  // На «Нет» — обратно показываем дефолтный текст.
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var token = params.get('t') || params.get('token');
+    if (!token) return;
+    var banner = document.querySelector('[data-suggest]');
+    var titleEl = document.querySelector('[data-suggest-title]');
+    var yesBtn = document.querySelector('[data-suggest-yes]');
+    var noBtn = document.querySelector('[data-suggest-no]');
+    var errEl = document.querySelector('[data-suggest-err]');
+    var defaultFlow = document.querySelector('[data-default-flow]');
+    if (!banner || !titleEl || !yesBtn || !noBtn || !defaultFlow) return;
+
+    var content = window.UMESTNO_CONTENT;
+    if (!content) return;
+
+    function buildText(s) {
+      // s = { category_id, original_level, suggested_level, suggested_count, count_unit }
+      // Текст: «Не помещаются все носки. Чтобы все поместилось, нужно
+      // сократить количество с Много (17+ пар) до 16 пар. Согласны?»
+      var catLower = (content.label(s.category_id) || '').toLowerCase();
+      var origLabel = content.volumeLabel(s.category_id, s.original_level) || s.original_level;
+      // У volumeLabel вид «Много (17+ пар)» — нам нужна именно эта форма.
+      // Если по какой-то причине вернула пусто — подставляем уровень как есть.
+      var unit = s.count_unit || 'шт';
+      return 'Не помещаются все ' + catLower + '. Чтобы все поместилось, нужно сократить количество с '
+        + origLabel + ' до ' + s.suggested_count + ' ' + unit + '. Согласны?';
+    }
+
+    function showBanner(s) {
+      titleEl.textContent = buildText(s);
+      banner.hidden = false;
+      defaultFlow.hidden = true;
+    }
+    function hideBanner() {
+      banner.hidden = true;
+      defaultFlow.hidden = false;
+    }
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
+
+    fetch('/api/result/' + encodeURIComponent(token), { credentials: 'same-origin' })
+      // /api/result отдаёт 402 для fit_partial (это не paid), но
+      // suggestion в теле есть. Парсим JSON и для 200, и для 402.
+      .then(function (r) { return r.json().catch(function () { return null; }); })
+      .then(function (payload) {
+        var suggestion = payload && payload.suggestion;
+        if (!suggestion || !suggestion.category_id) return;
+        showBanner(suggestion);
+      })
+      .catch(function (e) { console.warn('[no-fit/suggestion] failed', e); });
+
+    yesBtn.addEventListener('click', function () {
+      if (yesBtn.disabled) return;
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      yesBtn.textContent = 'Считаем…';
+      if (errEl) errEl.hidden = true;
+      fetch('/api/order/' + encodeURIComponent(token) + '/accept-suggestion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: '{}'
+      })
+        .then(function (r) {
+          if (r.ok) return r.json();
+          return r.json().catch(function () { return {}; }).then(function (b) {
+            var e = new Error('http_' + r.status); e.body = b; throw e;
+          });
+        })
+        .then(function (data) {
+          if (data.payment_url) {
+            location.href = data.payment_url;
+            return;
+          }
+          if (data.token && !data.can_pay) {
+            location.href = '/result/?t=' + encodeURIComponent(data.token);
+            return;
+          }
+          showErr('Не удалось перейти к оплате. Попробуйте ещё раз.');
+          yesBtn.disabled = false; noBtn.disabled = false;
+          yesBtn.textContent = 'Да, согласна';
+        })
+        .catch(function (err) {
+          var code = err && err.body && err.body.error;
+          if (code === 'reduction_no_longer_fits') {
+            showErr('К сожалению, теперь даже с уменьшением не получается уместить. Попробуйте изменить параметры вручную.');
+          } else if (code === 'not_fit_partial' || code === 'no_suggestion') {
+            showErr('Этот расчёт уже неактуален. Обновите страницу и попробуйте ещё раз.');
+          } else {
+            showErr('Не удалось обработать запрос. Попробуйте позже.');
+          }
+          yesBtn.disabled = false; noBtn.disabled = false;
+          yesBtn.textContent = 'Да, согласна';
+          console.error('[accept-suggestion] failed', err);
+        });
+    });
+
+    noBtn.addEventListener('click', hideBanner);
   })();
 </script>
 <script src="../landing_design/metrika.js?v=2" defer></script>

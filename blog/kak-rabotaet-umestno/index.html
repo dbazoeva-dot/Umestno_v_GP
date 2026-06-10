@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="ru" data-accent="sage">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="https://umestno-home.ru/blog/kak-rabotaet-umestno/" />
+
+<title>Как работает «Уместно»: схема хранения вещей для ящика по размерам | Журнал Уместно</title>
+<meta name="description" content="Как работает сервис «Уместно»: Вы указываете размеры ящика и вещи для хранения, а получаете схему с зонами, размерами блоков и подсказками, как разложить вещи удобно." />
+<meta name="theme-color" content="#FFFDF9" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Как работает «Уместно»: схема хранения для ящика по вашим размерам" />
+<meta property="og:description" content="Вы указываете размеры ящика и вещи, а сервис собирает схему с зонами, размерами блоков и подсказками по раскладке. Полная схема за 149 ₽." />
+<meta property="og:image" content="https://umestno-home.ru/assets/images/blog/kak-rabotaet-umestno.webp" />
+<meta property="og:url" content="https://umestno-home.ru/blog/kak-rabotaet-umestno/" />
+<meta property="og:site_name" content="Журнал «Уместно»" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="article:published_time" content="2026-06-09" />
+<meta property="article:section" content="Сервис" />
+<meta property="article:tag" content="сервис" />
+<meta property="article:tag" content="схема хранения" />
+<meta property="article:tag" content="порядок в комоде" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../landing_design/styles.css" />
+<link rel="stylesheet" href="../../landing_design/fluid-core.css?v=1" />
+<link rel="stylesheet" href="../../landing.css" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=25" />
+<link rel="stylesheet" href="../../landing_design/blog-fluid.css?v=3" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Как работает «Уместно»: схема хранения для ящика по вашим размерам",
+  "description": "Вы указываете размеры ящика и вещи, а сервис собирает схему с зонами, размерами блоков и подсказками по раскладке.",
+  "image": "https://umestno-home.ru/assets/images/blog/kak-rabotaet-umestno.webp",
+  "datePublished": "2026-06-09",
+  "dateModified": "2026-06-09",
+  "author": { "@type": "Organization", "name": "Уместно" },
+  "publisher": { "@type": "Organization", "name": "Уместно" },
+  "mainEntityOfPage": "https://umestno-home.ru/blog/kak-rabotaet-umestno/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Журнал", "item": "https://umestno-home.ru/blog/" },
+    { "@type": "ListItem", "position": 2, "name": "Сервис", "item": "https://umestno-home.ru/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Как работает «Уместно»", "item": "https://umestno-home.ru/blog/kak-rabotaet-umestno/" }
+  ]
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="shortcut icon" href="/favicon.ico" />
+
+<style>
+  /* ── Кастомные блоки статьи «Как работает Уместно» (размеры в rem) ──── */
+  /* "что Вы получаете" — editorial divided 3-col list */
+  .p-gets{ display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 2.875rem; margin: 2rem 0 0.5rem; border-top: 1px solid var(--u-ink); padding-top: 1.875rem; }
+  .p-get{ display: flex; flex-direction: column; }
+  .p-get + .p-get{ padding-left: 2.875rem; border-left: 1px solid var(--u-line-2); }
+  .p-get__n{ font-family: var(--f-display); font-style: italic; font-weight: 500; font-size: 3.25rem; line-height: 1; color: var(--u-sage-d); margin-bottom: 1.125rem; }
+  .p-get__tag{ font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-sage-dd, #69785F); margin-bottom: 0.625rem; }
+  .p-body .p-get__name{ font-family: var(--f-display); font-weight: 500; font-size: var(--fs-xl); line-height: 1.14; color: var(--u-ink); margin: 0 0 0.625rem; }
+  .p-body .p-get p{ font-family: var(--f-sans); font-size: var(--fs-sm); line-height: 1.6; color: var(--u-ink-2); margin: 0; }
+
+  /* full-width result-screen shot */
+  .p-shot{ margin: 2.375rem 0 0.5rem; }
+  .p-shot__media{ position: relative; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--u-line-2); box-shadow: 0 28px 56px -30px rgba(80,60,40,.3); background: #F4E3D2; min-height: 16.25rem; }
+  .p-shot__media img{ position: relative; z-index: 1; width: 100%; height: auto; display: block; }
+  .p-shot__media::after{ content: attr(data-ph); position: absolute; inset: 0; z-index: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.25rem; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); background: repeating-linear-gradient(45deg, #F4E3D2, #F4E3D2 0.6875rem, #FBF6ED 0.6875rem, #FBF6ED 1.375rem); }
+  .p-shot__media.is-empty{ aspect-ratio: 4 / 3; }
+  .p-shot figcaption{ margin-top: 0.75rem; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); color: var(--u-ink-3); }
+
+  /* keep the (!) callouts calm/sage */
+  .p-note__mark{ background: var(--u-sage-d); align-self: center; }
+  /* size note: swap the glyph for the measuring-tape mark */
+  .p-note--measure{ grid-template-columns: 3rem 1fr; }
+  .p-note--measure .p-note__mark{ background: transparent; width: 3rem; height: 3rem; }
+  .p-note--measure .p-note__mark img{ width: 2.875rem; height: 2.875rem; display: block; object-fit: contain; }
+
+  /* priority table: sage header band */
+  .p-table thead th{ background: #E7ECDF; }
+
+  /* "четыре проверки" — principle cards (2×2) */
+  .p-checks{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.125rem; margin: 2.125rem 0 0.5rem; }
+  .p-check{ position: relative; overflow: hidden; padding: 2.125rem; border-radius: var(--r-lg); background: var(--u-card); border: 1px solid var(--u-line-2); box-shadow: 0 20px 46px -32px rgba(80,60,40,.24); }
+  .p-check__ghost{ position: absolute; top: 0.125rem; right: 1.125rem; z-index: 0; pointer-events: none; font-family: var(--f-display); font-style: italic; font-weight: 500; font-size: 7rem; line-height: .82; color: var(--u-sage); opacity: .16; }
+  .p-check__top{ position: relative; z-index: 1; display: flex; align-items: center; gap: 0.6875rem; margin-bottom: 1rem; }
+  .p-check__badge{ width: 2.125rem; height: 2.125rem; border-radius: 50%; flex: 0 0 auto; background: var(--u-sage-d); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+  .p-check__badge svg{ width: 1rem; height: 1rem; }
+  .p-check__lbl{ font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-sage-dd, #69785F); }
+  .p-body .p-check__t{ position: relative; z-index: 1; margin: 0 0 0.625rem; font-family: var(--f-display); font-weight: 500; font-size: var(--fs-xl); line-height: 1.14; letter-spacing: -0.005em; color: var(--u-ink); text-wrap: balance; }
+  .p-check__d{ position: relative; z-index: 1; margin: 0; max-width: 42ch; font-family: var(--f-sans); font-size: var(--fs-sm); line-height: 1.6; color: var(--u-ink-2); }
+
+  /* "проверьте на своём ящике" CTA — sage island + olive-branch decor */
+  .p-cta--sage{ position: relative; overflow: hidden; background: #E7ECDF; border-color: transparent; }
+  .p-cta--sage > div{ position: relative; z-index: 1; }
+  /* шире заголовок и подпись — не ужимать в узкую колонку */
+  .p-body .p-cta--sage h3{ max-width: none; }
+  .p-cta--sage p{ max-width: none; }
+  .p-cta--sage .p-cta__eyebrow{ color: var(--u-sage-dd, #69785F); }
+  .p-cta--sage .p-cta__price{ color: var(--u-sage-dd, #69785F); }
+  .p-cta__leaf{ position: absolute; z-index: 0; pointer-events: none; user-select: none; }
+  .p-cta__leaf--tr{ top: -2.625rem; right: -2.125rem; width: 11.5rem; transform: rotate(18deg); opacity: .42; }
+  .p-cta__leaf--bl{ bottom: -2.375rem; left: -2.125rem; width: 7.5rem; transform: rotate(205deg); opacity: .16; }
+
+  @media (max-width: 600px){
+    .p-gets{ grid-template-columns: 1fr; padding-top: 1.625rem; }
+    .p-get + .p-get{ padding-left: 0; border-left: 0; border-top: 1px solid var(--u-line-2); padding-top: 1.5rem; margin-top: 1.5rem; }
+    .p-get__n{ font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .p-checks{ grid-template-columns: 1fr; gap: 0.875rem; }
+    .p-check__ghost{ font-size: 5.75rem; }
+    .p-cta__leaf--tr{ width: 8.125rem; top: -1.875rem; right: -1.75rem; }
+    .p-cta__leaf--bl{ width: 6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header u-header--sub">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../../" class="u-logo"><img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" class="u-logo__img" /></a>
+    <nav class="u-nav">
+      <div class="u-navgroup">
+        <a href="../../" class="u-navgroup__top">О сервисе<span class="u-navgroup__caret" aria-hidden="true"></span></a>
+        <div class="u-navgroup__sub">
+          <a href="../../#how">Как это работает</a>
+          <a href="../../#result">Результат</a>
+          <a href="../../#reviews">Отзывы</a>
+          <a href="../../#faq">FAQ</a>
+        </div>
+      </div>
+      <a href="../" class="u-navgroup__top u-nav-journal">Журнал</a>
+    </nav>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../../" class="u-mnav-top">О сервисе</a>
+    <div class="u-mnav-sub">
+      <a href="../../#how">Как это работает</a>
+      <a href="../../#result">Результат</a>
+      <a href="../../#reviews">Отзывы</a>
+      <a href="../../#faq">FAQ</a>
+    </div>
+    <a href="../" class="u-mnav-top u-nav-journal">Журнал</a>
+  </nav>
+</header>
+
+<main class="p-wrap">
+  <!-- ── Head ───────────────────────────────────────────────────── -->
+  <section class="u-container">
+    <nav class="p-breadcrumb">
+      <a href="../">Журнал</a><span class="sep">→</span>
+      <a href="../">Сервис</a><span class="sep">→</span>
+      <span class="cur">Как работает «Уместно»</span>
+    </nav>
+
+    <div class="p-masthead">
+      <div class="p-masthead__text">
+        <span class="p-head__cat">Сервис</span>
+        <h1>Как работает <em>«Уместно»</em>: схема хранения для ящика по&nbsp;Вашим размерам</h1>
+        <p class="p-lede">Рассказываем, как сервис превращает размеры ящика и список вещей в понятную схему хранения: с зонами, размерами блоков и подсказками по раскладке.</p>
+        <p class="p-masthead__preview">«Уместно» начинается не с покупки органайзеров, а с Вашего ящика: его размеров, высоты и вещей, которые Вы хотите хранить. Сервис собирает схему, по которой понятно, что где лежит и как этим пользоваться каждый день.</p>
+      </div>
+      <figure class="p-masthead__media"><img src="../../assets/images/blog/kak-rabotaet-umestno.webp" alt="Как работает сервис «Уместно» — схема хранения для ящика" data-pin-description="Как работает «Уместно»: вы указываете размеры ящика и вещи, а сервис собирает схему хранения с зонами, размерами блоков и подсказками по раскладке. Полная схема за 149 ₽." data-pin-url="https://umestno-home.ru/blog/kak-rabotaet-umestno/?utm_source=Pinterest&utm_medium=organic&utm_campaign=kak_rabotaet&utm_content=cover" data-pin-media="https://umestno-home.ru/assets/images/blog/kak-rabotaet-umestno-pin.webp" loading="eager" decoding="async" /></figure>
+    </div>
+
+    <div class="p-byline">
+      <div class="p-author">
+        <span class="p-author__av">У</span>
+        <span class="p-author__meta"><b>Редакция «Уместно»</b>журнал о хранении</span>
+      </div>
+      <div class="p-meta-facts">
+        <span>9 июня 2026</span><span class="sep"></span><span>4 мин чтения</span>
+      </div>
+      <div class="p-share">
+        <span class="p-share__lbl">Поделиться</span>
+        <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+        <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        <a href="#" aria-label="Pinterest"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+        <a href="#" aria-label="Скопировать ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Body + TOC ─────────────────────────────────────────────── -->
+  <section class="u-container">
+    <div class="p-layout">
+      <!-- TOC -->
+      <aside class="p-toc" id="toc">
+        <div class="p-toc__lbl">Содержание</div>
+        <a href="#s1"><span class="n">01</span>Что делает «Уместно»</a>
+        <a href="#s2"><span class="n">02</span>Какие данные нужны</a>
+        <a href="#s3"><span class="n">03</span>Как собирается схема</a>
+        <a href="#s4"><span class="n">04</span>Хорошая схема и красивая картинка</a>
+        <a href="#s5"><span class="n">05</span>Что Вы получаете</a>
+        <a href="#s6"><span class="n">06</span>Когда «Уместно» полезно</a>
+      </aside>
+
+      <!-- Prose -->
+      <article class="p-body">
+        <p>Обычно порядок в комоде начинают с покупки органайзеров. Вы смотрите красивые фото, пытаетесь рассчитать размеры, собрать всё в понятную схему, выбираете набор, сверяете размеры и надеетесь, что дома всё встанет так же аккуратно.</p>
+        <p>Но ящик редко ведёт себя как картинка из карточки товара. У него есть своя ширина, глубина и высота. У вещей — разный объём и форма, разная частота использования. Носкам нужны одни секции, белью — другие, а бюстгальтеры нельзя сильно сжимать.</p>
+
+        <div class="p-pull">
+          <p>«Уместно» работает иначе: сначала не товар, а схема.</p>
+        </div>
+
+        <h2 id="s1"><span class="h2num">01 — Идея</span>Что делает «Уместно»</h2>
+        <p>«Уместно» помогает собрать схему хранения для конкретного ящика: по Вашим размерам и вещам, которые Вы хотите там хранить.</p>
+        <p>Сервис не даёт общий совет «купите органайзер для белья» и не предлагает случайную подборку товаров. Он показывает, как может быть устроен именно Ваш ящик: какие зоны нужны, что где хранить и как разложить вещи, чтобы ими было удобно пользоваться каждый день.</p>
+        <p>Главная задача — не просто сделать красиво. Важно, чтобы вещи помещались, не перемешивались после стирки, ящик нормально закрывался, а порядок было легко поддерживать.</p>
+
+        <h2 id="s2"><span class="h2num">02 — Данные</span>Какие данные нужны</h2>
+        <p>Для расчёта схемы нужно указать три внутренних размера ящика:</p>
+        <ul>
+          <li>ширину;</li>
+          <li>глубину;</li>
+          <li>полезную высоту до закрытия.</li>
+        </ul>
+        <div class="p-note p-note--measure">
+          <span class="p-note__mark"><img src="../../landing_design/assets/measuring_tape.png" alt="" aria-hidden="true" onerror="this.style.display='none'"></span>
+          <p>Именно внутренние размеры важнее внешнего размера комода.</p>
+        </div>
+        <p>Затем Вы выбираете, что хотите хранить: бельё, носки, бюстгальтеры, колготки, майки, домашнюю одежду, аксессуары или детские вещи. Ещё нужно указать примерный объём: мало, средне или много. Для каждого типа вещей есть подсказка по количеству.</p>
+        <p>Также можно указать приоритет хранения:</p>
+        <div class="p-tablewrap">
+          <table class="p-table">
+            <thead>
+              <tr><th>Приоритет</th><th>Что делает система</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Удобно</td><td>рассчитывает раскладку так, чтобы вещами было проще пользоваться каждый день</td></tr>
+              <tr><td>Вместительно</td><td>располагает вещи максимально плотно, чтобы поместилось больше</td></tr>
+              <tr><td>Экономично</td><td>рекомендует бюджетные варианты органайзеров</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-weight: 600; color: rgb(105, 120, 95)">И всё. Этого достаточно, чтобы сервис понял не только размер пространства, но и сценарий хранения.</p>
+
+        <h2 id="s3"><span class="h2num">03 — Расчёт</span>Как собирается схема</h2>
+        <ol>
+          <li>Сначала «Уместно» определяет, какие зоны нужны вещам с учётом индивидуальной особенности каждой категории.</li>
+          <li>Затем сервис собирает раскладку внутри ящика: что лучше разместить ближе к переднему краю, какие категории можно поставить рядом, где нужна отдельная секция, а где лучше оставить открытую зону.</li>
+          <li>После этого схема сверяется с реальными способами хранения: органайзерами, коробами, разделителями или свободными зонами из базы, собранной с популярных маркетплейсов.</li>
+        </ol>
+        <div class="p-note">
+          <span class="p-note__mark">!</span>
+          <p>Мы не берём оплату, если вещи не помещаются в ящик и собрать схему не получается. Система сначала проверяет возможность расчёта и только потом перенаправляет на оплату.</p>
+        </div>
+        <p>Поэтому результат «Уместно» — это не абстрактная схема ради схемы, а попытка соединить три вещи: Ваш ящик, Ваши вещи и реальные варианты хранения.</p>
+
+        <aside class="p-cta p-cta--sage">
+          <img class="p-cta__leaf p-cta__leaf--tr" src="../../landing_design/assets/olive.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
+          <img class="p-cta__leaf p-cta__leaf--bl" src="../../landing_design/assets/olive.png" alt="" aria-hidden="true" onerror="this.style.display='none'">
+          <div>
+            <div class="p-cta__eyebrow">Проверьте на своём ящике</div>
+            <h3>Хотите проверить, как это работает в Вашем ящике?</h3>
+            <p>Рассчитайте схему хранения в «Уместно»: укажите размеры и вещи. Получите готовую раскладку с зонами и подсказками.</p>
+          </div>
+          <div class="p-cta__action">
+            <span class="p-cta__price">149 ₽ <small>· полный результат</small></span>
+            <a class="u-btn u-btn--sage u-btn--lg" href="../../configure/" data-ym-goal="cta_blog_article">Рассчитать схему</a>
+          </div>
+        </aside>
+
+        <h2 id="s4"><span class="h2num">04 — Качество</span>Чем хорошая схема отличается от красивой картинки</h2>
+        <p>Для «Уместно» важно не просто нарисовать аккуратный ящик, а чтобы схема была максимально реализуемой в реальной жизни. Хорошая схема должна пройти четыре проверки.</p>
+        <div class="p-checks">
+          <div class="p-check">
+            <span class="p-check__ghost">01</span>
+            <div class="p-check__top">
+              <span class="p-check__badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span class="p-check__lbl">Проверка 01</span>
+            </div>
+            <h3 class="p-check__t">Она должна выглядеть спокойно</h3>
+            <p class="p-check__d">Без случайных мелких кусочков, перекошенных зон и ощущения, что пространство собрали наспех</p>
+          </div>
+          <div class="p-check">
+            <span class="p-check__ghost">02</span>
+            <div class="p-check__top">
+              <span class="p-check__badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span class="p-check__lbl">Проверка 02</span>
+            </div>
+            <h3 class="p-check__t">Вещи должны действительно помещаться</h3>
+            <p class="p-check__d">Носки не расползаются по ящику, бельё не теряется в общей куче, а бюстгальтеры не сжимаются так, что чашки теряют форму</p>
+          </div>
+          <div class="p-check">
+            <span class="p-check__ghost">03</span>
+            <div class="p-check__top">
+              <span class="p-check__badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span class="p-check__lbl">Проверка 03</span>
+            </div>
+            <h3 class="p-check__t">Схему должно быть понятно повторить</h3>
+            <p class="p-check__d">Не просто «здесь зона для белья», а что именно поставить, сколько места оставить и куда сложить каждую категорию</p>
+          </div>
+          <div class="p-check">
+            <span class="p-check__ghost">04</span>
+            <div class="p-check__top">
+              <span class="p-check__badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span class="p-check__lbl">Проверка 04</span>
+            </div>
+            <h3 class="p-check__t">Ящиком должно быть удобно пользоваться</h3>
+            <p class="p-check__d">Открыть ящик, взять нужную вещь, вернуть чистое после стирки. И не собирать порядок заново каждую неделю</p>
+          </div>
+        </div>
+
+        <h2 id="s5"><span class="h2num">05 — Результат</span>Что Вы получаете</h2>
+        <p>В результате Вы получаете три вещи:</p>
+        <div class="p-gets">
+          <div class="p-get">
+            <span class="p-get__n">01</span>
+            <span class="p-get__tag">Схема</span>
+            <h3 class="p-get__name">Схема ящика сверху</h3>
+            <p>С зонами, размерами блоков и подсказками, что где хранить.</p>
+          </div>
+          <div class="p-get">
+            <span class="p-get__n">02</span>
+            <span class="p-get__tag">Памятка</span>
+            <h3 class="p-get__name">Как складывать и хранить</h3>
+            <p>Памятка по складыванию и хранению каждого типа вещей.</p>
+          </div>
+          <div class="p-get">
+            <span class="p-get__n">03</span>
+            <span class="p-get__tag">Рекомендации</span>
+            <h3 class="p-get__name">Подходящие органайзеры</h3>
+            <p>Рекомендации со ссылками на популярные маркетплейсы — достаточно кликнуть по карточке.</p>
+          </div>
+        </div>
+
+        <figure class="p-shot">
+          <div class="p-shot__media" data-ph="Экран результата · схема ящика с зонами"><img src="../../assets/images/blog/result-screen.webp" alt="Экран результата «Уместно»: схема ящика сверху с зонами, памятка по складыванию и подборка органайзеров" onerror="this.closest('.p-shot__media').classList.add('is-empty');this.remove();"></div>
+          <figcaption>Так выглядит готовый результат · схема ящика с зонами, памятка по складыванию и подходящие органайзеры</figcaption>
+        </figure>
+
+        <h2 id="s6"><span class="h2num">06 — Когда</span>Когда «Уместно» особенно полезно</h2>
+        <p>Сервис пригодится, если Вы хотите организовать хранение в комоде, но не хотите начинать со случайных покупок. Особенно если ящик нестандартный, вещей много, категории смешанные или у Вас уже был опыт, когда органайзер не подошёл по размеру.</p>
+        <p>«Уместно» помогает не просто придумать красивую раскладку, а довести её до бытового результата: чтобы вещи поместились, зоны выглядели спокойно, было понятно, что куда поставить, и ящиком было удобно пользоваться каждый день.</p>
+
+        <div class="p-pull">
+          <p>Иногда порядок начинается не с покупки, а с логики хранения.</p>
+        </div>
+
+        <!-- end -->
+        <div class="p-end">
+          <div class="p-end__tags">
+            <a class="p-tag" href="../">Сервис</a>
+            <a class="p-tag" href="../">Схема хранения</a>
+            <a class="p-tag" href="../">Система хранения вещей</a>
+            <a class="p-tag" href="../">Органайзер для ящика</a>
+            <a class="p-tag" href="../">Хранение белья</a>
+            <a class="p-tag" href="../">Порядок в комоде</a>
+          </div>
+          <div class="p-share">
+            <span class="p-share__lbl">Поделиться</span>
+            <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+            <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+            <a href="#" aria-label="Скопировать ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Final CTA ─────────────────────────────────────────────── -->
+  <section class="u-container">
+    <section class="u-finalcta u-finalcta--fade j-cta">
+      <div class="u-finalcta__inner">
+        <div class="u-finalcta__art">
+          <img src="../../landing_design/assets/final-cta.webp" alt="Ящик комода с органайзерами и аккуратно сложенными вещами" onerror="this.style.display='none'" />
+        </div>
+        <div class="u-finalcta__copy">
+          <span class="j-cta__eyebrow">Схема хранения</span>
+          <h3>Рассчитайте схему хранения для <em>своего</em> ящика</h3>
+          <p>Укажите размеры и вещи — «Уместно» соберёт раскладку с зонами, размерами блоков и подсказками. Полная схема за 149 ₽, без подписок.</p>
+          <div class="u-finalcta__row">
+            <a class="u-btn u-btn--accent u-btn--lg" href="../../configure/" data-ym-goal="cta_blog_article">Рассчитать схему →</a>
+            <div class="j-cta__trust">
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>149 ₽ один раз</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Без подписок</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Не помещается — не платите</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────────────── -->
+  <section class="u-container p-related">
+    <div class="p-related__head">
+      <h2>Читать дальше</h2>
+      <span class="num">Ещё в журнале</span>
+    </div>
+    <div class="j-grid">
+      <a class="j-card" href="../kak-navesti-poryadok-v-komode/">
+        <div class="j-card__media"><img src="../../assets/images/blog/komod-hero.webp" alt="" loading="lazy" decoding="async"></div>
+        <div class="j-card__cat">Комод</div>
+        <h3 class="j-card__title">Как навести порядок в комоде: схема хранения для белья, носков и мелочей</h3>
+        <div class="j-card__meta"><span>Комод</span><span class="sep"></span><span>8 мин</span></div>
+      </a>
+      <a class="j-card" href="../organayzer-dlya-belya-v-komod/">
+        <div class="j-card__media"><img src="../../assets/images/blog/organayzer-belya.webp" alt="" loading="lazy" decoding="async"></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Органайзер для белья в комод: какие бывают и как выбрать без ошибки</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>7 мин</span></div>
+      </a>
+      <a class="j-card" href="../razdeliteli-dlya-yashchikov/">
+        <div class="j-card__media"><img src="../../assets/images/blog/razdelitely.webp" alt="" loading="lazy" decoding="async"></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Разделители для ящиков: когда они помогают, а когда превращаются в «Тетрис»</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>5 мин</span></div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../../" class="u-logo"><img src="/landing_design/assets/logo-wordmark-tagline.svg" alt="Уместно — порядок, уют, спокойствие" class="u-logo__img u-logo__img--tagline" /></a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../../#how">Как это работает</a>
+        <a href="../../#result">Результат</a>
+        <a href="../../#reviews">Отзывы</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Документы</h6>
+        <a href="../../oferta/">Оферта</a>
+        <a href="../../privacy/">Политика конфиденциальности</a>
+        <a href="../../refunds/">Политика возвратов</a>
+        <a href="../../contacts/">Контакты</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Соцсети</h6>
+        <div class="u-footer__socials">
+          <a href="https://pin.it/hHrmtpWyE" target="_blank" rel="noopener" aria-label="Pinterest"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026 · ИП Базоева Дзерасса Александровна</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../app.js"></script>
+<script src="../../landing_design/metrika.js?v=1" defer></script>
+<script>
+/* TOC scroll-spy — highlight the section currently in view */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.p-toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var heads = Array.prototype.slice.call(document.querySelectorAll('.p-body h2[id]'));
+  if(!('IntersectionObserver' in window) || !heads.length) return;
+  var current = null;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) current = e.target.id; });
+    links.forEach(function(a){ a.classList.remove('is-active'); });
+    if(current && map[current]) map[current].classList.add('is-active');
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  heads.forEach(function(h){ io.observe(h); });
+})();
+</script>
+<script>
+/* Кнопки «Поделиться» — проставляем ссылки шеринга из текущего URL */
+(function(){
+  var url = location.href.split('#')[0];
+  var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
+  var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
+  var pinEl = document.querySelector('.p-masthead__media img');
+  var pinDesc = (pinEl && pinEl.getAttribute('data-pin-description')) || title;
+  var pinMedia = (pinEl && pinEl.getAttribute('data-pin-media')) || media;
+  /* UTM на ссылку пина — чтобы переходы с Pinterest считались в Метрике */
+  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=Pinterest&utm_medium=organic&utm_campaign=kak_rabotaet&utm_content=cover';
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), p = encodeURIComponent(pinDesc), pm = encodeURIComponent(pinMedia), pu = encodeURIComponent(pinUrl);
+  var intents = {
+    'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
+    'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + pu + '&description=' + p + (pinMedia ? '&media=' + pm : '')
+  };
+  document.querySelectorAll('.p-share a').forEach(function(a){
+    var label = a.getAttribute('aria-label') || '';
+    if (intents[label]) {
+      a.href = intents[label]; a.target = '_blank'; a.rel = 'noopener';
+    } else if (label.indexOf('Скопировать') === 0) {
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var feedback = function(){
+          var prev = a.getAttribute('aria-label');
+          a.setAttribute('aria-label', 'Ссылка скопирована');
+          a.classList.add('is-copied');
+          setTimeout(function(){ a.setAttribute('aria-label', prev); a.classList.remove('is-copied'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(feedback, feedback);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (_) {}
+          document.body.removeChild(ta); feedback();
+        }
+      });
+    }
+  });
+})();
+</script>
+<script>
+/* Пока фото не загружено — прячем «битую» картинку, остаётся чистая плашка */
+(function(){
+  var sel = '.j-feature__media img, .j-card__media img, .p-masthead__media img, .p-figure__media img';
+  document.querySelectorAll(sel).forEach(function(img){
+    var hide = function(){ img.style.display = 'none'; };
+    if (img.complete && img.naturalWidth === 0) hide();
+    img.addEventListener('error', hide);
+  });
+})();
+</script>
+</body>
+</html>

@@ -22,6 +22,7 @@ import {
   applyPromoCode,
   type PromoCodeRow,
 } from "../services/promoCodes.js";
+import { findReduction, type FitReductionSuggestion } from "../services/findReduction.js";
 
 // Текущая версия оферты. Меняется при редактировании самой оферты —
 // при изменении завести новый код ('oferta_v2', …), старые согласия
@@ -68,6 +69,9 @@ interface CalculateResponse {
   final_amount_kop: number;
   /** Применённый промокод (для отображения подтверждения и аналитики). */
   promo_applied: { code: string; discount_type: string } | null;
+  /** На fit_partial: предложение «уменьшите категорию X до Y» для UI на /no-fit/.
+   *  null если расчёт fit_all/fit_none или snijenie не помогает. */
+  suggestion: FitReductionSuggestion | null;
 }
 
 function makeToken(): string {
@@ -120,11 +124,39 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
     ) as {
       result: unknown;
       scheme_payload: { fit_status: FitStatus; assigned_zones: Array<Record<string, unknown>> } | null;
-      debug: { sku_matching_result?: Array<Record<string, unknown>> };
+      debug: {
+        sku_matching_result?: Array<Record<string, unknown>>;
+        fit_result?: { unplaced_zones?: Array<{ content_type: string }> };
+      };
     };
 
     const token = makeToken();
     const fitStatus: FitStatus | "no_scheme" = result.scheme_payload?.fit_status ?? "no_scheme";
+
+    // На fit_partial — пробуем подобрать снижение объёма одной категории,
+    // которое даст fit_all. Если найдено, юзер на /no-fit/ увидит
+    // конкретное предложение «уменьшите носки до 16 пар, согласны?».
+    // См. services/findReduction.ts.
+    let reductionSuggestion: FitReductionSuggestion | null = null;
+    if (fitStatus === "fit_partial") {
+      const unplacedRaw = result.debug.fit_result?.unplaced_zones ?? [];
+      const unplacedCategories = Array.from(
+        new Set(unplacedRaw.map((z) => z.content_type)),
+      );
+      reductionSuggestion = findReduction(
+        {
+          drawer_width_cm: body.drawer_width_cm,
+          drawer_depth_cm: body.drawer_depth_cm,
+          drawer_height_cm: body.drawer_height_cm,
+          storage_category: body.storage_category,
+          items: body.items,
+          priority: body.priority,
+          color_preference: body.color_preference,
+        },
+        unplacedCategories,
+        getCatalog(),
+      );
+    }
 
     // Решаем коммерческое поведение: status / amount_kop / discount_kop.
     // См. таблицу сценариев в docs/data-model.md.
@@ -200,12 +232,15 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
         }
       }
 
-      // 1. Технический след движка
+      // 1. Технический след движка.
+      // К engine_output присоединяем suggestion (для /no-fit/ страницы:
+      // через /api/result/:token достаём и рендерим «уменьшите носки»).
+      const engineOutputForStorage = { ...result, suggestion: reductionSuggestion };
       const configResult = await client.query<{ id: string }>(
         `INSERT INTO configurations (input_payload, engine_output, fit_status)
          VALUES ($1, $2, $3)
          RETURNING id`,
-        [body, result, fitStatus],
+        [body, engineOutputForStorage, fitStatus],
       );
       const configId = configResult.rows[0].id;
 
@@ -383,6 +418,7 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
       promo_applied: appliedPromo
         ? { code: appliedPromo.code, discount_type: appliedPromo.discount_type }
         : null,
+      suggestion: reductionSuggestion,
     };
     res.json(response);
   };
