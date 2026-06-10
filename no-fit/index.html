@@ -77,7 +77,7 @@
             <span>почти получилось</span>
           </div>
           <h2 class="u-apology__suggest-title" data-suggest-title></h2>
-          <p class="u-apology__suggest-hint">Если согласитесь — пересчитаем схему и предложим оплатить.</p>
+          <p class="u-apology__suggest-hint">Если согласитесь, пересчитаем схему и предложим оплатить.</p>
           <div class="u-apology__suggest-actions">
             <button type="button" class="u-btn u-btn--sage u-btn--lg" data-suggest-yes>Да, согласна</button>
             <button type="button" class="u-btn u-btn--ghost u-btn--lg" data-suggest-no>Нет</button>
@@ -227,7 +227,10 @@
       var origLabel = content.volumeLabel(s.category_id, s.original_level) || s.original_level;
       // У volumeLabel вид «Много (17+ пар)» — нам нужна именно эта форма.
       // Если по какой-то причине вернула пусто — подставляем уровень как есть.
-      var unit = s.count_unit || 'шт';
+      // Единицу измерения берём из VOLUME_BOUNDS (русская — «пар», «шт»,
+      // «компл.»), а не из движка (там английские "pairs", "items").
+      var bounds = content.volumeBounds(s.category_id);
+      var unit = (bounds && bounds.unit) || 'шт';
       return 'Не помещаются все ' + catLower + '. Чтобы все поместилось, нужно сократить количество с '
         + origLabel + ' до ' + s.suggested_count + ' ' + unit + '. Согласны?';
     }
