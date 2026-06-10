@@ -70,8 +70,7 @@
   .p-get{ display: flex; flex-direction: column; position: relative; }
   .p-get + .p-get::before{ content: ""; position: absolute; left: calc(-1.4375rem - 0.5px); top: 0; bottom: 0; width: 1px; background: var(--u-line-2); }
   .p-get__icon{ width: 1.625rem; height: 1.625rem; color: var(--u-sage-d); margin-bottom: 0.875rem; }
-  .p-get__n{ font-family: var(--f-display); font-style: italic; font-weight: 500; font-size: 2.5rem; line-height: 1; color: var(--u-sage-d); margin-bottom: 0.625rem; }
-  .p-get__tag{ font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-widest); text-transform: uppercase; color: var(--u-sage-dd, #69785F); margin-bottom: 0.625rem; }
+  .p-get__dim{ font-family: var(--f-display); font-style: italic; font-weight: 500; font-size: 2rem; line-height: 1.05; color: var(--u-sage-d); margin-bottom: 0.5rem; }
   .p-body .p-get__name{ font-family: var(--f-display); font-weight: 500; font-size: var(--fs-xl); line-height: 1.14; color: var(--u-ink); margin: 0 0 0.625rem; }
   .p-body .p-get p{ font-family: var(--f-sans); font-size: var(--fs-sm); line-height: 1.6; color: var(--u-ink-2); margin: 0; }
   @media (max-width: 600px){
@@ -79,7 +78,7 @@
     .p-get + .p-get{ padding-top: 1.5rem; margin-top: 1.5rem; }
     .p-get + .p-get::before{ left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 1px; }
     .p-get__icon{ width: 1.5rem; height: 1.5rem; }
-    .p-get__n{ font-size: 2.25rem; }
+    .p-get__dim{ font-size: 1.75rem; }
   }
 
   /* ── Чек-лист с галочками ─────────────────────────────────────── */
@@ -200,22 +199,19 @@
         <div class="p-gets">
           <div class="p-get">
             <svg class="p-get__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg>
-            <span class="p-get__n">01</span>
-            <span class="p-get__tag">Ширина</span>
+            <span class="p-get__dim">Ширина</span>
             <h3 class="p-get__name">Между стенками</h3>
             <p>Расстояние между внутренними боковыми стенками ящика.</p>
           </div>
           <div class="p-get">
             <svg class="p-get__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M5 13v6h6M13 5h6v6"/></svg>
-            <span class="p-get__n">02</span>
-            <span class="p-get__tag">Глубина</span>
+            <span class="p-get__dim">Глубина</span>
             <h3 class="p-get__name">От края до задней стенки</h3>
             <p>Расстояние от внутреннего переднего края до задней стенки.</p>
           </div>
           <div class="p-get">
             <svg class="p-get__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M8 8l4-4 4 4M8 16l4 4 4-4"/></svg>
-            <span class="p-get__n">03</span>
-            <span class="p-get__tag">Полезная высота</span>
+            <span class="p-get__dim">Высота</span>
             <h3 class="p-get__name">До закрывания</h3>
             <p>Сколько места есть до закрывания ящика. Учитывайте не только высоту борта, но и то, не будут ли органайзер или вещи мешать закрытию.</p>
           </div>
