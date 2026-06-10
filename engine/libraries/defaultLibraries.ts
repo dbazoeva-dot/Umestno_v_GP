@@ -100,6 +100,10 @@ export const defaultLibraries: Libraries = {
     // в неглубокий ящик после поворота: jewelry_large Много (15) → зона 24×40 → 40×24.
     { option_id: "cells_3x5", division_type: "cells", calculation_mode: "fixed_grid", count_min: 13, count_max: 15, cols: 3, rows: 5, capacity: 15 },
     { option_id: "cells_4x4", division_type: "cells", calculation_mode: "fixed_grid", count_min: 13, count_max: 16, cols: 4, rows: 4, capacity: 16 },
+    // Полный набор форм для 16 ячеек (BL-18): 2×8 — узкая/компактная альтернатива
+    // широкой 4×4. panties Много (16): 4×4 = 41×13, 2×8 = 21×25 — движок выбирает
+    // ту, что лучше ложится в геометрию ящика.
+    { option_id: "cells_2x8", division_type: "cells", calculation_mode: "fixed_grid", count_min: 13, count_max: 16, cols: 2, rows: 8, capacity: 16 },
     // Вытянутая раскладка 3×6 (BL-18): запасной вариант к 4×4 для 16–18 ячеек.
     // panties Много (16): 4×4 = 41×13 не лезет в ящик шириной 40; 3×6 = 31×19 лезет.
     // Имеет больший surplus, поэтому в обычных ящиках по-прежнему выбирается 4×4.
@@ -109,6 +113,12 @@ export const defaultLibraries: Libraries = {
     // 5×5 = 31×31 (квадрат, поворот не помогает) не лезет в 40×30; 4×6 = 25×37,
     // движок поворачивает до 37×25 → fit_all. Точная вместимость 24 < 25 у 5×5.
     { option_id: "cells_4x6", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 24, cols: 4, rows: 6, capacity: 24 },
+    // Полный набор форм для 24 ячеек (BL-18): 3×8 и 2×12 — более вытянутые
+    // альтернативы к 4×6 для узких/глубоких ящиков. У них больше площадь, чем
+    // у 4×6, поэтому в обычных ящиках движок остаётся на 4×6, а эти формы
+    // подключаются, только когда лучше ложатся в геометрию.
+    { option_id: "cells_3x8", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 24, cols: 3, rows: 8, capacity: 24 },
+    { option_id: "cells_2x12", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 24, cols: 2, rows: 12, capacity: 24 },
     { option_id: "cells_5x5", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 25, cols: 5, rows: 5, capacity: 25 },
     // Вытянутая раскладка 4×7 (BL-18): покрывает 26–28 ячеек вытянутой формой.
     { option_id: "cells_4x7", division_type: "cells", calculation_mode: "fixed_grid", count_min: 26, count_max: 28, cols: 4, rows: 7, capacity: 28 },

@@ -258,4 +258,36 @@ assert(bl18TooSmall.result === null && bl18TooSmall.scheme_payload === null, "BL
 const bl18BigDrawer = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
 assert(bl18BigDrawer.result !== null && bl18Zone(bl18BigDrawer, "socks_regular").fit_status === "fit_all", "BL-18 backward-compat: 90×45 socks large must remain fit_all");
 
-console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 7 BL-18 small-drawer/elongated-cells scenarios");
+// ── BL-18b: full shape set for 16/24 as geometry-driven rescue layouts ──
+// Extra exact-capacity elongated grids (cells_2x8 / cells_3x8 / cells_2x12) must
+// stay invisible in normal drawers (so compact defaults don't drift) and appear
+// only when no compact grid — even rotated — fits the actual drawer geometry.
+
+// 8. Very narrow + deep drawer for socks Много (24): compact 5×5/4×6 (and their
+//    rotations) all exceed 22 cm width; cells_3x8 (19×49) is the only fit.
+const bl18bDeepSocks = runUmestnoEngine({ drawer_width_cm: 22, drawer_depth_cm: 60, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+const bl18bDeepSocksZone = bl18Zone(bl18bDeepSocks, "socks_regular");
+assert(bl18bDeepSocks.result !== null && bl18bDeepSocksZone.fit_status === "fit_all", "BL-18b deep socks: 22×60 socks large should be fit_all via a rescue grid");
+assert(bl18bDeepSocksZone.zone?.option_id === "cells_3x8", "BL-18b deep socks: should use the elongated rescue grid cells_3x8");
+
+// 9. Even narrower drawer pushes socks to the most elongated rescue grid 2×12.
+const bl18bNarrowSocks = runUmestnoEngine({ drawer_width_cm: 16, drawer_depth_cm: 80, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+const bl18bNarrowSocksZone = bl18Zone(bl18bNarrowSocks, "socks_regular");
+assert(bl18bNarrowSocks.result !== null && bl18bNarrowSocksZone.fit_status === "fit_all", "BL-18b narrow socks: 16×80 socks large should be fit_all");
+assert(bl18bNarrowSocksZone.zone?.option_id === "cells_2x12", "BL-18b narrow socks: should use the most elongated rescue grid cells_2x12");
+
+// 10. panties Много (16) in a narrow shallow drawer where even 3×6 (31×19) is too
+//     wide: cells_2x8 (21×25) rescues it.
+const bl18bPanties = runUmestnoEngine({ drawer_width_cm: 24, drawer_depth_cm: 30, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "large" } ], priority: "convenient" });
+const bl18bPantiesZone = bl18Zone(bl18bPanties, "panties");
+assert(bl18bPanties.result !== null && bl18bPantiesZone.fit_status === "fit_all", "BL-18b panties: 24×30 panties large should be fit_all via rescue grid");
+assert(bl18bPantiesZone.zone?.option_id === "cells_2x8", "BL-18b panties: should use the rescue grid cells_2x8 when 4×4/3×6 are too wide");
+
+// 11. Anti-regression: in a roomy drawer the rescue grids must NOT be chosen —
+//     socks large stays on a compact grid, never an elongated rescue shape.
+const bl18bRoomy = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+const bl18bRoomyOption = bl18Zone(bl18bRoomy, "socks_regular").zone?.option_id ?? "";
+assert(bl18bRoomy.result !== null, "BL-18b roomy: 90×45 socks large should be fit_all");
+assert(!["cells_2x8", "cells_3x8", "cells_2x12"].some((id) => bl18bRoomyOption.startsWith(id)), "BL-18b roomy: rescue grids must not be selected when a compact grid fits");
+
+console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 11 BL-18 small-drawer/elongated-cells scenarios");
