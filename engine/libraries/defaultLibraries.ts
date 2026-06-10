@@ -95,10 +95,27 @@ export const defaultLibraries: Libraries = {
     { option_id: "cells_2x3", division_type: "cells", calculation_mode: "fixed_grid", count_min: 5, count_max: 6, cols: 2, rows: 3, capacity: 6 },
     { option_id: "cells_3x3", division_type: "cells", calculation_mode: "fixed_grid", count_min: 7, count_max: 9, cols: 3, rows: 3, capacity: 9 },
     { option_id: "cells_3x4", division_type: "cells", calculation_mode: "fixed_grid", count_min: 10, count_max: 12, cols: 3, rows: 4, capacity: 12 },
+    // Вытянутая раскладка 3×5 (BL-18): альтернатива квадрату 4×4 для 13–15 ячеек.
+    // Помогает «квадратным» категориям (jewelry_large/ties, ячейка 8×8) уложиться
+    // в неглубокий ящик после поворота: jewelry_large Много (15) → зона 24×40 → 40×24.
+    { option_id: "cells_3x5", division_type: "cells", calculation_mode: "fixed_grid", count_min: 13, count_max: 15, cols: 3, rows: 5, capacity: 15 },
     { option_id: "cells_4x4", division_type: "cells", calculation_mode: "fixed_grid", count_min: 13, count_max: 16, cols: 4, rows: 4, capacity: 16 },
+    // Вытянутая раскладка 3×6 (BL-18): запасной вариант к 4×4 для 16–18 ячеек.
+    // panties Много (16): 4×4 = 41×13 не лезет в ящик шириной 40; 3×6 = 31×19 лезет.
+    // Имеет больший surplus, поэтому в обычных ящиках по-прежнему выбирается 4×4.
+    { option_id: "cells_3x6", division_type: "cells", calculation_mode: "fixed_grid", count_min: 16, count_max: 18, cols: 3, rows: 6, capacity: 18 },
     { option_id: "cells_4x5", division_type: "cells", calculation_mode: "fixed_grid", count_min: 17, count_max: 20, cols: 4, rows: 5, capacity: 20 },
+    // Вытянутая раскладка 4×6 (BL-18): ключевой кейс — socks Много (24).
+    // 5×5 = 31×31 (квадрат, поворот не помогает) не лезет в 40×30; 4×6 = 25×37,
+    // движок поворачивает до 37×25 → fit_all. Точная вместимость 24 < 25 у 5×5.
+    { option_id: "cells_4x6", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 24, cols: 4, rows: 6, capacity: 24 },
     { option_id: "cells_5x5", division_type: "cells", calculation_mode: "fixed_grid", count_min: 21, count_max: 25, cols: 5, rows: 5, capacity: 25 },
+    // Вытянутая раскладка 4×7 (BL-18): покрывает 26–28 ячеек вытянутой формой.
+    { option_id: "cells_4x7", division_type: "cells", calculation_mode: "fixed_grid", count_min: 26, count_max: 28, cols: 4, rows: 7, capacity: 28 },
     { option_id: "cells_5x6", division_type: "cells", calculation_mode: "fixed_grid", count_min: 26, count_max: 30, cols: 5, rows: 6, capacity: 30 },
+    // Крупная раскладка 7×8 (BL-18): закрывает разрыв по вместимости для
+    // jewelry_small Много (50) — раньше максимум был 30 ячеек, и зона не строилась.
+    { option_id: "cells_7x8", division_type: "cells", calculation_mode: "fixed_grid", count_min: 31, count_max: 56, cols: 7, rows: 8, capacity: 56 },
     { option_id: "slots_single_row", division_type: "slots", calculation_mode: "linear_depth", count_min: 1, count_max: 99 },
     { option_id: "slots_multi_lane_auto", division_type: "slots", calculation_mode: "linear_depth_split", count_min: 7, count_max: 20, notes: "Split slot-stored items into multiple parallel lanes when one lane exceeds drawer depth." },
     { option_id: "open_single_section", division_type: "open", calculation_mode: "open_capacity_in_box", count_min: 1, count_max: 999 }

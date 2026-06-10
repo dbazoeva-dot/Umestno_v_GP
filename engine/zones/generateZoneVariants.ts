@@ -54,5 +54,20 @@ function buildCandidates(req: StorageRequirement, zoneLayoutOptions: ZoneLayoutO
     }
   }
 
+  // Cells rotation (BL-18): rotate a non-square grid only when the upright
+  // orientation does not fit the drawer but the rotated one does. Fit-aware on
+  // purpose — schemes that already fit upright keep their exact orientation, so
+  // existing fit_all cases are untouched, while elongated grids (e.g. socks
+  // cells_4x6 → 37×25) become placeable in shallow/narrow drawers.
+  if (req.can_rotate && req.primary_division === "cells") {
+    for (const zone of variants.filter((v) => v.calculation_mode === "fixed_grid")) {
+      if (zone.zone_w_cm === zone.zone_d_cm) continue;
+      const uprightFits = zone.zone_w_cm <= drawerSize.w_cm && zone.zone_d_cm <= drawerSize.d_cm;
+      const rotatedFits = zone.zone_d_cm <= drawerSize.w_cm && zone.zone_w_cm <= drawerSize.d_cm;
+      if (uprightFits || !rotatedFits) continue;
+      variants.push({ ...zone, zone_id: `${zone.zone_id}_rotated`, option_id: `${zone.option_id}_rotated`, zone_w_cm: zone.zone_d_cm, zone_d_cm: zone.zone_w_cm, calculated_cols: zone.calculated_rows, calculated_rows: zone.calculated_cols, variant_transform: "rotate_90" });
+    }
+  }
+
   return variants;
 }

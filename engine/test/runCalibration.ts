@@ -198,4 +198,64 @@ assert(scenario7Debug.scheme_payload.selected_calculated_zones.some((zone) => zo
 const d02ForcedD02 = findRuleEvaluation(forcedReport.layout_rule_evaluations, "D02");
 assert(d02ForcedD02?.status === "pass", "D02 true-positive guard: forced scenario socks between panties/bras in depth (same column) should still evaluate correctly after fix");
 
-console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios");
+// ── BL-18: small drawer + medium/large volumes (elongated cells layouts) ──
+// Weak spot in prior coverage: shallow/narrow drawers with mid-large counts.
+// Each previously returned no_scheme because only square cells grids existed.
+function bl18Zone(output: ReturnType<typeof runUmestnoEngine>, contentType: string) {
+  const debug = output.debug as { fit_result: { fit_status: string }; scheme_payload: { selected_calculated_zones: Array<{ content_type: string; option_id: string; division_type: string; zone_w_cm: number; zone_d_cm: number; capacity: number; count: number }> } };
+  return { fit_status: debug.fit_result.fit_status, zone: debug.scheme_payload.selected_calculated_zones.find((z) => z.content_type === contentType) };
+}
+
+// 1. The headline regression: 40×30×20 + socks Много (24 пары). Must become
+//    fit_all via cells_4x6 rotated to 37×25 (was no_scheme with only cells_5x5).
+const bl18Socks = runUmestnoEngine({ drawer_width_cm: 40, drawer_depth_cm: 30, drawer_height_cm: 20, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+const bl18SocksZone = bl18Zone(bl18Socks, "socks_regular");
+assert(bl18Socks.result !== null, "BL-18 socks: 40×30×20 + socks large should produce a scheme (was no_scheme)");
+assert(bl18SocksZone.fit_status === "fit_all", "BL-18 socks: should be fit_all");
+assert(bl18SocksZone.zone?.option_id === "cells_4x6_rotated", "BL-18 socks: should use elongated cells_4x6 rotated into the drawer");
+assert(bl18SocksZone.zone?.zone_w_cm === 37 && bl18SocksZone.zone?.zone_d_cm === 25, "BL-18 socks: rotated zone should be 37×25 and fit 40×30");
+assert((bl18SocksZone.zone?.capacity ?? 0) >= 24, "BL-18 socks: 24 pairs must fit in the chosen grid");
+
+// 2. panties Много (16) in 40×30×15. cells_4x4 (41×13) is too wide; the engine
+//    must fall back to the narrower cells_3x6 (31×19), which fits upright.
+const bl18Panties = runUmestnoEngine({ drawer_width_cm: 40, drawer_depth_cm: 30, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "panties", volume_level: "large" } ], priority: "convenient" });
+const bl18PantiesZone = bl18Zone(bl18Panties, "panties");
+assert(bl18Panties.result !== null && bl18PantiesZone.fit_status === "fit_all", "BL-18 panties: 40×30×15 + panties large should be fit_all (was no_scheme)");
+assert(bl18PantiesZone.zone?.option_id === "cells_3x6", "BL-18 panties: should fall back to narrower cells_3x6 when 4×4 is too wide");
+assert((bl18PantiesZone.zone?.capacity ?? 0) >= 16, "BL-18 panties: 16 items must fit in the chosen grid");
+
+// 3. Multi-category small box: 45×35×15 with socks Много (24) + tights Мало (3).
+//    Both categories must place; socks uses the rotated elongated grid.
+const bl18Multi = runUmestnoEngine({ drawer_width_cm: 45, drawer_depth_cm: 35, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" }, { content_type: "tights", volume_level: "small" } ], priority: "convenient" });
+const bl18MultiSocks = bl18Zone(bl18Multi, "socks_regular");
+const bl18MultiTights = bl18Zone(bl18Multi, "tights");
+assert(bl18Multi.result !== null && bl18MultiSocks.fit_status === "fit_all", "BL-18 multi: 45×35×15 socks large + tights small should be fit_all");
+assert(bl18MultiSocks.zone?.division_type === "cells" && bl18MultiTights.zone?.division_type === "cells", "BL-18 multi: both categories should stay in cells");
+assert((bl18MultiSocks.zone?.capacity ?? 0) >= 24 && (bl18MultiTights.zone?.capacity ?? 0) >= 3, "BL-18 multi: both grids must satisfy their counts");
+
+// 4. Accessories with square cells (ties Много = 12, unit 8×8). cells_3x4 (24×32)
+//    overflows depth 30; rotation of the existing option to 32×24 must fix it.
+const bl18Ties = runUmestnoEngine({ drawer_width_cm: 40, drawer_depth_cm: 30, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "ties", volume_level: "large" } ], priority: "convenient" });
+const bl18TiesZone = bl18Zone(bl18Ties, "ties");
+assert(bl18Ties.result !== null && bl18TiesZone.fit_status === "fit_all", "BL-18 ties: 40×30×15 + ties large should be fit_all via rotation");
+assert(bl18TiesZone.zone?.option_id === "cells_3x4_rotated", "BL-18 ties: should rotate the existing cells_3x4 to fit a shallow drawer");
+
+// 5. Capacity-gap closure: jewelry_small Много (50). Max cells capacity used to be
+//    30, so no grid could be built at all; cells_7x8 (56) now covers it.
+const bl18Jewelry = runUmestnoEngine({ drawer_width_cm: 40, drawer_depth_cm: 30, drawer_height_cm: 20, storage_category: "mixed", items: [ { content_type: "jewelry_small", volume_level: "large" } ], priority: "convenient" });
+const bl18JewelryZone = bl18Zone(bl18Jewelry, "jewelry_small");
+assert(bl18Jewelry.result !== null && bl18JewelryZone.fit_status === "fit_all", "BL-18 jewelry_small: 40×30×20 + 50 items should be fit_all (capacity gap closed)");
+assert((bl18JewelryZone.zone?.capacity ?? 0) >= 50, "BL-18 jewelry_small: chosen grid must hold all 50 items");
+
+// 6. Boundary guard: 35×30 is genuinely too small for socks Много (the only fitting
+//    grid, 4×6 rotated 37×25, needs 37 cm width). Must stay no_scheme — the new
+//    options must not fabricate an impossible fit.
+const bl18TooSmall = runUmestnoEngine({ drawer_width_cm: 35, drawer_depth_cm: 30, drawer_height_cm: 12, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+assert(bl18TooSmall.result === null && bl18TooSmall.scheme_payload === null, "BL-18 boundary: 35×30 socks large is genuinely too small and must remain no_scheme");
+
+// 7. Backward-compat: a roomy drawer must still produce fit_all for socks large
+//    (elongated options must not regress previously-working large drawers).
+const bl18BigDrawer = runUmestnoEngine({ drawer_width_cm: 90, drawer_depth_cm: 45, drawer_height_cm: 15, storage_category: "underwear", items: [ { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
+assert(bl18BigDrawer.result !== null && bl18Zone(bl18BigDrawer, "socks_regular").fit_status === "fit_all", "BL-18 backward-compat: 90×45 socks large must remain fit_all");
+
+console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 7 BL-18 small-drawer/elongated-cells scenarios");
