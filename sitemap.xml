@@ -56,6 +56,13 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://umestno-home.ru/blog/kak-zamerit-yashchik/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Юридические/документы -->
   <url>
     <loc>https://umestno-home.ru/oferta/</loc>
