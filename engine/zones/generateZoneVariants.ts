@@ -10,7 +10,7 @@ const MAX_VARIANTS = 3;
 // иначе мульти-зонный оптимизатор начнёт выбирать их в обычных ящиках и менять
 // привычные схемы. Подключаем их как «спасательные» формы только когда ни одна
 // компактная раскладка (включая поворот) не вписывается в геометрию ящика.
-export const FALLBACK_CELLS = new Set(["cells_2x8", "cells_3x8", "cells_2x12"]);
+export const FALLBACK_CELLS = new Set(["cells_2x4", "cells_2x5", "cells_2x6", "cells_2x8", "cells_3x8", "cells_2x12", "cells_5x10"]);
 
 function footprintFits(zone: CalculatedZone, drawerSize: DrawerSize): boolean {
   return zone.zone_w_cm <= drawerSize.w_cm && zone.zone_d_cm <= drawerSize.d_cm;

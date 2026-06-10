@@ -290,4 +290,33 @@ const bl18bRoomyOption = bl18Zone(bl18bRoomy, "socks_regular").zone?.option_id ?
 assert(bl18bRoomy.result !== null, "BL-18b roomy: 90×45 socks large should be fit_all");
 assert(!["cells_2x8", "cells_3x8", "cells_2x12"].some((id) => bl18bRoomyOption.startsWith(id)), "BL-18b roomy: rescue grids must not be selected when a compact grid fits");
 
-console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 11 BL-18 small-drawer/elongated-cells scenarios");
+// ── BL-18c: factorization completeness for every cells count ──
+// For each item count a cells category can produce, every non-degenerate
+// rectangular grid (both sides ≥ 2, aspect ≤ 6, i.e. excluding 1×N strips)
+// must exist in the library in either orientation — so the engine always has
+// the full shape set to match drawer geometry. This guards against future
+// volumeToCount edits silently re-introducing a missing layout.
+{
+  const cellsTypes = new Set(defaultLibraries.storageUnitProfile.filter((p) => p.primary_division === "cells").map((p) => p.content_type));
+  const cellsCounts = [...new Set(defaultLibraries.volumeToCount.filter((r) => cellsTypes.has(r.content_type)).map((r) => r.count))];
+  const cellsGrids = new Set(defaultLibraries.zoneLayoutOptions.filter((o) => o.division_type === "cells").map((o) => `${Math.min(o.cols ?? 0, o.rows ?? 0)}x${Math.max(o.cols ?? 0, o.rows ?? 0)}`));
+  for (const n of cellsCounts) {
+    for (let a = 2; a * a <= n; a++) {
+      if (n % a !== 0) continue;
+      const b = n / a;
+      if (b / a > 6) continue; // skip degenerate 1×N-like strips (aspect > 6)
+      assert(cellsGrids.has(`${a}x${b}`), `BL-18c completeness: cells count ${n} is missing grid ${a}×${b}`);
+    }
+  }
+}
+
+// 12. Rescue grid cells_2x4 (=8) must place when no compact grid (even rotated)
+//     fits: 16×18 rejects 3×3 in both orientations (22×13 / 13×22) but fits 2×4 (15×17).
+const bl18cTights = runUmestnoEngine({ drawer_width_cm: 16, drawer_depth_cm: 18, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "tights", volume_level: "medium" } ], priority: "convenient" });
+assert(bl18cTights.result !== null && bl18Zone(bl18cTights, "tights").zone?.option_id === "cells_2x4", "BL-18c rescue: 16×18 tights (8) should use cells_2x4");
+
+// 13. Rescue grid cells_5x10 (=50) for jewelry_small in a narrow deep drawer.
+const bl18cJewelry = runUmestnoEngine({ drawer_width_cm: 18, drawer_depth_cm: 70, drawer_height_cm: 15, storage_category: "mixed", items: [ { content_type: "jewelry_small", volume_level: "large" } ], priority: "convenient" });
+assert(bl18cJewelry.result !== null && bl18Zone(bl18cJewelry, "jewelry_small").zone?.option_id === "cells_5x10", "BL-18c rescue: 18×70 jewelry_small (50) should use cells_5x10");
+
+console.log("ok 3 calibration case(s), 1 validation case, 1 library coverage audit, 6 soft height scenarios, 13 BL-18 small-drawer/elongated-cells scenarios + cells factorization-completeness audit");
