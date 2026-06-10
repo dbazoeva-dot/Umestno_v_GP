@@ -230,6 +230,22 @@ export function calculateHandler(pool: Pool, env: Env, getCatalog: () => SkuCata
         if (amountKop === 0) {
           status = "sent_free";
         }
+      } else if (promoCodeRaw && fitStatus === "fit_partial") {
+        // Для fit_partial промокод НЕ применяем в этом расчёте (он и так
+        // бесплатный, скидывать не от чего), но валидируем и сохраняем
+        // promo_code_id на заказ — чтобы при accept-suggestion перенести
+        // его на новый платный заказ. Без этого юзер с DZERA100 на
+        // fit_partial попадает на оплату 149 ₽ после клика «Согласна».
+        // uses_count здесь НЕ инкрементим — увеличим в acceptSuggestion
+        // при создании нового заказа с реальной ценой/оплатой.
+        const v = await findValidPromoCode(client, promoCodeRaw);
+        if (!v.valid) {
+          await client.query("ROLLBACK");
+          return res.status(400).json({
+            ok: false, error: "invalid_promo_code", reason: v.reason,
+          });
+        }
+        appliedPromo = v.promo;
       }
 
       // 1. Технический след движка.
