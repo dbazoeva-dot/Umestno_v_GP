@@ -70,7 +70,10 @@ export function acceptSuggestionHandler(
     try {
       await client.query("BEGIN");
 
-      // 1. Найти оригинальный заказ + конфигурацию.
+      // 1. Найти оригинальный заказ + конфигурацию + промокод.
+      // Промокод нужен чтобы перенести его на новый заказ — если юзер
+      // применил DZERA100 (бесплатно) на исходном расчёте, при принятии
+      // suggestion цена тоже должна остаться 0 ₽, а не вернуться к 149.
       const orderQ = await client.query<{
         id: string;
         status: string;
@@ -81,9 +84,10 @@ export function acceptSuggestionHandler(
         session_id: string | null;
         input_payload: StoredInput;
         engine_output: { suggestion?: Suggestion | null } | null;
+        promo_code_id: string | null;
       }>(
         `SELECT o.id, o.status, o.fit_status, o.email, o.ip, o.user_agent,
-                o.session_id, c.input_payload, c.engine_output
+                o.session_id, c.input_payload, c.engine_output, o.promo_code_id
            FROM orders o
            JOIN configurations c ON c.id = o.configuration_id
           WHERE o.token = $1
@@ -151,13 +155,61 @@ export function acceptSuggestionHandler(
       }
 
       // 5. Создаём НОВЫЙ заказ (новый токен, новая configurations-запись).
-      // Цена базовая — без промокода (промокод можно применить на этапе
-      // accept-suggestion отдельно, сейчас не делаем для простоты).
+      // Если на оригинальном заказе был применён промокод — переносим его
+      // на новый заказ. Так юзер с DZERA100 (бесплатно) после принятия
+      // suggestion остаётся на 0 ₽, а не возвращается к 149 ₽.
       const newToken = makeToken();
       const basePriceKop = env.PRICE_KOP;
-      const newStatus = env.PAYMENT_REQUIRED ? "created" : "sent_free";
-      const amountKop = env.PAYMENT_REQUIRED ? basePriceKop : 0;
-      const discountKop = env.PAYMENT_REQUIRED ? 0 : basePriceKop;
+      let amountKop = env.PAYMENT_REQUIRED ? basePriceKop : 0;
+      let discountKop = env.PAYMENT_REQUIRED ? 0 : basePriceKop;
+      let newStatus = env.PAYMENT_REQUIRED ? "created" : "sent_free";
+
+      if (order.promo_code_id) {
+        // Подтягиваем актуальное состояние промокода (он мог быть
+        // отключён или превышен лимит за время между первой попыткой
+        // и принятием suggestion — если так, просто игнорируем и
+        // оставляем базовую цену; чтобы не блокировать оплату).
+        const promoQ = await client.query<{
+          discount_type: "percent" | "fixed" | "free";
+          discount_value: number;
+          is_active: boolean;
+          max_uses: number | null;
+          uses_count: number;
+        }>(
+          `SELECT discount_type, discount_value, is_active, max_uses, uses_count
+             FROM promo_codes
+            WHERE id = $1`,
+          [order.promo_code_id],
+        );
+        const promo = promoQ.rows[0];
+        const stillValid = promo && promo.is_active &&
+          (promo.max_uses === null || promo.uses_count < promo.max_uses);
+        if (stillValid) {
+          let finalAmount: number;
+          if (promo.discount_type === "free") {
+            finalAmount = 0;
+          } else if (promo.discount_type === "percent") {
+            const off = Math.floor((basePriceKop * promo.discount_value) / 100);
+            finalAmount = Math.max(0, basePriceKop - off);
+          } else {
+            finalAmount = Math.max(0, basePriceKop - promo.discount_value);
+          }
+          discountKop = basePriceKop - finalAmount;
+          amountKop = finalAmount;
+          if (amountKop === 0) newStatus = "sent_free";
+          // Инкрементируем счётчик использования — это второе
+          // применение того же промокода (потому что юзер уже один
+          // раз его применил на оригинальном расчёте).
+          await client.query(
+            `UPDATE promo_codes
+                SET uses_count = uses_count + 1
+              WHERE id = $1
+                AND is_active
+                AND (max_uses IS NULL OR uses_count < max_uses)`,
+            [order.promo_code_id],
+          );
+        }
+      }
 
       const configResult = await client.query<{ id: string }>(
         `INSERT INTO configurations (input_payload, engine_output, fit_status)
@@ -171,14 +223,14 @@ export function acceptSuggestionHandler(
         `INSERT INTO orders (
            configuration_id, token, session_id, ip, user_agent,
            fit_status, base_price_kop, discount_kop, amount_kop, status, email,
-           parent_order_id
+           parent_order_id, promo_code_id
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
          RETURNING id`,
         [
           newConfigId, newToken, order.session_id, order.ip, order.user_agent,
           fitStatus, basePriceKop, discountKop, amountKop, newStatus, order.email,
-          order.id,
+          order.id, order.promo_code_id,
         ],
       );
       const newOrderId = newOrderResult.rows[0].id;
@@ -196,7 +248,10 @@ export function acceptSuggestionHandler(
 
       // 7. Создаём YooKassa-платёж (вне транзакции — сетевой вызов).
       let paymentUrl: string | null = null;
-      const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED;
+      // canPay = надо ли создавать платёж в ЮКассе. Если промокод сделал
+      // заказ бесплатным (amountKop=0) — оплата не нужна, статус уже
+      // sent_free, юзера сразу ведём на /result/.
+      const canPay = isSuccess(fitStatus) && env.PAYMENT_REQUIRED && amountKop > 0;
       if (canPay) {
         try {
           const payment = await createPayment({
