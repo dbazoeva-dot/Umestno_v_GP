@@ -20,7 +20,6 @@
 import type { Pool } from "pg";
 import { Bot, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
 import { promises as fs } from "fs";
-import path from "path";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
 // TG user id админа (Дзеры) — на /stat отвечаем только ей.
@@ -50,13 +49,15 @@ const EXAMPLE_CAPTION =
   "Так выглядит готовая схема. Под ваш ящик она будет своя — " +
   "с вашими размерами и вещами.";
 
-// Путь к картинке-примеру. Файл должен лежать в репо в assets/bot/.
-// Если файла нет — callback «Пример результата» отправит текстовый
-// fallback с ссылкой на сайт. См. assets/bot/README.md.
-const EXAMPLE_IMAGE_PATH = path.resolve(
-  process.cwd(),
-  "assets/bot/bot_example_vertical.jpg",
-);
+// Путь к картинке-примеру. Файл лежит в репо в assets/bot/. На проде
+// репозиторий развёрнут в /var/www/umestno, поэтому абсолютный путь —
+// как у PDF_STORAGE_DIR в mailer.ts/pdf.ts. Можно переопределить через
+// BOT_EXAMPLE_IMAGE_PATH в .env (для dev/другого окружения). Если файла
+// нет — callback «Пример результата» отправит текстовый fallback.
+// См. assets/bot/README.md.
+const EXAMPLE_IMAGE_PATH =
+  process.env.BOT_EXAMPLE_IMAGE_PATH ??
+  "/var/www/umestno/assets/bot/bot_example_vertical.jpg";
 
 async function exampleImageExists(): Promise<boolean> {
   try {
