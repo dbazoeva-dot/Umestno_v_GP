@@ -68,12 +68,15 @@
   .p-compare{ margin: 2.125rem 0 0.75rem; }
   .p-compare__scroll{ overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--r-md); }
   .p-table{ width: 100%; border-collapse: collapse; min-width: 42rem; font-family: var(--f-sans); background: var(--u-card); }
-  .p-table thead th{ text-align: left; vertical-align: top; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); font-weight: 500; padding: 0 1.125rem 0.875rem; border-bottom: 1px solid var(--u-ink); }
+  .p-table thead th{ text-align: left; vertical-align: top; background: transparent; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); font-weight: 500; padding: 0 1.125rem 0.875rem; border-bottom: 1px solid var(--u-ink); white-space: nowrap; }
   .p-table thead th:first-child{ color: var(--u-accent); }
-  .p-table tbody td{ padding: 1rem 1.125rem; vertical-align: top; font-size: var(--fs-sm); line-height: 1.45; color: var(--u-ink-2); border-bottom: 1px solid var(--u-line-2); }
+  .p-table tbody td{ padding: 1rem 1.125rem; vertical-align: middle; font-size: var(--fs-sm); line-height: 1.45; color: var(--u-ink-2); border-top: 1px solid var(--u-line-2); border-bottom: 0; }
+  .p-table tbody tr:first-child td{ border-top: 0; }
   .p-table tbody tr:hover td{ background: rgba(125,140,114,.05); }
-  .p-table .c-item{ font-family: var(--f-display); font-weight: 500; font-size: var(--fs-lg); line-height: 1.12; color: var(--u-ink); width: 26%; white-space: nowrap; }
-  .p-table .c-how{ color: var(--u-sage-dd, #69785F); font-weight: 500; width: 32%; }
+  .p-table .c-item{ font-family: var(--f-display); font-weight: 500; font-size: var(--fs-lg); line-height: 1.12; color: var(--u-ink); width: 28%; }
+  .c-item__in{ display: flex; align-items: center; gap: 0.875rem; }
+  .c-item__ico{ flex: 0 0 auto; width: 2.25rem; height: 2.25rem; object-fit: contain; }
+  .p-table .c-how{ color: var(--u-sage-dd, #69785F); font-weight: 500; width: 30%; }
   .p-compare__hint{ display: none; font-family: var(--f-mono); font-size: var(--fs-2xs); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3); margin-top: 0.75rem; }
   @media (max-width: 720px){
     .p-compare__hint{ display: block; }
@@ -222,18 +225,18 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td class="c-item">Носки</td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Пары не путаются, всё видно сверху</td></tr>
-                <tr><td class="c-item">Трусы</td><td class="c-how" data-label="Как складывать">Тонкими прямоугольниками</td><td data-label="Почему так удобнее">Бельё занимает меньше места и не смешивается</td></tr>
-                <tr><td class="c-item">Боксеры</td><td class="c-how" data-label="Как складывать">Средними прямоугольниками</td><td data-label="Почему так удобнее">Вещи не расползаются по ящику</td></tr>
-                <tr><td class="c-item">Бюстгальтеры</td><td class="c-how" data-label="Как складывать">Деликатной стопкой</td><td data-label="Почему так удобнее">Чашки не сминаются</td></tr>
-                <tr><td class="c-item">Колготки и чулки</td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Тонкая ткань меньше цепляется</td></tr>
-                <tr><td class="c-item">Футболки</td><td class="c-how" data-label="Как складывать">Прямоугольниками вертикально</td><td data-label="Почему так удобнее">Каждый слой виден сверху</td></tr>
-                <tr><td class="c-item">Лонгсливы</td><td class="c-how" data-label="Как складывать">Тонкими прямоугольниками</td><td data-label="Почему так удобнее">Рукава не выбиваются</td></tr>
-                <tr><td class="c-item">Джинсы</td><td class="c-how" data-label="Как складывать">Крупными прямоугольниками</td><td data-label="Почему так удобнее">Блок держит форму</td></tr>
-                <tr><td class="c-item">Леггинсы</td><td class="c-how" data-label="Как складывать">Узкими прямоугольниками</td><td data-label="Почему так удобнее">Каждую пару легко увидеть</td></tr>
-                <tr><td class="c-item">Пижамы</td><td class="c-how" data-label="Как складывать">Комплектами</td><td data-label="Почему так удобнее">Верх и низ остаются вместе</td></tr>
-                <tr><td class="c-item">Ремни</td><td class="c-how" data-label="Как складывать">Спиралями</td><td data-label="Почему так удобнее">Пряжки не цепляют одежду</td></tr>
-                <tr><td class="c-item">Платки и шарфы</td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Ткань видно по цветам</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/socks.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Носки</span></td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Пары не путаются, всё видно сверху</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/panties.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Трусы</span></td><td class="c-how" data-label="Как складывать">Тонкими прямоугольниками</td><td data-label="Почему так удобнее">Бельё занимает меньше места и не смешивается</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/boxers.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Боксеры</span></td><td class="c-how" data-label="Как складывать">Средними прямоугольниками</td><td data-label="Почему так удобнее">Вещи не расползаются по ящику</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/bras.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Бюстгальтеры</span></td><td class="c-how" data-label="Как складывать">Деликатной стопкой</td><td data-label="Почему так удобнее">Чашки не сминаются</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/tights.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Колготки и чулки</span></td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Тонкая ткань меньше цепляется</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/tshirt.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Футболки</span></td><td class="c-how" data-label="Как складывать">Прямоугольниками вертикально</td><td data-label="Почему так удобнее">Каждый слой виден сверху</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/longsleeve.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Лонгсливы</span></td><td class="c-how" data-label="Как складывать">Тонкими прямоугольниками</td><td data-label="Почему так удобнее">Рукава не выбиваются</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/jeans.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Джинсы</span></td><td class="c-how" data-label="Как складывать">Крупными прямоугольниками</td><td data-label="Почему так удобнее">Блок держит форму</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/leggings.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Леггинсы</span></td><td class="c-how" data-label="Как складывать">Узкими прямоугольниками</td><td data-label="Почему так удобнее">Каждую пару легко увидеть</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/nightgown.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Пижамы</span></td><td class="c-how" data-label="Как складывать">Комплектами</td><td data-label="Почему так удобнее">Верх и низ остаются вместе</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/belt.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Ремни</span></td><td class="c-how" data-label="Как складывать">Спиралями</td><td data-label="Почему так удобнее">Пряжки не цепляют одежду</td></tr>
+                <tr><td class="c-item"><span class="c-item__in"><img class="c-item__ico" src="../../landing_design/assets/scarves.png" alt="" aria-hidden="true" onerror="this.style.display='none'">Платки и шарфы</span></td><td class="c-how" data-label="Как складывать">Рулонами</td><td data-label="Почему так удобнее">Ткань видно по цветам</td></tr>
               </tbody>
             </table>
           </div>
