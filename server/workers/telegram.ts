@@ -18,7 +18,9 @@
 // крутится вхолостую (логирует один раз и выходит).
 
 import type { Pool } from "pg";
-import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy";
+import { Bot, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
+import { promises as fs } from "fs";
+import path from "path";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
 // TG user id админа (Дзеры) — на /stat отвечаем только ей.
@@ -31,15 +33,39 @@ const SITE_URL = process.env.SITE_BASE_URL ?? "https://umestno-home.ru";
 
 // Текст приветствия — копирайт Дзеры. Не редактируем сами.
 const WELCOME_TEXT =
-  "Привет! Это «Уместно» — сервис, который собирает схему хранения " +
-  "под ваш ящик.\n\n" +
-  "Вы указываете размеры и вещи, и получаете раскладку с зонами, " +
-  "памятку по складыванию и список подходящих органайзеров.\n\n" +
-  "149 ₽, без подписок. Не помещается — не платите.";
+  "Привет! Это «Уместно» — сервис, который создан, чтобы навести порядок " +
+  "в ящике раз и навсегда.\n\n" +
+  "Вы указываете размеры ящика и что хотите в нём хранить, и за 3 минуты получаете:\n" +
+  "— схему хранения под размеры ящика с зонированием по типам вещей;\n" +
+  "— размер каждой зоны;\n" +
+  "— рекомендации по складыванию и хранению по типам вещей;\n" +
+  "— рекомендации по органайзерам со ссылками на маркетплейсы.\n\n" +
+  "149 ₽ за расчёт, без подписок. Не помещается — не платите.";
 
 const WANTS_BOT_CALC_TEXT =
-  "Скоро запустим расчёт прямо в Telegram. Вы в списке первых. " +
+  "Скоро запустим расчёт прямо в Telegram — вы в списке первых. " +
   "Как только будет готово, напишем сюда.";
+
+const EXAMPLE_CAPTION =
+  "Так выглядит готовая схема. Под ваш ящик она будет своя — " +
+  "с вашими размерами и вещами.";
+
+// Путь к картинке-примеру. Файл должен лежать в репо в assets/bot/.
+// Если файла нет — callback «Пример результата» отправит текстовый
+// fallback с ссылкой на сайт. См. assets/bot/README.md.
+const EXAMPLE_IMAGE_PATH = path.resolve(
+  process.cwd(),
+  "assets/bot/bot_example_vertical.jpg",
+);
+
+async function exampleImageExists(): Promise<boolean> {
+  try {
+    await fs.access(EXAMPLE_IMAGE_PATH);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // UTM-параметры для URL-кнопки в /start. <source> подставляется из
 // bot_subscribers.source (deeplink ?start=канал), пустой → 'organic'.
@@ -156,14 +182,18 @@ export function startTelegramWorker(pool: Pool): void {
     active_subscribers: number;
     contacts_24h: number;
     contacts_7d: number;
+    viewed_example: number;
+    viewed_example_pct: number;
     wants_bot_calc: number;
     wants_bot_calc_pct: number;
+    by_source: Array<{ source: string; total: number; viewed: number; wants: number }>;
   }> {
     const r = await pool.query<{
       total_contacts: string;
       active_subscribers: string;
       contacts_24h: string;
       contacts_7d: string;
+      viewed_example: string;
       wants_bot_calc: string;
     }>(
       `SELECT
@@ -171,19 +201,51 @@ export function startTelegramWorker(pool: Pool): void {
          COUNT(*) FILTER (WHERE subscribed_at IS NOT NULL AND unsubscribed_at IS NULL)::text AS active_subscribers,
          COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '24 hours')::text AS contacts_24h,
          COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '7 days')::text AS contacts_7d,
+         COUNT(*) FILTER (WHERE viewed_example)::text AS viewed_example,
          COUNT(*) FILTER (WHERE wants_bot_calc)::text AS wants_bot_calc
        FROM bot_subscribers`,
     );
     const row = r.rows[0];
     const total = parseInt(row.total_contacts, 10);
+    const viewed = parseInt(row.viewed_example, 10);
     const wants = parseInt(row.wants_bot_calc, 10);
+
+    // Воронка по источникам — топ-10 за всё время. Для каждого source
+    // считаем сколько /start, сколько viewed_example, сколько wants_bot_calc.
+    // По этим цифрам понятно где главный барьер: если viewed высокий
+    // а wants/url-переходы низкие — формулировка не убеждает.
+    const bySourceQ = await pool.query<{
+      source: string | null;
+      total: string;
+      viewed: string;
+      wants: string;
+    }>(
+      `SELECT
+         COALESCE(source, 'organic') AS source,
+         COUNT(*)::text AS total,
+         COUNT(*) FILTER (WHERE viewed_example)::text AS viewed,
+         COUNT(*) FILTER (WHERE wants_bot_calc)::text AS wants
+       FROM bot_subscribers
+       GROUP BY COALESCE(source, 'organic')
+       ORDER BY COUNT(*) DESC
+       LIMIT 10`,
+    );
+
     return {
       total_contacts: total,
       active_subscribers: parseInt(row.active_subscribers, 10),
       contacts_24h: parseInt(row.contacts_24h, 10),
       contacts_7d: parseInt(row.contacts_7d, 10),
+      viewed_example: viewed,
+      viewed_example_pct: total > 0 ? Math.round((viewed / total) * 100) : 0,
       wants_bot_calc: wants,
       wants_bot_calc_pct: total > 0 ? Math.round((wants / total) * 100) : 0,
+      by_source: bySourceQ.rows.map((r) => ({
+        source: r.source ?? "organic",
+        total: parseInt(r.total, 10),
+        viewed: parseInt(r.viewed, 10),
+        wants: parseInt(r.wants, 10),
+      })),
     };
   }
 
@@ -217,9 +279,61 @@ export function startTelegramWorker(pool: Pool): void {
     const keyboard = new InlineKeyboard()
       .url("Рассчитать схему →", buildSiteUrl(subscriberSource))
       .row()
+      .text("Пример результата", "viewed_example")
+      .row()
       .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
 
     await ctx.reply(WELCOME_TEXT, { reply_markup: keyboard });
+  });
+
+  // Callback кнопки «Пример результата» — показывает картинку с
+  // подписью «так выглядит готовая схема». Под картинкой дублируем
+  // URL-кнопку «Рассчитать схему» с тем же UTM-source, чтобы юзер
+  // не возвращался в меню после просмотра. Логируем нажатие в БД
+  // для воронки внутри бота.
+  bot.callbackQuery("viewed_example", async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(
+      BigInt(user.id),
+      user.username,
+      user.first_name,
+      user.language_code,
+      undefined,
+    );
+    // Идемпотентно ставим viewed_example=true + timestamp.
+    await pool.query(
+      `UPDATE bot_subscribers
+          SET viewed_example = true,
+              viewed_example_at = COALESCE(viewed_example_at, now())
+        WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+
+    // Source для дублирующей URL-кнопки — тот же, что был при /start.
+    const subQ = await pool.query<{ source: string | null }>(
+      `SELECT source FROM bot_subscribers WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+    const subscriberSource = subQ.rows[0]?.source ?? null;
+    const exampleKeyboard = new InlineKeyboard()
+      .url("Рассчитать схему →", buildSiteUrl(subscriberSource));
+
+    await ctx.answerCallbackQuery();
+
+    // Если файл картинки в репо — отправляем фото с подписью.
+    // Если нет — текстовый fallback с тем же текстом и кнопкой.
+    if (await exampleImageExists()) {
+      await ctx.replyWithPhoto(new InputFile(EXAMPLE_IMAGE_PATH), {
+        caption: EXAMPLE_CAPTION,
+        reply_markup: exampleKeyboard,
+      });
+    } else {
+      console.warn("[telegram] bot example image missing:", EXAMPLE_IMAGE_PATH);
+      await ctx.reply(EXAMPLE_CAPTION + "\n\nПосмотреть на сайте: " + SITE_URL + "/result/", {
+        reply_markup: exampleKeyboard,
+      });
+    }
   });
 
   // Callback кнопки «Хочу считать прямо здесь, в чате» — ставит флаг
@@ -293,13 +407,20 @@ export function startTelegramWorker(pool: Pool): void {
       return;
     }
     const s = await getStats();
+    const sourceLines = s.by_source.length === 0
+      ? "  (нет данных)"
+      : s.by_source
+          .map((r) => `  ${r.source}: ${r.total} /start, ${r.viewed} пример, ${r.wants} хотят TG`)
+          .join("\n");
     await ctx.reply(
       `📊 Статистика бота @umestno_home_bot\n\n` +
         `Всего контактов: ${s.total_contacts}\n` +
         `Активные подписчики (/subscribe): ${s.active_subscribers}\n` +
+        `Смотрели пример: ${s.viewed_example} (${s.viewed_example_pct}%)\n` +
         `Хотят считать в TG: ${s.wants_bot_calc} (${s.wants_bot_calc_pct}%)\n\n` +
         `За 24 часа: ${s.contacts_24h}\n` +
-        `За 7 дней: ${s.contacts_7d}`,
+        `За 7 дней: ${s.contacts_7d}\n\n` +
+        `По источникам (топ-10):\n${sourceLines}`,
     );
   });
 
