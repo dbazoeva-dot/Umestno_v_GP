@@ -18,7 +18,7 @@
 // крутится вхолостую (логирует один раз и выходит).
 
 import type { Pool } from "pg";
-import { Bot, GrammyError, HttpError } from "grammy";
+import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
 // TG user id админа (Дзеры) — на /stat отвечаем только ей.
@@ -31,12 +31,39 @@ const SITE_URL = process.env.SITE_BASE_URL ?? "https://umestno-home.ru";
 
 // Текст приветствия — копирайт Дзеры. Не редактируем сами.
 const WELCOME_TEXT =
-  "Здравствуйте! Это «Уместно» — сервис, который подбирает схему хранения " +
+  "Привет! Это «Уместно» — сервис, который собирает схему хранения " +
   "под ваш ящик.\n\n" +
-  "Пока бот в разработке, и расчёт доступен только на сайте:\n" +
-  `👉 ${SITE_URL}/configure/\n\n` +
-  "Когда полноценный помощник в боте будет готов, пришлю весточку — " +
-  "если нажмёте /subscribe, добавлю вас в список.";
+  "Вы указываете размеры и вещи, и получаете раскладку с зонами, " +
+  "памятку по складыванию и список подходящих органайзеров.\n\n" +
+  "149 ₽, без подписок. Не помещается — не платите.";
+
+const WANTS_BOT_CALC_TEXT =
+  "Скоро запустим расчёт прямо в Telegram. Вы в списке первых. " +
+  "Как только будет готово, напишем сюда.";
+
+// UTM-параметры для URL-кнопки в /start. <source> подставляется из
+// bot_subscribers.source (deeplink ?start=канал), пустой → 'organic'.
+// Если в БД лежит «грязный» source (с пробелами/символами) — санитайзится
+// до латиницы/цифр/подчёркивания перед попаданием в URL.
+function buildSiteUrl(source: string | null): string {
+  const safe = sanitizeSource(source) || "organic";
+  const params = new URLSearchParams({
+    utm_source: "telegram",
+    utm_medium: "bot",
+    utm_campaign: "bot_start",
+    utm_term: safe,
+  });
+  return `${SITE_URL}/configure/?${params.toString()}`;
+}
+
+// Допустимые символы — латиница/цифры/подчёркивание. Имена каналов
+// (tg_homechannel1, pinterest) подходят. Кириллица и спецсимволы
+// чистятся, чтобы UTM не сломался при копировании ссылки и Метрика
+// корректно атрибутировала.
+function sanitizeSource(raw: string | null | undefined): string {
+  if (!raw) return "";
+  return raw.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 64);
+}
 
 const SUBSCRIBED_TEXT =
   "Готово! Сообщу, как только бот сможет считать схему прямо здесь, в чате.\n\n" +
@@ -129,26 +156,34 @@ export function startTelegramWorker(pool: Pool): void {
     active_subscribers: number;
     contacts_24h: number;
     contacts_7d: number;
+    wants_bot_calc: number;
+    wants_bot_calc_pct: number;
   }> {
     const r = await pool.query<{
       total_contacts: string;
       active_subscribers: string;
       contacts_24h: string;
       contacts_7d: string;
+      wants_bot_calc: string;
     }>(
       `SELECT
          COUNT(*)::text AS total_contacts,
          COUNT(*) FILTER (WHERE subscribed_at IS NOT NULL AND unsubscribed_at IS NULL)::text AS active_subscribers,
          COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '24 hours')::text AS contacts_24h,
-         COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '7 days')::text AS contacts_7d
+         COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '7 days')::text AS contacts_7d,
+         COUNT(*) FILTER (WHERE wants_bot_calc)::text AS wants_bot_calc
        FROM bot_subscribers`,
     );
     const row = r.rows[0];
+    const total = parseInt(row.total_contacts, 10);
+    const wants = parseInt(row.wants_bot_calc, 10);
     return {
-      total_contacts: parseInt(row.total_contacts, 10),
+      total_contacts: total,
       active_subscribers: parseInt(row.active_subscribers, 10),
       contacts_24h: parseInt(row.contacts_24h, 10),
       contacts_7d: parseInt(row.contacts_7d, 10),
+      wants_bot_calc: wants,
+      wants_bot_calc_pct: total > 0 ? Math.round((wants / total) * 100) : 0,
     };
   }
 
@@ -157,17 +192,66 @@ export function startTelegramWorker(pool: Pool): void {
   bot.command("start", async (ctx) => {
     const user = ctx.from;
     if (!user) return;
-    // /start ?source=xxx — если пользователь пришёл по UTM-подобной ссылке
-    // вида t.me/umestno_home_bot?start=pinterest, TG передаёт это в payload.
-    const source = ctx.match?.toString().trim() || undefined;
+    // /start payload — если пользователь пришёл по deeplink'у
+    // t.me/umestno_home_bot?start=tg_homechannel1, TG передаёт 'tg_homechannel1'
+    // в ctx.match. Это source для бот-аналитики (откуда пришёл).
+    const startPayload = ctx.match?.toString().trim() || undefined;
     await rememberContact(
       BigInt(user.id),
       user.username,
       user.first_name,
       user.language_code,
-      source,
+      startPayload,
     );
-    await ctx.reply(WELCOME_TEXT);
+
+    // Source для UTM-кнопки берём ИЗ ЗАПИСИ подписчика (не из текущего
+    // вызова) — потому что повторный /start может прийти без deeplink'а,
+    // а исходный source должен сохраниться. rememberContact с COALESCE
+    // оставляет первый source при повторных контактах.
+    const subQ = await pool.query<{ source: string | null }>(
+      `SELECT source FROM bot_subscribers WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+    const subscriberSource = subQ.rows[0]?.source ?? null;
+
+    const keyboard = new InlineKeyboard()
+      .url("Рассчитать схему →", buildSiteUrl(subscriberSource))
+      .row()
+      .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
+
+    await ctx.reply(WELCOME_TEXT, { reply_markup: keyboard });
+  });
+
+  // Callback кнопки «Хочу считать прямо здесь, в чате» — ставит флаг
+  // wants_bot_calc в БД. Эта метрика — доля от общего числа /start —
+  // основной сигнал для решения по варианту С (диалоговый калькулятор
+  // в TG с TG Payments).
+  bot.callbackQuery("wants_bot_calc", async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
+    // На всякий случай регистрируем — вдруг callback прилетел от юзера,
+    // которого ещё нет в БД (теоретически возможно при долгой задержке
+    // обработки или повторной отправке).
+    await rememberContact(
+      BigInt(user.id),
+      user.username,
+      user.first_name,
+      user.language_code,
+      undefined,
+    );
+    // Ставим флаг + timestamp. ON CONFLICT не нужен — INSERT уже сделан
+    // rememberContact'ом, тут только UPDATE существующей строки.
+    await pool.query(
+      `UPDATE bot_subscribers
+          SET wants_bot_calc = true,
+              wants_bot_calc_at = COALESCE(wants_bot_calc_at, now())
+        WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+
+    // Confirm нажатие, чтобы у пользователя пропал индикатор «загрузка».
+    await ctx.answerCallbackQuery();
+    await ctx.reply(WANTS_BOT_CALC_TEXT);
   });
 
   bot.command(["subscribe", "подписаться"], async (ctx) => {
@@ -212,7 +296,8 @@ export function startTelegramWorker(pool: Pool): void {
     await ctx.reply(
       `📊 Статистика бота @umestno_home_bot\n\n` +
         `Всего контактов: ${s.total_contacts}\n` +
-        `Активные подписчики: ${s.active_subscribers}\n` +
+        `Активные подписчики (/subscribe): ${s.active_subscribers}\n` +
+        `Хотят считать в TG: ${s.wants_bot_calc} (${s.wants_bot_calc_pct}%)\n\n` +
         `За 24 часа: ${s.contacts_24h}\n` +
         `За 7 дней: ${s.contacts_7d}`,
     );
