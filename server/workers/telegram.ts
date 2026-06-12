@@ -114,7 +114,19 @@ export function startTelegramWorker(pool: Pool): void {
     return;
   }
 
-  const bot = new Bot(TG_BOT_TOKEN);
+  // На российском хостинге (Timeweb) прямой доступ к api.telegram.org
+  // заблокирован на сетевом уровне. Поэтому ходим через Cloudflare Worker-
+  // прокси (TG_API_ROOT в .env, например
+  // https://umestno-tg-proxy.d-bazoeva.workers.dev). Воркер вне РФ
+  // прозрачно проксирует всё на api.telegram.org. Если TG_API_ROOT не
+  // задан — grammy ходит напрямую (для окружений где TG доступен).
+  const apiRoot = process.env.TG_API_ROOT;
+  const bot = apiRoot
+    ? new Bot(TG_BOT_TOKEN, { client: { apiRoot } })
+    : new Bot(TG_BOT_TOKEN);
+  if (apiRoot) {
+    console.log(`[telegram] using API proxy: ${apiRoot}`);
+  }
 
   // Логируем все ошибки в один поток, не падаем — long-polling
   // должен переживать сетевые сбои и rate-limit'ы Telegram.
