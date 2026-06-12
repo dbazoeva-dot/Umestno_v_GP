@@ -32,24 +32,27 @@ const SITE_URL = process.env.SITE_BASE_URL ?? "https://umestno-home.ru";
 
 // Текст приветствия — копирайт Дзеры. Не редактируем сами.
 // Буллиты ▪️ — маленькие чёрные квадраты (emoji-вариант, на тёмной
-// и светлой темах TG читаются стабильно).
+// и светлой темах TG читаются стабильно). parse_mode HTML —
+// <b>…</b> для выделения болдом.
 const WELCOME_TEXT =
-  "Привет! Это «Уместно» — сервис, который создан, чтобы навести порядок " +
+  "Привет!\n\n" +
+  "Это «Уместно» — сервис, который создан, чтобы навести порядок " +
   "в ящике раз и навсегда.\n\n" +
   "Вы указываете размеры ящика и что хотите в нём хранить, и за 3 минуты получаете:\n" +
   "▪️ схему хранения под размеры ящика с зонированием по типам вещей;\n" +
   "▪️ размер каждой зоны;\n" +
   "▪️ рекомендации по складыванию и хранению по типам вещей;\n" +
   "▪️ рекомендации по органайзерам со ссылками на маркетплейсы.\n\n" +
-  "149 ₽ за расчёт, без подписок. Не помещается — не платите.";
+  "149 ₽ за расчёт, без подписок. Не получится собрать схему — не платите.";
 
 const WANTS_BOT_CALC_TEXT =
   "Скоро запустим расчёт прямо в Telegram. Вы в списке первых. " +
   "Как только будет готово, напишем сюда.";
 
+// parse_mode HTML — болдим «рассчитаем индивидуально, под нужные размеры».
 const EXAMPLE_CAPTION =
-  "Так выглядит готовая схема. Под Ваш ящик мы рассчитаем индивидуально, " +
-  "под нужные размеры, вещи и их количество.";
+  "Так выглядит готовая схема. Под Ваш ящик мы " +
+  "<b>рассчитаем индивидуально, под нужные размеры</b>, вещи и их количество.";
 
 // Путь к картинке-примеру. Файл лежит в репо в assets/bot/. На проде
 // репозиторий развёрнут в /var/www/umestno, поэтому абсолютный путь —
@@ -298,7 +301,7 @@ export function startTelegramWorker(pool: Pool): void {
       .row()
       .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
 
-    await ctx.reply(WELCOME_TEXT, { reply_markup: keyboard });
+    await ctx.reply(WELCOME_TEXT, { reply_markup: keyboard, parse_mode: "HTML" });
   });
 
   // Callback кнопки «Пример результата» — показывает картинку с
@@ -331,22 +334,30 @@ export function startTelegramWorker(pool: Pool): void {
       [user.id.toString()],
     );
     const subscriberSource = subQ.rows[0]?.source ?? null;
+    // Под картинкой-примером — две кнопки (чтобы не было тупика):
+    // URL на /configure/ (тот же UTM что в меню) + callback «хочу в чате»
+    // (тот же что в меню). Так после просмотра примера у юзера снова
+    // есть оба пути действия.
     const exampleKeyboard = new InlineKeyboard()
-      .url("Рассчитать схему →", buildSiteUrl(subscriberSource));
+      .url("Рассчитать схему под мои размеры →", buildSiteUrl(subscriberSource))
+      .row()
+      .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
 
     await ctx.answerCallbackQuery();
 
     // Если файл картинки в репо — отправляем фото с подписью.
-    // Если нет — текстовый fallback с тем же текстом и кнопкой.
+    // Если нет — текстовый fallback с тем же текстом и кнопками.
     if (await exampleImageExists()) {
       await ctx.replyWithPhoto(new InputFile(EXAMPLE_IMAGE_PATH), {
         caption: EXAMPLE_CAPTION,
         reply_markup: exampleKeyboard,
+        parse_mode: "HTML",
       });
     } else {
       console.warn("[telegram] bot example image missing:", EXAMPLE_IMAGE_PATH);
       await ctx.reply(EXAMPLE_CAPTION + "\n\nПосмотреть на сайте: " + SITE_URL + "/result/", {
         reply_markup: exampleKeyboard,
+        parse_mode: "HTML",
       });
     }
   });
