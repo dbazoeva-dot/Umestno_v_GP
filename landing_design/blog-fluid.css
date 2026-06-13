@@ -168,6 +168,11 @@
 @media (max-width: 600px){
   .p-cta{ grid-template-columns: 1fr; }
   .p-cta__action{ align-items: flex-start; }
+  /* на мобиле 8.25rem (132px) слишком крупно — режем примерно вдвое */
+  .j-mast h1{ font-size: clamp(2.875rem, 13.5vw, 4.25rem); }
+  .j-mast{ padding: 3rem 0 2.25rem; }
+  .j-mast__topline{ margin-bottom: 2.5rem; }
+  .j-mast__inner{ padding-bottom: 1.75rem; }
 }
 @media (max-width: 560px){
   .j-grid{ grid-template-columns: 1fr; }
