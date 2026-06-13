@@ -257,9 +257,8 @@ body{ overflow-x: hidden; }
   .u-hero__mag-shell{
     gap: 30px;
     padding-top: 16px;
-    /* = padding-top секции «Проблема» (56px на мобиле), чтобы отступы
-       над и под цветовой границей hero были одинаковыми */
-    padding-bottom: 56px;
+    /* компактный низ hero, чтобы блок «Проблема» появлялся раньше (доскролл) */
+    padding-bottom: 28px;
   }
   /* the giant editorial title overwhelms a phone at 64px+;
      bring it down and open the leading so it breathes */
@@ -289,9 +288,9 @@ body{ overflow-x: hidden; }
   .u-hero__mag-price .amt{ font-size: var(--fs-lg); }
   .u-hero__mag-price .sub{ font-size: var(--fs-2xs); padding-top: 4px; }
   /* CTA «Начать расчёт» below, normal rhythm */
-  /* свисающая половина ценника ~30px заходит сюда; padding подобран так,
-     чтобы видимый зазор ниже ценника совпадал с зазором CTA→граница (~56px) */
-  .u-hero__mag-foot{ padding-top: 84px; }
+  /* свисающая половина ценника (~31px) заходит сюда; небольшой зазор ниже
+     неё до CTA — компактно, чтобы не растягивать hero */
+  .u-hero__mag-foot{ padding-top: 52px; }
   .u-hero__mag-cta{ font-size: 30px; gap: 14px; padding-bottom: 10px; }
 
   /* ── Problem cards: clear hierarchy under the section title ─ */
