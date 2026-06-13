@@ -49,7 +49,7 @@ const HowItWorks = () =>
     <div className="u-container">
       <div className="u-sec-head u-sec-head--sage" data-comment-anchor="864f348260-div-51-7">
         <div className="u-sec-head__main">
-          <h2 className="u-sec-head__title">С <span className="u-brand-inline">уМестно</span> все становится <em>гораздо проще</em></h2>
+          <h2 className="u-sec-head__title">С <span className="u-brand-inline">Уместно</span> все становится <em>гораздо проще</em></h2>
         </div>
         <p className="u-sec-head__lede">От размеров ящика до готовой схемы и подходящих органайзеров за несколько минут.</p>
       </div>
