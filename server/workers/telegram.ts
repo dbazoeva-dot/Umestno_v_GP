@@ -238,12 +238,12 @@ function buildFaqListKeyboard(source: string | null): InlineKeyboard {
   return kb;
 }
 
-// Под ответом FAQ — действие + «← К вопросам». Для вопроса про чат —
-// дополнительно кнопка демо-сигнала (FAQ тоже питает wants_bot_calc).
+// Под ответом FAQ — действие + «← К вопросам». Для вопроса про чат — кнопка
+// «Хочу» (ответ на вопрос «Хотите, запишу Вас в список первых?») + сайт.
 function buildFaqAnswerKeyboard(id: string, source: string | null): InlineKeyboard {
   const kb = new InlineKeyboard();
   if (id === "chat") {
-    kb.text("Посчитать прямо здесь, в чате", "wants_bot_calc").row();
+    kb.text("Хочу", "wants_bot_calc").row();
     kb.url("Рассчитать на сайте →", buildSiteUrl(source)).row();
   } else {
     kb.url("Рассчитать схему →", buildSiteUrl(source)).row();
