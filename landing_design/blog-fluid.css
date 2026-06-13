@@ -170,9 +170,11 @@
   .p-cta__action{ align-items: flex-start; }
   /* на мобиле 8.25rem (132px) слишком крупно — режем примерно вдвое */
   .j-mast h1{ font-size: clamp(2.875rem, 13.5vw, 4.25rem); }
-  .j-mast{ padding: 3rem 0 2.25rem; }
+  .j-mast{ padding: 3rem 0 0; }
   .j-mast__topline{ margin-bottom: 2.5rem; }
   .j-mast__inner{ padding-bottom: 1.75rem; }
+  /* отступ под разделителем = отступу над ним (было 4rem сверху у .j-feature) */
+  .j-feature{ padding: 1.75rem 0 2.75rem; }
 }
 @media (max-width: 560px){
   .j-grid{ grid-template-columns: 1fr; }
