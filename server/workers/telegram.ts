@@ -6,19 +6,25 @@
 // (вариант С из обсуждения: полная замена /configure/ конверсационным
 // UX в чате, оплата через TG Payments + ЮКасса).
 //
-// Поведение заглушки:
-//   /start        — приветствие + ссылка на сайт + предложение подписаться
-//   /subscribe    — добавить себя в список «уведомить когда запустим»
-//   /unsubscribe  — выйти из списка (юридически — важно для 152-ФЗ)
-//   /stat         — admin-only, показывает счётчик /start и подписок
-//   (любое сообщение) — мягкое напоминание про /start
+// Поведение (UX по docs/bot-ux.md):
+//   /start        — приветствие + 3 кнопки: сайт (ветка 1), пример (2a),
+//                   «посчитать в чате» (ветка 2 — замер спроса)
+//   /help         — список частых вопросов (FAQ)
+//   /stop         — опт-аут от напоминаний (152-ФЗ; алиас /unsubscribe)
+//   /stat         — admin-only, воронка по источникам
+//   (любое сообщение) — фолбэк с кнопками меню + входом в FAQ
+//
+// Три ветки готовности обслуживаются без тупиков; FAQ — развязка, которая
+// всегда возвращает к действию. Поля под удержание (reminder_sent_at,
+// launch_announced_at, converted_at) добавлены миграцией 0009 — сами
+// рассылки и диалоговый калькулятор пока НЕ реализованы (см. ТЗ §6–§8, §12).
 //
 // Архитектурно — long-polling воркер, стартует вместе с API
 // (см. server/index.ts). При TG_BOT_TOKEN не задан — воркер
 // крутится вхолостую (логирует один раз и выходит).
 
 import type { Pool } from "pg";
-import { Bot, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
+import { Bot, Context, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
 import { promises as fs } from "fs";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
@@ -46,8 +52,10 @@ const WELCOME_TEXT =
   "149 ₽ за расчёт, без подписок. Не получится собрать схему — не платите.";
 
 const WANTS_BOT_CALC_TEXT =
-  "Скоро запустим расчёт прямо в Telegram. Вы в списке первых. " +
-  "Как только будет готово, напишем сюда.";
+  "Записала Вас в список первых 🌿 Как только расчёт заработает прямо " +
+  "здесь, в чате — сразу напишу сюда.\n\n" +
+  "А если ждать не хочется — схему можно собрать на сайте уже сейчас, " +
+  "это те же 3 минуты.";
 
 // parse_mode HTML — болдим «рассчитаем индивидуально, под нужные размеры».
 const EXAMPLE_CAPTION =
@@ -97,19 +105,124 @@ function sanitizeSource(raw: string | null | undefined): string {
   return raw.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 64);
 }
 
-const SUBSCRIBED_TEXT =
-  "Готово! Сообщу, как только бот сможет считать схему прямо здесь, в чате.\n\n" +
-  "А пока расчёт по ссылке: " + SITE_URL + "/configure/";
-
-const ALREADY_SUBSCRIBED_TEXT = "Вы уже в списке. Жду запуска вместе с вами 🌿";
-
 const UNSUBSCRIBED_TEXT =
-  "Убрала вас из списка. Если передумаете — /subscribe снова добавит.";
+  "Готово, больше напоминать не буду. Если передумаете — напишите /start, " +
+  "я снова рядом.";
 
 const FALLBACK_TEXT =
-  "Пока я только заглушка — расчёт схемы делается на сайте: " +
-  SITE_URL + "/configure/\n\n" +
-  "Чтобы получить уведомление о запуске бота, нажмите /subscribe.";
+  "Я пока умею немного 🙂 Чтобы собрать схему под Ваш ящик — выберите, " +
+  "как удобнее:";
+
+// ── FAQ — частые вопросы ────────────────────────────────────
+// Меню inline-кнопок (надёжнее распознавания свободного текста на русском
+// с опечатками). Входы: кнопка «Частые вопросы» под примером и в фолбэке,
+// команда /help. Петля без тупика: действия есть и на самом списке вопросов,
+// и в каждом ответе (действие по теме + «← К вопросам»). См. docs/bot-ux.md §5.
+
+const FAQ_LIST_TEXT = "Частые вопросы. Выберите, что интересно:";
+
+const FAQ_ANSWERS: Record<string, string> = {
+  price:
+    "149 ₽ за один расчёт. Без подписок и скрытых доплат. Если под Ваши " +
+    "размеры собрать надёжную схему не удастся — оплаты не будет.",
+  engine:
+    "Программа — по размерам именно Вашего ящика и списку вещей. Это не " +
+    "готовый шаблон: зоны и их размеры рассчитываются под Ваш случай.",
+  result:
+    "Схему с зонами под Ваши вещи, размер каждой зоны, памятку «как " +
+    "сложить» по типам вещей и подборку органайзеров со ссылками на " +
+    "маркетплейсы. Готово за пару минут.",
+  measure:
+    "Нужны три внутренних размера — длина, ширина и глубина, по внутренним " +
+    "стенкам (без их толщины). Подробно, с картинками — вот здесь:\n" +
+    SITE_URL + "/blog/kak-zamerit-yashchik/",
+  fit:
+    "Если по Вашим размерам надёжную схему собрать не получится — мы прямо " +
+    "скажем и денег не возьмём. Часто помогает чуть уменьшить объём одной " +
+    "категории — это подскажем прямо на месте.",
+  chat:
+    "Пока расчёт живёт на сайте — это те же 3 минуты. Версию прямо в чате " +
+    "готовим. Хотите — запишу Вас в список первых и напишу, как только " +
+    "заработает.",
+};
+
+const FAQ_QUESTIONS: Array<{ id: string; label: string }> = [
+  { id: "price", label: "Сколько стоит?" },
+  { id: "engine", label: "Это программа или человек?" },
+  { id: "result", label: "Что я получу?" },
+  { id: "measure", label: "Как замерить ящик?" },
+  { id: "fit", label: "А вдруг не подойдёт?" },
+  { id: "chat", label: "Можно посчитать в чате?" },
+];
+
+// Регэксп callback'а ответа FAQ — только известные id (чтобы не ловить чужое).
+const FAQ_ANSWER_RE = /^faq:(price|engine|result|measure|fit|chat)$/;
+
+// ── Клавиатуры (переиспользуются между экранами) ────────────
+
+// Стартовое меню (3 кнопки) — /start.
+function buildMainKeyboard(source: string | null): InlineKeyboard {
+  return new InlineKeyboard()
+    .url("Рассчитать схему под мои размеры →", buildSiteUrl(source))
+    .row()
+    .text("Посмотреть пример результата", "viewed_example")
+    .row()
+    .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
+}
+
+// Фолбэк на свободный текст — те же действия + вход в FAQ.
+function buildFallbackKeyboard(source: string | null): InlineKeyboard {
+  return new InlineKeyboard()
+    .text("Частые вопросы", "faq:open")
+    .row()
+    .url("Рассчитать схему под мои размеры →", buildSiteUrl(source))
+    .row()
+    .text("Посмотреть пример результата", "viewed_example")
+    .row()
+    .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
+}
+
+// Под фото-примером — Рассчитать + в чате + FAQ (FAQ третьей, чтобы не
+// двигать позиции конверсии и демо-сигнала).
+function buildExampleKeyboard(source: string | null): InlineKeyboard {
+  return new InlineKeyboard()
+    .url("Рассчитать схему под мои размеры →", buildSiteUrl(source))
+    .row()
+    .text("Посчитать прямо здесь, в чате", "wants_bot_calc")
+    .row()
+    .text("Частые вопросы", "faq:open");
+}
+
+// Под подтверждением «хочу в чате» — выход на сайт (без тупика).
+function buildWantsKeyboard(source: string | null): InlineKeyboard {
+  return new InlineKeyboard().url("Рассчитать на сайте →", buildSiteUrl(source));
+}
+
+// Список вопросов FAQ: 6 вопросов + действия на самом списке (из списка
+// всегда один тап до действия — петля не запирается на вопросах).
+function buildFaqListKeyboard(source: string | null): InlineKeyboard {
+  const kb = new InlineKeyboard();
+  for (const q of FAQ_QUESTIONS) {
+    kb.text(q.label, `faq:${q.id}`).row();
+  }
+  kb.url("Рассчитать схему →", buildSiteUrl(source)).row();
+  kb.text("Посчитать прямо здесь, в чате", "wants_bot_calc");
+  return kb;
+}
+
+// Под ответом FAQ — действие + «← К вопросам». Для вопроса про чат —
+// дополнительно кнопка демо-сигнала (FAQ тоже питает wants_bot_calc).
+function buildFaqAnswerKeyboard(id: string, source: string | null): InlineKeyboard {
+  const kb = new InlineKeyboard();
+  if (id === "chat") {
+    kb.text("Посчитать прямо здесь, в чате", "wants_bot_calc").row();
+    kb.url("Рассчитать на сайте →", buildSiteUrl(source)).row();
+  } else {
+    kb.url("Рассчитать схему →", buildSiteUrl(source)).row();
+  }
+  kb.text("← К вопросам", "faq:open");
+  return kb;
+}
 
 // Watchdog state — экспортируется для /api/healthz?bot=1.
 // botLastEventAt — timestamp последнего обработанного update от Telegram
@@ -219,20 +332,46 @@ export function startTelegramWorker(pool: Pool): void {
     );
   }
 
-  async function markSubscribed(userId: bigint): Promise<"new" | "already"> {
-    const r = await pool.query<{ subscribed_at: Date | null }>(
-      `UPDATE bot_subscribers
-          SET subscribed_at = COALESCE(subscribed_at, now()),
-              unsubscribed_at = NULL
-        WHERE tg_user_id = $1
-        RETURNING subscribed_at`,
+  /** Source подписчика (из исходного deeplink) для UTM-кнопок. Берём из
+   *  записи, а не из текущего апдейта — повторный заход может прийти без
+   *  deeplink'а, а исходный source должен сохраниться. */
+  async function getSource(userId: bigint): Promise<string | null> {
+    const r = await pool.query<{ source: string | null }>(
+      `SELECT source FROM bot_subscribers WHERE tg_user_id = $1`,
       [userId.toString()],
     );
-    if (r.rowCount === 0) return "new"; // не должно случаться (rememberContact перед этим)
-    // subscribed_at был NULL до COALESCE? Проверим был ли он изменён.
-    // Простейший способ: если строки нет — точно новая. Если есть и
-    // subscribed_at = свежая (в пределах секунды) — была NULL.
-    return "new";
+    return r.rows[0]?.source ?? null;
+  }
+
+  /** Показывает FAQ внутри текущего сообщения: если это фото-пример — правим
+   *  подпись (editMessageCaption), иначе текст (editMessageText). Фото
+   *  остаётся сверху, исходные кнопки не теряются — петля «пример → FAQ →
+   *  действие» замыкается в одном сообщении. Если редактирование не удалось
+   *  (старое сообщение и т.п.) — отправляем новым, чтобы не было тупика. */
+  async function renderFaq(
+    ctx: Context,
+    text: string,
+    keyboard: InlineKeyboard,
+  ): Promise<void> {
+    const msg = ctx.callbackQuery?.message;
+    const isPhoto = !!(msg && "photo" in msg && msg.photo);
+    try {
+      if (isPhoto) {
+        await ctx.editMessageCaption({
+          caption: text,
+          reply_markup: keyboard,
+          parse_mode: "HTML",
+        });
+      } else {
+        await ctx.editMessageText(text, {
+          reply_markup: keyboard,
+          parse_mode: "HTML",
+        });
+      }
+    } catch (e) {
+      console.warn("[telegram] faq edit failed, sending new message:", e);
+      await ctx.reply(text, { reply_markup: keyboard, parse_mode: "HTML" });
+    }
   }
 
   async function markUnsubscribed(userId: bigint): Promise<void> {
@@ -246,7 +385,8 @@ export function startTelegramWorker(pool: Pool): void {
 
   async function getStats(): Promise<{
     total_contacts: number;
-    active_subscribers: number;
+    unsubscribed: number;
+    reminders_sent: number;
     contacts_24h: number;
     contacts_7d: number;
     viewed_example: number;
@@ -257,7 +397,8 @@ export function startTelegramWorker(pool: Pool): void {
   }> {
     const r = await pool.query<{
       total_contacts: string;
-      active_subscribers: string;
+      unsubscribed: string;
+      reminders_sent: string;
       contacts_24h: string;
       contacts_7d: string;
       viewed_example: string;
@@ -265,7 +406,8 @@ export function startTelegramWorker(pool: Pool): void {
     }>(
       `SELECT
          COUNT(*)::text AS total_contacts,
-         COUNT(*) FILTER (WHERE subscribed_at IS NOT NULL AND unsubscribed_at IS NULL)::text AS active_subscribers,
+         COUNT(*) FILTER (WHERE unsubscribed_at IS NOT NULL)::text AS unsubscribed,
+         COUNT(*) FILTER (WHERE reminder_sent_at IS NOT NULL)::text AS reminders_sent,
          COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '24 hours')::text AS contacts_24h,
          COUNT(*) FILTER (WHERE first_seen_at >= now() - interval '7 days')::text AS contacts_7d,
          COUNT(*) FILTER (WHERE viewed_example)::text AS viewed_example,
@@ -300,7 +442,8 @@ export function startTelegramWorker(pool: Pool): void {
 
     return {
       total_contacts: total,
-      active_subscribers: parseInt(row.active_subscribers, 10),
+      unsubscribed: parseInt(row.unsubscribed, 10),
+      reminders_sent: parseInt(row.reminders_sent, 10),
       contacts_24h: parseInt(row.contacts_24h, 10),
       contacts_7d: parseInt(row.contacts_7d, 10),
       viewed_example: viewed,
@@ -337,20 +480,12 @@ export function startTelegramWorker(pool: Pool): void {
     // вызова) — потому что повторный /start может прийти без deeplink'а,
     // а исходный source должен сохраниться. rememberContact с COALESCE
     // оставляет первый source при повторных контактах.
-    const subQ = await pool.query<{ source: string | null }>(
-      `SELECT source FROM bot_subscribers WHERE tg_user_id = $1`,
-      [user.id.toString()],
-    );
-    const subscriberSource = subQ.rows[0]?.source ?? null;
+    const subscriberSource = await getSource(BigInt(user.id));
 
-    const keyboard = new InlineKeyboard()
-      .url("Рассчитать схему →", buildSiteUrl(subscriberSource))
-      .row()
-      .text("Пример результата", "viewed_example")
-      .row()
-      .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
-
-    await ctx.reply(WELCOME_TEXT, { reply_markup: keyboard, parse_mode: "HTML" });
+    await ctx.reply(WELCOME_TEXT, {
+      reply_markup: buildMainKeyboard(subscriberSource),
+      parse_mode: "HTML",
+    });
   });
 
   // Callback кнопки «Пример результата» — показывает картинку с
@@ -378,19 +513,11 @@ export function startTelegramWorker(pool: Pool): void {
     );
 
     // Source для дублирующей URL-кнопки — тот же, что был при /start.
-    const subQ = await pool.query<{ source: string | null }>(
-      `SELECT source FROM bot_subscribers WHERE tg_user_id = $1`,
-      [user.id.toString()],
-    );
-    const subscriberSource = subQ.rows[0]?.source ?? null;
-    // Под картинкой-примером — две кнопки (чтобы не было тупика):
-    // URL на /configure/ (тот же UTM что в меню) + callback «хочу в чате»
-    // (тот же что в меню). Так после просмотра примера у юзера снова
-    // есть оба пути действия.
-    const exampleKeyboard = new InlineKeyboard()
-      .url("Рассчитать схему под мои размеры →", buildSiteUrl(subscriberSource))
-      .row()
-      .text("Хочу считать прямо здесь, в чате", "wants_bot_calc");
+    const subscriberSource = await getSource(BigInt(user.id));
+    // Под картинкой-примером — три кнопки (чтобы не было тупика):
+    // URL на /configure/, callback «в чате» (демо-сигнал) и вход в FAQ
+    // (снять сомнение на пике интереса). См. docs/bot-ux.md §4.2.
+    const exampleKeyboard = buildExampleKeyboard(subscriberSource);
 
     await ctx.answerCallbackQuery();
 
@@ -440,13 +567,39 @@ export function startTelegramWorker(pool: Pool): void {
 
     // Confirm нажатие, чтобы у пользователя пропал индикатор «загрузка».
     await ctx.answerCallbackQuery();
-    await ctx.reply(WANTS_BOT_CALC_TEXT);
+    const source = await getSource(BigInt(user.id));
+    // Выход на сайт (без тупика): горячие из листа ожидания конвертятся сразу.
+    await ctx.reply(WANTS_BOT_CALC_TEXT, { reply_markup: buildWantsKeyboard(source) });
   });
 
-  bot.command(["subscribe", "подписаться"], async (ctx) => {
+  // ── FAQ ─────────────────────────────────────────────────────
+  // Список вопросов. Входы: кнопка «Частые вопросы» (под примером/фолбэком)
+  // и команда /help. На самом списке есть действия — из него всегда один
+  // тап до «Рассчитать»/«в чате», петля не запирается. См. docs/bot-ux.md §5.
+  bot.callbackQuery("faq:open", async (ctx) => {
     const user = ctx.from;
     if (!user) return;
-    // На случай если юзер впервые написал именно /subscribe (а не /start).
+    const source = await getSource(BigInt(user.id));
+    await ctx.answerCallbackQuery();
+    await renderFaq(ctx, FAQ_LIST_TEXT, buildFaqListKeyboard(source));
+  });
+
+  // Ответ на конкретный вопрос. Каждый ответ: действие по теме + «← К вопросам».
+  bot.callbackQuery(FAQ_ANSWER_RE, async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
+    const match = ctx.match as RegExpMatchArray;
+    const id = match[1];
+    const text = FAQ_ANSWERS[id];
+    const source = await getSource(BigInt(user.id));
+    await ctx.answerCallbackQuery();
+    await renderFaq(ctx, text, buildFaqAnswerKeyboard(id, source));
+  });
+
+  // /help — открывает список FAQ новым сообщением.
+  bot.command("help", async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
     await rememberContact(
       BigInt(user.id),
       user.username,
@@ -454,20 +607,14 @@ export function startTelegramWorker(pool: Pool): void {
       user.language_code,
       undefined,
     );
-
-    // Проверяем, был ли уже подписан до этого UPDATE'а.
-    const before = await pool.query<{ was_subscribed: boolean }>(
-      `SELECT (subscribed_at IS NOT NULL AND unsubscribed_at IS NULL) AS was_subscribed
-         FROM bot_subscribers WHERE tg_user_id = $1`,
-      [user.id.toString()],
-    );
-    const wasSubscribed = before.rows[0]?.was_subscribed ?? false;
-
-    await markSubscribed(BigInt(user.id));
-    await ctx.reply(wasSubscribed ? ALREADY_SUBSCRIBED_TEXT : SUBSCRIBED_TEXT);
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(FAQ_LIST_TEXT, { reply_markup: buildFaqListKeyboard(source) });
   });
 
-  bot.command(["unsubscribe", "отписаться"], async (ctx) => {
+  // /stop — опт-аут от напоминаний (152-ФЗ + этикет). Строку не удаляем:
+  // нужна как suppression-ключ («не писать»). Алиас /unsubscribe — для
+  // совместимости. Та же логика дёргается кнопкой «Больше не напоминать».
+  bot.command(["stop", "unsubscribe", "отписаться"], async (ctx) => {
     const user = ctx.from;
     if (!user) return;
     await markUnsubscribed(BigInt(user.id));
@@ -490,7 +637,8 @@ export function startTelegramWorker(pool: Pool): void {
     await ctx.reply(
       `📊 Статистика бота @umestno_home_bot\n\n` +
         `Всего контактов: ${s.total_contacts}\n` +
-        `Активные подписчики (/subscribe): ${s.active_subscribers}\n` +
+        `Отписались (/stop): ${s.unsubscribed}\n` +
+        `Напоминаний отправлено: ${s.reminders_sent}\n` +
         `Смотрели пример: ${s.viewed_example} (${s.viewed_example_pct}%)\n` +
         `Хотят считать в TG: ${s.wants_bot_calc} (${s.wants_bot_calc_pct}%)\n\n` +
         `За 24 часа: ${s.contacts_24h}\n` +
@@ -512,7 +660,8 @@ export function startTelegramWorker(pool: Pool): void {
       user.language_code,
       undefined,
     );
-    await ctx.reply(FALLBACK_TEXT);
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(FALLBACK_TEXT, { reply_markup: buildFallbackKeyboard(source) });
   });
 
   // ── Watchdog ────────────────────────────────────────────────
