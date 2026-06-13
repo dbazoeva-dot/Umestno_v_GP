@@ -281,7 +281,9 @@ body{ overflow-x: hidden; }
   /* raise the photo closer to the lede; right-align the inline price tag */
   .u-hero__mag-photo{ margin-top: -10px; min-height: 0; text-align: right; }
   /* price tag: quieter and pinned to the right edge */
-  .u-hero__mag-price{ margin-top: -64px; padding: 10px 14px; gap: 4px; border-radius: 14px; text-align: left; }
+  /* ценник — абсолютно над нижним краём фото (вне потока), чтобы он не
+     тянул за собой кнопку «Начать расчёт» и не наезжал на неё */
+  .u-hero__mag-price{ position: absolute; left: auto; right: 12px; bottom: 14px; margin-top: 0; padding: 10px 14px; gap: 4px; border-radius: 14px; text-align: left; }
   .u-hero__mag-price-row{ gap: 14px; }
   .u-hero__mag-price .label{ font-size: var(--fs-xs); }
   .u-hero__mag-price .amt{ font-size: var(--fs-lg); }
