@@ -111,6 +111,42 @@ const FALLBACK_TEXT =
   SITE_URL + "/configure/\n\n" +
   "Чтобы получить уведомление о запуске бота, нажмите /subscribe.";
 
+// Watchdog state — экспортируется для /api/healthz?bot=1.
+// botLastEventAt — timestamp последнего обработанного update от Telegram
+// (включая heartbeat watchdog'а, который раз в минуту делает getMe).
+// Если разрыв между now() и botLastEventAt > 3 минуты — бот «висит».
+let botLastEventAt: Date | null = null;
+let botStartedAt: Date | null = null;
+
+export function getBotHealth(): {
+  started_at: string | null;
+  last_event_at: string | null;
+  seconds_since_event: number | null;
+  healthy: boolean;
+} {
+  const now = Date.now();
+  const lastMs = botLastEventAt?.getTime() ?? null;
+  const secondsSinceEvent = lastMs !== null ? Math.floor((now - lastMs) / 1000) : null;
+  // Бот считается здоровым если:
+  //  - вообще не стартовал (TG_BOT_TOKEN не задан) → undefined, healthy=true
+  //    (значит на этом окружении бот не нужен, не нужно тревожить)
+  //  - стартовал и последнее событие было не позже 3 минут назад
+  // Watchdog тикает раз в 60 сек → запас 3 минуты покрывает 2 пропущенных тика.
+  const healthy = botStartedAt === null
+    ? true
+    : secondsSinceEvent !== null && secondsSinceEvent <= 180;
+  return {
+    started_at: botStartedAt?.toISOString() ?? null,
+    last_event_at: botLastEventAt?.toISOString() ?? null,
+    seconds_since_event: secondsSinceEvent,
+    healthy,
+  };
+}
+
+function markBotEvent(): void {
+  botLastEventAt = new Date();
+}
+
 export function startTelegramWorker(pool: Pool): void {
   if (!TG_BOT_TOKEN) {
     console.log("[telegram] TG_BOT_TOKEN не задан — воркер не стартует");
@@ -141,6 +177,19 @@ export function startTelegramWorker(pool: Pool): void {
     } else if (err.error instanceof HttpError) {
       console.error("[telegram] http error:", err.error);
     }
+  });
+
+  // Лог-маркер на каждый входящий update + watchdog heartbeat.
+  // Видно в journalctl что бот получает сообщения, и /api/healthz?bot=1
+  // считает время с последнего события. Логи короткие, не засирают журнал.
+  bot.use(async (ctx, next) => {
+    markBotEvent();
+    const kind =
+      ctx.message?.text ? `msg:${ctx.message.text.slice(0, 32)}` :
+      ctx.callbackQuery?.data ? `cb:${ctx.callbackQuery.data}` :
+      ctx.update.message ? "msg:other" : "other";
+    console.log(`[telegram] update ${ctx.update.update_id} from ${ctx.from?.id ?? "?"} (${kind})`);
+    await next();
   });
 
   /** Регистрирует первый контакт (/start) либо обновляет username/имя
@@ -466,12 +515,48 @@ export function startTelegramWorker(pool: Pool): void {
     await ctx.reply(FALLBACK_TEXT);
   });
 
+  // ── Watchdog ────────────────────────────────────────────────
+  // Раз в 60 сек делаем getMe через client'а grammy. На успех — обновляем
+  // botLastEventAt (heartbeat для healthz). На фейл — счётчик; 3 подряд
+  // → process.exit(1), systemd рестартует (у нас Restart=on-failure).
+  // Так лечатся «тихие» зависания: процесс жив, но getUpdates висит
+  // и события не приходят (видели вживую в проде, 19h аптайма → 0 событий).
+  const WATCHDOG_INTERVAL_MS = 60_000;
+  const WATCHDOG_TIMEOUT_MS = 8_000;
+  const WATCHDOG_MAX_FAILURES = 3;
+  let watchdogFailures = 0;
+  const watchdog = setInterval(async () => {
+    try {
+      // bot.api.getMe() уже идёт через настроенный apiRoot и собственный
+      // timeout grammy. Дополнительный гард — Promise.race с таймером.
+      await Promise.race([
+        bot.api.getMe(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("watchdog_timeout")), WATCHDOG_TIMEOUT_MS),
+        ),
+      ]);
+      watchdogFailures = 0;
+      markBotEvent(); // heartbeat — здоровый бот «бьётся» раз в минуту
+    } catch (e) {
+      watchdogFailures += 1;
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(`[telegram] watchdog fail ${watchdogFailures}/${WATCHDOG_MAX_FAILURES}: ${msg}`);
+      if (watchdogFailures >= WATCHDOG_MAX_FAILURES) {
+        console.error("[telegram] watchdog: too many failures, exiting for systemd restart");
+        clearInterval(watchdog);
+        process.exit(1);
+      }
+    }
+  }, WATCHDOG_INTERVAL_MS);
+
   // ── Старт long-polling ──────────────────────────────────────
   // bot.start() возвращает promise, который резолвится при остановке.
   // Не await'им — пусть крутится фоном, ошибки логируются через bot.catch.
   console.log("[telegram] starting long-polling…");
   bot.start({
     onStart: (info) => {
+      botStartedAt = new Date();
+      markBotEvent(); // первая «бипка» в момент успешного старта polling'а
       console.log(`[telegram] bot @${info.username} started, id=${info.id}`);
     },
   });

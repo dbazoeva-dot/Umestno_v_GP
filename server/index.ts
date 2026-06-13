@@ -15,7 +15,7 @@ import { yookassaWebhookHandler } from "./api/yookassa.js";
 import { promoCheckHandler } from "./api/promoCheck.js";
 import { acceptSuggestionHandler } from "./api/acceptSuggestion.js";
 import { startMailerWorker } from "./workers/mailer.js";
-import { startTelegramWorker } from "./workers/telegram.js";
+import { startTelegramWorker, getBotHealth } from "./workers/telegram.js";
 import {
   originCheck,
   calculateLimiterPerMinute,
@@ -45,9 +45,23 @@ app.use(express.json({ limit: "256kb" }));
 
 // ── базовые эндпойнты ───────────────────────────────────────
 
-app.get("/api/healthz", async (_req: Request, res: Response) => {
+app.get("/api/healthz", async (req: Request, res: Response) => {
   try {
     await pool.query("SELECT 1");
+    // ?bot=1 — расширенная проверка для внешнего мониторинга (UptimeRobot).
+    // Возвращает 503 если бот не «бился» heartbeat'ом 3+ минуты. Так
+    // тихие зависания бота отлавливаются сразу — UptimeRobot шлёт алерт.
+    const wantBotCheck = req.query.bot === "1";
+    if (wantBotCheck) {
+      const bot = getBotHealth();
+      const code = bot.healthy ? 200 : 503;
+      return res.status(code).json({
+        ok: bot.healthy,
+        env: env.NODE_ENV,
+        catalog_size: catalogCache.length,
+        bot,
+      });
+    }
     res.json({
       ok: true,
       env: env.NODE_ENV,
