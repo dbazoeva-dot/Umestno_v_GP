@@ -289,7 +289,9 @@ body{ overflow-x: hidden; }
   .u-hero__mag-price .amt{ font-size: var(--fs-lg); }
   .u-hero__mag-price .sub{ font-size: var(--fs-2xs); padding-top: 4px; }
   /* CTA «Начать расчёт» below, normal rhythm */
-  .u-hero__mag-foot{ padding-top: 52px; }
+  /* свисающая половина ценника ~30px заходит сюда; padding подобран так,
+     чтобы видимый зазор ниже ценника совпадал с зазором CTA→граница (~56px) */
+  .u-hero__mag-foot{ padding-top: 84px; }
   .u-hero__mag-cta{ font-size: 30px; gap: 14px; padding-bottom: 10px; }
 
   /* ── Problem cards: clear hierarchy under the section title ─ */
