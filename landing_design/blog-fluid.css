@@ -179,6 +179,8 @@
   .j-feature{ display: flex; flex-direction: column; row-gap: 1.25rem; min-height: 70vh; padding: 1.75rem 0 2.5rem; }
   .j-feature__media{ flex: 1 1 auto; min-height: 0; aspect-ratio: auto; }
   .j-feature__body{ flex: 0 0 auto; padding: 0; }
+  /* заголовок featured на мобиле мельче на ~15% (3.625rem → 3.08rem) */
+  .j-feature__title{ font-size: 3.08rem; }
 }
 @media (max-width: 560px){
   .j-grid{ grid-template-columns: 1fr; }
