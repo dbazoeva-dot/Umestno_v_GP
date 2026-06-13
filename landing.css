@@ -257,7 +257,9 @@ body{ overflow-x: hidden; }
   .u-hero__mag-shell{
     gap: 30px;
     padding-top: 16px;
-    padding-bottom: clamp(44px, 12vw, 64px);
+    /* = padding-top секции «Проблема» (56px на мобиле), чтобы отступы
+       над и под цветовой границей hero были одинаковыми */
+    padding-bottom: 56px;
   }
   /* the giant editorial title overwhelms a phone at 64px+;
      bring it down and open the leading so it breathes */
