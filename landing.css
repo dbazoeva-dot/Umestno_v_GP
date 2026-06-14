@@ -199,7 +199,9 @@ body{ overflow-x: hidden; }
     gap: 24px;
   }
   .u-calc__title{
-    font-size: clamp(30px, 8vw, 44px);
+    /* min=24px чтобы «Подберём хранение» помещалось на 320px viewport.
+       На 384–600px скейл идёт через 8vw, выше — фиксируется на 44px. */
+    font-size: clamp(24px, 8vw, 44px);
     overflow-wrap: break-word;
     word-break: break-word;
   }

@@ -117,10 +117,14 @@
 .u-calc__lede{
   margin: 0;
   font-family: var(--f-display);
-  font-size: var(--fs-md);
+  /* Плавное сжатие: 13px@320 → 17px@550+. Раньше 17px (--fs-md) фиксированно —
+     длинная первая строка «Пожалуйста, введите данные в форме ниже.» обрезалась
+     на 384px viewport. */
+  font-size: clamp(13px, 4vw, 17px);
   color: var(--u-ink-2);
   max-width: 52ch;
   line-height: var(--lh-base);
+  overflow-wrap: break-word;
 }
 
 /* dividers */
@@ -218,6 +222,15 @@
 }
 .u-calc__choice-t{
   letter-spacing: -0.005em;
+  /* Длинные заголовки карточек («Одежда для взрослых», «Домашний текстиль»)
+     должны плавно сжиматься, чтобы помещаться в узкую колонку на мобильном.
+     11px@320 → 14px@520+. */
+  font-size: clamp(11px, 3.2vw, 14px);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  text-align: center;
+  line-height: 1.25;
 }
 .u-calc__choice-soon{
   position: absolute; top: 8px; right: 10px;
