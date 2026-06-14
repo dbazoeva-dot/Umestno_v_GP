@@ -24,7 +24,7 @@
 // крутится вхолостую (логирует один раз и выходит).
 
 import type { Pool } from "pg";
-import { Bot, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
+import { Bot, Context, GrammyError, HttpError, InlineKeyboard, InputFile, Keyboard } from "grammy";
 import { promises as fs } from "fs";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
@@ -198,16 +198,27 @@ function buildMainKeyboard(source: string | null): InlineKeyboard {
     .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
 }
 
-// Фолбэк на свободный текст — те же действия + вход в FAQ.
-function buildFallbackKeyboard(source: string | null): InlineKeyboard {
-  return new InlineKeyboard()
-    .text("Частые вопросы", "faq:open")
-    .row()
-    .url("Рассчитать схему под мои размеры →", buildSiteUrl(source))
-    .row()
-    .text("Посмотреть пример результата", "viewed_example")
-    .row()
-    .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
+// ── Нижнее меню (постоянная reply-клавиатура) ───────────────
+// Кнопки внизу всегда под рукой. Их нажатия приходят как обычный текст и
+// ловятся в обработчике message:text точным сравнением меток — поэтому метки
+// и проверки должны совпадать буква в букву. URL reply-клавиатура не умеет,
+// поэтому «Рассчитать» отвечает сообщением с inline-ссылкой на сайт.
+const MENU_CALC = "🧮 Рассчитать схему";
+const MENU_EXAMPLE = "🖼 Пример результата";
+const MENU_FAQ = "❓ Частые вопросы";
+const MENU_CHAT = "💬 Посчитать в чате";
+
+const BOTTOM_MENU_HINT = "Меню с быстрыми действиями всегда внизу 👇";
+
+const MENU_CALC_REPLY_TEXT =
+  "Откроется расчёт под Ваши размеры, это займёт около трёх минут:";
+
+function buildBottomMenu(): Keyboard {
+  return new Keyboard()
+    .text(MENU_CALC).text(MENU_EXAMPLE).row()
+    .text(MENU_FAQ).text(MENU_CHAT)
+    .resized()
+    .persistent();
 }
 
 // Под фото-примером — Рассчитать + в чате + FAQ (FAQ третьей, чтобы не
@@ -371,6 +382,73 @@ export function startTelegramWorker(pool: Pool): void {
     return r.rows[0]?.source ?? null;
   }
 
+  // ── Общие действия (вызываются и из inline-callback'ов, и из нижнего меню) ──
+
+  /** Показывает картинку-пример с inline-клавиатурой. Логирует viewed_example. */
+  async function sendExample(ctx: Context): Promise<void> {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
+    await pool.query(
+      `UPDATE bot_subscribers
+          SET viewed_example = true,
+              viewed_example_at = COALESCE(viewed_example_at, now())
+        WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+    const kb = buildExampleKeyboard(await getSource(BigInt(user.id)));
+    if (await exampleImageExists()) {
+      await ctx.replyWithPhoto(new InputFile(EXAMPLE_IMAGE_PATH), {
+        caption: EXAMPLE_CAPTION,
+        reply_markup: kb,
+        parse_mode: "HTML",
+      });
+    } else {
+      console.warn("[telegram] bot example image missing:", EXAMPLE_IMAGE_PATH);
+      await ctx.reply(EXAMPLE_CAPTION + "\n\nПосмотреть на сайте: " + SITE_URL + "/result/", {
+        reply_markup: kb,
+        parse_mode: "HTML",
+      });
+    }
+  }
+
+  /** Ставит флаг wants_bot_calc и подтверждает с выходом на сайт. */
+  async function registerWantsCalc(ctx: Context): Promise<void> {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
+    await pool.query(
+      `UPDATE bot_subscribers
+          SET wants_bot_calc = true,
+              wants_bot_calc_at = COALESCE(wants_bot_calc_at, now())
+        WHERE tg_user_id = $1`,
+      [user.id.toString()],
+    );
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(WANTS_BOT_CALC_TEXT, { reply_markup: buildWantsKeyboard(source) });
+  }
+
+  /** Нижнее меню «Рассчитать»: reply-кнопка не умеет URL, поэтому отвечаем
+   *  сообщением с inline-ссылкой на сайт (тот же UTM/source). */
+  async function sendCalcLink(ctx: Context): Promise<void> {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(MENU_CALC_REPLY_TEXT, {
+      reply_markup: new InlineKeyboard().url("Рассчитать схему под мои размеры →", buildSiteUrl(source)),
+    });
+  }
+
+  /** Список FAQ новым сообщением (из /help и из нижнего меню). */
+  async function sendFaqList(ctx: Context): Promise<void> {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(FAQ_LIST_TEXT, { reply_markup: buildFaqListKeyboard(source) });
+  }
+
   async function markUnsubscribed(userId: bigint): Promise<void> {
     await pool.query(
       `UPDATE bot_subscribers
@@ -483,6 +561,10 @@ export function startTelegramWorker(pool: Pool): void {
       reply_markup: buildMainKeyboard(subscriberSource),
       parse_mode: "HTML",
     });
+    // Ставим постоянное нижнее меню (reply-клавиатура). Inline и reply нельзя
+    // положить в одно сообщение, поэтому отдельной короткой строкой. Дальше
+    // клавиатура держится на уровне чата, повторно слать не нужно.
+    await ctx.reply(BOTTOM_MENU_HINT, { reply_markup: buildBottomMenu() });
   });
 
   // Callback кнопки «Пример результата» — показывает картинку с
@@ -491,48 +573,8 @@ export function startTelegramWorker(pool: Pool): void {
   // не возвращался в меню после просмотра. Логируем нажатие в БД
   // для воронки внутри бота.
   bot.callbackQuery("viewed_example", async (ctx) => {
-    const user = ctx.from;
-    if (!user) return;
-    await rememberContact(
-      BigInt(user.id),
-      user.username,
-      user.first_name,
-      user.language_code,
-      undefined,
-    );
-    // Идемпотентно ставим viewed_example=true + timestamp.
-    await pool.query(
-      `UPDATE bot_subscribers
-          SET viewed_example = true,
-              viewed_example_at = COALESCE(viewed_example_at, now())
-        WHERE tg_user_id = $1`,
-      [user.id.toString()],
-    );
-
-    // Source для дублирующей URL-кнопки — тот же, что был при /start.
-    const subscriberSource = await getSource(BigInt(user.id));
-    // Под картинкой-примером — три кнопки (чтобы не было тупика):
-    // URL на /configure/, callback «в чате» (демо-сигнал) и вход в FAQ
-    // (снять сомнение на пике интереса). См. docs/bot-ux.md §4.2.
-    const exampleKeyboard = buildExampleKeyboard(subscriberSource);
-
     await ctx.answerCallbackQuery();
-
-    // Если файл картинки в репо — отправляем фото с подписью.
-    // Если нет — текстовый fallback с тем же текстом и кнопками.
-    if (await exampleImageExists()) {
-      await ctx.replyWithPhoto(new InputFile(EXAMPLE_IMAGE_PATH), {
-        caption: EXAMPLE_CAPTION,
-        reply_markup: exampleKeyboard,
-        parse_mode: "HTML",
-      });
-    } else {
-      console.warn("[telegram] bot example image missing:", EXAMPLE_IMAGE_PATH);
-      await ctx.reply(EXAMPLE_CAPTION + "\n\nПосмотреть на сайте: " + SITE_URL + "/result/", {
-        reply_markup: exampleKeyboard,
-        parse_mode: "HTML",
-      });
-    }
+    await sendExample(ctx);
   });
 
   // Callback кнопки «Хочу считать прямо здесь, в чате» — ставит флаг
@@ -540,33 +582,8 @@ export function startTelegramWorker(pool: Pool): void {
   // основной сигнал для решения по варианту С (диалоговый калькулятор
   // в TG с TG Payments).
   bot.callbackQuery("wants_bot_calc", async (ctx) => {
-    const user = ctx.from;
-    if (!user) return;
-    // На всякий случай регистрируем — вдруг callback прилетел от юзера,
-    // которого ещё нет в БД (теоретически возможно при долгой задержке
-    // обработки или повторной отправке).
-    await rememberContact(
-      BigInt(user.id),
-      user.username,
-      user.first_name,
-      user.language_code,
-      undefined,
-    );
-    // Ставим флаг + timestamp. ON CONFLICT не нужен — INSERT уже сделан
-    // rememberContact'ом, тут только UPDATE существующей строки.
-    await pool.query(
-      `UPDATE bot_subscribers
-          SET wants_bot_calc = true,
-              wants_bot_calc_at = COALESCE(wants_bot_calc_at, now())
-        WHERE tg_user_id = $1`,
-      [user.id.toString()],
-    );
-
-    // Confirm нажатие, чтобы у пользователя пропал индикатор «загрузка».
     await ctx.answerCallbackQuery();
-    const source = await getSource(BigInt(user.id));
-    // Выход на сайт (без тупика): горячие из листа ожидания конвертятся сразу.
-    await ctx.reply(WANTS_BOT_CALC_TEXT, { reply_markup: buildWantsKeyboard(source) });
+    await registerWantsCalc(ctx);
   });
 
   // ── FAQ ─────────────────────────────────────────────────────
@@ -597,19 +614,7 @@ export function startTelegramWorker(pool: Pool): void {
   });
 
   // /help — открывает список FAQ новым сообщением.
-  bot.command("help", async (ctx) => {
-    const user = ctx.from;
-    if (!user) return;
-    await rememberContact(
-      BigInt(user.id),
-      user.username,
-      user.first_name,
-      user.language_code,
-      undefined,
-    );
-    const source = await getSource(BigInt(user.id));
-    await ctx.reply(FAQ_LIST_TEXT, { reply_markup: buildFaqListKeyboard(source) });
-  });
+  bot.command("help", (ctx) => sendFaqList(ctx));
 
   // /stop — опт-аут от напоминаний (152-ФЗ + этикет). Строку не удаляем:
   // нужна как suppression-ключ («не писать»). Алиас /unsubscribe — для
@@ -653,6 +658,14 @@ export function startTelegramWorker(pool: Pool): void {
   bot.on("message:text", async (ctx) => {
     const user = ctx.from;
     if (!user) return;
+    const text = ctx.message.text;
+    // Нажатия нижнего меню приходят как обычный текст — маршрутизируем по
+    // точному совпадению меток, прежде чем уйти в фолбэк.
+    if (text === MENU_CALC) { await sendCalcLink(ctx); return; }
+    if (text === MENU_EXAMPLE) { await sendExample(ctx); return; }
+    if (text === MENU_FAQ) { await sendFaqList(ctx); return; }
+    if (text === MENU_CHAT) { await registerWantsCalc(ctx); return; }
+
     await rememberContact(
       BigInt(user.id),
       user.username,
@@ -660,8 +673,8 @@ export function startTelegramWorker(pool: Pool): void {
       user.language_code,
       undefined,
     );
-    const source = await getSource(BigInt(user.id));
-    await ctx.reply(FALLBACK_TEXT, { reply_markup: buildFallbackKeyboard(source) });
+    // Фолбэк заодно ставит/держит нижнее меню — для тех, кто начал не с /start.
+    await ctx.reply(FALLBACK_TEXT, { reply_markup: buildBottomMenu() });
   });
 
   // ── Watchdog ────────────────────────────────────────────────
