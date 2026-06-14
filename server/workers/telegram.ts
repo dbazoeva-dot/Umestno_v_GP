@@ -24,7 +24,7 @@
 // крутится вхолостую (логирует один раз и выходит).
 
 import type { Pool } from "pg";
-import { Bot, Context, GrammyError, HttpError, InlineKeyboard, InputFile, Keyboard } from "grammy";
+import { Bot, Context, GrammyError, HttpError, InlineKeyboard, InputFile } from "grammy";
 import { promises as fs } from "fs";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
@@ -198,27 +198,36 @@ function buildMainKeyboard(source: string | null): InlineKeyboard {
     .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
 }
 
-// ── Нижнее меню (постоянная reply-клавиатура) ───────────────
-// Кнопки внизу всегда под рукой. Их нажатия приходят как обычный текст и
-// ловятся в обработчике message:text точным сравнением меток — поэтому метки
-// и проверки должны совпадать буква в букву. URL reply-клавиатура не умеет,
-// поэтому «Рассчитать» отвечает сообщением с inline-ссылкой на сайт.
-const MENU_CALC = "🧮 Рассчитать схему";
-const MENU_EXAMPLE = "🖼 Пример результата";
-const MENU_FAQ = "❓ Частые вопросы";
-const MENU_CHAT = "💬 Посчитать в чате";
-
-const BOTTOM_MENU_HINT = "Меню с быстрыми действиями всегда внизу 👇";
-
-const MENU_CALC_REPLY_TEXT =
+// Текст ответа на /calc и кнопку «Рассчитать»: ведём на сайт inline-ссылкой.
+const CALC_LINK_TEXT =
   "Откроется расчёт под Ваши размеры, это займёт около трёх минут:";
 
-function buildBottomMenu(): Keyboard {
-  return new Keyboard()
-    .text(MENU_CALC).text(MENU_EXAMPLE).row()
-    .text(MENU_FAQ).text(MENU_CHAT)
-    .resized()
-    .persistent();
+const CONTACTS_TEXT =
+  "Если остался вопрос, напишите нам на help@umestno-home.ru, поможем 🌿";
+
+// Команды бота — левая кнопка «Меню» у поля ввода. Ставятся через
+// setMyCommands при старте и ЗАМЕНЯЮТ прежний список (там оставались мёртвые
+// /subscribe и /unsubscribe). Это единственное меню бота: действия + сервис.
+const BOT_COMMANDS = [
+  { command: "start", description: "В начало" },
+  { command: "calc", description: "Рассчитать схему под мои размеры" },
+  { command: "example", description: "Пример результата" },
+  { command: "faq", description: "Частые вопросы" },
+  { command: "chat", description: "Посчитать прямо в чате" },
+  { command: "contacts", description: "Связаться с нами" },
+  { command: "stop", description: "Не напоминать о сервисе" },
+];
+
+// Фолбэк на свободный текст — те же действия inline + вход в FAQ.
+function buildFallbackKeyboard(source: string | null): InlineKeyboard {
+  return new InlineKeyboard()
+    .text("Частые вопросы", "faq:open")
+    .row()
+    .url("Рассчитать схему под мои размеры →", buildSiteUrl(source))
+    .row()
+    .text("Посмотреть пример результата", "viewed_example")
+    .row()
+    .text("Посчитать прямо здесь, в чате", "wants_bot_calc");
 }
 
 // Под фото-примером — Рассчитать + в чате + FAQ (FAQ третьей, чтобы не
@@ -435,7 +444,7 @@ export function startTelegramWorker(pool: Pool): void {
     if (!user) return;
     await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
     const source = await getSource(BigInt(user.id));
-    await ctx.reply(MENU_CALC_REPLY_TEXT, {
+    await ctx.reply(CALC_LINK_TEXT, {
       reply_markup: new InlineKeyboard().url("Рассчитать схему под мои размеры →", buildSiteUrl(source)),
     });
   }
@@ -561,10 +570,6 @@ export function startTelegramWorker(pool: Pool): void {
       reply_markup: buildMainKeyboard(subscriberSource),
       parse_mode: "HTML",
     });
-    // Ставим постоянное нижнее меню (reply-клавиатура). Inline и reply нельзя
-    // положить в одно сообщение, поэтому отдельной короткой строкой. Дальше
-    // клавиатура держится на уровне чата, повторно слать не нужно.
-    await ctx.reply(BOTTOM_MENU_HINT, { reply_markup: buildBottomMenu() });
   });
 
   // Callback кнопки «Пример результата» — показывает картинку с
@@ -613,8 +618,18 @@ export function startTelegramWorker(pool: Pool): void {
     await ctx.reply(text, { reply_markup: buildFaqAnswerKeyboard(id, source) });
   });
 
-  // /help — открывает список FAQ новым сообщением.
-  bot.command("help", (ctx) => sendFaqList(ctx));
+  // Команды-действия (левое меню) — дублируют inline-кнопки, зовут те же
+  // хелперы, поведение единое. /help и /faq — синонимы.
+  bot.command(["help", "faq"], (ctx) => sendFaqList(ctx));
+  bot.command("calc", (ctx) => sendCalcLink(ctx));
+  bot.command("example", (ctx) => sendExample(ctx));
+  bot.command("chat", (ctx) => registerWantsCalc(ctx));
+  bot.command("contacts", async (ctx) => {
+    const user = ctx.from;
+    if (!user) return;
+    await rememberContact(BigInt(user.id), user.username, user.first_name, user.language_code, undefined);
+    await ctx.reply(CONTACTS_TEXT);
+  });
 
   // /stop — опт-аут от напоминаний (152-ФЗ + этикет). Строку не удаляем:
   // нужна как suppression-ключ («не писать»). Алиас /unsubscribe — для
@@ -658,14 +673,6 @@ export function startTelegramWorker(pool: Pool): void {
   bot.on("message:text", async (ctx) => {
     const user = ctx.from;
     if (!user) return;
-    const text = ctx.message.text;
-    // Нажатия нижнего меню приходят как обычный текст — маршрутизируем по
-    // точному совпадению меток, прежде чем уйти в фолбэк.
-    if (text === MENU_CALC) { await sendCalcLink(ctx); return; }
-    if (text === MENU_EXAMPLE) { await sendExample(ctx); return; }
-    if (text === MENU_FAQ) { await sendFaqList(ctx); return; }
-    if (text === MENU_CHAT) { await registerWantsCalc(ctx); return; }
-
     await rememberContact(
       BigInt(user.id),
       user.username,
@@ -673,8 +680,8 @@ export function startTelegramWorker(pool: Pool): void {
       user.language_code,
       undefined,
     );
-    // Фолбэк заодно ставит/держит нижнее меню — для тех, кто начал не с /start.
-    await ctx.reply(FALLBACK_TEXT, { reply_markup: buildBottomMenu() });
+    const source = await getSource(BigInt(user.id));
+    await ctx.reply(FALLBACK_TEXT, { reply_markup: buildFallbackKeyboard(source) });
   });
 
   // ── Watchdog ────────────────────────────────────────────────
@@ -720,6 +727,12 @@ export function startTelegramWorker(pool: Pool): void {
       botStartedAt = new Date();
       markBotEvent(); // первая «бипка» в момент успешного старта polling'а
       console.log(`[telegram] bot @${info.username} started, id=${info.id}`);
+      // Обновляем левое меню команд (заменяет прежний список с мёртвыми
+      // /subscribe и /unsubscribe). Fire-and-forget — на ошибку логируем.
+      bot.api.setMyCommands(BOT_COMMANDS).then(
+        () => console.log("[telegram] commands menu updated"),
+        (e) => console.error("[telegram] setMyCommands failed:", e),
+      );
     },
   });
 }
