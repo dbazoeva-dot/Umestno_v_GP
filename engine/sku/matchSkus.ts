@@ -7,7 +7,10 @@
 
 import type { DivisionType, PlacedZone, SchemePayload, SkuCatalogRow } from "../types.js";
 
-const TOL = { cellW: 3, cellD: 1.5, hUnder: 3, hOver: 5 } as const;
+// cellDUnder / cellDOver — НЕсимметричный допуск глубины ячейки: ячейка
+// глубже вещи допустима (вещь лежит свободнее), мельче — нет (не влезет),
+// поэтому over > under. Ширина (cellW) — симметрична. См. SPEC.md «cell_depth».
+const TOL = { cellW: 3, cellDUnder: 1.5, cellDOver: 3, hUnder: 3, hOver: 5 } as const;
 
 export type MatchKind = "set" | "multipack" | "singles" | null;
 export type MatchStatus = "exact" | "composed_from_slots" | "alternative_division" | "no_match";
@@ -56,16 +59,39 @@ function fitsFootprint(sku: SkuCatalogRow, lane_w: number, lane_d: number, lane_
   return normal || rotated;
 }
 
+// can_adapt-органайзеры (соты / настраиваемые ячейки) НЕ имеют фиксированного
+// footprint — число ячеек подстраивается под зону. Поэтому вместо «коробка
+// влезла целиком» проверяем «в зоне помещается достаточно ячеек»: ∃ раскладка
+// cols×rows, чья общая вместимость (с учётом потолка набора) ≥ нужды.
+// Размер самой ячейки проверяется отдельными cell-воротами.
+function adaptiveCellsFit(sku: SkuCatalogRow, geom: LaneGeom): boolean {
+  const cw = sku.cell_width_cm ?? sku.width_cm;
+  const cd = sku.cell_depth_cm ?? sku.depth_cm;
+  if (!(cw > 0) || !(cd > 0)) return false;
+  if (sku.height_cm > geom.lane_h + TOL.hOver) return false;
+  const colsFit = Math.floor(geom.lane_w / cw);
+  const rowsFit = Math.floor(geom.lane_d / cd);
+  const realizable = Math.min(colsFit * rowsFit, sku.capacity_units ?? 0);
+  return realizable >= geom.cap_per_lane;
+}
+
 // Granular cell predicates — single source of truth shared by the base
 // filter, the composed-from-slots path, and the diagnostic funnel. Compare
 // SKU cell to the EFFECTIVE cell (unit + item_gap), not the raw unit: the
 // tolerances ±3 / ±1.5 are meant around the realistic cell size that
 // includes finger-room/packing margin, not the bare item footprint.
+// Ширина — симметрично; глубина — несимметрично (глубже можно, мельче нет).
+function widthWithin(value: number, target: number): boolean {
+  return Math.abs(value - target) <= TOL.cellW;
+}
+function depthWithin(value: number, target: number): boolean {
+  return value >= target - TOL.cellDUnder && value <= target + TOL.cellDOver;
+}
 function cellWidthOk(sku: SkuCatalogRow, eff_w: number): boolean {
-  return Math.abs((sku.cell_width_cm ?? sku.width_cm) - eff_w) <= TOL.cellW;
+  return widthWithin(sku.cell_width_cm ?? sku.width_cm, eff_w);
 }
 function cellDepthOk(sku: SkuCatalogRow, eff_d: number): boolean {
-  return Math.abs((sku.cell_depth_cm ?? sku.depth_cm) - eff_d) <= TOL.cellD;
+  return depthWithin(sku.cell_depth_cm ?? sku.depth_cm, eff_d);
 }
 function heightOk(sku: SkuCatalogRow, unit_h: number): boolean {
   return sku.height_cm >= unit_h - TOL.hUnder && sku.height_cm <= unit_h + TOL.hOver;
@@ -109,7 +135,8 @@ export function baseFilterGates(divType: DivisionType, geom: LaneGeom, zone: Pla
     { name: "cell_width",    test: (s) => cellWidthOk(s, eff_w) },
     { name: "cell_depth",    test: (s) => cellDepthOk(s, eff_d) },
     { name: "height",        test: (s) => heightOk(s, unit_h) },
-    { name: "footprint",     test: (s) => fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
+    // can_adapt → footprint = «∃ раскладка влезает»; иначе — коробка целиком.
+    { name: "footprint",     test: (s) => s.can_adapt === "yes" ? adaptiveCellsFit(s, geom) : fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
   );
   return gates;
 }
@@ -238,8 +265,8 @@ function tryComposedFromSlots(zone: PlacedZone, catalog: SkuCatalogRow[], colorP
     const cw = sku.cell_width_cm ?? sku.width_cm;
     const cd = sku.cell_depth_cm ?? sku.depth_cm;
     const eff = effectiveCellDims(zone);
-    if (Math.abs(cw - eff.eff_d) > TOL.cellD) return false;
-    if (Math.abs(cd - eff.eff_w) > TOL.cellW) return false;
+    if (!depthWithin(cw, eff.eff_d)) return false;
+    if (!widthWithin(cd, eff.eff_w)) return false;
     if (sku.height_cm < zone.unit_h_cm - TOL.hUnder || sku.height_cm > zone.unit_h_cm + TOL.hOver) return false;
     if (sku.depth_cm > rotatedGeom.lane_w) return false;
     if (sku.width_cm > rotatedGeom.lane_d) return false;
