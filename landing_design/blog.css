@@ -47,15 +47,23 @@ image-slot::part(empty){
 .j-mast__eyebrow .rule{ flex: 0 0 48px; height: 1px; background: var(--u-accent); }
 .j-mast h1{
   font-family: var(--f-display); font-weight: var(--fw-display);
-  font-size: clamp(56px, 8vw, 132px); line-height: 0.9;
+  /* Раньше min был 56px — на 320–400px viewport «всё на месте» не помещалось.
+     32px позволяет уместиться на самых узких экранах, 8.5vw обеспечивает
+     плавный рост к 132px на десктопе. */
+  font-size: clamp(32px, 8.5vw, 132px); line-height: 0.9;
   letter-spacing: -0.025em; margin: 0; color: var(--u-ink);
+  overflow-wrap: break-word;
 }
 .j-mast h1 em{
   font-style: italic; font-weight: 400; color: var(--u-accent);
 }
 .j-mast__lede{
-  font-family: var(--f-sans); font-size: var(--fs-lg); line-height: 1.5;
+  font-family: var(--f-sans);
+  /* Раньше был var(--fs-lg) (20px) — на узких экранах текст не помещался
+     в первую строку. Теперь шрифт плавно сжимается с 14px@320 до 20px@600+. */
+  font-size: clamp(14px, 3.5vw, 20px); line-height: 1.5;
   color: var(--u-ink-2); margin: 0; max-width: 38ch;
+  overflow-wrap: break-word;
 }
 .j-mast__issue{
   font-family: var(--f-mono); font-size: var(--fs-2xs);

@@ -185,13 +185,23 @@ body{ overflow-x: hidden; }
     padding-left: clamp(14px, 4vw, 24px);
     padding-right: clamp(14px, 4vw, 24px);
   }
+  /* Шапка должна повторять отступы .u-container, иначе логотип и бургер
+     сидят в 40px от краёв (из --gutter), пока контент стоит в ~16px —
+     заметное рассогласование на /configure, где не подключён fluid-core. */
+  .u-header__inner{
+    max-width: 100%;
+    padding-left: clamp(14px, 4vw, 24px);
+    padding-right: clamp(14px, 4vw, 24px);
+  }
   .u-calc__form-card{
     padding: clamp(20px, 5vw, 32px) clamp(16px, 4vw, 24px);
     border-radius: 16px;
     gap: 24px;
   }
   .u-calc__title{
-    font-size: clamp(30px, 8vw, 44px);
+    /* min=24px чтобы «Подберём хранение» помещалось на 320px viewport.
+       На 384–600px скейл идёт через 8vw, выше — фиксируется на 44px. */
+    font-size: clamp(24px, 8vw, 44px);
     overflow-wrap: break-word;
     word-break: break-word;
   }
@@ -249,7 +259,8 @@ body{ overflow-x: hidden; }
   .u-hero__mag-shell{
     gap: 30px;
     padding-top: 16px;
-    padding-bottom: clamp(44px, 12vw, 64px);
+    /* компактный низ hero, чтобы блок «Проблема» появлялся раньше (доскролл) */
+    padding-bottom: 18px;
   }
   /* the giant editorial title overwhelms a phone at 64px+;
      bring it down and open the leading so it breathes */
@@ -271,21 +282,29 @@ body{ overflow-x: hidden; }
   /* raise the photo closer to the lede; right-align the inline price tag */
   .u-hero__mag-photo{ margin-top: -10px; min-height: 0; text-align: right; }
   /* price tag: quieter and pinned to the right edge */
-  .u-hero__mag-price{ margin-top: -40px; padding: 10px 14px; gap: 4px; border-radius: 14px; text-align: left; }
+  /* ценник — абсолютно, центр по нижнему краю фото: на 50% перекрывает
+     изображение, на 50% висит снизу. Вне потока — не тянет кнопку. */
+  .u-hero__mag-price{ position: absolute; left: auto; right: 12px; bottom: 0; transform: translateY(50%); margin-top: 0; padding: 10px 14px; gap: 4px; border-radius: 14px; text-align: left; }
   .u-hero__mag-price-row{ gap: 14px; }
   .u-hero__mag-price .label{ font-size: var(--fs-xs); }
   .u-hero__mag-price .amt{ font-size: var(--fs-lg); }
   .u-hero__mag-price .sub{ font-size: var(--fs-2xs); padding-top: 4px; }
   /* CTA «Начать расчёт» below, normal rhythm */
-  .u-hero__mag-foot{ padding-top: 26px; }
+  /* свисающая половина ценника (~31px) заходит сюда; небольшой зазор ниже
+     неё до CTA — компактно, чтобы не растягивать hero */
+  .u-hero__mag-foot{ padding-top: 46px; }
   .u-hero__mag-cta{ font-size: 30px; gap: 14px; padding-bottom: 10px; }
 
   /* ── Problem cards: clear hierarchy under the section title ─ */
+  /* убираем 60px grid-gap (он шёл от ≤1024 поверх padding карточек и давал
+     разные зазоры над/под разделителями); ровные отступы задаёт только
+     симметричный padding самих карточек */
+  .u-problem-grid{ gap: 0 !important; }
   .u-pain{
     grid-template-columns: 48px 1fr !important;
     column-gap: 18px;
     row-gap: 10px;
-    padding: 30px 0 !important;
+    padding: 24px 0 !important;
   }
   .u-pain__icon{ width: 44px; height: 44px; margin-left: 0; }
   .u-pain h3{ font-size: var(--fs-xl); padding-top: 2px; }   /* 24px vs 34px head */

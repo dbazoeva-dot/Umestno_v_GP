@@ -13,12 +13,14 @@
 
 BEGIN;
 
+-- IF NOT EXISTS — миграция могла частично примениться при синхронизации
+-- между окружениями. Делаем идемпотентной, чтобы повторный запуск не падал.
 ALTER TABLE bot_subscribers
-  ADD COLUMN viewed_example      bool        NOT NULL DEFAULT false,
-  ADD COLUMN viewed_example_at   timestamptz;
+  ADD COLUMN IF NOT EXISTS viewed_example      bool        NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS viewed_example_at   timestamptz;
 
 -- Индекс по нажавшим — для отчётов «кто смотрел пример» в разбивке по source.
-CREATE INDEX bot_subscribers_viewed_example
+CREATE INDEX IF NOT EXISTS bot_subscribers_viewed_example
   ON bot_subscribers (viewed_example_at DESC)
   WHERE viewed_example;
 
