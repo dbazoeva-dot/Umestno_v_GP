@@ -25,6 +25,7 @@ const CATALOG_QUERY = `
     cell_width_cm,
     cell_depth_cm,
     can_rotate,
+    adjustable,
     color_group,
     availability_status,
     product_title,
@@ -54,6 +55,9 @@ function toCatalogRow(row: Record<string, unknown>): SkuCatalogRow {
     cell_width_cm:       num(row.cell_width_cm),
     cell_depth_cm:       num(row.cell_depth_cm),
     can_rotate:          row.can_rotate === true ? "yes" : "no",
+    // соты/настраиваемые ячейки: в БД булев флаг adjustable (yes у dividers-сот,
+    // no у фикс-органайзеров). Включает adaptiveCellsFit в матчере.
+    adjustable:          row.adjustable === true ? "yes" : "no",
     color_group:         str(row.color_group),
     availability_status: str(row.availability_status) ?? "unknown",
     product_title:       String(row.product_title),

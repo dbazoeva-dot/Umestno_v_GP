@@ -59,7 +59,7 @@ function fitsFootprint(sku: SkuCatalogRow, lane_w: number, lane_d: number, lane_
   return normal || rotated;
 }
 
-// can_adapt-органайзеры (соты / настраиваемые ячейки) НЕ имеют фиксированного
+// adjustable-органайзеры (соты / настраиваемые ячейки) НЕ имеют фиксированного
 // footprint — число ячеек подстраивается под зону. Поэтому вместо «коробка
 // влезла целиком» проверяем «в зоне помещается достаточно ячеек»: ∃ раскладка
 // cols×rows, чья общая вместимость (с учётом потолка набора) ≥ нужды.
@@ -135,8 +135,8 @@ export function baseFilterGates(divType: DivisionType, geom: LaneGeom, zone: Pla
     { name: "cell_width",    test: (s) => cellWidthOk(s, eff_w) },
     { name: "cell_depth",    test: (s) => cellDepthOk(s, eff_d) },
     { name: "height",        test: (s) => heightOk(s, unit_h) },
-    // can_adapt → footprint = «∃ раскладка влезает»; иначе — коробка целиком.
-    { name: "footprint",     test: (s) => s.can_adapt === "yes" ? adaptiveCellsFit(s, geom) : fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
+    // adjustable → footprint = «∃ раскладка влезает»; иначе — коробка целиком.
+    { name: "footprint",     test: (s) => s.adjustable === "yes" ? adaptiveCellsFit(s, geom) : fitsFootprint(s, geom.lane_w, geom.lane_d, geom.lane_h) },
   );
   return gates;
 }
