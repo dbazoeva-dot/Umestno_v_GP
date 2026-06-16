@@ -46,6 +46,7 @@ EMITTED_FIELDS = [
     ("cell_width_cm", "num"),
     ("cell_depth_cm", "num"),
     ("can_rotate", "yn"),
+    ("adjustable", "yn"),
     ("color_group", "str"),
     ("availability_status", "str"),
     ("product_title", "str"),
