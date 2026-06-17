@@ -225,6 +225,18 @@
   };
   var RIGIDITY_RU = { soft: 'мягкий', semi_rigid: 'полужёсткий', rigid: 'жёсткий' };
 
+  // Заголовок продавца дублирует то, что мы и так показываем структурно
+  // (размер — отдельной строкой, количество ячеек — в подстроке). Чистим
+  // название от встроенных «N ячеек/секций» и «Ш×Г×В см», оставляя
+  // бренд/тип/цвет. Так в карточке размер и количество не повторяются.
+  function cleanProductName(title) {
+    if (!title) return '';
+    var s = String(title);
+    s = s.replace(/,?\s*\d+(?:[.,]\d+)?\s*[x×х]\s*\d+(?:[.,]\d+)?\s*[x×х]\s*\d+(?:[.,]\d+)?\s*см/gi, '');
+    s = s.replace(/,?\s*(набор\s+)?\d+\s*(яче[а-яё]*|секц[а-яё]*)/gi, '');
+    return s.replace(/\s*,\s*,+/g, ', ').replace(/\s{2,}/g, ' ').replace(/^[\s,]+|[\s,]+$/g, '');
+  }
+
   // «Подходящие органайзеры» — блок на каждую зону схемы. В каждом блоке
   // либо карточка SKU (если матчер нашёл подходящий товар), либо
   // empty-state с фразой «к сожалению, не нашли — подбирайте сами по
@@ -281,7 +293,7 @@
         var cardInner =
           '<div class="u-res-prod-card__img">' + (sku.image_url ? '<img src="' + esc(sku.image_url) + '" loading="lazy" decoding="async" alt="' + esc(sku.product_title || '') + '" />' : '') + '</div>' +
           '<div class="u-res-prod-card__b">под блок ' + n + '</div>' +
-          '<div class="u-res-prod-card__n">' + esc(sku.product_title || '') + '</div>' +
+          '<div class="u-res-prod-card__n">' + esc(cleanProductName(sku.product_title) || sku.product_title || '') + '</div>' +
           (subParts.length ? '<div class="u-res-prod-card__sub">' + esc(subParts.join(' · ')) + '</div>' : '') +
           '<div class="u-res-prod-card__sz">' + esc(sizes) + '</div>';
         cardHtml = sku.product_url
