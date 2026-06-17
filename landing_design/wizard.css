@@ -66,41 +66,21 @@
   background: var(--u-ink); border-radius: 2px;
   transition: transform .25s ease, opacity .2s ease;
 }
-body.u-wiz-menu-open .u-wiz__menu span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-body.u-wiz-menu-open .u-wiz__menu span:nth-child(2) { opacity: 0; }
-body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-/* Оверлей меню — открывается по клику на бургер; перекрывает весь визард,
-   фон затемнён, ссылки списком. Закрывается по клику на бургер ещё раз,
-   по фону или Esc. z-index ниже модалок (9998), но выше всего остального. */
-.u-wiz-menu-ovr {
-  position: fixed; inset: 0; z-index: 9990;
-  display: flex; flex-direction: column;
-  animation: u-wiz-mfade .2s ease;
-}
-.u-wiz-menu-ovr__bg {
-  position: absolute; inset: 0;
-  background: rgba(40,32,26,0.45);
-  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
-}
-.u-wiz-menu-ovr__nav {
-  position: relative; margin-top: 50px;
-  background: var(--u-card);
-  border-bottom: 1px solid var(--u-line);
-  padding: 8px var(--wz-pad) 16px;
-  display: flex; flex-direction: column; gap: 2px;
+body.u-nav-open .u-wiz__menu span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.u-nav-open .u-wiz__menu span:nth-child(2) { opacity: 0; }
+body.u-nav-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+/* Штатная мобильная nav сайта (#u-mobile-nav) переносится в body и
+   позиционируется fixed под топбаром визарда (height 56). z-index ниже
+   модалок (9998), но выше топбара (.u-wiz z:1). Стили самих ссылок и фон
+   берутся из landing.css (.u-mobile-nav) — то же меню, что в старом
+   конфигураторе. */
+body.u-wiz-active #u-mobile-nav:not([hidden]) {
+  position: fixed; top: 56px; left: 0; right: 0;
+  z-index: 9000;
+  max-height: calc(100vh - 56px); overflow-y: auto;
   animation: u-wiz-menu-down .26s cubic-bezier(.2,.7,.3,1);
 }
 @keyframes u-wiz-menu-down { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
-.u-wiz-menu-ovr__nav a {
-  font-family: var(--f-sans, sans-serif);
-  font-size: 15px; font-weight: 500;
-  color: var(--u-ink-2);
-  padding: 14px 2px;
-  border-bottom: 1px solid var(--u-line);
-  text-decoration: none;
-}
-.u-wiz-menu-ovr__nav a:last-child { border-bottom: none; }
-.u-wiz-menu-ovr__nav a:hover { color: var(--u-ink); }
 /* Лого — обрезанная версия logo-wordmark.svg (только знак, без слова
    «уместно»). Через overflow:hidden на узкой обёртке. В исходном SVG
    (viewBox 594×76) знак занимает первые ~57px → при height:24 видимая
@@ -447,14 +427,18 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
 .u-wiz .u-consent { display: flex; gap: 10px; align-items: flex-start; }
 .u-wiz .u-consent label { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
 
-/* ── Footer (липкий CTA-док) ────────────────────────────────── */
+/* ── Footer (липкий CTA-док) ────────────────────────────────────
+   Симметрия по вертикали: 16px разделитель → кнопка → подпись → safe-area.
+   row-gap у flex = 0, чтобы вертикальный отступ задавался ТОЛЬКО padding-top
+   футера и margin-top подписи (одинаковые 16). column-gap 10 — между «Назад»
+   и «Далее» в одной строке. */
 .u-wiz__footer {
   flex: 0 0 auto;
-  padding: 12px var(--wz-pad) calc(12px + env(safe-area-inset-bottom));
+  padding: 16px var(--wz-pad) calc(16px + env(safe-area-inset-bottom));
   background: rgba(255,253,249,0.92);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-top: 1px solid var(--u-line);
-  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  display: flex; flex-wrap: wrap; gap: 0 10px; align-items: center;
 }
 /* «Назад» — компактная кнопка-стрелка слева от «Далее» (на мобиле и
    десктопе). На шаге 1 скрывается через [disabled]. */
@@ -489,9 +473,12 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
   display: flex; align-items: center; justify-content: center; gap: 9px;
   border-radius: 15px; font-size: 15px;
 }
-/* Отступ от кнопки до подписи = padding-top футера (12px) — симметрия
-   «разделитель → кнопка» и «кнопка → подпись». */
-.u-wiz__note { margin: 12px 2px 0; font-size: 10.5px; line-height: 1.45; color: var(--u-ink-3); text-align: center; }
+/* Подпись — отдельной строкой ниже кнопок (flex-basis:100%), отступ сверху
+   16px = padding-top футера = padding-bottom (без safe-area). Симметрия. */
+.u-wiz__note {
+  flex-basis: 100%; margin: 16px 2px 0;
+  font-size: 10.5px; line-height: 1.45; color: var(--u-ink-3); text-align: center;
+}
 [data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
 
 /* ══ Модалки — точный порт PreviewPopup / MeasurePopup / PrioHelpPopup ══

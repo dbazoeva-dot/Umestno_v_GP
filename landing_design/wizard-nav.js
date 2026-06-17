@@ -335,44 +335,33 @@
   }
 
   /* ── Бургер-меню в топбаре ─────────────────────────────────────
-     На мобиле страница /configure/ открывается БЕЗ шапки сайта (boot
-     убирает .u-header). Бургер в топбаре открывает оверлей с теми же
-     ссылками, чтобы юзер мог уйти на главную/блог/FAQ не теряя контекст. */
+     Переиспользуем штатную мобильную nav сайта (#u-mobile-nav из шапки
+     .u-header--sub) — то же меню, что у старого конфигуратора. Boot
+     скрывает header через display:none, поэтому переносим nav в body на
+     время работы визарда, чтобы оно осталось видимым при открытии. */
   var menuBtn = wiz.querySelector('[data-wiz-menu]');
-  if (menuBtn) {
-    var MENU_LINKS = [
-      ['О сервисе',       '../'],
-      ['Как это работает','../#how'],
-      ['Результат',       '../#result'],
-      ['Отзывы',          '../#reviews'],
-      ['FAQ',             '../#faq'],
-      ['Журнал',          '../blog/'],
-    ];
+  var mobileNav = document.getElementById('u-mobile-nav');
+  if (menuBtn && mobileNav) {
+    if (mobileNav.parentNode && mobileNav.parentNode.tagName !== 'BODY') {
+      document.body.appendChild(mobileNav);
+    }
+    var closeNav = function () {
+      mobileNav.hidden = true;
+      menuBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('u-nav-open');
+    };
+    menuBtn.setAttribute('aria-controls', 'u-mobile-nav');
+    menuBtn.setAttribute('aria-expanded', 'false');
     menuBtn.addEventListener('click', function () {
+      var open = menuBtn.getAttribute('aria-expanded') === 'true';
+      if (open) return closeNav();
+      mobileNav.hidden = false;
+      menuBtn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('u-nav-open');
       track('wiz_menu_open');
-      document.body.classList.add('u-wiz-menu-open');
-      var m = document.createElement('div');
-      m.className = 'u-wiz-menu-ovr';
-      m.setAttribute('data-wiz-menu-ovr', '');
-      m.innerHTML =
-        '<div class="u-wiz-menu-ovr__bg"></div>' +
-        '<nav class="u-wiz-menu-ovr__nav">' +
-          MENU_LINKS.map(function (l) {
-            return '<a href="' + l[1] + '">' + l[0] + '</a>';
-          }).join('') +
-        '</nav>';
-      document.body.appendChild(m);
-      var close = function () {
-        document.body.classList.remove('u-wiz-menu-open');
-        m.remove();
-        document.removeEventListener('keydown', onEscMenu);
-      };
-      var onEscMenu = function (e) { if (e.key === 'Escape') close(); };
-      m.addEventListener('click', function (e) {
-        if (e.target.classList.contains('u-wiz-menu-ovr__bg')) close();
-      });
-      menuBtn.addEventListener('click', close, { once: true });
-      document.addEventListener('keydown', onEscMenu);
+    });
+    mobileNav.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeNav);
     });
   }
 })();
