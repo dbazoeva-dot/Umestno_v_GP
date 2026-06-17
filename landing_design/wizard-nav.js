@@ -192,11 +192,19 @@
   function onEsc(e) { if (e.key === 'Escape') closeModal(); }
 
   var modalHead = function (title, em) {
-    return '<div class="u-wiz-modal__grip"></div>' +
+    return '<div class="u-wiz-modal__hd">' +
+      '<div class="u-wiz-modal__grip"></div>' +
       '<div class="u-wiz-modal__head">' +
         '<h2 class="u-wiz-modal__title">' + title + ' <em>' + em + '</em></h2>' +
         '<button type="button" class="u-wiz-modal__close" data-wiz-mclose aria-label="Закрыть">✕</button>' +
-      '</div>';
+      '</div>' +
+    '</div>';
+  };
+  // CTA модалки — в отдельном футере с верхней границей и нижним отступом.
+  var modalFoot = function (label) {
+    return '<div class="u-wiz-modal__ft">' +
+      '<button type="button" class="u-wiz-modal__cta" data-wiz-mclose>' + label + '</button>' +
+    '</div>';
   };
 
   // Превью результата — главная фича для конверсии: показываем пример
@@ -212,7 +220,7 @@
           '</div>' +
           '<p class="u-wiz-modal__p" style="margin-top:14px">Пример готовой схемы. Ваша будет под ваши размеры и категории — со схемой раскладки, подбором органайзеров и памяткой, как сложить вещи.</p>' +
         '</div>' +
-        '<button type="button" class="u-wiz-modal__cta" data-wiz-mclose>Понятно, продолжить</button>'
+        modalFoot('Понятно, продолжить')
       );
     });
   });
@@ -267,7 +275,7 @@
           '<span class="arr">↗</span>' +
         '</a>' +
       '</div>' +
-      '<button type="button" class="u-wiz-modal__cta" data-wiz-mclose>Понятно</button>'
+      modalFoot('Понятно')
     );
   });
 
@@ -293,7 +301,7 @@
           }).join('') +
         '</div>' +
       '</div>' +
-      '<button type="button" class="u-wiz-modal__cta" data-wiz-mclose>Понятно</button>'
+      modalFoot('Понятно')
     );
   });
 
