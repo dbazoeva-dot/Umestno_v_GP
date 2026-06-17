@@ -214,11 +214,10 @@
       track('preview_result_open');
       openModal(
         modalHead('Как будет', 'выглядеть') +
-        '<div class="u-wiz-modal__body">' +
+        '<div class="u-wiz-modal__body u-wiz-modal__body--preview">' +
           '<div class="u-wiz-modal__preview">' +
-            '<img src="../landing_design/assets/sample-scheme-mobile.webp" alt="Пример готовой схемы хранения" decoding="async" />' +
+            '<img src="../assets/images/result-mobile.webp" alt="Пример готовой схемы хранения" decoding="async" onerror="this.src=\'../landing_design/assets/sample-scheme-mobile.webp\'" />' +
           '</div>' +
-          '<p class="u-wiz-modal__p" style="margin-top:14px">Пример готовой схемы. Ваша будет под ваши размеры и категории — со схемой раскладки, подбором органайзеров и памяткой, как сложить вещи.</p>' +
         '</div>' +
         modalFoot('Понятно, продолжить')
       );
