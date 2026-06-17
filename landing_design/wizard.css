@@ -39,10 +39,10 @@
   overflow: hidden;
 }
 
-/* ── Топбар: бургер слева · лого рядом · «Конфигуратор» справа ── */
+/* ── Топбар: лого + «Конфигуратор» слева · бургер справа ───── */
 .u-wiz__topbar {
   flex: 0 0 auto;
-  height: 50px;
+  height: 56px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -50,17 +50,19 @@
   background: var(--u-card);
   border-bottom: 1px solid var(--u-line);
 }
-/* Бургер-меню (3 линии). По клику открывается оверлей со ссылками на
-   разделы сайта (см. wizard-nav.js → openMenuOverlay). */
+/* Бургер-меню — дизайн взят из старого конфигуратора (.u-burger):
+   44×44, gap 5, линии 24×2. Прижат к правому краю через margin-left:auto. */
 .u-wiz__menu {
-  width: 34px; height: 34px;
+  width: 44px; height: 44px;
   flex: 0 0 auto; padding: 0;
-  border: none; background: transparent;
+  margin-left: auto;
+  border: 0; background: transparent;
+  border-radius: 8px; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 5px; cursor: pointer; border-radius: 8px;
+  gap: 5px;
 }
 .u-wiz__menu span {
-  display: block; width: 22px; height: 2px;
+  display: block; width: 24px; height: 2px;
   background: var(--u-ink); border-radius: 2px;
   transition: transform .25s ease, opacity .2s ease;
 }
@@ -99,28 +101,21 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
 }
 .u-wiz-menu-ovr__nav a:last-child { border-bottom: none; }
 .u-wiz-menu-ovr__nav a:hover { color: var(--u-ink); }
-/* Лого — обрезанная версия logo-wordmark.svg: показываем только левую
-   часть-знак, без слова «уместно». Через overflow:hidden на обёртке.
-   В исходном SVG (viewBox 594×76) знак занимает первые ~57px → при
-   height:24 видимая ширина = 57 × 24 / 76 ≈ 18px. */
+/* Лого — полный wordmark (знак + «уместно»), как в шапке сайта. */
 .u-wiz__brand {
   display: flex; align-items: center; flex: 0 0 auto;
   text-decoration: none;
 }
-.u-wiz__brand-crop {
-  display: inline-block;
-  width: 18px; height: 24px;
-  overflow: hidden;
-}
-.u-wiz__brand-crop img {
-  height: 24px; width: auto; display: block;
-}
-/* Лейбл «Конфигуратор» справа (раньше показывался только на десктопе) */
+.u-wiz__brand img { height: 18px; width: auto; display: block; }
+/* Лейбл «Конфигуратор» — рядом с лого, отделён лёгким разделителем
+   (вертикальная палочка, как в editorial-стиле). */
 .u-wiz__topbar-label {
-  margin-left: auto; flex: 0 0 auto;
-  font-family: var(--f-mono, 'JetBrains Mono', monospace);
-  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--u-ink-3);
+  flex: 0 0 auto;
+  padding-left: 12px;
+  border-left: 1px solid var(--u-line-2);
+  font-family: var(--f-sans, sans-serif);
+  font-size: 14px; font-weight: 600;
+  color: var(--u-ink);
 }
 
 /* ── Прогресс-бар ───────────────────────────────────────────── */
@@ -758,11 +753,16 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
     padding-left: calc((100vw - var(--container)) / 2 + var(--gutter));
     padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
   }
-  /* На десктопе скрываем мобильный бургер — навигация уже есть в шапке сайта.
-     Лого крупнее: показываем полный wordmark (отменяем CSS-обрезку). */
+  /* На десктопе скрываем бургер — навигация уже есть в шапке сайта.
+     Лого крупнее, лейбл «Конфигуратор» становится mono-уголком справа. */
   .u-wiz__menu { display: none; }
-  .u-wiz__brand-crop { width: auto; height: 28px; overflow: visible; }
-  .u-wiz__brand-crop img { height: 28px; }
+  .u-wiz__brand img { height: 22px; }
+  .u-wiz__topbar-label {
+    margin-left: auto; padding-left: 0; border-left: none;
+    font-family: var(--f-mono, monospace); font-size: 11px;
+    font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--u-ink-3);
+  }
   /* Двухколоночник как у старого калькулятора (.u-calc__layout):
      контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
   .u-wiz__main {
