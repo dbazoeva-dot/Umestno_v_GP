@@ -25,7 +25,7 @@
   var fill    = wiz.querySelector('[data-wiz-fill]');
   var labelEl = wiz.querySelector('[data-wiz-label]');
   var curEls  = wiz.querySelectorAll('[data-wiz-cur], [data-wiz-cur2]');
-  var backBtns = wiz.querySelectorAll('[data-wiz-back]'); // топбар (мобайл) + футер (десктоп)
+  var backBtns = wiz.querySelectorAll('[data-wiz-back]'); // кнопка «Назад» в футере
   var nextBtn = wiz.querySelector('[data-wiz-next]');
   var finalEl = wiz.querySelector('[data-wiz-final]');
   var noteEl  = wiz.querySelector('[data-wiz-note]');
@@ -332,5 +332,47 @@
     setTimeout(function () { go(3); }, 400);
   } else {
     render();
+  }
+
+  /* ── Бургер-меню в топбаре ─────────────────────────────────────
+     На мобиле страница /configure/ открывается БЕЗ шапки сайта (boot
+     убирает .u-header). Бургер в топбаре открывает оверлей с теми же
+     ссылками, чтобы юзер мог уйти на главную/блог/FAQ не теряя контекст. */
+  var menuBtn = wiz.querySelector('[data-wiz-menu]');
+  if (menuBtn) {
+    var MENU_LINKS = [
+      ['О сервисе',       '../'],
+      ['Как это работает','../#how'],
+      ['Результат',       '../#result'],
+      ['Отзывы',          '../#reviews'],
+      ['FAQ',             '../#faq'],
+      ['Журнал',          '../blog/'],
+    ];
+    menuBtn.addEventListener('click', function () {
+      track('wiz_menu_open');
+      document.body.classList.add('u-wiz-menu-open');
+      var m = document.createElement('div');
+      m.className = 'u-wiz-menu-ovr';
+      m.setAttribute('data-wiz-menu-ovr', '');
+      m.innerHTML =
+        '<div class="u-wiz-menu-ovr__bg"></div>' +
+        '<nav class="u-wiz-menu-ovr__nav">' +
+          MENU_LINKS.map(function (l) {
+            return '<a href="' + l[1] + '">' + l[0] + '</a>';
+          }).join('') +
+        '</nav>';
+      document.body.appendChild(m);
+      var close = function () {
+        document.body.classList.remove('u-wiz-menu-open');
+        m.remove();
+        document.removeEventListener('keydown', onEscMenu);
+      };
+      var onEscMenu = function (e) { if (e.key === 'Escape') close(); };
+      m.addEventListener('click', function (e) {
+        if (e.target.classList.contains('u-wiz-menu-ovr__bg')) close();
+      });
+      menuBtn.addEventListener('click', close, { once: true });
+      document.addEventListener('keydown', onEscMenu);
+    });
   }
 })();

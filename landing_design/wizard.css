@@ -39,46 +39,89 @@
   overflow: hidden;
 }
 
-/* ── Топбар: назад · бренд · бейдж шага ─────────────────────── */
+/* ── Топбар: бургер слева · лого рядом · «Конфигуратор» справа ── */
 .u-wiz__topbar {
   flex: 0 0 auto;
   height: 50px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 0 var(--wz-pad);
   background: var(--u-card);
   border-bottom: 1px solid var(--u-line);
 }
-.u-wiz__back {
+/* Бургер-меню (3 линии). По клику открывается оверлей со ссылками на
+   разделы сайта (см. wizard-nav.js → openMenuOverlay). */
+.u-wiz__menu {
   width: 34px; height: 34px;
-  flex: 0 0 auto;
-  border: 1px solid var(--u-line-2);
-  border-radius: 10px;
-  background: var(--u-bg);
+  flex: 0 0 auto; padding: 0;
+  border: none; background: transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; cursor: pointer; border-radius: 8px;
+}
+.u-wiz__menu span {
+  display: block; width: 22px; height: 2px;
+  background: var(--u-ink); border-radius: 2px;
+  transition: transform .25s ease, opacity .2s ease;
+}
+body.u-wiz-menu-open .u-wiz__menu span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.u-wiz-menu-open .u-wiz__menu span:nth-child(2) { opacity: 0; }
+body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+/* Оверлей меню — открывается по клику на бургер; перекрывает весь визард,
+   фон затемнён, ссылки списком. Закрывается по клику на бургер ещё раз,
+   по фону или Esc. z-index ниже модалок (9998), но выше всего остального. */
+.u-wiz-menu-ovr {
+  position: fixed; inset: 0; z-index: 9990;
+  display: flex; flex-direction: column;
+  animation: u-wiz-mfade .2s ease;
+}
+.u-wiz-menu-ovr__bg {
+  position: absolute; inset: 0;
+  background: rgba(40,32,26,0.45);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+.u-wiz-menu-ovr__nav {
+  position: relative; margin-top: 50px;
+  background: var(--u-card);
+  border-bottom: 1px solid var(--u-line);
+  padding: 8px var(--wz-pad) 16px;
+  display: flex; flex-direction: column; gap: 2px;
+  animation: u-wiz-menu-down .26s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes u-wiz-menu-down { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.u-wiz-menu-ovr__nav a {
+  font-family: var(--f-sans, sans-serif);
+  font-size: 15px; font-weight: 500;
   color: var(--u-ink-2);
-  font-size: 19px; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: opacity .15s, background .15s;
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--u-line);
+  text-decoration: none;
 }
-.u-wiz__back[disabled] { opacity: 0; pointer-events: none; }
+.u-wiz-menu-ovr__nav a:last-child { border-bottom: none; }
+.u-wiz-menu-ovr__nav a:hover { color: var(--u-ink); }
+/* Лого — обрезанная версия logo-wordmark.svg: показываем только левую
+   часть-знак, без слова «уместно». Через overflow:hidden на обёртке.
+   В исходном SVG (viewBox 594×76) знак занимает первые ~57px → при
+   height:24 видимая ширина = 57 × 24 / 76 ≈ 18px. */
 .u-wiz__brand {
-  display: flex; align-items: center; gap: 9px;
-  font-weight: 700; font-size: 14px; letter-spacing: -0.01em;
+  display: flex; align-items: center; flex: 0 0 auto;
+  text-decoration: none;
 }
-.u-wiz__brand img { height: 16px; width: auto; display: block; }
-.u-wiz__stepbadge {
-  margin-left: auto;
+.u-wiz__brand-crop {
+  display: inline-block;
+  width: 18px; height: 24px;
+  overflow: hidden;
+}
+.u-wiz__brand-crop img {
+  height: 24px; width: auto; display: block;
+}
+/* Лейбл «Конфигуратор» справа (раньше показывался только на десктопе) */
+.u-wiz__topbar-label {
+  margin-left: auto; flex: 0 0 auto;
   font-family: var(--f-mono, 'JetBrains Mono', monospace);
-  font-size: 11px; letter-spacing: 0.04em;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--u-ink-3);
-  background: var(--u-bg);
-  border: 1px solid var(--u-line);
-  border-radius: 8px;
-  padding: 4px 10px;
 }
-.u-wiz__stepbadge b { color: var(--u-ink); font-weight: 600; }
 
 /* ── Прогресс-бар ───────────────────────────────────────────── */
 .u-wiz__progress {
@@ -408,9 +451,22 @@
   background: rgba(255,253,249,0.92);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-top: 1px solid var(--u-line);
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
 }
+/* «Назад» — компактная кнопка-стрелка слева от «Далее» (на мобиле и
+   десктопе). На шаге 1 скрывается через [disabled]. */
+.u-wiz__back-d {
+  flex: 0 0 auto;
+  height: 52px; padding: 0 16px;
+  border-radius: 15px; cursor: pointer;
+  border: 1.5px solid var(--u-line); background: var(--u-card); color: var(--u-ink-2);
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.u-wiz__back-d[disabled] { display: none; }
 .u-wiz__next {
-  width: 100%; height: 52px; border: none; border-radius: 15px; cursor: pointer;
+  flex: 1 1 auto;
+  height: 52px; border: none; border-radius: 15px; cursor: pointer;
   background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd)); color: #fff;
   font-family: inherit; font-size: 15px; font-weight: 600;
   display: flex; align-items: center; justify-content: center; gap: 9px;
@@ -604,9 +660,10 @@
       Правая панель и десктопные элементы скрыты до брейкпоинта. ───────── */
 .u-wiz__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .u-wiz__col  { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-.u-wiz__rail,
-.u-wiz__topbar-label,
-.u-wiz__back-d { display: none; }
+.u-wiz__rail { display: none; }
+/* «Назад» в футере (.u-wiz__back-d) — теперь показывается на всех ширинах
+   (на шаге 1 скрывается через [disabled] ниже). Лейбл «Конфигуратор»
+   справа в топбаре — тоже на всех ширинах. */
 
 /* ── Правая панель ценности (offer / отзыв До-После / secure).
       Стили определяем всегда, видимость включает десктоп-брейкпоинт. ──── */
@@ -701,13 +758,11 @@
     padding-left: calc((100vw - var(--container)) / 2 + var(--gutter));
     padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
   }
-  .u-wiz__back, .u-wiz__stepbadge, .u-wiz__brand-m { display: none; }
-  .u-wiz__brand img { height: 20px; }
-  .u-wiz__topbar-label {
-    display: inline-block; margin-left: auto;
-    font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--u-ink-3);
-  }
+  /* На десктопе скрываем мобильный бургер — навигация уже есть в шапке сайта.
+     Лого крупнее: показываем полный wordmark (отменяем CSS-обрезку). */
+  .u-wiz__menu { display: none; }
+  .u-wiz__brand-crop { width: auto; height: 28px; overflow: visible; }
+  .u-wiz__brand-crop img { height: 28px; }
   /* Двухколоночник как у старого калькулятора (.u-calc__layout):
      контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
   .u-wiz__main {
@@ -742,14 +797,9 @@
     border-top: none; padding: 32px 0 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
   }
-  .u-wiz__back-d {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    height: 54px; padding: 0 22px; border-radius: 14px; cursor: pointer;
-    border: 1.5px solid var(--u-line-2); background: var(--u-card); color: var(--u-ink-2);
-    font-family: inherit; font-size: 15px; font-weight: 600;
-  }
-  .u-wiz__back-d[disabled] { display: none; }
-  .u-wiz__next { width: auto; padding: 0 32px; }
+  /* десктопные подгонки .u-wiz__back-d (общие стили уже в base — см. выше) */
+  .u-wiz__back-d { height: 54px; padding: 0 22px; border-radius: 14px; gap: 6px; }
+  .u-wiz__next { flex: 0 0 auto; width: auto; padding: 0 32px; }
   .u-wiz__next::after { content: "›"; font-size: 18px; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
