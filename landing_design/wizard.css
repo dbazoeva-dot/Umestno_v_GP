@@ -470,12 +470,145 @@
 .u-wiz-measure__article .meta { font-size: 11px; color: var(--u-ink-3); }
 .u-wiz-measure__article .arr { margin-left: auto; flex: 0 0 auto; color: var(--u-sage-dd); font-size: 15px; }
 
-/* ── Десктоп: пока интерим — визард центрируем колонкой.
-      Полноценная двухколоночная раскладка с правой панелью ценности —
-      следующая итерация (см. README · десктоп). ──────────────────── */
-@media (min-width: 760px) {
+/* ── Вложенность main/col (нужна для двухколоночника на десктопе).
+      На мобиле .u-wiz__main и .u-wiz__col — прозрачные flex-обёртки, чтобы
+      внутренний скролл (.u-wiz__scroll) и липкий футер работали как раньше.
+      Правая панель и десктопные элементы скрыты до брейкпоинта. ───────── */
+.u-wiz__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.u-wiz__col  { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.u-wiz__rail,
+.u-wiz__topbar-label,
+.u-wiz__back-d { display: none; }
+
+/* ── Правая панель ценности (offer / отзыв До-После / secure).
+      Стили определяем всегда, видимость включает десктоп-брейкпоинт. ──── */
+.u-wiz__offer {
+  background: var(--u-card); border: 1.5px solid var(--u-line-2); border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(80,70,55,0.07);
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+}
+.u-wiz__offer-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.u-wiz__offer-head .lbl {
+  font-family: var(--f-mono, monospace); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--u-ink-3); max-width: 18ch; line-height: 1.4;
+}
+.u-wiz__offer-head .price {
+  font-family: var(--f-display, serif); font-size: 34px; font-weight: 600;
+  color: var(--u-ink); line-height: 0.9; white-space: nowrap;
+}
+.u-wiz__offer-div { height: 1px; background: var(--u-line); }
+.u-wiz__offer-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.u-wiz__offer-list li {
+  position: relative; padding-left: 27px; font-size: 12.5px; line-height: 1.4; color: var(--u-ink-2);
+}
+.u-wiz__offer-list li::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--wz-sage-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 6 11 11.5 3.5' fill='none' stroke='%237D8C72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 10px no-repeat;
+}
+.u-wiz__review {
+  background: var(--u-card); border: 1.5px solid var(--u-line-2); border-radius: 18px;
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 13px;
+}
+.u-wiz__review-top { display: flex; align-items: center; justify-content: space-between; }
+.u-wiz__review-top .hist {
+  font-family: var(--f-mono, monospace); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--u-ink-3);
+}
+.u-wiz__review-quote {
+  font-family: var(--f-display, serif); font-style: italic; font-size: 18px;
+  line-height: 1.32; color: var(--u-ink); margin: 0;
+}
+.u-wiz__review-pair { display: flex; flex-direction: column; gap: 8px; }
+.u-wiz__review-pair figure {
+  position: relative; margin: 0; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--u-line-2); aspect-ratio: 545 / 300;
+}
+.u-wiz__review-pair img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.u-wiz__review-pair figcaption {
+  position: absolute; top: 8px; left: 8px;
+  font-family: var(--f-mono, monospace); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+  border-radius: 20px; padding: 3px 9px;
+}
+.u-wiz__review-pair .is-before { background: rgba(46,46,46,0.82); }
+.u-wiz__review-pair .is-after  { background: var(--u-sage-d); }
+.u-wiz__review-author { display: flex; align-items: center; gap: 8px; }
+.u-wiz__review-author .av {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--wz-sage-soft); color: var(--u-sage-dd);
+  font-family: var(--f-display, serif); font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.u-wiz__review-author .who { display: flex; flex-direction: column; margin-right: auto; }
+.u-wiz__review-author .who b { font-size: 12.5px; color: var(--u-ink); line-height: 1.1; }
+.u-wiz__review-author .who span { font-size: 10.5px; color: var(--u-ink-3); }
+.u-wiz__review-author .dots { display: flex; gap: 5px; flex: 0 0 auto; }
+.u-wiz__review-author .dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--u-taupe); display: block; }
+.u-wiz__review-author .dots i.on { width: 16px; background: var(--u-accent); }
+.u-wiz__secure { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
+.u-wiz__secure svg { flex: 0 0 auto; margin-top: 1px; }
+.u-wiz__secure span { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); }
+
+/* ── Планшет 600–959: один столбец, но центрированный (без растягивания) ─ */
+@media (min-width: 600px) and (max-width: 959px) {
   .u-wiz__topbar, .u-wiz__progress, .u-wiz__scroll, .u-wiz__footer {
     padding-left: max(var(--wz-pad), calc((100vw - 560px) / 2));
     padding-right: max(var(--wz-pad), calc((100vw - 560px) / 2));
   }
+}
+
+/* ── Десктоп ≥960: двухколоночник (форма слева + панель ценности справа) ─ */
+@media (min-width: 960px) {
+  .u-wiz {
+    position: static; inset: auto; height: auto; min-height: 100vh;
+    overflow: visible; display: block;
+  }
+  /* топбар → хедер */
+  .u-wiz__topbar { position: sticky; top: 0; z-index: 5; height: 68px; padding: 0 56px; }
+  .u-wiz__back, .u-wiz__stepbadge, .u-wiz__brand-m { display: none; }
+  .u-wiz__brand img { height: 18px; }
+  .u-wiz__topbar-label {
+    display: inline-block; margin-left: auto;
+    font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--u-ink-3);
+  }
+  /* контейнер двух колонок */
+  .u-wiz__main {
+    display: flex; flex-direction: row; gap: 56px; align-items: flex-start;
+    max-width: 1080px; margin: 0 auto; padding: 40px 56px;
+  }
+  .u-wiz__col { flex: 0 1 600px; min-width: 0; display: block; }
+  .u-wiz__rail {
+    display: flex; flex-direction: column; gap: 14px;
+    flex: 0 0 340px; position: sticky; top: 92px;
+  }
+  /* поток вместо внутреннего скролла */
+  .u-wiz__progress { padding: 0 0 6px; }
+  .u-wiz__scroll { overflow: visible; padding: 0; flex: none; }
+  .u-wiz__step.is-on { animation: none; }
+  .u-wiz__title { font-size: 34px; margin-top: 0; }
+  /* поля не на всю ширину — как в макете */
+  .u-wiz__col .u-calc__sizes,
+  .u-wiz__col .u-wiz__measure { max-width: 440px; }
+  .u-wiz__preview { max-width: 360px; }
+  .u-wiz__col .u-wiz__summary,
+  .u-wiz__col .u-promo { max-width: 480px; }
+  /* футер — инлайн-ряд кнопок */
+  .u-wiz__footer {
+    position: static; background: none;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-top: none; padding: 32px 0 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  }
+  .u-wiz__back-d {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 54px; padding: 0 22px; border-radius: 14px; cursor: pointer;
+    border: 1.5px solid var(--u-line-2); background: var(--u-card); color: var(--u-ink-2);
+    font-family: inherit; font-size: 15px; font-weight: 600;
+  }
+  .u-wiz__back-d[disabled] { display: none; }
+  .u-wiz__next { width: auto; padding: 0 32px; }
+  .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
+  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
+  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 13px 0 0; max-width: 52ch; }
 }

@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css?v=4" />
 <link rel="stylesheet" href="../landing.css?v=8" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
-<link rel="stylesheet" href="../landing_design/wizard.css?v=2" />
+<link rel="stylesheet" href="../landing_design/wizard.css?v=3" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -73,9 +73,16 @@
 <div class="u-wiz" data-wiz hidden>
   <div class="u-wiz__topbar">
     <button type="button" class="u-wiz__back" data-wiz-back aria-label="Назад" disabled>‹</button>
-    <span class="u-wiz__brand"><img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" />Конфигуратор</span>
+    <span class="u-wiz__brand">
+      <img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" />
+      <span class="u-wiz__brand-m">Конфигуратор</span>
+    </span>
+    <span class="u-wiz__topbar-label">Конфигуратор хранения</span>
     <span class="u-wiz__stepbadge">Шаг <b data-wiz-cur>1</b>/3</span>
   </div>
+
+  <div class="u-wiz__main">
+    <div class="u-wiz__col">
 
   <div class="u-wiz__progress">
     <div class="u-wiz__progress-head">
@@ -225,6 +232,7 @@
 
   <!-- ── Липкий футер: «Далее»/«Назад» (шаги 1–2) → финальный CTA (шаг 3) ── -->
   <div class="u-wiz__footer">
+    <button type="button" class="u-wiz__back-d" data-wiz-back disabled>‹&nbsp;Назад</button>
     <button type="button" class="u-wiz__next" data-wiz-next>Далее</button>
     <div class="u-calc__actions" data-wiz-final hidden>
       <a href="../no-fit/" class="u-btn u-btn--accent u-btn--lg u-calc__cta" data-ym-goal="cta_configure_pay" style="background-color:rgb(125,140,114)">
@@ -234,6 +242,47 @@
     </div>
     <p class="u-wiz__note" data-wiz-note>Полная схема и подбор органайзеров — 149&nbsp;₽ в конце</p>
   </div>
+
+    </div><!-- /.u-wiz__col -->
+
+    <!-- ── Правая панель ценности (десктоп) ──────────────────── -->
+    <aside class="u-wiz__rail" aria-hidden="true">
+      <div class="u-wiz__offer">
+        <div class="u-wiz__offer-head">
+          <span class="lbl">Что вы получите</span>
+          <span class="price">149&nbsp;₽</span>
+        </div>
+        <div class="u-wiz__offer-div"></div>
+        <ul class="u-wiz__offer-list">
+          <li>Точная схема раскладки под ваш ящик</li>
+          <li>Подбор подходящих органайзеров</li>
+          <li>Памятка, как сложить вещи</li>
+          <li>PDF и доступ сразу после оплаты</li>
+        </ul>
+      </div>
+
+      <div class="u-wiz__review">
+        <div class="u-wiz__review-top">
+          <span class="hist">История 01 / 5</span>
+        </div>
+        <p class="u-wiz__review-quote">«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
+        <div class="u-wiz__review-pair">
+          <figure><img src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" /><figcaption class="is-before">До</figcaption></figure>
+          <figure><img src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" /><figcaption class="is-after">После</figcaption></figure>
+        </div>
+        <div class="u-wiz__review-author">
+          <span class="av">А</span>
+          <span class="who"><b>Анна</b><span>Москва</span></span>
+          <span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+        </div>
+      </div>
+
+      <div class="u-wiz__secure">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span>Оплата через ЮKassa. Введённые данные не теряются.</span>
+      </div>
+    </aside>
+  </div><!-- /.u-wiz__main -->
 </div>
 
 <main class="u-calc">

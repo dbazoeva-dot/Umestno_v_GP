@@ -25,7 +25,7 @@
   var fill    = wiz.querySelector('[data-wiz-fill]');
   var labelEl = wiz.querySelector('[data-wiz-label]');
   var curEls  = wiz.querySelectorAll('[data-wiz-cur], [data-wiz-cur2]');
-  var backBtn = wiz.querySelector('[data-wiz-back]');
+  var backBtns = wiz.querySelectorAll('[data-wiz-back]'); // топбар (мобайл) + футер (десктоп)
   var nextBtn = wiz.querySelector('[data-wiz-next]');
   var finalEl = wiz.querySelector('[data-wiz-final]');
   var noteEl  = wiz.querySelector('[data-wiz-note]');
@@ -119,7 +119,7 @@
     if (fill) fill.style.width = Math.round((cur / TOTAL) * 100) + '%';
     if (labelEl) labelEl.textContent = STEP_LABELS[cur - 1];
     curEls.forEach(function (el) { el.textContent = String(cur); });
-    if (backBtn) backBtn.disabled = cur === 1;
+    backBtns.forEach(function (b) { b.disabled = cur === 1; });
     if (noteEl) noteEl.textContent = NOTES[cur - 1];
 
     var last = cur === TOTAL;
@@ -160,7 +160,7 @@
 
   /* ── Кнопки навигации ─────────────────────────────────────── */
   if (nextBtn) nextBtn.addEventListener('click', function () { go(cur + 1); });
-  if (backBtn) backBtn.addEventListener('click', function () { go(cur - 1); });
+  backBtns.forEach(function (b) { b.addEventListener('click', function () { go(cur - 1); }); });
 
   // «Изменить» в сводке → прыжок на нужный шаг
   if (summary) summary.addEventListener('click', function (e) {
