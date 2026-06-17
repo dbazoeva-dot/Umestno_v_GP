@@ -42,7 +42,7 @@
 /* ── Топбар: назад · бренд · бейдж шага ─────────────────────── */
 .u-wiz__topbar {
   flex: 0 0 auto;
-  height: 56px;
+  height: 50px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -83,11 +83,11 @@
 /* ── Прогресс-бар ───────────────────────────────────────────── */
 .u-wiz__progress {
   flex: 0 0 auto;
-  padding: 14px var(--wz-pad) 4px;
+  padding: 10px var(--wz-pad) 2px;
 }
 .u-wiz__progress-head {
   display: flex; align-items: baseline; justify-content: space-between;
-  margin-bottom: 7px;
+  margin-bottom: 6px;
 }
 .u-wiz__progress-head .s {
   font-family: var(--f-mono, monospace);
@@ -217,12 +217,19 @@
   font-size: 12.5px; font-weight: 600;
   box-shadow: var(--sh-card, 0 1px 3px rgba(80,70,55,0.05));
 }
-.u-wiz .u-calc__choice .u-calc__choice-ic { width: 18px; height: 18px; background: none; color: inherit; }
-.u-wiz .u-calc__choice .u-calc__choice-ic svg { width: 16px; height: 16px; }
+/* В макете (Chip) у чипов НЕТ иконки категории — только текст, галочка на
+   выбранном и «скоро» у недоступных. Иконки из старой формы делали чипы
+   шире, 3 не помещались в строку и переносились (+~80px высоты → скролл). */
+.u-wiz .u-calc__choice .u-calc__choice-ic { display: none; }
 .u-wiz .u-calc__choice.is-on {
   border-color: var(--u-sage-d);
   background: var(--wz-sage-soft);
   color: var(--u-sage-dd);
+}
+/* галочка на выбранном чипе (как Check в Chip) */
+.u-wiz .u-calc__choice.is-on::before {
+  content: ""; width: 13px; height: 13px; flex: 0 0 auto;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 6 11 11.5 3.5' fill='none' stroke='%237D8C72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 13px no-repeat;
 }
 .u-wiz .u-calc__choice.is-soon { opacity: 0.55; border-style: dashed; }
 .u-wiz .u-calc__choice-soon {
