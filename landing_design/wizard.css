@@ -13,6 +13,13 @@
    Токены берём из landing_design/styles.css (--u-*). Локально доопределяем
    только то, чего там нет (focus-ring terracotta). */
 
+/* По умолчанию визард скрыт: атрибут [hidden] должен побеждать .u-wiz{
+   display:flex}, иначе при каждой загрузке /configure/ (в т.ч. без флага)
+   визард на миг перекрывал бы рабочую форму, пока внизу страницы не
+   отработает boot-скрипт. Boot снимает [hidden] (флаг вкл) либо удаляет
+   узел целиком (флаг выкл). */
+.u-wiz[hidden] { display: none !important; }
+
 .u-wiz {
   --wz-accent-soft: #F6E7DC;   /* terracotta focus-ring (нет в общих токенах) */
   --wz-sage-soft:   #EAEFE4;   /* шалфейный фон выбора / превью-кнопки */
@@ -372,6 +379,12 @@
   box-shadow: 0 8px 22px -8px rgba(105,120,95,0.6);
 }
 .u-wiz__next[disabled] { background: var(--u-line-2); color: var(--u-ink-3); box-shadow: none; cursor: not-allowed; }
+/* [hidden] не скрывает элементы с явным display (display:flex перебивает
+   UA-правило [hidden]{display:none}). next-кнопка и финальный CTA имеют
+   display:flex, поэтому глушим их через явное правило — иначе на каждом
+   шаге показались бы обе кнопки разом. */
+.u-wiz__next[hidden],
+.u-wiz__footer .u-calc__actions[hidden] { display: none !important; }
 /* финальный CTA (calc.js) на шаге 3 — растягиваем под футер */
 .u-wiz__footer .u-calc__actions { margin: 0; }
 .u-wiz__footer .u-calc__cta {
