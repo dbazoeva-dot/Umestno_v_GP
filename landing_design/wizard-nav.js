@@ -216,7 +216,7 @@
         modalHead('Как будет', 'выглядеть') +
         '<div class="u-wiz-modal__body u-wiz-modal__body--preview">' +
           '<div class="u-wiz-modal__preview">' +
-            '<img src="../assets/images/result-mobile.webp" alt="Пример готовой схемы хранения" decoding="async" onerror="this.src=\'../landing_design/assets/sample-scheme-mobile.webp\'" />' +
+            '<img src="../assets/images/result-vert.webp" alt="Пример готовой схемы хранения" decoding="async" />' +
           '</div>' +
         '</div>' +
         modalFoot('Понятно, продолжить')
