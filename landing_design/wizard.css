@@ -24,6 +24,9 @@
   --wz-accent-soft: #F6E7DC;   /* terracotta focus-ring (нет в общих токенах) */
   --wz-sage-soft:   #EAEFE4;   /* шалфейный фон выбора / превью-кнопки */
   --wz-pad: clamp(16px, 4.5vw, 22px);
+  /* Десктоп: ширина = размеры из оригинального макета (wizard.jsx WShell):
+     форма 600 + панель 340 + gap 56 + padding 56×2 ≈ 1120px. */
+  --wz-deskmax: 1120px;
 
   position: fixed;
   inset: 0;
@@ -580,28 +583,32 @@
     font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--u-ink-3);
   }
-  /* Двухколоночник в контейнере сайта (как старый калькулятор): ширина
-     min(1800px, 100vw−80px), форма тянется (fluid), панель фикс 340. */
+  /* Двухколоночник как у старого калькулятора (.u-calc__layout):
+     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
   .u-wiz__main {
-    display: flex; flex-direction: row; gap: 56px; align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(24px, 2.5vw, 40px);
+    align-items: start;
     max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
   }
-  .u-wiz__col { flex: 1 1 auto; min-width: 0; display: block; }
-  .u-wiz__rail {
-    display: flex; flex-direction: column; gap: 14px;
-    flex: 0 0 340px; position: sticky; top: 24px;
+  /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку */
+  .u-wiz__col {
+    min-width: 0; display: block;
+    background: var(--u-card); border: 1px solid var(--u-line);
+    border-radius: 20px; box-shadow: var(--sh-card);
+    padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 44px);
   }
-  /* поток вместо внутреннего скролла */
+  .u-wiz__rail {
+    display: flex; flex-direction: column; gap: 16px;
+    position: sticky; top: 88px; align-self: start; min-width: 0;
+  }
+  /* поток вместо внутреннего скролла; контент заполняет карточку (капы
+     с превью/размеров/сводки сняты — как в старом калькуляторе) */
   .u-wiz__progress { padding: 0 0 6px; }
   .u-wiz__scroll { overflow: visible; padding: 0; flex: none; }
   .u-wiz__step.is-on { animation: none; }
   .u-wiz__title { font-size: 34px; margin-top: 0; }
-  /* поля не на всю ширину — как в макете */
-  .u-wiz__col .u-calc__sizes,
-  .u-wiz__col .u-wiz__measure { max-width: 440px; }
-  .u-wiz__preview { max-width: 360px; }
-  .u-wiz__col .u-wiz__summary,
-  .u-wiz__col .u-promo { max-width: 480px; }
   /* футер — инлайн-ряд кнопок */
   .u-wiz__footer {
     position: static; background: none;

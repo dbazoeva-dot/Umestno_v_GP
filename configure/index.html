@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css?v=4" />
 <link rel="stylesheet" href="../landing.css?v=8" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
-<link rel="stylesheet" href="../landing_design/wizard.css?v=5" />
+<link rel="stylesheet" href="../landing_design/wizard.css?v=6" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -594,20 +594,20 @@
 
 <!-- ══ Boot-флаг визарда. Должен отработать ДО calc.js: оставляет в DOM
      ровно одну раскладку (старую форму ИЛИ визард), иначе calc.js
-     забиндит дублирующиеся хуки. Флаг: ?v=2 → визард, ?v=1 → старая,
-     иначе из localStorage (по умолчанию старая). Fail-safe: при любой
-     ошибке убираем визард и оставляем рабочую старую форму. ══ -->
+     забиндит дублирующиеся хуки. Флаг: визард ТОЛЬКО при ?v=2 в URL;
+     без персистентности — чистый /configure/ всегда старая форма.
+     Fail-safe: при любой ошибке убираем визард и оставляем старую форму. ══ -->
 <script>
 (function () {
   var wiz = document.querySelector('[data-wiz]');
   try {
-    var p = new URLSearchParams(location.search);
-    var v = p.get('v');
-    var KEY = 'umestno_wiz';
-    var on;
-    if (v === '2')      { on = true;  try { localStorage.setItem(KEY, '1'); } catch (e) {} }
-    else if (v === '1') { on = false; try { localStorage.setItem(KEY, '0'); } catch (e) {} }
-    else { try { on = localStorage.getItem(KEY) === '1'; } catch (e) { on = false; } }
+    // Визард показываем ТОЛЬКО если ?v=2 прямо в URL. Без персистентности:
+    // чистый /configure/ — всегда старая форма (визард не «залипает» в
+    // localStorage и не утекает на реальный трафик).
+    var on = new URLSearchParams(location.search).get('v') === '2';
+    // Подчищаем флаг из прежней (localStorage) версии, чтобы браузеры,
+    // успевшие его сохранить во время теста, сами вернулись к старой форме.
+    try { localStorage.removeItem('umestno_wiz'); } catch (e) {}
 
     var old = document.querySelector('main.u-calc');
     var header = document.querySelector('header.u-header');
