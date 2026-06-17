@@ -291,4 +291,44 @@ function run(zone: PlacedZone, catalog: SkuCatalogRow[], colorPreference = "neut
   assert(!ids.includes("U4") && !ids.includes("O6"), "11: edge-fail SKUs excluded");
 }
 
-console.log("ok matchSkus spec: 11 scenarios covering all branches");
+// ── 12. cells: ячейка матчится повёрнутой (admit-more) ─────────
+// Зоне нужна ячейка Ш3 Г8 (unit 3×8), органайзер имеет ячейку Ш8 Г3.
+// Неповёрнуто не совпадает, но повёрнутый органайзер даёт ячейку 3×8 →
+// должен подобраться (вещь ляжет перпендикулярно ящику).
+{
+  const zone = zoneFixture({
+    division_type: "cells", count: 1,
+    unit_w_cm: 3, unit_d_cm: 8, unit_h_cm: 8,
+    assigned_w_cm: 40, assigned_d_cm: 40, assigned_h_cm: 10,
+  });
+  const rotated = skuFixture({
+    sku_id: "ROT83", division_type: "cells",
+    cell_width_cm: 8, cell_depth_cm: 3, height_cm: 8,
+    width_cm: 20, depth_cm: 20, can_rotate: "yes",
+  });
+  const r = run(zone, [rotated]);
+  assert(r.match_status === "exact", `12: rotated cell должен подобраться, got ${r.match_status}`);
+  assert(r.candidates[0]?.sku_id === "ROT83", "12: ROT83 в кандидатах");
+}
+
+// ── 12b. slots: поворот ячейки НЕ применяется (направленные слоты) ─
+// Тот же кейс, но division=slots → нативный матч строгий по ориентации,
+// повёрнутая ячейка не допускается (поворот слотов — через composed-путь).
+{
+  const zone = zoneFixture({
+    division_type: "slots", count: 1,
+    unit_w_cm: 3, unit_d_cm: 8, unit_h_cm: 8,
+    calculated_cols: 1, calculated_rows: 1,
+    assigned_w_cm: 40, assigned_d_cm: 40, assigned_h_cm: 10,
+  });
+  const rotated = skuFixture({
+    sku_id: "SLOT83", division_type: "slots",
+    cell_width_cm: 8, cell_depth_cm: 3, height_cm: 8,
+    width_cm: 20, depth_cm: 20, cols: 1, can_rotate: "no",
+  });
+  const r = run(zone, [rotated]);
+  assert(r.candidates[0]?.sku_id !== "SLOT83" || r.match_status === "no_match",
+    `12b: slots не должен брать повёрнутую ячейку нативно, got ${r.match_status}/${r.candidates[0]?.sku_id}`);
+}
+
+console.log("ok matchSkus spec: 13 scenarios covering all branches");

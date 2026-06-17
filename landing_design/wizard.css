@@ -1,0 +1,682 @@
+/* ── Уместно · пошаговый конфигуратор (визард) ───────────────────────
+   Мобайл-first редизайн /configure/. Включается флагом (?v=2 или cookie
+   umestno_wiz=1) — см. boot-скрипт в configure/index.html. Старая форма
+   (.u-calc) остаётся дефолтом и не трогается.
+
+   Принцип: разметка визарда содержит ТЕ ЖЕ хуки, что ждёт calc.js
+   (.u-calc__choice, [data-dim], [data-items], .u-calc__pri-btn,
+   .u-calc__cta, [data-promo-block], #u-consent-oferta), поэтому промокоды,
+   fit_partial, сабмит и prefill работают без изменения JS. wizard.css лишь
+   переопределяет внешний вид этих хуков внутри scope .u-wiz, а wizard-nav.js
+   добавляет навигацию по шагам + модалки.
+
+   Токены берём из landing_design/styles.css (--u-*). Локально доопределяем
+   только то, чего там нет (focus-ring terracotta). */
+
+/* По умолчанию визард скрыт: атрибут [hidden] должен побеждать .u-wiz{
+   display:flex}, иначе при каждой загрузке /configure/ (в т.ч. без флага)
+   визард на миг перекрывал бы рабочую форму, пока внизу страницы не
+   отработает boot-скрипт. Boot снимает [hidden] (флаг вкл) либо удаляет
+   узел целиком (флаг выкл). */
+.u-wiz[hidden] { display: none !important; }
+
+.u-wiz {
+  --wz-accent-soft: #F6E7DC;   /* terracotta focus-ring (нет в общих токенах) */
+  --wz-sage-soft:   #EAEFE4;   /* шалфейный фон выбора / превью-кнопки */
+  --wz-pad: clamp(16px, 4.5vw, 22px);
+  /* Десктоп: ширина = размеры из оригинального макета (wizard.jsx WShell):
+     форма 600 + панель 340 + gap 56 + padding 56×2 ≈ 1120px. */
+  --wz-deskmax: 1120px;
+
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--u-bg);
+  font-family: var(--f-sans, 'Manrope', system-ui, sans-serif);
+  color: var(--u-ink);
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* ── Топбар: назад · бренд · бейдж шага ─────────────────────── */
+.u-wiz__topbar {
+  flex: 0 0 auto;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--wz-pad);
+  background: var(--u-card);
+  border-bottom: 1px solid var(--u-line);
+}
+.u-wiz__back {
+  width: 34px; height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid var(--u-line-2);
+  border-radius: 10px;
+  background: var(--u-bg);
+  color: var(--u-ink-2);
+  font-size: 19px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: opacity .15s, background .15s;
+}
+.u-wiz__back[disabled] { opacity: 0; pointer-events: none; }
+.u-wiz__brand {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 700; font-size: 14px; letter-spacing: -0.01em;
+}
+.u-wiz__brand img { height: 16px; width: auto; display: block; }
+.u-wiz__stepbadge {
+  margin-left: auto;
+  font-family: var(--f-mono, 'JetBrains Mono', monospace);
+  font-size: 11px; letter-spacing: 0.04em;
+  color: var(--u-ink-3);
+  background: var(--u-bg);
+  border: 1px solid var(--u-line);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+.u-wiz__stepbadge b { color: var(--u-ink); font-weight: 600; }
+
+/* ── Прогресс-бар ───────────────────────────────────────────── */
+.u-wiz__progress {
+  flex: 0 0 auto;
+  padding: 10px var(--wz-pad) 2px;
+}
+.u-wiz__progress-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.u-wiz__progress-head .s {
+  font-family: var(--f-mono, monospace);
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--u-ink-3);
+}
+.u-wiz__progress-head .l { font-size: 12.5px; font-weight: 700; color: var(--u-ink); }
+.u-wiz__bar {
+  height: 6px; border-radius: 99px;
+  background: var(--u-line);
+  overflow: hidden;
+}
+.u-wiz__bar i {
+  display: block; height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--u-accent), var(--u-accent-d));
+  transition: width .32s cubic-bezier(.2,.7,.3,1);
+}
+
+/* ── Область шага: fit-to-screen (как Screen в макете) ───────────
+   Не прокрутка, а flex-колонка: активный шаг заполняет высоту экрана,
+   а распорки .u-wiz__grow/.u-wiz__spacer распределяют контент так, чтобы
+   всё уместилось на один экран без скролла (overflow-y:auto — только
+   страховка для очень низких экранов). */
+.u-wiz__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px var(--wz-pad) 0;
+}
+.u-wiz__step { display: none; }
+.u-wiz__step.is-on {
+  display: flex; flex-direction: column;
+  flex: 1 1 auto; min-height: 0;
+  animation: u-wiz-fade .26s ease;
+}
+@keyframes u-wiz-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* Распорки fit-to-screen (Grow = гибкая, Spacer = фикс.; высоты задаются
+   инлайн, как в макете). На десктопе (карточный поток) — выключены. */
+.u-wiz__grow { flex: 1 1 0; min-height: 0; }
+.u-wiz__spacer { flex: 0 0 auto; }
+
+/* ── Типографика шага ───────────────────────────────────────── */
+/* Title — display 28 (как Title size=28 в макете) */
+.u-wiz__title {
+  font-family: var(--f-display, 'Cormorant Garamond', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(27px, 7.8vw, 32px);
+  line-height: 1.04; letter-spacing: -0.01em;
+  margin: 0 0 6px;
+  overflow-wrap: break-word;
+}
+.u-wiz__title em { font-style: italic; color: var(--u-accent); font-weight: 500; }
+/* Lead — sans 12.5 */
+.u-wiz__lead {
+  font-size: clamp(12.5px, 3.5vw, 14px); line-height: 1.5;
+  color: var(--u-ink-2); margin: 0 0 8px; max-width: 42ch;
+}
+/* Kicker — mono 10.5; отступ СВЕРХУ задаётся распоркой Spacer/Grow, поэтому
+   margin-top:0 (как в макете) */
+.u-wiz__kicker {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono, monospace);
+  font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--u-ink-3);
+  margin: 0 0 8px;
+}
+.u-wiz__kicker::before {
+  content: ""; width: 14px; height: 2px; border-radius: 2px;
+  background: var(--u-accent); flex: 0 0 auto;
+}
+.u-wiz__help {
+  margin-left: 4px; width: 16px; height: 16px;
+  border-radius: 50%; border: 1.5px solid var(--u-taupe);
+  background: transparent; color: var(--u-ink-3);
+  font-size: 10px; font-weight: 700; line-height: 1;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* ── Превью-кнопка «как будет выглядеть результат» (PreviewBanner) ─ */
+.u-wiz__preview {
+  width: 100%; height: 44px; margin: 0;
+  border-radius: 12px; cursor: pointer;
+  border: 1.5px solid var(--wz-sage-soft);
+  background: var(--wz-sage-soft);
+  color: var(--u-sage-dd);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.u-wiz__preview svg { flex: 0 0 auto; }
+
+/* ── Подсказка-рулетка над размерами ────────────────────────── */
+.u-wiz__measure {
+  width: 100%; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0; margin-bottom: 10px;
+  border: none; background: transparent;
+  font-family: inherit; font-size: 12px; line-height: 1.3; color: var(--u-ink-3);
+}
+.u-wiz__measure img { width: 20px; height: 20px; flex: 0 0 auto; display: block; }
+.u-wiz__measure b { font-weight: 700; color: var(--u-ink-2); }
+.u-wiz__measure .more {
+  margin-left: auto; flex: 0 0 auto;
+  font-weight: 600; color: var(--u-sage-d);
+  border-bottom: 1px solid var(--u-sage);
+}
+
+/* ── Чипы (тип пространства / что храните) — переопределяем
+      старый .u-calc__choice (card) под компактный чип ────────── */
+.u-wiz .u-calc__choices {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.u-wiz .u-calc__choice {
+  height: auto !important;
+  width: auto;
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--u-line-2);
+  background: var(--u-card);
+  color: var(--u-ink-2);
+  font-size: 12.5px; font-weight: 600;
+  box-shadow: var(--sh-card, 0 1px 3px rgba(80,70,55,0.05));
+}
+/* В макете (Chip) у чипов НЕТ иконки категории — только текст, галочка на
+   выбранном и «скоро» у недоступных. Иконки из старой формы делали чипы
+   шире, 3 не помещались в строку и переносились (+~80px высоты → скролл). */
+.u-wiz .u-calc__choice .u-calc__choice-ic { display: none; }
+.u-wiz .u-calc__choice.is-on {
+  border-color: var(--u-sage-d);
+  background: var(--wz-sage-soft);
+  color: var(--u-sage-dd);
+}
+/* галочка на выбранном чипе (как Check в Chip) */
+.u-wiz .u-calc__choice.is-on::before {
+  content: ""; width: 13px; height: 13px; flex: 0 0 auto;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 6 11 11.5 3.5' fill='none' stroke='%237D8C72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 13px no-repeat;
+}
+.u-wiz .u-calc__choice.is-soon { opacity: 0.55; border-style: dashed; }
+.u-wiz .u-calc__choice-soon {
+  position: static; top: auto; right: auto; padding: 0; margin-left: 2px;
+  font-family: var(--f-mono, monospace); font-size: 8.5px; background: none; border: none; color: var(--u-ink-3);
+}
+
+/* ── Размеры ─────────────────────────────────────────────────── */
+.u-wiz .u-calc__sizes { display: flex; gap: 8px; }
+.u-wiz .u-calc__sz {
+  flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;
+}
+.u-wiz .u-calc__sz > span {
+  font-family: var(--f-mono, monospace); font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--u-ink-3);
+  text-align: center;
+}
+.u-wiz .u-calc__sz input {
+  height: 48px; width: 100%; box-sizing: border-box;
+  border: 1.5px solid var(--u-line-2); border-radius: 12px;
+  background: var(--u-card);
+  text-align: center;
+  font-family: var(--f-display, serif); font-size: 24px; font-weight: 600; color: var(--u-ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+.u-wiz .u-calc__sz input:focus {
+  outline: none; border-color: var(--u-accent);
+  box-shadow: 0 0 0 3px var(--wz-accent-soft);
+}
+.u-wiz.is-dim-warn .u-calc__sz input { color: var(--u-taupe); }
+
+/* В макете «Частые» и пресеты — в ОДНУ строку (flex-row). calc.css ставит
+   этому классу flex-direction:column, поэтому переопределяем явно. */
+.u-wiz .u-calc__preset-row {
+  display: flex; flex-direction: row; align-items: baseline;
+  gap: 13px; flex-wrap: wrap; margin-top: 10px;
+}
+.u-wiz .u-calc__preset-label {
+  font-family: var(--f-mono, monospace); font-size: 9px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--u-ink-3);
+}
+.u-wiz .u-calc__presets { display: flex; gap: 13px; flex-wrap: wrap; }
+.u-wiz .u-calc__preset {
+  background: none !important; border: none !important; border-radius: 0 !important;
+  padding: 0 0 1px !important;
+  font-family: var(--f-mono, monospace); font-size: 11.5px; font-weight: 500;
+  color: var(--u-ink-3) !important; cursor: pointer;
+  border-bottom: 1.5px solid transparent !important;
+}
+.u-wiz .u-calc__preset.is-on {
+  color: var(--u-ink) !important;
+  border-bottom-color: var(--u-taupe) !important;
+}
+
+/* «Не знаю размеры» чекбокс */
+.u-wiz .u-calc__check {
+  display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; cursor: pointer;
+}
+.u-wiz .u-calc__check input { position: absolute; opacity: 0; pointer-events: none; }
+.u-wiz .u-calc__check .box {
+  width: 20px; height: 20px; flex: 0 0 auto; margin-top: 1px;
+  border: 1.5px solid var(--u-taupe); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.u-wiz .u-calc__check input:checked + .box { background: var(--u-sage-d); border-color: var(--u-sage-d); }
+.u-wiz .u-calc__check-txt { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
+.u-wiz .u-calc__check-txt .t { font-weight: 600; color: var(--u-ink); display: block; }
+.u-wiz .u-calc__check-txt .h { color: var(--u-ink-3); }
+
+/* ── Шаг 2: категории ───────────────────────────────────────── */
+.u-wiz__itemhead {
+  display: flex; gap: 7px; padding: 0 2px 6px;
+}
+.u-wiz__itemhead span {
+  font-family: var(--f-mono, monospace); font-size: 9.5px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--u-ink-3);
+}
+.u-wiz__itemhead span:nth-child(1) { flex: 1.2 1 0; }
+.u-wiz__itemhead span:nth-child(2) { flex: 1 1 0; }
+.u-wiz .u-calc__items { display: flex; flex-direction: column; gap: 8px; }
+.u-wiz .u-calc__item-row { display: flex; gap: 7px; align-items: center; }
+.u-wiz .u-calc__field { flex: 1 1 0; min-width: 0; }
+.u-wiz .u-calc__field:nth-child(1) { flex: 1.2 1 0; }
+/* per-row подписи прячем — есть общий ItemHead сверху */
+.u-wiz .u-calc__field-lbl { display: none; }
+.u-wiz .u-calc__select-wrap { position: relative; }
+.u-wiz .u-calc__select-wrap select {
+  width: 100%; height: 44px; box-sizing: border-box;
+  appearance: none; -webkit-appearance: none;
+  border: 1.5px solid var(--u-line-2); border-radius: 11px;
+  background: var(--u-card); color: var(--u-ink);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 0 28px 0 11px;
+  text-overflow: ellipsis;
+}
+.u-wiz .u-calc__select-wrap select:disabled { color: var(--u-ink-3); }
+.u-wiz .u-calc__select-wrap svg {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--u-ink-3); pointer-events: none;
+}
+.u-wiz .u-calc__item-rm {
+  width: 38px; height: 44px; flex: 0 0 auto;
+  border: 1.5px solid var(--u-line-2); border-radius: 11px;
+  background: var(--u-card); color: var(--u-ink-3);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.u-wiz .u-calc__dup-hint { font-size: 11px; color: var(--u-accent-d); margin: 8px 2px 0; line-height: 1.4; }
+.u-wiz .u-calc__add {
+  width: 100%; height: 42px; margin-top: 9px;
+  border: 1.5px dashed var(--u-line-2); border-radius: 12px;
+  background: transparent; color: var(--u-ink-3);
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer;
+}
+
+/* ── Приоритет (карточки) ───────────────────────────────────── */
+.u-wiz .u-calc__priority { display: flex; flex-direction: column; gap: 8px; }
+.u-wiz .u-calc__pri-btn {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 13px 14px; border-radius: 14px; cursor: pointer; text-align: left;
+  border: 1.5px solid var(--u-line-2); background: var(--u-card);
+}
+.u-wiz .u-calc__pri-btn.is-on { border-color: var(--u-sage-d); background: var(--wz-sage-soft); }
+.u-wiz .u-calc__pri-check {
+  width: 22px; height: 22px; flex: 0 0 auto; margin-top: 1px;
+  border-radius: 50%; border: 1.5px solid var(--u-taupe);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.u-wiz .u-calc__pri-btn.is-on .u-calc__pri-check { background: var(--u-sage-d); border-color: var(--u-sage-d); }
+.u-wiz .u-calc__pri-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.u-wiz .u-calc__pri-body .ttl {
+  font-family: var(--f-display, serif); font-size: 18px; font-weight: 600; color: var(--u-ink); line-height: 1.1;
+}
+.u-wiz .u-calc__pri-btn.is-on .u-calc__pri-body .ttl { color: var(--u-sage-dd); }
+.u-wiz .u-calc__pri-body .sub { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
+
+/* ── Шаг 3: сводка ──────────────────────────────────────────── */
+.u-wiz__summary {
+  border: 1.5px solid var(--u-line-2); border-radius: 16px;
+  background: var(--u-card); padding: 2px 14px; margin: 12px 0 11px;
+  box-shadow: var(--sh-card, 0 1px 3px rgba(80,70,55,0.05));
+}
+.u-wiz__sumrow {
+  display: flex; align-items: center; gap: 10px; padding: 11px 0;
+  border-bottom: 1px solid var(--u-line);
+}
+.u-wiz__sumrow:last-child { border-bottom: none; }
+.u-wiz__sumrow .k {
+  font-family: var(--f-mono, monospace); font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--u-ink-3);
+  width: 76px; flex: 0 0 auto;
+}
+.u-wiz__sumrow .v { font-size: 13px; font-weight: 600; color: var(--u-ink); flex: 1 1 auto; min-width: 0; }
+.u-wiz__sumrow .edit {
+  display: flex; align-items: center; gap: 4px; flex: 0 0 auto;
+  font-size: 11px; font-weight: 600; color: var(--u-ink-3); background: none; border: none; cursor: pointer;
+}
+
+/* промокод и оферта внутри визарда — мягкая адаптация существующих блоков */
+.u-wiz .u-promo { margin: 0 0 10px; }
+.u-wiz .u-consent { display: flex; gap: 10px; align-items: flex-start; }
+.u-wiz .u-consent label { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
+
+/* ── Footer (липкий CTA-док) ────────────────────────────────── */
+.u-wiz__footer {
+  flex: 0 0 auto;
+  padding: 12px var(--wz-pad) calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255,253,249,0.92);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-top: 1px solid var(--u-line);
+}
+.u-wiz__next {
+  width: 100%; height: 52px; border: none; border-radius: 15px; cursor: pointer;
+  background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd)); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 8px 22px -8px rgba(105,120,95,0.6);
+}
+.u-wiz__next[disabled] { background: var(--u-line-2); color: var(--u-ink-3); box-shadow: none; cursor: not-allowed; }
+/* [hidden] не скрывает элементы с явным display (display:flex перебивает
+   UA-правило [hidden]{display:none}). next-кнопка и финальный CTA имеют
+   display:flex, поэтому глушим их через явное правило — иначе на каждом
+   шаге показались бы обе кнопки разом. */
+.u-wiz__next[hidden],
+.u-wiz__footer .u-calc__actions[hidden] { display: none !important; }
+/* финальный CTA (calc.js) на шаге 3 — растягиваем под футер */
+.u-wiz__footer .u-calc__actions { margin: 0; }
+.u-wiz__footer .u-calc__cta {
+  width: 100%; height: 52px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  border-radius: 15px; font-size: 15px;
+}
+.u-wiz__note { margin: 9px 2px 0; font-size: 10.5px; line-height: 1.45; color: var(--u-ink-3); text-align: center; }
+[data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
+
+/* ── Модалки (нижний лист) ──────────────────────────────────── */
+.u-wiz-modal {
+  position: fixed; inset: 0; z-index: 9998;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(40,32,26,0.5);
+  -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px);
+  font-family: var(--f-sans, sans-serif);
+  animation: u-wiz-mfade .2s ease;
+}
+@keyframes u-wiz-mfade { from { opacity: 0; } to { opacity: 1; } }
+/* Лист модалки — секционный: шапка (flex:0) → тело (скролл) → футер (flex:0).
+   Паддинги задают секции, а не лист, поэтому CTA не липнет к низу. */
+.u-wiz-modal__sheet {
+  width: 100%; max-width: 520px; max-height: calc(100% - 10px);
+  background: var(--u-bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
+  display: flex; flex-direction: column; overflow: hidden;
+  animation: u-wiz-mup .26s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes u-wiz-mup { from { transform: translateY(30px); } to { transform: none; } }
+.u-wiz-modal__hd { flex: 0 0 auto; padding: 10px var(--wz-pad) 8px; }
+.u-wiz-modal__grip { width: 40px; height: 4px; border-radius: 99px; background: var(--u-taupe); margin: 0 auto 12px; }
+.u-wiz-modal__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.u-wiz-modal__title {
+  font-family: var(--f-display, serif); font-weight: 500; font-size: 23px; line-height: 1.05; margin: 0; color: var(--u-ink);
+}
+.u-wiz-modal__title em { font-style: italic; color: var(--u-accent); }
+.u-wiz-modal__close {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
+  border: 1px solid var(--u-line-2); background: var(--u-card); color: var(--u-ink-2);
+  font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.u-wiz-modal__body { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 4px var(--wz-pad) 6px; }
+.u-wiz-modal__p { margin: 0 0 16px; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-modal__ft {
+  flex: 0 0 auto;
+  padding: 12px var(--wz-pad) calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--u-line); background: var(--u-bg);
+}
+.u-wiz-modal__cta {
+  width: 100%; height: 52px; margin: 0;
+  border: none; border-radius: 15px; cursor: pointer;
+  background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd)); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+}
+/* превью результата: картинка во всю ширину */
+.u-wiz-modal__preview {
+  background: #FFFBF5; border: 1.5px solid var(--u-line-2);
+  border-radius: 16px; overflow: hidden;
+}
+.u-wiz-modal__preview img { width: 100%; height: auto; display: block; }
+/* приоритет-хелп: список режимов */
+.u-wiz-prio { display: flex; flex-direction: column; gap: 12px; }
+.u-wiz-prio__row { display: flex; gap: 12px; align-items: flex-start; }
+.u-wiz-prio__n {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--u-line); color: var(--u-ink-3);
+  font-family: var(--f-display, serif); font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.u-wiz-prio__row:first-child .u-wiz-prio__n { background: var(--wz-sage-soft); color: var(--u-sage-d); }
+.u-wiz-prio__t { font-size: 14px; font-weight: 700; color: var(--u-ink); margin-bottom: 1px; }
+.u-wiz-prio__d { font-size: 12px; line-height: 1.45; color: var(--u-ink-2); }
+/* measure-модалка: подзаголовок с рулеткой + строки с чертежами (вид
+   сверху / сбоку) — как MeasurePopup в макете */
+.u-wiz-measure__lead {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
+}
+.u-wiz-measure__lead img { width: 22px; height: 22px; flex: 0 0 auto; display: block; }
+.u-wiz-measure__lead p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-measure__lead b { font-weight: 700; color: var(--u-ink); }
+.u-wiz-measure__row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+}
+.u-wiz-measure__dia { width: 100px; height: 72px; flex: 0 0 auto; display: block; }
+.u-wiz-measure__txt { min-width: 0; }
+.u-wiz-measure__txt .t { font-size: 13.5px; font-weight: 700; color: var(--u-ink); margin-bottom: 3px; }
+.u-wiz-measure__txt .d { font-size: 11.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-measure__txt .d b { font-weight: 600; color: var(--u-ink); }
+/* measure-модалка: карточка-ссылка на статью */
+.u-wiz-measure__article {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-top: 14px;
+  border-radius: 14px; border: 1px solid var(--wz-sage-soft); background: var(--wz-sage-soft);
+  text-decoration: none;
+}
+.u-wiz-measure__article-ic {
+  width: 42px; height: 42px; flex: 0 0 auto; border-radius: 11px;
+  background: var(--u-card); border: 1px solid var(--wz-sage-soft);
+  display: flex; align-items: center; justify-content: center; color: var(--u-sage-d);
+}
+.u-wiz-measure__article .eyebrow {
+  font-family: var(--f-mono, monospace); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--u-sage-dd);
+}
+.u-wiz-measure__article .ttl { font-size: 13.5px; font-weight: 700; color: var(--u-ink); line-height: 1.2; }
+.u-wiz-measure__article .meta { font-size: 11px; color: var(--u-ink-3); }
+.u-wiz-measure__article .arr { margin-left: auto; flex: 0 0 auto; color: var(--u-sage-dd); font-size: 15px; }
+
+/* ── Вложенность main/col (нужна для двухколоночника на десктопе).
+      На мобиле .u-wiz__main и .u-wiz__col — прозрачные flex-обёртки, чтобы
+      внутренний скролл (.u-wiz__scroll) и липкий футер работали как раньше.
+      Правая панель и десктопные элементы скрыты до брейкпоинта. ───────── */
+.u-wiz__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.u-wiz__col  { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.u-wiz__rail,
+.u-wiz__topbar-label,
+.u-wiz__back-d { display: none; }
+
+/* ── Правая панель ценности (offer / отзыв До-После / secure).
+      Стили определяем всегда, видимость включает десктоп-брейкпоинт. ──── */
+.u-wiz__offer {
+  background: var(--u-card); border: 1.5px solid var(--u-line-2); border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(80,70,55,0.07);
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+}
+.u-wiz__offer-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.u-wiz__offer-head .lbl {
+  font-family: var(--f-mono, monospace); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--u-ink-3); max-width: 18ch; line-height: 1.4;
+}
+.u-wiz__offer-head .price {
+  font-family: var(--f-display, serif); font-size: 34px; font-weight: 600;
+  color: var(--u-ink); line-height: 0.9; white-space: nowrap;
+}
+.u-wiz__offer-div { height: 1px; background: var(--u-line); }
+.u-wiz__offer-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.u-wiz__offer-list li {
+  position: relative; padding-left: 27px; font-size: 12.5px; line-height: 1.4; color: var(--u-ink-2);
+}
+.u-wiz__offer-list li::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--wz-sage-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 6 11 11.5 3.5' fill='none' stroke='%237D8C72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 10px no-repeat;
+}
+.u-wiz__review {
+  background: var(--u-card); border: 1.5px solid var(--u-line-2); border-radius: 18px;
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 13px;
+}
+.u-wiz__review-top { display: flex; align-items: center; justify-content: space-between; }
+.u-wiz__review-top .hist {
+  font-family: var(--f-mono, monospace); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--u-ink-3);
+}
+.u-wiz__review-quote {
+  font-family: var(--f-display, serif); font-style: italic; font-size: 18px;
+  line-height: 1.32; color: var(--u-ink); margin: 0;
+}
+.u-wiz__review-pair { display: flex; flex-direction: column; gap: 8px; }
+.u-wiz__review-pair figure {
+  position: relative; margin: 0; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--u-line-2); aspect-ratio: 545 / 300;
+}
+.u-wiz__review-pair img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.u-wiz__review-pair figcaption {
+  position: absolute; top: 8px; left: 8px;
+  font-family: var(--f-mono, monospace); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+  border-radius: 20px; padding: 3px 9px;
+}
+.u-wiz__review-pair .is-before { background: rgba(46,46,46,0.82); }
+.u-wiz__review-pair .is-after  { background: var(--u-sage-d); }
+.u-wiz__review-author { display: flex; align-items: center; gap: 8px; }
+.u-wiz__review-author .av {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--wz-sage-soft); color: var(--u-sage-dd);
+  font-family: var(--f-display, serif); font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.u-wiz__review-author .who { display: flex; flex-direction: column; margin-right: auto; }
+.u-wiz__review-author .who b { font-size: 12.5px; color: var(--u-ink); line-height: 1.1; }
+.u-wiz__review-author .who span { font-size: 10.5px; color: var(--u-ink-3); }
+.u-wiz__review-author .dots { display: flex; gap: 5px; flex: 0 0 auto; }
+.u-wiz__review-author .dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--u-taupe); display: block; }
+.u-wiz__review-author .dots i.on { width: 16px; background: var(--u-accent); }
+.u-wiz__secure { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
+.u-wiz__secure svg { flex: 0 0 auto; margin-top: 1px; }
+.u-wiz__secure span { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); }
+
+/* ── Планшет 600–959: один столбец, но центрированный (без растягивания) ─ */
+@media (min-width: 600px) and (max-width: 959px) {
+  .u-wiz__topbar, .u-wiz__progress, .u-wiz__scroll, .u-wiz__footer {
+    padding-left: max(var(--wz-pad), calc((100vw - 560px) / 2));
+    padding-right: max(var(--wz-pad), calc((100vw - 560px) / 2));
+  }
+}
+
+/* ── Десктоп ≥960: двухколоночник (форма слева + панель ценности справа) ─ */
+@media (min-width: 960px) {
+  .u-wiz {
+    position: static; inset: auto; height: auto; min-height: 100vh;
+    overflow: visible; display: block;
+  }
+  /* топбар → хедер: статичный (без sticky — гарантированно виден), с чётким
+     нижним разделителем. Внутренние отступы повторяют контейнер сайта
+     (--container/--gutter, как у старого калькулятора), чтобы лого лёг над
+     левым краем формы, а лейбл — над правым краем панели. */
+  .u-wiz__topbar {
+    position: static; height: 64px;
+    border-bottom: 1px solid var(--u-line-2);
+    padding-left: calc((100vw - var(--container)) / 2 + var(--gutter));
+    padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
+  }
+  .u-wiz__back, .u-wiz__stepbadge, .u-wiz__brand-m { display: none; }
+  .u-wiz__brand img { height: 20px; }
+  .u-wiz__topbar-label {
+    display: inline-block; margin-left: auto;
+    font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--u-ink-3);
+  }
+  /* Двухколоночник как у старого калькулятора (.u-calc__layout):
+     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
+  .u-wiz__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(24px, 2.5vw, 40px);
+    align-items: start;
+    max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
+  }
+  /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку */
+  .u-wiz__col {
+    min-width: 0; display: block;
+    background: var(--u-card); border: 1px solid var(--u-line);
+    border-radius: 20px; box-shadow: var(--sh-card);
+    padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 44px);
+  }
+  .u-wiz__rail {
+    display: flex; flex-direction: column; gap: 16px;
+    position: sticky; top: 88px; align-self: start; min-width: 0;
+  }
+  /* карточный поток вместо мобильного fit-to-screen: распорки выключены,
+     шаг — обычный блок, контент заполняет карточку */
+  .u-wiz__progress { padding: 0 0 6px; }
+  .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
+  .u-wiz__step.is-on { display: block; animation: none; }
+  .u-wiz__grow, .u-wiz__spacer { display: none; }
+  .u-wiz__title { font-size: 34px; margin-top: 0; }
+  /* футер — инлайн-ряд кнопок */
+  .u-wiz__footer {
+    position: static; background: none;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-top: none; padding: 32px 0 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  }
+  .u-wiz__back-d {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 54px; padding: 0 22px; border-radius: 14px; cursor: pointer;
+    border: 1.5px solid var(--u-line-2); background: var(--u-card); color: var(--u-ink-2);
+    font-family: inherit; font-size: 15px; font-weight: 600;
+  }
+  .u-wiz__back-d[disabled] { display: none; }
+  .u-wiz__next { width: auto; padding: 0 32px; }
+  .u-wiz__next::after { content: "›"; font-size: 18px; margin-top: -2px; }
+  .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
+  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
+  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 13px 0 0; max-width: 52ch; }
+}
