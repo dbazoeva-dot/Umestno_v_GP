@@ -217,15 +217,46 @@
     });
   });
 
-  // Как измерить
+  // Как измерить — с чертежами (вид сверху + вид сбоку), как MeasurePopup
+  var TOP_DIAGRAM =
+    '<svg class="u-wiz-measure__dia" viewBox="0 0 116 84" aria-hidden="true">' +
+      '<rect x="32" y="12" width="62" height="44" rx="8" fill="#F8EEE0" stroke="#DBC8B1" stroke-width="1.3"/>' +
+      '<g stroke="#DBC8B1" stroke-width="1" stroke-linecap="round">' +
+        '<line x1="32" y1="12" x2="16" y2="12"/><line x1="32" y1="56" x2="16" y2="56"/>' +
+        '<line x1="32" y1="58" x2="32" y2="73"/><line x1="94" y1="58" x2="94" y2="73"/></g>' +
+      '<g stroke="#D08A72" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" fill="none">' +
+        '<line x1="20" y1="13" x2="20" y2="55"/><polyline points="17.5,16 20,13 22.5,16"/><polyline points="17.5,52 20,55 22.5,52"/>' +
+        '<line x1="34" y1="70" x2="92" y2="70"/><polyline points="37,67.5 34,70 37,72.5"/><polyline points="89,67.5 92,70 89,72.5"/></g>' +
+      '<text x="9" y="37" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#B6735C">Г</text>' +
+      '<text x="63" y="81" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#B6735C">Ш</text>' +
+    '</svg>';
+  var SIDE_DIAGRAM =
+    '<svg class="u-wiz-measure__dia" viewBox="0 0 116 84" aria-hidden="true">' +
+      '<path d="M34 16 V58 H94 V16" fill="none" stroke="#C2A98C" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<line x1="34" y1="26" x2="94" y2="26" stroke="#CDB89C" stroke-width="1.1" stroke-dasharray="3.5 3.5" stroke-linecap="round"/>' +
+      '<g stroke="#DBC8B1" stroke-width="1" stroke-linecap="round"><line x1="34" y1="26" x2="18" y2="26"/><line x1="34" y1="58" x2="18" y2="58"/></g>' +
+      '<g stroke="#D08A72" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" fill="none">' +
+        '<line x1="22" y1="27" x2="22" y2="57"/><polyline points="19.5,30 22,27 24.5,30"/><polyline points="19.5,54 22,57 24.5,54"/></g>' +
+      '<text x="11" y="45" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#B6735C">В</text>' +
+    '</svg>';
   var measureBtn = wiz.querySelector('[data-wiz-measure]');
   if (measureBtn) measureBtn.addEventListener('click', function () {
     track('measure_help_open');
     openModal(
       modalHead('Как измерить', 'ящик') +
       '<div class="u-wiz-modal__body">' +
-        '<p class="u-wiz-modal__p">Пожалуйста, измеряйте <b style="color:#2E2E2E">внутренние</b> стороны. Размеры нужны, чтобы все органайзеры точно подошли.</p>' +
-        '<p class="u-wiz-modal__p" style="margin:0"><b style="color:#2E2E2E">Ширина и глубина:</b> от стенки к стенке внутри ящика, без фасада, бортиков и направляющих.<br><b style="color:#2E2E2E">Высота:</b> от дна до самой низкой точки сверху — лучше оставить запас 1–2&nbsp;см.</p>' +
+        '<div class="u-wiz-measure__lead">' +
+          '<img src="../landing_design/assets/measuring_tape.png" alt="" decoding="async" />' +
+          '<p>Пожалуйста, измеряйте <b>внутренние</b> стороны. Размеры нужны, чтобы все органайзеры точно подошли.</p>' +
+        '</div>' +
+        '<div class="u-wiz-measure__row">' + TOP_DIAGRAM +
+          '<div class="u-wiz-measure__txt"><div class="t">Ширина и глубина</div>' +
+            '<div class="d"><b>ширина:</b> от левого края к правому<br><b>глубина:</b> от передней стенки к задней<br>без фасада, бортиков и направляющих</div></div>' +
+        '</div>' +
+        '<div class="u-wiz-measure__row">' + SIDE_DIAGRAM +
+          '<div class="u-wiz-measure__txt"><div class="t">Высота</div>' +
+            '<div class="d">от дна до самой низкой точки сверху, лучше оставить запас 1–2&nbsp;см.</div></div>' +
+        '</div>' +
         '<a class="u-wiz-measure__article" href="../blog/kak-zamerit-yashchik/" target="_blank" rel="noopener">' +
           '<span class="u-wiz-measure__article-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5z"/><path d="M17 7h3v12H6"/><path d="M8 9h6M8 12h6"/></svg></span>' +
           '<span style="display:flex;flex-direction:column;min-width:0">' +
