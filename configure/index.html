@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css?v=4" />
 <link rel="stylesheet" href="../landing.css?v=8" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
-<link rel="stylesheet" href="../landing_design/wizard.css?v=6" />
+<link rel="stylesheet" href="../landing_design/wizard.css?v=7" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -78,7 +78,6 @@
       <span class="u-wiz__brand-m">Конфигуратор</span>
     </span>
     <span class="u-wiz__topbar-label">Конфигуратор хранения</span>
-    <span class="u-wiz__stepbadge">Шаг <b data-wiz-cur>1</b>/3</span>
   </div>
 
   <div class="u-wiz__main">
@@ -97,13 +96,14 @@
     <!-- ── Шаг 1 · Ваш ящик ──────────────────────────────────── -->
     <section class="u-wiz__step is-on" data-wiz-step="1">
       <h1 class="u-wiz__title">Ваш <em>ящик</em></h1>
-      <p class="u-wiz__lead">Несколько параметров — и подберём органайзеры под ваш ящик.</p>
+      <p class="u-wiz__lead">Несколько параметров — и подберём органайзеры.</p>
 
       <button type="button" class="u-wiz__preview" data-wiz-preview>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>
         Как будет выглядеть результат
       </button>
 
+      <div class="u-wiz__spacer" style="height:14px"></div>
       <div class="u-wiz__kicker">Тип пространства</div>
       <div class="u-calc__choices">
         <button type="button" class="u-calc__choice is-on" aria-pressed="true">
@@ -120,22 +120,24 @@
         </button>
       </div>
 
+      <div class="u-wiz__spacer" style="height:12px"></div>
       <div class="u-wiz__kicker">Что храните</div>
       <div class="u-calc__choices">
         <button type="button" class="u-calc__choice is-on" aria-pressed="true">
           <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l3 2 2 1 2-1 3-2 3 3-3 3v9H6v-9L3 7z"/></svg></span>
-          <span class="u-calc__choice-t">Одежда для взрослых</span>
+          <span class="u-calc__choice-t">Одежда</span>
         </button>
         <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled>
           <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="7" r="2"/><path d="M4 20c0-3 2.5-5 5-5s5 2 5 5"/><path d="M14 19c.5-2 2-3.5 4-3.5"/></svg></span>
-          <span class="u-calc__choice-t">Детские вещи</span><span class="u-calc__choice-soon">скоро</span>
+          <span class="u-calc__choice-t">Детское</span><span class="u-calc__choice-soon">скоро</span>
         </button>
         <button type="button" class="u-calc__choice is-soon" aria-pressed="false" disabled>
           <span class="u-calc__choice-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/><path d="M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></svg></span>
-          <span class="u-calc__choice-t">Домашний текстиль</span><span class="u-calc__choice-soon">скоро</span>
+          <span class="u-calc__choice-t">Текстиль</span><span class="u-calc__choice-soon">скоро</span>
         </button>
       </div>
 
+      <div class="u-wiz__grow" style="min-height:20px"></div>
       <div class="u-wiz__kicker">Размеры, см</div>
       <button type="button" class="u-wiz__measure" data-wiz-measure>
         <img src="../landing_design/assets/measuring_tape.png" alt="" decoding="async" />
@@ -147,6 +149,7 @@
         <label class="u-calc__sz"><span>Глубина</span><input type="text" inputmode="numeric" data-dim="d" value="45" placeholder="45" /></label>
         <label class="u-calc__sz"><span>Высота</span><input type="text" inputmode="numeric" data-dim="h" value="15" placeholder="15" /></label>
       </div>
+      <div class="u-wiz__spacer" style="height:8px"></div>
       <div class="u-calc__preset-row">
         <div class="u-calc__preset-label">Частые</div>
         <div class="u-calc__presets">
@@ -155,14 +158,7 @@
           <button type="button" class="u-calc__preset" data-w="90" data-d="50" data-h="20">90×50×20</button>
         </div>
       </div>
-      <label class="u-calc__check">
-        <input type="checkbox" />
-        <span class="box" aria-hidden="true"></span>
-        <span class="u-calc__check-txt">
-          <span class="t">Не знаю точные размеры.</span>
-          <span class="h">Можно продолжить с примерными, но перед покупкой органайзеров лучше измерить.</span>
-        </span>
-      </label>
+      <div class="u-wiz__grow"></div>
     </section>
 
     <!-- ── Шаг 2 · Что внутри + приоритет ────────────────────── -->
@@ -173,11 +169,13 @@
       <div class="u-wiz__itemhead"><span>Что хранить</span><span>Объём</span></div>
       <div class="u-calc__items" data-items></div>
       <p class="u-calc__dup-hint" data-items-dup-hint hidden></p>
+      <div class="u-wiz__spacer" style="height:9px"></div>
       <button type="button" class="u-calc__add" data-add>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>
         <span>Добавить ещё категорию</span>
       </button>
 
+      <div class="u-wiz__grow" style="min-height:18px"></div>
       <div class="u-wiz__kicker">Что важнее в итоге
         <button type="button" class="u-wiz__help" data-wiz-prio aria-label="Что значит важнее">?</button>
       </div>
@@ -195,6 +193,7 @@
           <span class="u-calc__pri-body"><span class="ttl">Экономично</span><span class="sub">минимум органайзеров и трат</span></span>
         </button>
       </div>
+      <div class="u-wiz__grow"></div>
     </section>
 
     <!-- ── Шаг 3 · Оплата ────────────────────────────────────── -->
@@ -207,6 +206,7 @@
         Как будет выглядеть результат
       </button>
 
+      <div class="u-wiz__grow" style="min-height:12px"></div>
       <div class="u-wiz__summary" data-wiz-summary></div>
 
       <div class="u-promo" data-promo-block>
@@ -223,10 +223,12 @@
         </div>
       </div>
 
+      <div class="u-wiz__spacer" style="height:10px"></div>
       <div class="u-consent">
         <input type="checkbox" id="u-consent-oferta" required />
         <label for="u-consent-oferta">Я принимаю условия <a href="../oferta/" target="_blank" rel="noopener">Оферты</a> и понимаю, что схема формируется на основании введённых мной данных.</label>
       </div>
+      <div class="u-wiz__grow"></div>
     </section>
   </div>
 
