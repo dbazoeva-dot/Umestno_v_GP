@@ -261,8 +261,11 @@
 }
 .u-wiz.is-dim-warn .u-calc__sz input { color: var(--u-taupe); }
 
+/* В макете «Частые» и пресеты — в ОДНУ строку (flex-row). calc.css ставит
+   этому классу flex-direction:column, поэтому переопределяем явно. */
 .u-wiz .u-calc__preset-row {
-  display: flex; align-items: center; gap: 10px 13px; flex-wrap: wrap; margin-top: 10px;
+  display: flex; flex-direction: row; align-items: baseline;
+  gap: 13px; flex-wrap: wrap; margin-top: 10px;
 }
 .u-wiz .u-calc__preset-label {
   font-family: var(--f-mono, monospace); font-size: 9px;
