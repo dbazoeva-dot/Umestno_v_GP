@@ -191,42 +191,49 @@
   }
   function onEsc(e) { if (e.key === 'Escape') closeModal(); }
 
-  var modalHead = function (title, em) {
-    return '<div class="u-wiz-modal__hd">' +
-      '<div class="u-wiz-modal__grip"></div>' +
-      '<div class="u-wiz-modal__head">' +
-        '<h2 class="u-wiz-modal__title">' + title + ' <em>' + em + '</em></h2>' +
-        '<button type="button" class="u-wiz-modal__close" data-wiz-mclose aria-label="Закрыть">✕</button>' +
-      '</div>' +
-    '</div>';
-  };
-  // CTA модалки — в отдельном футере с верхней границей и нижним отступом.
-  var modalFoot = function (label) {
-    return '<div class="u-wiz-modal__ft">' +
-      '<button type="button" class="u-wiz-modal__cta" data-wiz-mclose>' + label + '</button>' +
-    '</div>';
-  };
+  // Шаблон «головы» (grip + заголовок + крестик) — общий для всех трёх попапов.
+  // Точно как в макете: grip 40×4, Title size 23, mb 0, крестик 30×30.
+  // Отступ между головой и контентом задаёт КАЖДЫЙ попап сам (marginBottom),
+  // потому что в макете он разный: preview 8, measure 8 (внутри head), prio 6.
+  function popupHead(title, em) {
+    return '<div class="u-wiz-mp__grip"></div>' +
+      '<div class="u-wiz-mp__head">' +
+        '<h2 class="u-wiz-mp__title">' + title + ' <em>' + em + '</em></h2>' +
+        '<button type="button" class="u-wiz-mp__close" data-wiz-mclose aria-label="Закрыть">✕</button>' +
+      '</div>';
+  }
 
-  // Превью результата — главная фича для конверсии: показываем пример
-  // готовой схемы ДО оплаты, чтобы снять «кота в мешке».
+  // ── 1. PreviewPopup — особая трёхсекционная структура с CTA-overlap ──
+  // В макете: лист {display:flex, flexDirection:column, overflow:hidden,
+  // maxHeight: calc(100% - 8px)}, внутри три секции:
+  //   head   flex:0 0, padding 10/18/8
+  //   body   flex:0 1, padding 0/18, position:relative z-index:1; внутри
+  //          превью-карточка {background:#FFFBF5, border, borderRadius:16/16/0/0,
+  //          paddingBottom:26, overflow:hidden} с картинкой width:100%
+  //   footer flex:0 0, marginTop:-20, z-index:2, padding 10/18/(14+safe),
+  //          borderTop, background:bg — НАЕЗЖАЕТ поверх карточки на 20px.
   wiz.querySelectorAll('[data-wiz-preview]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       track('preview_result_open');
       openModal(
-        modalHead('Как будет', 'выглядеть') +
-        '<div class="u-wiz-modal__body u-wiz-modal__body--preview">' +
-          '<div class="u-wiz-modal__preview">' +
-            '<img src="../assets/images/result-vert.webp" alt="Пример готовой схемы хранения" decoding="async" />' +
+        '<div class="u-wiz-mp u-wiz-mp--preview">' +
+          '<div class="u-wiz-mp__top">' + popupHead('Как будет', 'выглядеть') + '</div>' +
+          '<div class="u-wiz-mp__pvbody">' +
+            '<div class="u-wiz-mp__pvcard">' +
+              '<img src="../assets/images/result-vert.webp" alt="Пример итоговой схемы хранения" decoding="async" />' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-        modalFoot('Понятно, продолжить')
+          '<div class="u-wiz-mp__pvfoot">' +
+            '<button type="button" class="u-wiz-mp__cta" data-wiz-mclose>Понятно, продолжить</button>' +
+          '</div>' +
+        '</div>'
       );
     });
   });
 
-  // Как измерить — с чертежами (вид сверху + вид сбоку), как MeasurePopup
+  // SVG-чертежи (TopViewDiagram / SideViewDiagram из макета). Размер 100×72.
   var TOP_DIAGRAM =
-    '<svg class="u-wiz-measure__dia" viewBox="0 0 116 84" aria-hidden="true">' +
+    '<svg class="u-wiz-mp__dia" viewBox="0 0 116 84" aria-hidden="true">' +
       '<rect x="32" y="12" width="62" height="44" rx="8" fill="#F8EEE0" stroke="#DBC8B1" stroke-width="1.3"/>' +
       '<g stroke="#DBC8B1" stroke-width="1" stroke-linecap="round">' +
         '<line x1="32" y1="12" x2="16" y2="12"/><line x1="32" y1="56" x2="16" y2="56"/>' +
@@ -238,7 +245,7 @@
       '<text x="63" y="81" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#B6735C">Ш</text>' +
     '</svg>';
   var SIDE_DIAGRAM =
-    '<svg class="u-wiz-measure__dia" viewBox="0 0 116 84" aria-hidden="true">' +
+    '<svg class="u-wiz-mp__dia" viewBox="0 0 116 84" aria-hidden="true">' +
       '<path d="M34 16 V58 H94 V16" fill="none" stroke="#C2A98C" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>' +
       '<line x1="34" y1="26" x2="94" y2="26" stroke="#CDB89C" stroke-width="1.1" stroke-dasharray="3.5 3.5" stroke-linecap="round"/>' +
       '<g stroke="#DBC8B1" stroke-width="1" stroke-linecap="round"><line x1="34" y1="26" x2="18" y2="26"/><line x1="34" y1="58" x2="18" y2="58"/></g>' +
@@ -246,39 +253,45 @@
         '<line x1="22" y1="27" x2="22" y2="57"/><polyline points="19.5,30 22,27 24.5,30"/><polyline points="19.5,54 22,57 24.5,54"/></g>' +
       '<text x="11" y="45" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#B6735C">В</text>' +
     '</svg>';
+
+  // ── 2. MeasurePopup — единый padding 12/18/22 (БЕЗ safe-area), всё потоком ──
+  // В макете: grip mb=16, head mb=8, lead-блок mb=16, row1 mb=14, row2,
+  // Spacer 14, статья-ссылка mb=12, CTA. Никаких секций.
   var measureBtn = wiz.querySelector('[data-wiz-measure]');
   if (measureBtn) measureBtn.addEventListener('click', function () {
     track('measure_help_open');
     openModal(
-      modalHead('Как измерить', 'ящик') +
-      '<div class="u-wiz-modal__body">' +
-        '<div class="u-wiz-measure__lead">' +
+      '<div class="u-wiz-mp u-wiz-mp--measure">' +
+        popupHead('Как измерить', 'ящик') +
+        '<div class="u-wiz-mp__lead">' +
           '<img src="../landing_design/assets/measuring_tape.png" alt="" decoding="async" />' +
           '<p>Пожалуйста, измеряйте <b>внутренние</b> стороны. Размеры нужны, чтобы все органайзеры точно подошли.</p>' +
         '</div>' +
-        '<div class="u-wiz-measure__row">' + TOP_DIAGRAM +
-          '<div class="u-wiz-measure__txt"><div class="t">Ширина и глубина</div>' +
+        '<div class="u-wiz-mp__row">' + TOP_DIAGRAM +
+          '<div class="u-wiz-mp__rowtxt"><div class="t">Ширина и глубина</div>' +
             '<div class="d"><b>ширина:</b> от левого края к правому<br><b>глубина:</b> от передней стенки к задней<br>без фасада, бортиков и направляющих</div></div>' +
         '</div>' +
-        '<div class="u-wiz-measure__row">' + SIDE_DIAGRAM +
-          '<div class="u-wiz-measure__txt"><div class="t">Высота</div>' +
+        '<div class="u-wiz-mp__row u-wiz-mp__row--last">' + SIDE_DIAGRAM +
+          '<div class="u-wiz-mp__rowtxt"><div class="t">Высота</div>' +
             '<div class="d">от дна до самой низкой точки сверху, лучше оставить запас 1–2&nbsp;см.</div></div>' +
         '</div>' +
-        '<a class="u-wiz-measure__article" href="../blog/kak-zamerit-yashchik/" target="_blank" rel="noopener">' +
-          '<span class="u-wiz-measure__article-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5z"/><path d="M17 7h3v12H6"/><path d="M8 9h6M8 12h6"/></svg></span>' +
-          '<span style="display:flex;flex-direction:column;min-width:0">' +
+        '<a class="u-wiz-mp__article" href="../blog/kak-zamerit-yashchik/" target="_blank" rel="noopener">' +
+          '<span class="u-wiz-mp__article-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5z"/><path d="M17 7h3v12H6"/><path d="M8 9h6M8 12h6"/></svg></span>' +
+          '<span class="u-wiz-mp__article-tx">' +
             '<span class="eyebrow">Статья в блоге</span>' +
             '<span class="ttl">Как замерить ящик: пошагово</span>' +
             '<span class="meta">5 мин · с фото и примерами</span>' +
           '</span>' +
           '<span class="arr">↗</span>' +
         '</a>' +
-      '</div>' +
-      modalFoot('Понятно')
+        '<button type="button" class="u-wiz-mp__cta" data-wiz-mclose>Понятно</button>' +
+      '</div>'
     );
   });
 
-  // Что значит «важнее»
+  // ── 3. PrioHelpPopup — единый padding 10/18/(18+safe), всё потоком ──
+  // В макете: grip mb=14, head mb=6, p mb=16, список (gap:12), Spacer 18, CTA.
+  // У первого режима — кружок с галочкой sageSoft+sageD, у остальных — цифры на line2.
   var prioBtn = wiz.querySelector('[data-wiz-prio]');
   if (prioBtn) prioBtn.addEventListener('click', function () {
     track('priority_help_open');
@@ -287,20 +300,26 @@
       ['Вместительно', 'максимум объёма на каждом см²'],
       ['Экономично', 'минимум органайзеров и трат'],
     ];
+    var checkSvg = '<svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11 11.5 3.5" fill="none" stroke="#7D8C72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     openModal(
-      modalHead('Что значит', '«важнее»') +
-      '<div class="u-wiz-modal__body">' +
-        '<p class="u-wiz-modal__p">Под выбранный приоритет настроим плотность раскладки и число органайзеров.</p>' +
-        '<div class="u-wiz-prio">' +
+      '<div class="u-wiz-mp u-wiz-mp--prio">' +
+        popupHead('Что значит', '«важнее»') +
+        '<p class="u-wiz-mp__intro">Под выбранный приоритет настроим плотность раскладки и число органайзеров.</p>' +
+        '<div class="u-wiz-mp__priolist">' +
           modes.map(function (m, i) {
-            return '<div class="u-wiz-prio__row">' +
-              '<span class="u-wiz-prio__n">' + (i + 1) + '</span>' +
-              '<span><span class="u-wiz-prio__t">' + m[0] + '</span><span class="u-wiz-prio__d">' + m[1] + '</span></span>' +
+            return '<div class="u-wiz-mp__priorow">' +
+              '<span class="u-wiz-mp__prion' + (i === 0 ? ' is-on' : '') + '">' +
+                (i === 0 ? checkSvg : (i + 1)) +
+              '</span>' +
+              '<span class="u-wiz-mp__priotx">' +
+                '<span class="t">' + m[0] + '</span>' +
+                '<span class="d">' + m[1] + '</span>' +
+              '</span>' +
             '</div>';
           }).join('') +
         '</div>' +
-      '</div>' +
-      modalFoot('Понятно')
+        '<button type="button" class="u-wiz-mp__cta" data-wiz-mclose>Понятно</button>' +
+      '</div>'
     );
   });
 

@@ -425,7 +425,14 @@
 .u-wiz__note { margin: 9px 2px 0; font-size: 10.5px; line-height: 1.45; color: var(--u-ink-3); text-align: center; }
 [data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
 
-/* ── Модалки (нижний лист) ──────────────────────────────────── */
+/* ══ Модалки — точный порт PreviewPopup / MeasurePopup / PrioHelpPopup ══
+   Бэкдроп общий, лист — нижний sheet (left:0, right:0, bottom:0). КАЖДЫЙ
+   попап имеет свой набор padding-ов / margin-ов прямо в .u-wiz-mp--*,
+   потому что в макете три структуры разные:
+   - preview: трёхсекционный flex с CTA-overlap -20px;
+   - measure: единый padding 12/18/22, поток с marginBottom;
+   - prio:    единый padding 10/18/(18+safe), поток с marginBottom.
+   Никаких универсальных «head/body/footer» секций нет. */
 .u-wiz-modal {
   position: fixed; inset: 0; z-index: 9998;
   display: flex; align-items: flex-end; justify-content: center;
@@ -435,105 +442,153 @@
   animation: u-wiz-mfade .2s ease;
 }
 @keyframes u-wiz-mfade { from { opacity: 0; } to { opacity: 1; } }
-/* Лист модалки — секционный: шапка (flex:0) → тело (скролл) → футер (flex:0).
-   Паддинги задают секции, а не лист, поэтому CTA не липнет к низу. */
+@keyframes u-wiz-mup { from { transform: translateY(30px); } to { transform: none; } }
+/* Внешний контейнер sheet — нужен только для центрирования и max-width;
+   на узких устройствах фактически растягивается на всю ширину. */
 .u-wiz-modal__sheet {
-  width: 100%; max-width: 520px; max-height: calc(100% - 10px);
+  width: 100%; max-width: 420px;
+  background: transparent; box-shadow: none;
+  border-radius: 0;
+  animation: u-wiz-mup .26s cubic-bezier(.2,.7,.3,1);
+  display: flex; flex-direction: column; align-items: stretch;
+}
+/* Общие примитивы шапки попапа (одинаковы во всех трёх). */
+.u-wiz-mp__grip { width: 40px; height: 4px; border-radius: 99px; background: var(--u-taupe); margin: 0 auto; }
+.u-wiz-mp__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.u-wiz-mp__title {
+  font-family: var(--f-display, serif); font-weight: 500; font-size: 23px;
+  line-height: 1.05; margin: 0; color: var(--u-ink);
+}
+.u-wiz-mp__title em { font-style: italic; color: var(--u-accent); }
+.u-wiz-mp__close {
+  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
+  border: 1px solid var(--u-line); background: var(--u-card); color: var(--u-ink-2);
+  font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.u-wiz-mp__cta {
+  width: 100%; height: 52px; border: none; border-radius: 15px; cursor: pointer;
+  background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd)); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  box-shadow: 0 8px 22px -8px rgba(105,120,95,0.6);
+}
+
+/* ── PreviewPopup — трёхсекционная структура с overlap -20px ──
+   Лист: display:flex, flexDirection:column, maxHeight: calc(100% - 8px),
+   borderRadius: 24/24/0/0. Три секции внутри:
+     .__top     flex:0 0, padding 10/18/8       — grip + head
+     .__pvbody  flex:0 1, padding 0/18, z:1     — превью-карточка
+     .__pvfoot  flex:0 0, marginTop:-20, z:2,   — CTA НАЕЗЖАЕТ на 20px
+                padding 10/18/(14+safe),
+                borderTop, background:bg
+   Превью-карточка внутри body:
+     background:#FFFBF5, border, borderRadius:16/16/0/0,
+     paddingBottom:26, overflow:hidden, img width:100%
+*/
+.u-wiz-mp--preview {
+  display: flex; flex-direction: column; overflow: hidden;
+  max-height: calc(100% - 8px);
   background: var(--u-bg);
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
-  display: flex; flex-direction: column; overflow: hidden;
-  animation: u-wiz-mup .26s cubic-bezier(.2,.7,.3,1);
 }
-@keyframes u-wiz-mup { from { transform: translateY(30px); } to { transform: none; } }
-.u-wiz-modal__hd { flex: 0 0 auto; padding: 10px var(--wz-pad) 8px; }
-.u-wiz-modal__grip { width: 40px; height: 4px; border-radius: 99px; background: var(--u-taupe); margin: 0 auto 12px; }
-.u-wiz-modal__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.u-wiz-modal__title {
-  font-family: var(--f-display, serif); font-weight: 500; font-size: 23px; line-height: 1.05; margin: 0; color: var(--u-ink);
+.u-wiz-mp--preview .u-wiz-mp__top {
+  flex: 0 0 auto; padding: 10px 18px 8px;
 }
-.u-wiz-modal__title em { font-style: italic; color: var(--u-accent); }
-.u-wiz-modal__close {
+.u-wiz-mp--preview .u-wiz-mp__grip { margin: 0 auto 10px; }
+.u-wiz-mp__pvbody {
+  flex: 0 1 auto; min-height: 0;
+  padding: 0 18px; position: relative; z-index: 1;
+  display: flex;
+}
+.u-wiz-mp__pvcard {
+  flex: 0 0 auto; width: 100%;
+  background: #FFFBF5;
+  border: 1.5px solid var(--u-line);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 1px 3px rgba(80,70,55,0.05);
+  padding-bottom: 26px;
+  overflow: hidden;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+.u-wiz-mp__pvcard img { width: 100%; height: auto; display: block; }
+.u-wiz-mp__pvfoot {
+  flex: 0 0 auto; margin-top: -20px; position: relative; z-index: 2;
+  padding: 10px 18px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--u-line);
+  background: var(--u-bg);
+}
+
+/* ── MeasurePopup — единый padding 12/18/22, всё потоком ──
+   В макете: padding:'12px 18px 22px' на листе, БЕЗ safe-area.
+   grip mb=16, head mb=8, lead mb=16, row1 mb=14, row2 mb=0,
+   Spacer 14, статья mb=12, CTA. */
+.u-wiz-mp--measure {
+  background: var(--u-bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
+  padding: 12px 18px 22px;
+}
+.u-wiz-mp--measure .u-wiz-mp__grip { margin: 0 auto 16px; }
+.u-wiz-mp--measure .u-wiz-mp__head { margin-bottom: 8px; }
+.u-wiz-mp__lead {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
+}
+.u-wiz-mp__lead img { width: 22px; height: 22px; flex: 0 0 auto; display: block; }
+.u-wiz-mp__lead p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-mp__lead b { font-weight: 700; color: var(--u-ink); }
+.u-wiz-mp__row {
+  display: flex; align-items: center; gap: 4px; margin-bottom: 14px;
+}
+.u-wiz-mp__row--last { margin-bottom: 0; }
+.u-wiz-mp__dia { width: 100px; height: 72px; flex: 0 0 auto; display: block; }
+.u-wiz-mp__rowtxt { min-width: 0; }
+.u-wiz-mp__rowtxt .t { font-size: 13.5px; font-weight: 700; color: var(--u-ink); margin-bottom: 3px; }
+.u-wiz-mp__rowtxt .d { font-size: 11.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-mp__rowtxt .d b { font-weight: 600; color: var(--u-ink); }
+.u-wiz-mp__article {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; margin-top: 14px; margin-bottom: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--wz-sage-soft); background: var(--wz-sage-soft);
+  text-decoration: none;
+}
+.u-wiz-mp__article-ic {
+  width: 42px; height: 42px; flex: 0 0 auto; border-radius: 11px;
+  background: var(--u-card); border: 1px solid var(--wz-sage-soft);
+  display: flex; align-items: center; justify-content: center;
+}
+.u-wiz-mp__article-tx { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+.u-wiz-mp__article-tx .eyebrow {
+  font-family: var(--f-mono, monospace); font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--u-sage-dd); margin-bottom: 2px;
+}
+.u-wiz-mp__article-tx .ttl { font-size: 13.5px; font-weight: 700; color: var(--u-ink); line-height: 1.2; margin-bottom: 3px; }
+.u-wiz-mp__article-tx .meta { font-size: 11px; color: var(--u-ink-3); }
+.u-wiz-mp__article .arr { flex: 0 0 auto; color: var(--u-sage-dd); font-size: 15px; }
+
+/* ── PrioHelpPopup — единый padding 10/18/(18+safe), всё потоком ──
+   grip mb=14, head mb=6, intro mb=16, список (gap:12), Spacer 18, CTA. */
+.u-wiz-mp--prio {
+  background: var(--u-bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
+  padding: 10px 18px calc(18px + env(safe-area-inset-bottom));
+}
+.u-wiz-mp--prio .u-wiz-mp__grip { margin: 0 auto 14px; }
+.u-wiz-mp--prio .u-wiz-mp__head { margin-bottom: 6px; }
+.u-wiz-mp__intro { margin: 0 0 16px; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
+.u-wiz-mp__priolist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.u-wiz-mp__priorow { display: flex; gap: 12px; align-items: flex-start; }
+.u-wiz-mp__prion {
   width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
-  border: 1px solid var(--u-line-2); background: var(--u-card); color: var(--u-ink-2);
-  font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.u-wiz-modal__body { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 4px var(--wz-pad) 6px; }
-.u-wiz-modal__p { margin: 0 0 16px; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
-.u-wiz-modal__ft {
-  flex: 0 0 auto;
-  padding: 12px var(--wz-pad) calc(16px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--u-line); background: var(--u-bg);
-}
-.u-wiz-modal__cta {
-  width: 100%; height: 52px; margin: 0;
-  border: none; border-radius: 15px; cursor: pointer;
-  background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd)); color: #fff;
-  font-family: inherit; font-size: 15px; font-weight: 600;
-}
-/* превью-вариант тела модалки: убираем нижний отступ и боковые паддинги,
-   чтобы карточка превью прилегала встык к футеру и краям листа — как в
-   PreviewPopup. */
-.u-wiz-modal__body--preview {
-  padding: 6px var(--wz-pad) 0;
-  display: flex; flex-direction: column;
-}
-.u-wiz-modal__preview {
-  flex: 1 1 auto; min-height: 0;
-  background: #FFFBF5; border: 1.5px solid var(--u-line-2);
-  border-top-left-radius: 16px; border-top-right-radius: 16px;
-  border-bottom: none; overflow: hidden;
-  display: flex; justify-content: center;
-}
-.u-wiz-modal__preview img {
-  width: 100%; height: auto; max-height: 100%;
-  display: block; object-fit: contain; object-position: top;
-}
-/* приоритет-хелп: список режимов */
-.u-wiz-prio { display: flex; flex-direction: column; gap: 12px; }
-.u-wiz-prio__row { display: flex; gap: 12px; align-items: flex-start; }
-.u-wiz-prio__n {
-  width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;
-  background: var(--u-line); color: var(--u-ink-3);
+  background: var(--u-line-2); color: var(--u-ink-3);
   font-family: var(--f-display, serif); font-size: 15px; font-weight: 600;
   display: flex; align-items: center; justify-content: center;
 }
-.u-wiz-prio__row:first-child .u-wiz-prio__n { background: var(--wz-sage-soft); color: var(--u-sage-d); }
-.u-wiz-prio__t { font-size: 14px; font-weight: 700; color: var(--u-ink); margin-bottom: 1px; }
-.u-wiz-prio__d { font-size: 12px; line-height: 1.45; color: var(--u-ink-2); }
-/* measure-модалка: подзаголовок с рулеткой + строки с чертежами (вид
-   сверху / сбоку) — как MeasurePopup в макете */
-.u-wiz-measure__lead {
-  display: flex; align-items: center; gap: 9px; margin-bottom: 16px;
-}
-.u-wiz-measure__lead img { width: 22px; height: 22px; flex: 0 0 auto; display: block; }
-.u-wiz-measure__lead p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--u-ink-2); }
-.u-wiz-measure__lead b { font-weight: 700; color: var(--u-ink); }
-.u-wiz-measure__row {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
-}
-.u-wiz-measure__dia { width: 100px; height: 72px; flex: 0 0 auto; display: block; }
-.u-wiz-measure__txt { min-width: 0; }
-.u-wiz-measure__txt .t { font-size: 13.5px; font-weight: 700; color: var(--u-ink); margin-bottom: 3px; }
-.u-wiz-measure__txt .d { font-size: 11.5px; line-height: 1.5; color: var(--u-ink-2); }
-.u-wiz-measure__txt .d b { font-weight: 600; color: var(--u-ink); }
-/* measure-модалка: карточка-ссылка на статью */
-.u-wiz-measure__article {
-  display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-top: 14px;
-  border-radius: 14px; border: 1px solid var(--wz-sage-soft); background: var(--wz-sage-soft);
-  text-decoration: none;
-}
-.u-wiz-measure__article-ic {
-  width: 42px; height: 42px; flex: 0 0 auto; border-radius: 11px;
-  background: var(--u-card); border: 1px solid var(--wz-sage-soft);
-  display: flex; align-items: center; justify-content: center; color: var(--u-sage-d);
-}
-.u-wiz-measure__article .eyebrow {
-  font-family: var(--f-mono, monospace); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--u-sage-dd);
-}
-.u-wiz-measure__article .ttl { font-size: 13.5px; font-weight: 700; color: var(--u-ink); line-height: 1.2; }
-.u-wiz-measure__article .meta { font-size: 11px; color: var(--u-ink-3); }
-.u-wiz-measure__article .arr { margin-left: auto; flex: 0 0 auto; color: var(--u-sage-dd); font-size: 15px; }
+.u-wiz-mp__prion.is-on { background: var(--wz-sage-soft); color: var(--u-sage-d); }
+.u-wiz-mp__priotx { display: flex; flex-direction: column; min-width: 0; }
+.u-wiz-mp__priotx .t { font-size: 14px; font-weight: 700; color: var(--u-ink); margin-bottom: 1px; }
+.u-wiz-mp__priotx .d { font-size: 12px; line-height: 1.45; color: var(--u-ink-2); }
 
 /* ── Вложенность main/col (нужна для двухколоночника на десктопе).
       На мобиле .u-wiz__main и .u-wiz__col — прозрачные flex-обёртки, чтобы
