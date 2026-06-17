@@ -101,12 +101,20 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
 }
 .u-wiz-menu-ovr__nav a:last-child { border-bottom: none; }
 .u-wiz-menu-ovr__nav a:hover { color: var(--u-ink); }
-/* Лого — полный wordmark (знак + «уместно»), как в шапке сайта. */
+/* Лого — обрезанная версия logo-wordmark.svg (только знак, без слова
+   «уместно»). Через overflow:hidden на узкой обёртке. В исходном SVG
+   (viewBox 594×76) знак занимает первые ~57px → при height:24 видимая
+   ширина = 57 × 24 / 76 ≈ 18px. */
 .u-wiz__brand {
   display: flex; align-items: center; flex: 0 0 auto;
   text-decoration: none;
 }
-.u-wiz__brand img { height: 18px; width: auto; display: block; }
+.u-wiz__brand-crop {
+  display: inline-block;
+  width: 18px; height: 24px;
+  overflow: hidden;
+}
+.u-wiz__brand-crop img { height: 24px; width: auto; display: block; }
 /* Лейбл «Конфигуратор» — рядом с лого, отделён лёгким разделителем
    (вертикальная палочка, как в editorial-стиле). */
 .u-wiz__topbar-label {
@@ -754,9 +762,11 @@ body.u-wiz-menu-open .u-wiz__menu span:nth-child(3) { transform: translateY(-7px
     padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
   }
   /* На десктопе скрываем бургер — навигация уже есть в шапке сайта.
-     Лого крупнее, лейбл «Конфигуратор» становится mono-уголком справа. */
+     Лого крупнее: показываем полный wordmark (отменяем CSS-обрезку),
+     лейбл «Конфигуратор» становится mono-уголком справа. */
   .u-wiz__menu { display: none; }
-  .u-wiz__brand img { height: 22px; }
+  .u-wiz__brand-crop { width: auto; height: 26px; overflow: visible; }
+  .u-wiz__brand-crop img { height: 26px; }
   .u-wiz__topbar-label {
     margin-left: auto; padding-left: 0; border-left: none;
     font-family: var(--f-mono, monospace); font-size: 11px;
