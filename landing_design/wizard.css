@@ -563,24 +563,33 @@
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
   }
-  /* топбар → хедер */
-  .u-wiz__topbar { position: sticky; top: 0; z-index: 5; height: 68px; padding: 0 56px; }
+  /* топбар → хедер: статичный (без sticky — гарантированно виден),
+     с чётким нижним разделителем; внутренние отступы выровнены с колонками
+     (лого над левым краем формы, лейбл над правым краем панели). */
+  .u-wiz__topbar {
+    position: static; height: 64px;
+    border-bottom: 1px solid var(--u-line-2);
+    padding-left: max(56px, calc((100vw - 1120px) / 2 + 56px));
+    padding-right: max(56px, calc((100vw - 1120px) / 2 + 56px));
+  }
   .u-wiz__back, .u-wiz__stepbadge, .u-wiz__brand-m { display: none; }
-  .u-wiz__brand img { height: 18px; }
+  .u-wiz__brand img { height: 20px; }
   .u-wiz__topbar-label {
     display: inline-block; margin-left: auto;
     font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--u-ink-3);
   }
-  /* контейнер двух колонок */
+  /* контейнер двух колонок: форма прижата влево, панель — вправо
+     (justify-content:space-between), всё в центрированном поле 1120px. */
   .u-wiz__main {
-    display: flex; flex-direction: row; gap: 56px; align-items: flex-start;
-    max-width: 1080px; margin: 0 auto; padding: 40px 56px;
+    display: flex; flex-direction: row; gap: 48px; align-items: flex-start;
+    justify-content: space-between;
+    max-width: 1120px; margin: 0 auto; padding: 40px 56px;
   }
   .u-wiz__col { flex: 0 1 600px; min-width: 0; display: block; }
   .u-wiz__rail {
     display: flex; flex-direction: column; gap: 14px;
-    flex: 0 0 340px; position: sticky; top: 92px;
+    flex: 0 0 340px; position: sticky; top: 24px;
   }
   /* поток вместо внутреннего скролла */
   .u-wiz__progress { padding: 0 0 6px; }
@@ -608,6 +617,7 @@
   }
   .u-wiz__back-d[disabled] { display: none; }
   .u-wiz__next { width: auto; padding: 0 32px; }
+  .u-wiz__next::after { content: "›"; font-size: 18px; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
   .u-wiz__note { flex-basis: 100%; text-align: left; margin: 13px 0 0; max-width: 52ch; }
