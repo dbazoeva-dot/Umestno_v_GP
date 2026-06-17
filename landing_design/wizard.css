@@ -563,14 +563,15 @@
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
   }
-  /* топбар → хедер: статичный (без sticky — гарантированно виден),
-     с чётким нижним разделителем; внутренние отступы выровнены с колонками
-     (лого над левым краем формы, лейбл над правым краем панели). */
+  /* топбар → хедер: статичный (без sticky — гарантированно виден), с чётким
+     нижним разделителем. Внутренние отступы повторяют контейнер сайта
+     (--container/--gutter, как у старого калькулятора), чтобы лого лёг над
+     левым краем формы, а лейбл — над правым краем панели. */
   .u-wiz__topbar {
     position: static; height: 64px;
     border-bottom: 1px solid var(--u-line-2);
-    padding-left: max(56px, calc((100vw - 1120px) / 2 + 56px));
-    padding-right: max(56px, calc((100vw - 1120px) / 2 + 56px));
+    padding-left: calc((100vw - var(--container)) / 2 + var(--gutter));
+    padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
   }
   .u-wiz__back, .u-wiz__stepbadge, .u-wiz__brand-m { display: none; }
   .u-wiz__brand img { height: 20px; }
@@ -579,14 +580,13 @@
     font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--u-ink-3);
   }
-  /* контейнер двух колонок: форма прижата влево, панель — вправо
-     (justify-content:space-between), всё в центрированном поле 1120px. */
+  /* Двухколоночник в контейнере сайта (как старый калькулятор): ширина
+     min(1800px, 100vw−80px), форма тянется (fluid), панель фикс 340. */
   .u-wiz__main {
-    display: flex; flex-direction: row; gap: 48px; align-items: flex-start;
-    justify-content: space-between;
-    max-width: 1120px; margin: 0 auto; padding: 40px 56px;
+    display: flex; flex-direction: row; gap: 56px; align-items: flex-start;
+    max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
   }
-  .u-wiz__col { flex: 0 1 600px; min-width: 0; display: block; }
+  .u-wiz__col { flex: 1 1 auto; min-width: 0; display: block; }
   .u-wiz__rail {
     display: flex; flex-direction: column; gap: 14px;
     flex: 0 0 340px; position: sticky; top: 24px;
