@@ -425,6 +425,117 @@
     });
   }
 
+  /* ── Карусель отзывов с автоплеем ─────────────────────────────
+     5 отзывов (те же, что в .u-review-slide на лэндинге).
+     Управление: стрелки prev/next, клик по точке, клавиатура (←/→).
+     Автоплей: 5 секунд, ставится на паузу при любом взаимодействии,
+     возобновляется через 12 секунд после последнего действия. */
+  var REVIEWS = [
+    {
+      name: 'Анна', city: 'Москва',
+      quote: '«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»',
+      bfr: '../landing_design/assets/review1-bfr.webp',
+      aftr: '../landing_design/assets/review1-aftr.webp'
+    },
+    {
+      name: 'Елена', city: 'Владикавказ',
+      quote: '«Сервис показал не просто товары, а саму логику хранения. Наконец стало удобно пользоваться ящиком — не уходит по 10 минут на поиск нужной вещи»',
+      bfr: '../landing_design/assets/review2-bfr.webp',
+      aftr: '../landing_design/assets/review2-aftr.webp'
+    },
+    {
+      name: 'Максим', city: 'Санкт-Петербург',
+      quote: '«Не хотел тратить время на поиски органайзеров и прикидывать размеры вручную. Сразу получил понятную схему и рекомендации, что купить»',
+      bfr: '../landing_design/assets/review3-bfr.webp',
+      aftr: '../landing_design/assets/review3-aftr.webp'
+    },
+    {
+      name: 'Ирина', city: 'Москва',
+      quote: '«Самое полезное — что схема собирается не на глаз. Я бы сама не додумалась разложить именно так. Оказалось удобнее, и порядок поддерживается сам собой»',
+      bfr: '../landing_design/assets/review4-bfr.webp',
+      aftr: '../landing_design/assets/review4-aftr.webp'
+    },
+    {
+      name: 'Давид', city: 'Екатеринбург',
+      quote: '«Ящик большой — и потому в нём был хаос. Разложил, как предложил Уместно: джинсы, футболки, ремни — каждое по своим зонам. Вещи перестали мешать друг другу»',
+      bfr: '../landing_design/assets/review5-bfr.webp',
+      aftr: '../landing_design/assets/review5-aftr.webp'
+    }
+  ];
+
+  var reviewsRoot = wiz.querySelector('[data-reviews]');
+  if (reviewsRoot) {
+    var curR = 0;
+    var autoTimer = null;
+    var resumeTimer = null;
+    var elNum    = reviewsRoot.querySelector('[data-review-num]');
+    var elQuote  = reviewsRoot.querySelector('[data-review-quote]');
+    var elName   = reviewsRoot.querySelector('[data-review-name]');
+    var elCity   = reviewsRoot.querySelector('[data-review-city]');
+    var elAvatar = reviewsRoot.querySelector('[data-review-avatar]');
+    var elBefore = reviewsRoot.querySelector('[data-review-before]');
+    var elAfter  = reviewsRoot.querySelector('[data-review-after]');
+    var elDots   = reviewsRoot.querySelector('[data-review-dots]');
+    var compareFrame = reviewsRoot.querySelector('.u-wiz__compare-frame');
+
+    function renderReview(idx) {
+      curR = ((idx % REVIEWS.length) + REVIEWS.length) % REVIEWS.length;
+      var r = REVIEWS[curR];
+      if (elNum)    elNum.textContent = (curR + 1 < 10 ? '0' : '') + (curR + 1);
+      if (elQuote)  elQuote.textContent = r.quote;
+      if (elName)   elName.textContent = r.name;
+      if (elCity)   elCity.textContent = r.city;
+      if (elAvatar) elAvatar.textContent = r.name.charAt(0);
+      if (elBefore) elBefore.src = r.bfr;
+      if (elAfter)  elAfter.src = r.aftr;
+      if (elDots) elDots.querySelectorAll('button').forEach(function (b, i) {
+        b.classList.toggle('on', i === curR);
+      });
+      // сбрасываем позицию compare-слайдера при смене карточки
+      if (compareFrame) compareFrame.style.setProperty('--x', '50%');
+    }
+    function startAuto() {
+      stopAuto();
+      autoTimer = setInterval(function () { renderReview(curR + 1); }, 5000);
+    }
+    function stopAuto() {
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+    }
+    function pauseAuto() {
+      stopAuto();
+      resumeTimer = setTimeout(startAuto, 12000);
+    }
+
+    reviewsRoot.querySelector('[data-review-prev]').addEventListener('click', function () {
+      renderReview(curR - 1); pauseAuto();
+    });
+    reviewsRoot.querySelector('[data-review-next]').addEventListener('click', function () {
+      renderReview(curR + 1); pauseAuto();
+    });
+    if (elDots) elDots.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        renderReview(parseInt(b.getAttribute('data-review-go'), 10)); pauseAuto();
+      });
+    });
+    reviewsRoot.addEventListener('mouseenter', pauseAuto);
+    reviewsRoot.addEventListener('focusin', pauseAuto);
+    if (compareFrame) {
+      compareFrame.addEventListener('mousedown', pauseAuto);
+      compareFrame.addEventListener('touchstart', pauseAuto, { passive: true });
+    }
+    // keydown только на самих стрелках, чтобы не конфликтовать со стрелками
+    // compare-слайдера и не реагировать на стрелки в полях формы
+    [reviewsRoot.querySelector('[data-review-prev]'),
+     reviewsRoot.querySelector('[data-review-next]')].forEach(function (b) {
+      b.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft')  { renderReview(curR - 1); pauseAuto(); e.preventDefault(); }
+        if (e.key === 'ArrowRight') { renderReview(curR + 1); pauseAuto(); e.preventDefault(); }
+      });
+    });
+    startAuto();
+  }
+
   /* ── Compare-слайдер «До / После» с вертикальной линией ───────
      Ручка двигает разделитель влево-вправо: слева остаётся «После»
      (верхний слой через clip-path), справа — «До». Управление: мышь,

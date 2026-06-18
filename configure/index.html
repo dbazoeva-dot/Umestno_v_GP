@@ -270,16 +270,24 @@
         </ul>
       </div>
 
-      <div class="u-wiz__review">
+      <div class="u-wiz__review" data-reviews>
         <div class="u-wiz__review-top">
-          <span class="hist">История 01 / 5</span>
+          <span class="hist">История <span data-review-num>01</span> / <span data-review-total>5</span></span>
+          <span class="u-wiz__review-arrs">
+            <button type="button" class="u-wiz__review-arr" data-review-prev aria-label="Предыдущий отзыв">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+            </button>
+            <button type="button" class="u-wiz__review-arr" data-review-next aria-label="Следующий отзыв">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </span>
         </div>
-        <p class="u-wiz__review-quote">«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
+        <p class="u-wiz__review-quote" data-review-quote>«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
         <div class="u-wiz__review-pair u-wiz__compare" data-compare>
           <div class="u-wiz__compare-frame">
-            <img class="u-wiz__compare-img" src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" />
+            <img class="u-wiz__compare-img" data-review-before src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" />
             <div class="u-wiz__compare-clip" aria-hidden="true">
-              <img class="u-wiz__compare-img" src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" />
+              <img class="u-wiz__compare-img" data-review-after src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" />
             </div>
             <span class="u-wiz__compare-cap is-after">После</span>
             <span class="u-wiz__compare-cap is-before">До</span>
@@ -294,9 +302,15 @@
           </div>
         </div>
         <div class="u-wiz__review-author">
-          <span class="av">А</span>
-          <span class="who"><b>Анна</b><span>Москва</span></span>
-          <span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+          <span class="av" data-review-avatar>А</span>
+          <span class="who"><b data-review-name>Анна</b><span data-review-city>Москва</span></span>
+          <span class="dots" data-review-dots>
+            <button type="button" class="on" data-review-go="0" aria-label="Отзыв 1"></button>
+            <button type="button" data-review-go="1" aria-label="Отзыв 2"></button>
+            <button type="button" data-review-go="2" aria-label="Отзыв 3"></button>
+            <button type="button" data-review-go="3" aria-label="Отзыв 4"></button>
+            <button type="button" data-review-go="4" aria-label="Отзыв 5"></button>
+          </span>
         </div>
       </div>
 

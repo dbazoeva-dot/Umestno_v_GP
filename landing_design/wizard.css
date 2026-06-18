@@ -916,9 +916,27 @@ body.u-wiz-active .u-header { display: none; }
 .u-wiz__review-author .who { display: flex; flex-direction: column; margin-right: auto; }
 .u-wiz__review-author .who b { font-size: 12.5px; color: var(--u-ink); line-height: 1.1; }
 .u-wiz__review-author .who span { font-size: 10.5px; color: var(--u-ink-3); }
-.u-wiz__review-author .dots { display: flex; gap: 5px; flex: 0 0 auto; }
-.u-wiz__review-author .dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--u-taupe); display: block; }
+.u-wiz__review-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.u-wiz__review-arrs { display: inline-flex; gap: 6px; flex: 0 0 auto; }
+.u-wiz__review-arr {
+  width: 28px; height: 28px; padding: 0; border-radius: 50%;
+  background: var(--u-card); border: 1px solid var(--u-line);
+  color: var(--u-ink-2); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.u-wiz__review-arr:hover { background: var(--u-accent); border-color: var(--u-accent); color: #fff; }
+.u-wiz__review-arr:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
+.u-wiz__review-author .dots { display: flex; gap: 5px; flex: 0 0 auto; align-items: center; }
+.u-wiz__review-author .dots button,
+.u-wiz__review-author .dots i {
+  width: 6px; height: 6px; padding: 0; border-radius: 99px;
+  background: var(--u-taupe); border: 0; cursor: pointer; display: block;
+  transition: width .2s ease, background .2s ease;
+}
+.u-wiz__review-author .dots button.on,
 .u-wiz__review-author .dots i.on { width: 16px; background: var(--u-accent); }
+.u-wiz__review-author .dots button:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
 .u-wiz__secure { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
 .u-wiz__secure svg { flex: 0 0 auto; margin-top: 1px; }
 .u-wiz__secure span { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); }
