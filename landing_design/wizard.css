@@ -988,7 +988,7 @@ body.u-wiz-active .u-header { display: none; }
     overflow: visible; display: block;
     font-size: min(
       clamp(15px, calc(14px + 0.156vw), 18px),
-      clamp(13px, 2.15vh, 18px)
+      clamp(13px, 1.85vh, 18px)
     );
   }
   /* На десктопе возвращаем шапку сайта (.u-header — sticky, навигация,
