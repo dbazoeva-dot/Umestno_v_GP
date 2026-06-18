@@ -27,6 +27,10 @@
   /* Десктоп: ширина = размеры из оригинального макета (wizard.jsx WShell):
      форма 600 + панель 340 + gap 56 + padding 56×2 ≈ 1120px. */
   --wz-deskmax: 1120px;
+  /* Дефолт для масштаба — без него calc(N * var(--wiz-scale)) даёт
+     невалидное значение и padding/font-size схлопываются в 0. На
+     десктопе clamp() переопределяет (см. @media 960+). */
+  --wiz-scale: 1;
 
   position: fixed;
   inset: 0;
@@ -1005,10 +1009,12 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__secure { display: flex; flex: 0 0 auto; }
   /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку.
      Padding растёт через --wiz-scale: 32/28 на 1280, до ~40/34 на 1920. */
-  .u-wiz__col {
+  .u-wiz .u-wiz__col {
     min-width: 0; display: block;
-    background: var(--u-card); border: 1px solid var(--u-line);
-    border-radius: 20px; box-shadow: var(--sh-card);
+    background: var(--u-card) !important;
+    border: 1px solid var(--u-line) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--sh-card);
     padding: calc(32px * var(--wiz-scale)) calc(28px * var(--wiz-scale));
   }
   .u-wiz__rail {
