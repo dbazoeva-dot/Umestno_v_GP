@@ -478,6 +478,15 @@
     var elDots   = reviewsRoot.querySelector('[data-review-dots]');
     var compareFrame = reviewsRoot.querySelector('.u-wiz__compare-frame');
 
+    // Точки рендерим из массива — на случай, если в HTML или из-за чего-то
+    // ещё пришло больше элементов: фиксируем количество = REVIEWS.length.
+    if (elDots) {
+      elDots.innerHTML = REVIEWS.map(function (_, i) {
+        return '<button type="button"' + (i === 0 ? ' class="on"' : '') +
+               ' data-review-go="' + i + '" aria-label="Отзыв ' + (i + 1) + '"></button>';
+      }).join('');
+    }
+
     function renderReview(idx) {
       curR = ((idx % REVIEWS.length) + REVIEWS.length) % REVIEWS.length;
       var r = REVIEWS[curR];
