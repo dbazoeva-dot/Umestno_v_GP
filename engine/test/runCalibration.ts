@@ -167,14 +167,22 @@ assert(disabledSocksDebug.fit_result.failed_dimension === "height", "disabled so
 assert(disabledSocksDebug.fit_result.failed_zones.some((zone) => zone.content_type === "socks_regular"), "disabled socks guard: socks should remain failed");
 
 const scenario6Output = runUmestnoEngine({ drawer_width_cm: 60, drawer_depth_cm: 40, drawer_height_cm: 12, storage_category: "mixed", items: [ { content_type: "jeans", volume_level: "large" }, { content_type: "sweaters", volume_level: "medium" }, { content_type: "socks_regular", volume_level: "large" } ], priority: "convenient" });
-const scenario6Debug = scenario6Output.debug as { fit_result: { fit_status: string; failed_dimension?: string; failed_zones: Array<{ content_type: string }>; placed_zones: Array<{ content_type: string; division_type: string }> }; adjustment_attempts: Array<{ content_type?: string; selected_adjustment_candidate?: string; accepted?: boolean; adjusted_zone_was_failed?: boolean; original_failed_dimension?: string }> };
-assert(scenario6Output.result === null, "scenario 6 guard: no fit_all achievable when clothing heights exceed drawer — result should be null");
-assert(scenario6Output.scheme_payload === null, "scenario 6 guard: scheme_payload should be null when no fit_all candidate exists");
-assert(scenario6Debug.fit_result.fit_status !== "fit_all", "scenario 6 guard: best-failed candidate should not be fit_all");
+const scenario6Debug = scenario6Output.debug as { fit_result: { fit_status: string; failed_dimension?: string; failed_zones: Array<{ content_type: string }>; unplaced_zones?: Array<{ content_type: string }>; placed_zones: Array<{ content_type: string; division_type: string }> }; adjustment_attempts: Array<{ content_type?: string; selected_adjustment_candidate?: string; accepted?: boolean; adjusted_zone_was_failed?: boolean; original_failed_dimension?: string }> };
+const scenario6SchemeStatus = (scenario6Output.scheme_payload as { fit_status?: string } | null)?.fit_status;
+// Новый контракт (BL-18): если влезает хоть что-то, движок отдаёт fit_partial-схему
+// на то, что поместилось, а не null. Решение «какой fit_partial показать клиенту /
+// предложить снижение» принимается отдельно на сервере (findReduction). Высота
+// jeans/sweaters остаётся честным блокером — она не лечится снижением количества,
+// поэтому findReduction по этому кейсу вернёт null и оплату не предложит.
+assert(scenario6Output.result !== null, "scenario 6 guard: fit_partial scheme should be returned when socks still fit (not null)");
+assert(scenario6SchemeStatus === "fit_partial", "scenario 6 guard: scheme should be fit_partial (socks placed, clothing did not)");
+assert(scenario6Debug.fit_result.fit_status !== "fit_all", "scenario 6 guard: candidate should not be fit_all");
 assert(scenario6Debug.fit_result.failed_dimension === "height", "scenario 6 guard: clothing height should remain the true blocker");
 assert(scenario6Debug.fit_result.failed_zones.some((zone) => zone.content_type === "jeans"), "scenario 6 guard: jeans should be reported as failed");
 assert(scenario6Debug.fit_result.failed_zones.some((zone) => zone.content_type === "sweaters"), "scenario 6 guard: sweaters should be reported as failed");
-assert(scenario6Debug.fit_result.placed_zones.some((zone) => zone.content_type === "socks_regular" && zone.division_type === "cells"), "scenario 6 guard: unrelated socks should remain in cells in the best-failed candidate");
+assert((scenario6Debug.fit_result.unplaced_zones ?? []).some((zone) => zone.content_type === "jeans") && (scenario6Debug.fit_result.unplaced_zones ?? []).some((zone) => zone.content_type === "sweaters"), "scenario 6 guard: jeans and sweaters should be unplaced (feeds server findReduction)");
+assert(!scenario6Debug.fit_result.placed_zones.some((zone) => zone.content_type === "jeans" || zone.content_type === "sweaters"), "scenario 6 guard: too-tall clothing must not be placed");
+assert(scenario6Debug.fit_result.placed_zones.some((zone) => zone.content_type === "socks_regular" && zone.division_type === "cells"), "scenario 6 guard: socks should be placed in cells in the partial scheme");
 assert(!scenario6Debug.fit_result.placed_zones.some((zone) => zone.content_type === "socks_regular" && zone.division_type === "open"), "scenario 6 guard: unrelated socks must not be converted to open");
 assert(!scenario6Debug.adjustment_attempts.some((attempt) => attempt.content_type === "socks_regular" || attempt.selected_adjustment_candidate === "socks_regular"), "scenario 6 guard: unrelated socks fallback should not be attempted");
 
