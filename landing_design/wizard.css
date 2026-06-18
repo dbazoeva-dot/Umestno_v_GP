@@ -930,13 +930,26 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
     display: flex; flex-direction: column; gap: 16px;
     position: sticky; top: 88px; align-self: start; min-width: 0;
   }
-  /* карточный поток вместо мобильного fit-to-screen: распорки выключены,
-     шаг — обычный блок, контент заполняет карточку */
-  .u-wiz__progress { padding: 0 0 6px; }
+  /* карточный поток вместо мобильного fit-to-screen: шаг — обычный блок,
+     контент заполняет карточку. Распорки дают «десктопный» ритм через
+     CSS-переменную --dh на inline-style (если не задана — схлопываются). */
+  .u-wiz__progress { padding: 0 0 26px; }
   .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
   .u-wiz__step.is-on { display: block; animation: none; }
-  .u-wiz__grow, .u-wiz__spacer { display: none; }
+  .u-wiz__spacer { display: block; height: var(--dh, 0); }
+  .u-wiz__grow { display: block; flex: none; min-height: 0; height: var(--dh, 0); }
   .u-wiz__title { font-size: 34px; margin-top: 0; }
+  /* ритм-мелочи под макет визарда (Lead/Kicker/Stack/Row) */
+  .u-wiz__step[data-wiz-step="1"] .u-wiz__lead { margin-bottom: 22px; }
+  .u-wiz__kicker { margin-bottom: 11px; }
+  .u-wiz .u-calc__choices { gap: 8px; }
+  .u-wiz .u-calc__items { gap: 9px; }
+  /* maxWidth-капы — чтобы элементы не растягивались на всю широкую колонку */
+  .u-wiz__preview { max-width: 360px; }
+  .u-wiz__measure { max-width: 440px; }
+  .u-wiz .u-calc__sizes { max-width: 440px; }
+  .u-wiz__summary { max-width: 480px; }
+  .u-wiz .u-promo { max-width: 480px; }
   /* футер — инлайн-ряд кнопок */
   .u-wiz__footer {
     position: static; background: none;
