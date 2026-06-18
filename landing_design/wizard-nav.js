@@ -425,39 +425,39 @@
     });
   }
 
-  /* ── Compare-слайдер «До / После» (вертикальный) ──────────────
-     Ручка двигает разделитель, верхний слой (clip-path) показывает
-     «После» от верха до текущей точки, под ним остаётся «До».
-     Управление: мышь, touch, клавиатура (стрелки ↑/↓, Home/End). */
+  /* ── Compare-слайдер «До / После» с вертикальной линией ───────
+     Ручка двигает разделитель влево-вправо: слева остаётся «После»
+     (верхний слой через clip-path), справа — «До». Управление: мышь,
+     touch, клавиатура (стрелки ←/→, Home/End). */
   wiz.querySelectorAll('[data-compare]').forEach(function (root) {
     var frame = root.querySelector('.u-wiz__compare-frame');
     var handle = root.querySelector('[data-compare-handle]');
     if (!frame || !handle) return;
     var dragging = false;
 
-    function setY(pct) {
+    function setX(pct) {
       pct = Math.max(0, Math.min(100, pct));
-      frame.style.setProperty('--y', pct + '%');
+      frame.style.setProperty('--x', pct + '%');
       handle.setAttribute('aria-valuenow', Math.round(pct));
     }
-    function pctFromClientY(clientY) {
+    function pctFromClientX(clientX) {
       var r = frame.getBoundingClientRect();
-      return ((clientY - r.top) / r.height) * 100;
+      return ((clientX - r.left) / r.width) * 100;
     }
-    function getEventY(e) {
-      if (e.touches && e.touches.length) return e.touches[0].clientY;
-      if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientY;
-      return e.clientY;
+    function getEventX(e) {
+      if (e.touches && e.touches.length) return e.touches[0].clientX;
+      if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
+      return e.clientX;
     }
     function onDown(e) {
       dragging = true;
       handle.focus({ preventScroll: true });
-      setY(pctFromClientY(getEventY(e)));
+      setX(pctFromClientX(getEventX(e)));
       e.preventDefault();
     }
     function onMove(e) {
       if (!dragging) return;
-      setY(pctFromClientY(getEventY(e)));
+      setX(pctFromClientX(getEventX(e)));
       e.preventDefault();
     }
     function onUp() { dragging = false; }
@@ -475,10 +475,10 @@
     handle.addEventListener('keydown', function (e) {
       var cur = parseFloat(handle.getAttribute('aria-valuenow')) || 50;
       var step = e.shiftKey ? 10 : 5;
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft')   { setY(cur - step); e.preventDefault(); }
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight'){ setY(cur + step); e.preventDefault(); }
-      if (e.key === 'Home') { setY(0);   e.preventDefault(); }
-      if (e.key === 'End')  { setY(100); e.preventDefault(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { setX(cur - step); e.preventDefault(); }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp')  { setX(cur + step); e.preventDefault(); }
+      if (e.key === 'Home') { setX(0);   e.preventDefault(); }
+      if (e.key === 'End')  { setX(100); e.preventDefault(); }
     });
   });
 })();

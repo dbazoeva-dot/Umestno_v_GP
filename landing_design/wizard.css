@@ -847,12 +847,13 @@ body.u-wiz-active .u-header { display: none; }
   font-family: var(--f-display, serif); font-style: italic; font-size: 18px;
   line-height: 1.32; color: var(--u-ink); margin: 0;
 }
-/* Вертикальный сравнитель «До / После» — одна рамка с двумя картинками,
-   верхний слой обрезается через clip-path по --y, ручка-перетаскивание
-   двигает разделитель. Экономит высоту: вместо двух фото 545×300 — одно. */
+/* Compare-слайдер «До / После» с вертикальной линией-разделителем.
+   Одна рамка с двумя картинками: «До» снизу полностью, «После» обрезается
+   через clip-path по --x. Ручка-перетаскивание двигает разделитель влево
+   и вправо. Экономит высоту: вместо двух кадров 545×300 — один. */
 .u-wiz__review-pair { display: block; }
 .u-wiz__compare-frame {
-  --y: 50%;
+  --x: 50%;
   position: relative; aspect-ratio: 545 / 360;
   border-radius: 12px; overflow: hidden;
   border: 1px solid var(--u-line-2);
@@ -866,24 +867,24 @@ body.u-wiz-active .u-header { display: none; }
 }
 .u-wiz__compare-clip {
   position: absolute; inset: 0;
-  clip-path: inset(0 0 calc(100% - var(--y)) 0);
-  -webkit-clip-path: inset(0 0 calc(100% - var(--y)) 0);
+  clip-path: inset(0 calc(100% - var(--x)) 0 0);
+  -webkit-clip-path: inset(0 calc(100% - var(--x)) 0 0);
   will-change: clip-path;
 }
 .u-wiz__compare-cap {
-  position: absolute; left: 8px; z-index: 2;
+  position: absolute; top: 8px; z-index: 2;
   font-family: var(--f-mono, monospace); font-size: 9px; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
   border-radius: 20px; padding: 3px 9px;
   pointer-events: none;
 }
-.u-wiz__compare-cap.is-after  { top: 8px; background: var(--u-sage-d); }
-.u-wiz__compare-cap.is-before { bottom: 8px; background: rgba(46,46,46,0.82); }
+.u-wiz__compare-cap.is-after  { left: 8px;  background: var(--u-sage-d); }
+.u-wiz__compare-cap.is-before { right: 8px; background: rgba(46,46,46,0.82); }
 .u-wiz__compare-handle {
-  position: absolute; left: 0; right: 0;
-  top: var(--y); transform: translateY(-50%);
-  height: 32px; padding: 0; margin: 0;
-  border: 0; background: transparent; cursor: ns-resize;
+  position: absolute; top: 0; bottom: 0;
+  left: var(--x); transform: translateX(-50%);
+  width: 32px; padding: 0; margin: 0;
+  border: 0; background: transparent; cursor: ew-resize;
   display: flex; align-items: center; justify-content: center;
   z-index: 3;
 }
@@ -892,10 +893,10 @@ body.u-wiz-active .u-header { display: none; }
   box-shadow: 0 0 0 3px rgba(125,140,114,0.35), 0 6px 18px rgba(0,0,0,0.25);
 }
 .u-wiz__compare-bar {
-  position: absolute; left: 0; right: 0; top: 50%;
-  height: 2px; background: rgba(255,255,255,0.92);
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 2px; background: rgba(255,255,255,0.92);
   box-shadow: 0 0 0 1px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.18);
-  transform: translateY(-1px);
+  transform: translateX(-1px);
 }
 .u-wiz__compare-knob {
   position: relative; z-index: 1;
