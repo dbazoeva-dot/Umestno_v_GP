@@ -858,7 +858,7 @@ body.u-wiz-active .u-header { display: none; }
 .u-wiz__review-pair { display: block; }
 .u-wiz__compare-frame {
   --x: 50%;
-  position: relative; aspect-ratio: 545 / 360;
+  position: relative; aspect-ratio: 1448 / 1024;
   border-radius: 12px; overflow: hidden;
   /* box-shadow inset вместо border — border создавал 1px смещение между
      нижним <img> и обрезаемым clip-слоем (border-box / content-box mix). */
