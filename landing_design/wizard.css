@@ -1039,7 +1039,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__preview, .u-wiz__measure { font-size: 0.8125em; }
   .u-wiz__preview { height: 2.75em; }
   .u-wiz .u-calc__choice-t { font-size: 0.875em; }
-  .u-wiz .u-calc__sz input { font-size: 1.5em; height: 3em; }
+  .u-wiz .u-calc__sz input { font-size: 1.375em; height: 2.75em; }
   .u-wiz .u-calc__sz > span { font-size: max(9px, 0.5625em); }
   .u-wiz__progress-head .s { font-size: max(10px, 0.625em); }
   .u-wiz__progress-head .l { font-size: 0.781em; }
