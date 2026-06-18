@@ -518,7 +518,10 @@
         renderReview(parseInt(b.getAttribute('data-review-go'), 10)); pauseAuto();
       });
     });
-    reviewsRoot.addEventListener('mouseenter', pauseAuto);
+    // Пауза — только при настоящих действиях (клик по стрелке/точке,
+    // drag compare, попадание фокуса на интерактивный элемент). Hover
+    // мышью НЕ ставит на паузу — иначе с курсором над блоком автоплей
+    // никогда не тикает.
     reviewsRoot.addEventListener('focusin', pauseAuto);
     if (compareFrame) {
       compareFrame.addEventListener('mousedown', pauseAuto);
