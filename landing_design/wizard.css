@@ -970,86 +970,109 @@ body.u-wiz-active .u-header { display: none; }
   }
 }
 
-/* ── Десктоп ≥960: двухколоночник (форма слева + панель ценности справа) ─ */
+/* ── Десктоп ≥960: двухколоночник (форма слева + панель ценности справа) ─
+   Шкала: один font-size на .u-wiz управляет ВСЕМ визардом (всё внутри
+   в em). Корень считается по ДВУМ ограничениям, берётся меньшее:
+     ① по ширине  — clamp(15px, 12px + 0.3125vw, 18px)  → UX-диапазон
+     ② по высоте  — clamp(13px, 2.15vh, 18px)           → не дать карточке
+                                                          выйти за экран
+   На 1280×800+ → 16px (макет 1-в-1). На 1920×1080+ → 18px. На 1280×700
+   → 15px (с запасом по высоте). На 1280×600 → 13px (минимум читаемости).
+*/
 @media (min-width: 960px) {
   .u-wiz {
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
+    font-size: min(
+      clamp(15px, calc(12px + 0.3125vw), 18px),
+      clamp(13px, 2.15vh, 18px)
+    );
   }
   /* На десктопе возвращаем шапку сайта (.u-header — sticky, навигация,
      бургер) и прячем внутренний топбар визарда — он там лишний. */
   body.u-wiz-active .u-header { display: block; }
   .u-wiz__topbar { display: none; }
-  /* Двухколоночник как у старого калькулятора (.u-calc__layout):
-     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px).
-     align-items: stretch — колонки одной высоты (карточка слева растёт
-     до высоты правой колонки, или наоборот). */
+  /* Контейнер: max-width как у шапки сайта (резинка по vw, не em). */
   .u-wiz__main {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    gap: clamp(24px, 2.5vw, 40px);
+    gap: 2.5em;
     align-items: stretch;
-    max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
+    max-width: var(--container); margin: 0 auto;
+    padding: 2.5em var(--gutter);
   }
-  /* Левая колонка: форма в карточке + плашка ЮКассы под ней (вне
-     карточки). На десктопе .u-wiz__left становится flex-column,
-     карточка тянется по высоте, плашка прижата к низу. */
+  /* Левая колонка: форма в карточке + плашка ЮКассы под ней. */
   .u-wiz__left {
-    display: flex; flex-direction: column; gap: 16px;
+    display: flex; flex-direction: column; gap: 1em;
     min-width: 0;
   }
-  .u-wiz__secure { display: flex; flex: 0 0 auto; }
-  /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку */
+  .u-wiz__secure { display: flex; flex: 0 0 auto; padding: 0.75em 0.875em; gap: 0.625em; }
+  .u-wiz__secure span { font-size: 0.719em; }
+  /* Карточка-форма (.u-calc__form-card аналог). */
   .u-wiz__col {
     min-width: 0; display: block;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 44px);
+    padding: 2em 1.75em;
   }
+  /* Правая колонка. */
   .u-wiz__rail {
-    display: flex; flex-direction: column; gap: 16px;
+    display: flex; flex-direction: column; gap: 1em;
     min-width: 0;
     justify-content: space-between;
   }
-  /* Правая колонка выровнена с левой по высоте (align-items: stretch
-     на грид-родителе). Внутри: offer прижат вверху, review — внизу,
-     между ними пустота, если правая колонка ниже левой. */
-  .u-wiz__offer  { flex: 0 0 auto; }
-  .u-wiz__review { flex: 0 0 auto; }
-  /* карточный поток вместо мобильного fit-to-screen: шаг — обычный блок,
-     контент заполняет карточку. Распорки дают «десктопный» ритм через
-     CSS-переменную --dh на inline-style (если не задана — схлопываются). */
-  .u-wiz__progress { padding: 0 0 26px; }
+  .u-wiz__offer  { flex: 0 0 auto; padding: 1.25em; gap: 0.875em; }
+  .u-wiz__review { flex: 0 0 auto; padding: 1em 1.125em; gap: 0.813em; }
+  /* Карточный поток вместо мобильного fit-to-screen. Spacer/Grow берут
+     высоту из inline-style --dh (px) и пересчитываются в em относительно
+     текущего font-size — так распорки сжимаются вместе со шрифтом. */
+  .u-wiz__progress { padding: 0 0 1.625em; }
   .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
   .u-wiz__step.is-on { display: block; animation: none; }
-  .u-wiz__spacer { display: block; height: var(--dh, 0); }
-  .u-wiz__grow { display: block; flex: none; min-height: 0; height: var(--dh, 0); }
-  .u-wiz__title { font-size: 34px; margin-top: 0; }
-  /* ритм-мелочи под макет визарда (Lead/Kicker/Stack/Row) */
-  .u-wiz__step[data-wiz-step="1"] .u-wiz__lead { margin-bottom: 22px; }
-  .u-wiz__kicker { margin-bottom: 11px; }
-  .u-wiz .u-calc__choices { gap: 8px; }
-  .u-wiz .u-calc__items { gap: 9px; }
-  /* maxWidth-капы — чтобы элементы не растягивались на всю широкую колонку */
-  .u-wiz__preview { max-width: 360px; }
-  .u-wiz__measure { max-width: 440px; }
-  .u-wiz .u-calc__sizes { max-width: 440px; }
-  .u-wiz__summary { max-width: 480px; }
-  .u-wiz .u-promo { max-width: 480px; }
-  /* футер — инлайн-ряд кнопок */
+  .u-wiz__spacer { display: block; height: calc(var(--dh, 0) * 1em / 16px); }
+  .u-wiz__grow   { display: block; flex: none; min-height: 0; height: calc(var(--dh, 0) * 1em / 16px); }
+  /* ── Шрифты ключевых элементов формы (база 16 = 1em) ─────── */
+  .u-wiz__title  { font-size: 2.125em; margin-top: 0; text-wrap: balance; }
+  .u-wiz__lead   { font-size: 0.9375em; }
+  .u-wiz__step[data-wiz-step="1"] .u-wiz__lead { margin-bottom: 1.375em; }
+  .u-wiz__kicker { font-size: max(11px, 0.6875em); margin-bottom: 0.6875em; }
+  .u-wiz__preview, .u-wiz__measure { font-size: 0.8125em; }
+  .u-wiz__preview { height: 2.75em; }
+  .u-wiz .u-calc__choice-t { font-size: 0.875em; }
+  .u-wiz .u-calc__sz input { font-size: 1.5em; height: 3em; }
+  .u-wiz .u-calc__sz > span { font-size: max(9px, 0.5625em); }
+  .u-wiz__progress-head .s { font-size: max(10px, 0.625em); }
+  .u-wiz__progress-head .l { font-size: 0.781em; }
+  .u-wiz .u-calc__choices { gap: 0.5em; }
+  .u-wiz .u-calc__items { gap: 0.563em; }
+  /* maxWidth-капы — теперь в em, чтобы расти со шрифтом, но не быть шире
+     родителя. width: min(...) удобнее, чем max-width (специфичность). */
+  .u-wiz__preview { width: min(22.5em, 100%); }
+  .u-wiz__measure { width: min(27.5em, 100%); }
+  .u-wiz .u-calc__sizes { width: min(27.5em, 100%); }
+  .u-wiz__summary { width: min(30em, 100%); }
+  .u-wiz .u-promo { width: min(30em, 100%); }
+  /* ── Правая колонка (offer/review) ───────────────────────── */
+  .u-wiz__offer-head .price { font-size: 2.125em; }
+  .u-wiz__offer-head .lbl   { font-size: max(10px, 0.625em); }
+  .u-wiz__offer-list li     { font-size: 0.781em; }
+  .u-wiz__review-quote      { font-size: 1.125em; }
+  .u-wiz__review-author .who b    { font-size: 0.781em; }
+  .u-wiz__review-author .who span { font-size: max(10px, 0.656em); }
+  .u-wiz__review-top .hist  { font-size: max(10px, 0.625em); }
+  /* ── Футер: инлайн-ряд кнопок ─────────────────────────────── */
   .u-wiz__footer {
     position: static; background: none;
     -webkit-backdrop-filter: none; backdrop-filter: none;
-    border-top: none; padding: 32px 0 0;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    border-top: none; padding: 2em 0 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em;
   }
-  /* десктопные подгонки .u-wiz__back-d — квадрат 54×54 со стрелкой */
-  .u-wiz__back-d { width: 54px; height: 54px; padding: 0; border-radius: 14px; font-size: 24px; }
-  .u-wiz__next { flex: 0 0 auto; width: auto; padding: 0 32px; }
-  .u-wiz__next::after { content: "›"; font-size: 18px; margin-top: -2px; }
+  .u-wiz__back-d { width: 3.375em; height: 3.375em; padding: 0; border-radius: 14px; font-size: 1.5em; }
+  .u-wiz__next { flex: 0 0 auto; width: auto; padding: 0 2em; }
+  .u-wiz__next::after { content: "›"; font-size: 1.125em; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
-  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
-  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 13px 0 0; max-width: 52ch; }
+  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 2em; }
+  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; font-size: max(11px, 0.6875em); }
 
   /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
      Макет (DModalShell): align-center, padding 48, bg rgba(40,32,26,.55) +
