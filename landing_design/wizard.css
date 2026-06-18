@@ -167,7 +167,7 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   font-size: clamp(27px, 7.8vw, 32px);
   line-height: 1.04; letter-spacing: -0.01em;
   margin: 0 0 6px;
-  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 .u-wiz__title em { font-style: italic; color: var(--u-accent); font-weight: 500; }
 /* Lead — sans 12.5 */
@@ -975,10 +975,11 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz {
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
-    /* Масштаб контента визарда: на 1280 viewport = 1.0 (макет 1-в-1),
-       на ~1920 ≈ 1.2 (рост шрифтов/паддингов на 20%), выше — потолок.
-       Используется в font-size / padding ключевых блоков визарда. */
-    --wiz-scale: clamp(1, calc(1 + (100vw - 1280px) / 3200), 1.2);
+    /* Масштаб контента визарда: на 1280 viewport = 1.0 (макет 1-в-1).
+       Ниже 1280 — лёгкое сжатие (на 960 ≈ 0.9, минимум 0.88), выше
+       1280 — плавный рост (на 1920 ≈ 1.2, потолок 1.2). Используется
+       в font-size / padding / max-width ключевых блоков визарда. */
+    --wiz-scale: clamp(0.88, calc(1 + (100vw - 1280px) / 3200), 1.2);
   }
   /* На десктопе возвращаем шапку сайта (.u-header — sticky, навигация,
      бургер) и прячем внутренний топбар визарда — он там лишний. */
