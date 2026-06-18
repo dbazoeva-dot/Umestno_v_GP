@@ -1002,7 +1002,7 @@ body.u-wiz-active .u-header { display: none; }
     gap: 2.5em;
     align-items: stretch;
     max-width: var(--container); margin: 0 auto;
-    padding: 1.25em var(--gutter);
+    padding: 2.5em var(--gutter);
   }
   /* Левая колонка: форма в карточке + плашка ЮКассы под ней. */
   .u-wiz__left {
@@ -1016,7 +1016,7 @@ body.u-wiz-active .u-header { display: none; }
     min-width: 0; display: block;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: 2em 1.75em;
+    padding: 1.5em 1.75em;
   }
   /* Правая колонка. */
   .u-wiz__rail {
@@ -1029,7 +1029,7 @@ body.u-wiz-active .u-header { display: none; }
   /* Карточный поток вместо мобильного fit-to-screen. Spacer/Grow берут
      высоту из inline-style --dh (px) и пересчитываются в em относительно
      текущего font-size — так распорки сжимаются вместе со шрифтом. */
-  .u-wiz__progress { padding: 0 0 1.625em; }
+  .u-wiz__progress { padding: 0 0 1em; }
   .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
   .u-wiz__step.is-on { display: block; animation: none; }
   .u-wiz__spacer { display: block; height: calc(var(--dh, 0) * 1em / 16px); }
@@ -1126,7 +1126,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__footer {
     position: static; background: none;
     -webkit-backdrop-filter: none; backdrop-filter: none;
-    border-top: none; padding: 2em 0 0;
+    border-top: none; padding: 1.25em 0 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em;
   }
   /* Высоты back-d / next / CTA одинаковые. Чтобы высота не «плыла»
