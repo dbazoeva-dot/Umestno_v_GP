@@ -267,13 +267,15 @@
           '<img src="../landing_design/assets/measuring_tape.png" alt="" decoding="async" />' +
           '<p>Пожалуйста, измеряйте <b>внутренние</b> стороны. Размеры нужны, чтобы все органайзеры точно подошли.</p>' +
         '</div>' +
-        '<div class="u-wiz-mp__row">' + TOP_DIAGRAM +
-          '<div class="u-wiz-mp__rowtxt"><div class="t">Ширина и глубина</div>' +
-            '<div class="d"><b>ширина:</b> от левого края к правому<br><b>глубина:</b> от передней стенки к задней<br>без фасада, бортиков и направляющих</div></div>' +
-        '</div>' +
-        '<div class="u-wiz-mp__row u-wiz-mp__row--last">' + SIDE_DIAGRAM +
-          '<div class="u-wiz-mp__rowtxt"><div class="t">Высота</div>' +
-            '<div class="d">от дна до самой низкой точки сверху, лучше оставить запас 1–2&nbsp;см.</div></div>' +
+        '<div class="u-wiz-mp__rows">' +
+          '<div class="u-wiz-mp__row">' + TOP_DIAGRAM +
+            '<div class="u-wiz-mp__rowtxt"><div class="t">Ширина и глубина</div>' +
+              '<div class="d"><b>ширина:</b> от левого края к правому<br><b>глубина:</b> от передней стенки к задней<br>без фасада, бортиков и направляющих</div></div>' +
+          '</div>' +
+          '<div class="u-wiz-mp__row u-wiz-mp__row--last">' + SIDE_DIAGRAM +
+            '<div class="u-wiz-mp__rowtxt"><div class="t">Высота</div>' +
+              '<div class="d">от дна до самой низкой точки сверху, лучше оставить запас 1–2&nbsp;см.</div></div>' +
+          '</div>' +
         '</div>' +
         '<a class="u-wiz-mp__article" href="../blog/kak-zamerit-yashchik/" target="_blank" rel="noopener">' +
           '<span class="u-wiz-mp__article-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5z"/><path d="M17 7h3v12H6"/><path d="M8 9h6M8 12h6"/></svg></span>' +

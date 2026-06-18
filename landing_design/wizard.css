@@ -964,4 +964,75 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 32px; }
   .u-wiz__note { flex-basis: 100%; text-align: left; margin: 13px 0 0; max-width: 52ch; }
+
+  /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
+     Макет (DModalShell): align-center, padding 48, bg rgba(40,32,26,.55) +
+     blur 2px, sheet radius:22, shadow 0 40px 110px rgba(0,0,0,.42). ─── */
+  .u-wiz-modal {
+    align-items: center;
+    padding: 48px;
+    background: rgba(40,32,26,0.55);
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  .u-wiz-modal__sheet {
+    width: auto; max-width: 100%; max-height: 100%;
+    animation: u-wiz-mfade .22s ease;
+  }
+  .u-wiz-mp__grip { display: none; }
+  .u-wiz-mp--preview,
+  .u-wiz-mp--measure,
+  .u-wiz-mp--prio,
+  .u-wiz-mp--oferta {
+    border-radius: 22px;
+    box-shadow: 0 40px 110px rgba(0,0,0,0.42);
+    max-height: calc(100vh - 96px);
+  }
+  .u-wiz-mp--preview { width: 920px; max-width: calc(100vw - 96px); }
+  .u-wiz-mp--measure { width: 720px; max-width: calc(100vw - 96px); }
+  .u-wiz-mp--prio    { width: 560px; max-width: calc(100vw - 96px); }
+  .u-wiz-mp--oferta  { width: 920px; max-width: calc(100vw - 96px); height: 80vh; }
+
+  /* PreviewPopup — top/body/footer без overlap, картинка на #FFFBF5 */
+  .u-wiz-mp--preview .u-wiz-mp__top { padding: 22px 30px; border-bottom: 1px solid var(--u-line); }
+  .u-wiz-mp__pvbody {
+    padding: 24px 30px; background: #FFFBF5;
+    align-items: center; justify-content: center;
+  }
+  .u-wiz-mp__pvcard {
+    width: auto; max-width: 100%;
+    border-radius: 14px; padding-bottom: 0;
+    box-shadow: 0 14px 40px rgba(80,70,55,0.07);
+  }
+  .u-wiz-mp__pvcard img {
+    width: auto; max-width: 100%; max-height: calc(100vh - 320px);
+  }
+  .u-wiz-mp__pvfoot {
+    margin-top: 0; padding: 18px 30px;
+    border-top: 1px solid var(--u-line);
+    display: flex; align-items: center; gap: 16px; justify-content: flex-end;
+  }
+  .u-wiz-mp__cta { width: auto; flex: 0 0 auto; padding: 0 28px; height: 48px; }
+
+  /* MeasurePopup — две карточки в строку, поток внутри листа */
+  .u-wiz-mp--measure {
+    padding: 26px 30px;
+    display: flex; flex-direction: column;
+  }
+  .u-wiz-mp--measure .u-wiz-mp__head { margin-bottom: 14px; }
+  .u-wiz-mp--measure .u-wiz-mp__lead { margin-bottom: 18px; }
+  .u-wiz-mp__rows {
+    display: flex; flex-direction: row; gap: 16px;
+    margin-bottom: 14px;
+  }
+  .u-wiz-mp--measure .u-wiz-mp__row {
+    flex: 1 1 0; min-width: 0; margin-bottom: 0;
+    background: var(--u-card); border: 1px solid var(--u-line-2);
+    border-radius: 16px; padding: 16px 18px; gap: 14px;
+  }
+
+  /* PrioHelpPopup — центрированный, padding потоком */
+  .u-wiz-mp--prio { padding: 26px 30px; }
+
+  /* OfertaPopup — iframe внутри центрированного диалога */
+  .u-wiz-mp--oferta .u-wiz-mp__top { padding: 22px 30px; border-bottom: 1px solid var(--u-line); }
 }
