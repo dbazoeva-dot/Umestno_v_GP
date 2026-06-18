@@ -984,7 +984,7 @@ body.u-wiz-active .u-header { display: none; }
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
     font-size: min(
-      clamp(15px, calc(12px + 0.3125vw), 18px),
+      clamp(15px, calc(14px + 0.156vw), 18px),
       clamp(13px, 2.15vh, 18px)
     );
   }
@@ -1039,7 +1039,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__preview, .u-wiz__measure { font-size: 0.8125em; }
   .u-wiz__preview { height: 2.75em; }
   .u-wiz .u-calc__choice-t { font-size: 0.875em; }
-  .u-wiz .u-calc__sz input { font-size: 1.375em; height: 2.75em; }
+  .u-wiz .u-calc__sz input { font-size: 1.25em; height: 2.5em; }
   .u-wiz .u-calc__sz > span { font-size: max(9px, 0.5625em); }
   .u-wiz__progress-head .s { font-size: max(10px, 0.625em); }
   .u-wiz__progress-head .l { font-size: 0.781em; }
@@ -1054,7 +1054,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz .u-promo { width: min(30em, 100%); }
   /* ── Правая колонка (offer/review) ───────────────────────── */
   .u-wiz__offer-head .price { font-size: 2.125em; }
-  .u-wiz__offer-head .lbl   { font-size: max(10px, 0.625em); }
+  .u-wiz__offer-head .lbl   { font-size: max(10px, 0.625em); max-width: none; }
   .u-wiz__offer-list li     { font-size: 0.781em; }
   .u-wiz__review-quote      { font-size: 1.125em; }
   .u-wiz__review-author .who b    { font-size: 0.781em; }
@@ -1067,11 +1067,13 @@ body.u-wiz-active .u-header { display: none; }
     border-top: none; padding: 2em 0 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em;
   }
-  .u-wiz__back-d { width: 3.375em; height: 3.375em; padding: 0; border-radius: 14px; font-size: 1.5em; }
-  .u-wiz__next { flex: 0 0 auto; width: auto; padding: 0 2em; }
+  /* Высоты back-d / next / CTA одинаковые (3.25em ≈ 52px на базе),
+     чтобы кнопки стояли ровно по нижней линии. */
+  .u-wiz__back-d { width: 3.25em; height: 3.25em; padding: 0; border-radius: 14px; font-size: 1.25em; }
+  .u-wiz__next { flex: 0 0 auto; width: auto; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
   .u-wiz__next::after { content: "›"; font-size: 1.125em; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
-  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; padding: 0 2em; }
+  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
   .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; font-size: max(11px, 0.6875em); }
 
   /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
