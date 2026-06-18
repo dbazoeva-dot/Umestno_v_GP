@@ -387,12 +387,30 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   display: block; stroke-width: 1.8;
 }
 .u-wiz .u-calc__dup-hint { font-size: 11px; color: var(--u-accent-d); margin: 8px 2px 0; line-height: 1.4; }
+/* AddCat (как в A2): обёртка с кнопкой + подписью под ней. На кнопке
+   справа абсолютный счётчик N/4. При is-full (count >= max-1, т.е. 3+)
+   рамка/счётчик переходят на accent — визуальный сигнал «лимит почти
+   достигнут». Когда строк = max, calc.js скрывает саму кнопку через
+   display:none — подпись остаётся видимой и сообщает «лимит». */
+.u-wiz__addcat { display: flex; flex-direction: column; gap: 7px; }
 .u-wiz .u-calc__add {
-  width: 100%; height: 42px; margin-top: 9px;
-  border: 1.5px dashed var(--u-line-2); border-radius: 12px;
+  position: relative;
+  width: 100%; height: 42px; padding: 0;
+  border: 1.5px dashed var(--u-line); border-radius: 12px;
   background: transparent; color: var(--u-ink-3);
   font-family: inherit; font-size: 12.5px; font-weight: 600;
   display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer;
+}
+.u-wiz .u-calc__add .plus { font-size: 15px; margin-top: -1px; line-height: 1; }
+.u-wiz .u-calc__add .count {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-family: var(--f-mono, monospace); font-size: 11px; font-weight: 600;
+  color: var(--u-ink-3);
+}
+.u-wiz .u-calc__add.is-full { border-color: var(--wz-accent-soft); color: var(--u-accent-d); }
+.u-wiz .u-calc__add.is-full .count { color: var(--u-accent); }
+.u-wiz__addcat-sub {
+  font-size: 11px; color: var(--u-ink-3); text-align: center;
 }
 
 /* ── Приоритет — компактный Segmented control (как в A2) ─────────

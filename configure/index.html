@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css?v=4" />
 <link rel="stylesheet" href="../landing.css?v=8" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
-<link rel="stylesheet" href="../landing_design/wizard.css?v=27" />
+<link rel="stylesheet" href="../landing_design/wizard.css?v=28" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -173,10 +173,14 @@
       <div class="u-calc__items" data-items></div>
       <p class="u-calc__dup-hint" data-items-dup-hint hidden></p>
       <div class="u-wiz__spacer" style="height:9px"></div>
-      <button type="button" class="u-calc__add" data-add>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>
-        <span>Добавить ещё категорию</span>
-      </button>
+      <div class="u-wiz__addcat">
+        <button type="button" class="u-calc__add" data-add>
+          <span class="plus" aria-hidden="true">＋</span>
+          <span class="lbl">Добавить ещё категорию</span>
+          <span class="count" data-wiz-add-count>2 / 4</span>
+        </button>
+        <span class="u-wiz__addcat-sub" data-wiz-add-sub>Не более 4 категорий на один ящик</span>
+      </div>
 
       <div class="u-wiz__grow" style="min-height:18px"></div>
       <div class="u-wiz__kicker">Что важнее в итоге
@@ -635,7 +639,7 @@
 <script src="../app.js"></script>
 <script src="../landing_design/content-labels.js?v=10"></script>
 <script src="../calc.js?v=11"></script>
-<script src="../landing_design/wizard-nav.js?v=9"></script>
+<script src="../landing_design/wizard-nav.js?v=10"></script>
 <script src="../landing_design/metrika.js?v=2" defer></script>
 </body>
 </html>

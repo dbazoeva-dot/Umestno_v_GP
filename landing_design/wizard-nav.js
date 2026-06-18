@@ -334,6 +334,35 @@
     render();
   }
 
+  /* ── AddCat: счётчик N/4 и подпись под кнопкой ──────────────────
+     calc.js сам по себе считает строки и скрывает кнопку при достижении
+     max=4 (rows < MAX_ROWS). Здесь только обновляем визуальный счётчик и
+     текст подписи — следим за изменениями в [data-items] через
+     MutationObserver. */
+  var itemsRoot = wiz.querySelector('[data-items]');
+  var addBtn = wiz.querySelector('[data-add]');
+  var addCountEl = wiz.querySelector('[data-wiz-add-count]');
+  var addSubEl = wiz.querySelector('[data-wiz-add-sub]');
+  var MAX_CAT = 4;
+  if (itemsRoot) {
+    var updateAddCount = function () {
+      var n = itemsRoot.querySelectorAll('.u-calc__item-row').length;
+      if (addCountEl) addCountEl.textContent = n + ' / ' + MAX_CAT;
+      // «is-full» зажигаем уже на предпоследнем слоте — последний визуальный
+      // сигнал перед тем, как calc.js скроет кнопку при достижении лимита.
+      if (addBtn) addBtn.classList.toggle('is-full', n >= MAX_CAT - 1);
+      if (addSubEl) {
+        addSubEl.textContent = n >= MAX_CAT
+          ? 'Максимум 4 категории на ящик'
+          : 'Не более 4 категорий на один ящик';
+      }
+    };
+    // initial — calc.js рендерит первые 2 строки синхронно, но на всякий
+    // случай через setTimeout, чтобы DOM точно был готов.
+    setTimeout(updateAddCount, 0);
+    new MutationObserver(updateAddCount).observe(itemsRoot, { childList: true });
+  }
+
   /* ── Бургер-меню в топбаре ─────────────────────────────────────
      Переиспользуем штатную мобильную nav сайта (#u-mobile-nav из шапки
      .u-header--sub) — то же меню, что у старого конфигуратора. Boot
