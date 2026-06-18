@@ -1067,7 +1067,6 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__lead,
   .u-wiz__preview,
   .u-wiz__measure,
-  .u-wiz .u-calc__choice,
   .u-wiz__next,
   .u-wiz__footer .u-calc__cta,
   .u-wiz__offer-list li,
@@ -1077,14 +1076,17 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz .u-calc__add,
   .u-wiz .u-calc__pri-btn .ttl,
   .u-wiz .u-promo__toggle { font-size: 0.875em; }
-  /* Внутри chip body — text наследует 1em от родителя (= 0.875em корня) */
-  .u-wiz .u-calc__choice-t { font-size: 1em; }
+  /* Chip и pri-btn — родители 1em (от корня), чтобы дети 0.875em давали
+     ровно Body (14 на base 16), а не наследовались от 12.5px default. */
+  .u-wiz .u-calc__choice,
+  .u-wiz .u-calc__pri-btn { font-size: 1em; }
+  /* Текст внутри чипа наследует Body 0.875em от корня */
+  .u-wiz .u-calc__choice-t { font-size: 0.875em; }
 
   /* Small ───────────────────────────────────────────────────── */
   .u-wiz__measure .more,
   .u-wiz .u-calc__preset,
   .u-wiz .u-calc__check-txt,
-  .u-wiz .u-calc__pri-btn,
   .u-wiz .u-calc__pri-btn .sub,
   .u-wiz__addcat .count,
   .u-wiz__addcat-sub,
