@@ -1031,21 +1031,87 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__step.is-on { display: block; animation: none; }
   .u-wiz__spacer { display: block; height: calc(var(--dh, 0) * 1em / 16px); }
   .u-wiz__grow   { display: block; flex: none; min-height: 0; height: calc(var(--dh, 0) * 1em / 16px); }
-  /* ── Шрифты ключевых элементов формы (база 16 = 1em) ─────── */
-  .u-wiz__title  { font-size: 2.125em; margin-top: 0; text-wrap: balance; }
-  .u-wiz__lead   { font-size: 0.9375em; }
+  /* ══ ТИПОГРАФИЧЕСКАЯ ШКАЛА — 5 УРОВНЕЙ НА ВСЮ СТРАНИЦУ ══════════════
+     Все размеры текста сведены к фиксированному набору, чтобы шкала
+     была читаемой иерархией, а не хаосом из 15 близких полутонов.
+
+       Display  2.125em (~34px)  — title, price
+       Lead     1.125em (~18px)  — цитата в отзыве
+       Body     0.875em (~14px)  — основной текст, кнопки, чипы, списки
+       Small    0.75em  (~12px)  — подзаголовки, подписи, secondary
+       Caps     0.688em (~11px)  — mono uppercase eyebrow-метки (с полом 11)
+
+     Спец-уровень: Number 1.375em (~22px) — цифры в полях ширина/глубина/высота. */
+
+  /* Display ─────────────────────────────────────────────────── */
+  .u-wiz__title,
+  .u-wiz__offer-head .price { font-size: 2.125em; }
+  .u-wiz__title { margin-top: 0; text-wrap: balance; }
+
+  /* Lead ────────────────────────────────────────────────────── */
+  .u-wiz__review-quote { font-size: 1.125em; }
+
+  /* Body ────────────────────────────────────────────────────── */
+  .u-wiz__lead,
+  .u-wiz__preview,
+  .u-wiz__measure,
+  .u-wiz .u-calc__choice,
+  .u-wiz__next,
+  .u-wiz__footer .u-calc__cta,
+  .u-wiz__offer-list li,
+  .u-wiz__review-author .who b,
+  .u-wiz__sumrow .v,
+  .u-wiz .u-promo__input,
+  .u-wiz .u-calc__add,
+  .u-wiz .u-calc__pri-btn .ttl,
+  .u-wiz .u-promo__toggle { font-size: 0.875em; }
+  /* Внутри chip body — text наследует 1em от родителя (= 0.875em корня) */
+  .u-wiz .u-calc__choice-t { font-size: 1em; }
+
+  /* Small ───────────────────────────────────────────────────── */
+  .u-wiz__measure .more,
+  .u-wiz .u-calc__preset,
+  .u-wiz .u-calc__check-txt,
+  .u-wiz .u-calc__pri-btn,
+  .u-wiz .u-calc__pri-btn .sub,
+  .u-wiz__addcat .count,
+  .u-wiz__addcat-sub,
+  .u-wiz .u-calc__dup-hint,
+  .u-wiz__sumrow .edit,
+  .u-wiz .u-promo__msg,
+  .u-wiz .u-consent label,
+  .u-wiz__secure span,
+  .u-wiz__review-author .who span,
+  .u-wiz__note,
+  .u-wiz__progress-head .l { font-size: 0.75em; }
+
+  /* Caps eyebrow (mono uppercase, с полом 11px чтобы caps оставались
+     читаемыми даже на сжатии до base 13-14px на коротком экране) ─ */
+  .u-wiz__kicker,
+  .u-wiz__progress-head .s,
+  .u-wiz__offer-head .lbl,
+  .u-wiz__review-top .hist,
+  .u-wiz .u-calc__preset-label,
+  .u-wiz .u-calc__sz > span,
+  .u-wiz__itemhead > span,
+  .u-wiz__sumrow .k { font-size: max(11px, 0.688em); }
+
+  /* Number (спец) — крупные цифры в полях ширина/глубина/высота ─ */
+  .u-wiz .u-calc__sz input { font-size: 1.375em; }
+
+  /* ── Прочие размеры (не font-size) — отступы, gaps, max-width ─ */
   .u-wiz__step[data-wiz-step="1"] .u-wiz__lead { margin-bottom: 1.375em; }
-  .u-wiz__kicker { font-size: max(11px, 0.6875em); margin-bottom: 0.6875em; }
-  .u-wiz__preview, .u-wiz__measure { font-size: 0.8125em; }
+  .u-wiz__kicker { margin-bottom: 0.6875em; }
   .u-wiz__preview { height: 2.75em; }
-  .u-wiz .u-calc__choice { font-size: 1em; padding: 0.5em 0.625em; }
-  .u-wiz .u-calc__choice-t { font-size: 0.875em; }
-  .u-wiz .u-calc__sz input { font-size: 1.25em; height: 2.5em; }
-  .u-wiz .u-calc__sz > span { font-size: max(9px, 0.5625em); }
-  .u-wiz__progress-head .s { font-size: max(10px, 0.625em); }
-  .u-wiz__progress-head .l { font-size: 0.781em; }
+  .u-wiz .u-calc__choice { padding: 0.5em 0.625em; }
+  .u-wiz .u-calc__sz input { height: 2.5em; }
+  .u-wiz__offer-head .lbl { max-width: none; }
   .u-wiz .u-calc__choices { gap: 0.5em; }
   .u-wiz .u-calc__items { gap: 0.563em; }
+  .u-wiz__measure { gap: 0.5em; padding: 0.625em 0.875em; }
+  .u-wiz__measure img { width: 1.25em; height: 1.25em; }
+  .u-wiz .u-calc__presets { gap: 0.813em; }
+  .u-wiz .u-calc__add .plus { font-size: 1.25em; }
   /* maxWidth-капы — теперь в em, чтобы расти со шрифтом, но не быть шире
      родителя. width: min(...) удобнее, чем max-width (специфичность). */
   .u-wiz__preview { width: min(22.5em, 100%); }
@@ -1053,14 +1119,6 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz .u-calc__sizes { width: min(27.5em, 100%); }
   .u-wiz__summary { width: min(30em, 100%); }
   .u-wiz .u-promo { width: min(30em, 100%); }
-  /* ── Правая колонка (offer/review) ───────────────────────── */
-  .u-wiz__offer-head .price { font-size: 2.125em; }
-  .u-wiz__offer-head .lbl   { font-size: max(10px, 0.625em); max-width: none; }
-  .u-wiz__offer-list li     { font-size: 0.781em; }
-  .u-wiz__review-quote      { font-size: 1.125em; }
-  .u-wiz__review-author .who b    { font-size: 0.781em; }
-  .u-wiz__review-author .who span { font-size: max(10px, 0.656em); }
-  .u-wiz__review-top .hist  { font-size: max(10px, 0.625em); }
   /* ── Футер: инлайн-ряд кнопок ─────────────────────────────── */
   .u-wiz__footer {
     position: static; background: none;
@@ -1075,33 +1133,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__next::after { content: "›"; font-size: 1.125em; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
-  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; font-size: max(11px, 0.6875em); }
-
-  /* ── Массовый перевод всех ОСТАЛЬНЫХ фикс-px текстов в em-шкалу.
-     Чтобы не вылавливать каждый элемент по одному, прогоняю весь
-     перечень мелких подписей в форме: measure, preset-label, preset,
-     itemhead, addcat, sumrow, promo, consent, pri-btn. ───────── */
-  .u-wiz__measure { gap: 0.5em; padding: 0.625em 0.875em; }
-  .u-wiz__measure img { width: 1.25em; height: 1.25em; }
-  .u-wiz__measure .more { font-size: 0.75em; }
-  .u-wiz .u-calc__preset-label { font-size: max(9px, 0.5625em); }
-  .u-wiz .u-calc__presets { gap: 0.813em; }
-  .u-wiz .u-calc__preset { font-size: 0.719em; }
-  .u-wiz__itemhead > span { font-size: max(9px, 0.594em); }
-  .u-wiz .u-calc__check-txt { font-size: 0.75em; }
-  .u-wiz .u-calc__add { font-size: 0.781em; }
-  .u-wiz .u-calc__add .plus { font-size: 0.938em; }
-  .u-wiz__addcat .count { font-size: 0.688em; }
-  .u-wiz__addcat-sub { font-size: 0.688em; }
-  .u-wiz .u-calc__dup-hint { font-size: 0.688em; }
-  .u-wiz .u-calc__pri-btn { font-size: 0.781em; }
-  .u-wiz .u-calc__pri-btn .sub { font-size: 0.781em; }
-  .u-wiz__sumrow .k { font-size: max(10px, 0.625em); }
-  .u-wiz__sumrow .v { font-size: 0.813em; }
-  .u-wiz__sumrow .edit { font-size: 0.688em; }
-  .u-wiz .u-promo__toggle { font-size: 0.813em; }
-  .u-wiz .u-promo__input { font-size: 0.875em; }
-  .u-wiz .u-promo__msg { font-size: 0.75em; }
+  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; }
   .u-wiz .u-consent label { font-size: 0.719em; }
 
   /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
