@@ -1077,6 +1077,33 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
   .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; font-size: max(11px, 0.6875em); }
 
+  /* ── Массовый перевод всех ОСТАЛЬНЫХ фикс-px текстов в em-шкалу.
+     Чтобы не вылавливать каждый элемент по одному, прогоняю весь
+     перечень мелких подписей в форме: measure, preset-label, preset,
+     itemhead, addcat, sumrow, promo, consent, pri-btn. ───────── */
+  .u-wiz__measure { gap: 0.5em; padding: 0.625em 0.875em; }
+  .u-wiz__measure img { width: 1.25em; height: 1.25em; }
+  .u-wiz__measure .more { font-size: 0.75em; }
+  .u-wiz .u-calc__preset-label { font-size: max(9px, 0.5625em); }
+  .u-wiz .u-calc__presets { gap: 0.813em; }
+  .u-wiz .u-calc__preset { font-size: 0.719em; }
+  .u-wiz__itemhead > span { font-size: max(9px, 0.594em); }
+  .u-wiz .u-calc__check-txt { font-size: 0.75em; }
+  .u-wiz .u-calc__add { font-size: 0.781em; }
+  .u-wiz .u-calc__add .plus { font-size: 0.938em; }
+  .u-wiz__addcat .count { font-size: 0.688em; }
+  .u-wiz__addcat-sub { font-size: 0.688em; }
+  .u-wiz .u-calc__dup-hint { font-size: 0.688em; }
+  .u-wiz .u-calc__pri-btn { font-size: 0.781em; }
+  .u-wiz .u-calc__pri-btn .sub { font-size: 0.781em; }
+  .u-wiz__sumrow .k { font-size: max(10px, 0.625em); }
+  .u-wiz__sumrow .v { font-size: 0.813em; }
+  .u-wiz__sumrow .edit { font-size: 0.688em; }
+  .u-wiz .u-promo__toggle { font-size: 0.813em; }
+  .u-wiz .u-promo__input { font-size: 0.875em; }
+  .u-wiz .u-promo__msg { font-size: 0.75em; }
+  .u-wiz .u-consent label { font-size: 0.719em; }
+
   /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
      Макет (DModalShell): align-center, padding 48, bg rgba(40,32,26,.55) +
      blur 2px, sheet radius:22, shadow 0 40px 110px rgba(0,0,0,.42). ─── */
