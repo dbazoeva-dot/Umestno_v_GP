@@ -1016,7 +1016,7 @@ body.u-wiz-active .u-header { display: none; }
     min-width: 0; display: block;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: 1.5em 1.75em;
+    padding: 1.5em 1.75em 1em;
   }
   /* Правая колонка. */
   .u-wiz__rail {
@@ -1144,7 +1144,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__next::after { content: "›"; font-size: 1.25em; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
   .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; }
-  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; }
+  .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.5em 0 0; max-width: 52ch; }
   .u-wiz .u-consent label { font-size: 0.719em; }
 
   /* ── Десктоп-попапы: центрированные диалоги вместо bottom-sheet.
