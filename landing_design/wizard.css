@@ -801,6 +801,10 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 .u-wiz__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .u-wiz__col  { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .u-wiz__rail { display: none; }
+/* Мобильный fixed-визард со своим топбаром перекрывает шапку сайта —
+   на мобиле прячем .u-header. На десктопе шапка сайта возвращается
+   (см. @media 960+ ниже). */
+body.u-wiz-active .u-header { display: none; }
 /* «Назад» в футере (.u-wiz__back-d) — теперь показывается на всех ширинах
    (на шаге 1 скрывается через [disabled] ниже). Лейбл «Конфигуратор»
    справа в топбаре — тоже на всех ширинах. */
@@ -888,28 +892,10 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
   }
-  /* топбар → хедер: статичный (без sticky — гарантированно виден), с чётким
-     нижним разделителем. Внутренние отступы повторяют контейнер сайта
-     (--container/--gutter, как у старого калькулятора), чтобы лого лёг над
-     левым краем формы, а лейбл — над правым краем панели. */
-  .u-wiz__topbar {
-    position: static; height: 64px;
-    border-bottom: 1px solid var(--u-line-2);
-    padding-left: calc((100vw - var(--container)) / 2 + var(--gutter));
-    padding-right: calc((100vw - var(--container)) / 2 + var(--gutter));
-  }
-  /* На десктопе скрываем бургер — навигация уже есть в шапке сайта.
-     Лого крупнее: показываем полный wordmark (отменяем CSS-обрезку),
-     лейбл «Конфигуратор» становится mono-уголком справа. */
-  .u-wiz__menu { display: none; }
-  .u-wiz__brand-crop { width: auto; height: 26px; overflow: visible; }
-  .u-wiz__brand-crop img { height: 26px; }
-  .u-wiz__topbar-label {
-    margin-left: auto; padding-left: 0; border-left: none;
-    font-family: var(--f-mono, monospace); font-size: 11px;
-    font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--u-ink-3);
-  }
+  /* На десктопе возвращаем шапку сайта (.u-header — sticky, навигация,
+     бургер) и прячем внутренний топбар визарда — он там лишний. */
+  body.u-wiz-active .u-header { display: block; }
+  .u-wiz__topbar { display: none; }
   /* Двухколоночник как у старого калькулятора (.u-calc__layout):
      контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
   .u-wiz__main {
