@@ -692,6 +692,36 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   background: var(--u-bg);
 }
 
+/* ── Оферта-модалка ──────────────────────────────────────────
+   Структура как у preview, но вместо картинки — iframe с /oferta/.
+   Открывается из чекбокса согласия на шаге 3 — пользователь видит оферту
+   не уходя из визарда (форма остаётся заполненной). */
+.u-wiz-mp--oferta {
+  display: flex; flex-direction: column; overflow: hidden;
+  height: calc(100% - 8px);
+  background: var(--u-bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
+}
+.u-wiz-mp--oferta .u-wiz-mp__top {
+  flex: 0 0 auto; padding: 10px 18px 8px;
+  border-bottom: 1px solid var(--u-line);
+}
+.u-wiz-mp--oferta .u-wiz-mp__grip { margin: 0 auto 10px; }
+.u-wiz-mp__oframe {
+  flex: 1 1 auto; min-height: 0;
+  background: var(--u-card);
+  position: relative; z-index: 1;
+  overflow: hidden;
+}
+.u-wiz-mp__oframe iframe {
+  width: 100%; height: 100%;
+  border: 0; display: block;
+}
+.u-wiz-mp--oferta .u-wiz-mp__pvfoot {
+  margin-top: 0; border-top: 1px solid var(--u-line);
+}
+
 /* ── MeasurePopup — единый padding 12/18/22, всё потоком ──
    В макете: padding:'12px 18px 22px' на листе, БЕЗ safe-area.
    grip mb=16, head mb=8, lead mb=16, row1 mb=14, row2 mb=0,

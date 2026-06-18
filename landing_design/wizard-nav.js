@@ -323,6 +323,35 @@
     );
   });
 
+  /* ── Оферта: открываем в попапе вместо новой вкладки ────────────────
+     Юзер на шаге 3 кликает «Оферты» в чекбоксе согласия — раньше уходил в
+     новую вкладку (../oferta/), что разрывает фокус с расчётом. Теперь
+     перехватываем клик и показываем оферту в iframe-модалке, форма
+     остаётся заполненной, юзер не теряется. */
+  wiz.querySelectorAll('[data-wiz-oferta]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      track('oferta_popup_open');
+      openModal(
+        '<div class="u-wiz-mp u-wiz-mp--oferta">' +
+          '<div class="u-wiz-mp__top">' +
+            '<div class="u-wiz-mp__grip"></div>' +
+            '<div class="u-wiz-mp__head">' +
+              '<h2 class="u-wiz-mp__title">Публичная <em>оферта</em></h2>' +
+              '<button type="button" class="u-wiz-mp__close" data-wiz-mclose aria-label="Закрыть">✕</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="u-wiz-mp__oframe">' +
+            '<iframe src="../oferta/" title="Публичная оферта" loading="eager"></iframe>' +
+          '</div>' +
+          '<div class="u-wiz-mp__pvfoot">' +
+            '<button type="button" class="u-wiz-mp__cta" data-wiz-mclose>Закрыть</button>' +
+          '</div>' +
+        '</div>'
+      );
+    });
+  });
+
   /* ── Если зашли с ?t=token (prefill) — начинаем с шага 3, чтобы юзер
         сразу увидел сводку и пошёл на оплату. Иначе — с шага 1. ──── */
   var params = new URLSearchParams(location.search);
