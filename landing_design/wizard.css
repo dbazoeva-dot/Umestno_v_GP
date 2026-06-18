@@ -875,7 +875,6 @@ body.u-wiz-active .u-header { display: none; }
   position: absolute; inset: 0;
   clip-path: inset(0 calc(100% - var(--x)) 0 0);
   -webkit-clip-path: inset(0 calc(100% - var(--x)) 0 0);
-  will-change: clip-path;
 }
 .u-wiz__compare-cap {
   position: absolute; top: 8px; z-index: 2;
