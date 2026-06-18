@@ -868,11 +868,11 @@ body.u-wiz-active .u-header { display: none; }
    subpixel-смещений. */
 .u-wiz__compare-frame {
   --x: 50%;
+  --frame-w: 100%;
   position: relative;
   aspect-ratio: 1448 / 1024;
   border-radius: 12px;
   overflow: hidden;
-  container-type: inline-size;
   background: var(--u-line-2);
   touch-action: none;
   user-select: none; -webkit-user-select: none;
@@ -889,7 +889,7 @@ body.u-wiz-active .u-header { display: none; }
 }
 .u-wiz__compare-clip .u-wiz__compare-img {
   position: absolute; top: 0; left: 0;
-  width: 100cqw;
+  width: var(--frame-w);
   height: 100%;
   inset: auto;
 }
