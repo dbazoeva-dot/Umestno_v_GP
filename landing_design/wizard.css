@@ -434,7 +434,7 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
    отступ задавался ТОЛЬКО padding-top и margin-top подписи. */
 .u-wiz__footer {
   flex: 0 0 auto;
-  padding: 8px var(--wz-pad);
+  padding: 16px var(--wz-pad);
   background: rgba(255,253,249,0.92);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-top: 1px solid var(--u-line);
@@ -476,17 +476,23 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 /* Подпись — отдельной строкой ниже кнопок (flex-basis:100%), отступ сверху
    16px = padding-top футера = padding-bottom (без safe-area). Симметрия. */
 .u-wiz__note {
-  flex-basis: 100%; margin: 8px 2px 0;
+  flex-basis: 100%; margin: 16px 2px 0;
   font-size: 10.5px; line-height: 1.45; color: var(--u-ink-3); text-align: center;
 }
-/* На низких экранах (≤660 высота) — ещё компактнее: 5/5/5 + меньше кнопка.
-   Так шаг визарда уверенно помещается на узких/коротких устройствах
-   (например, iPhone SE 1, бюджетные Android), не отжирая полезное место
-   под форму. */
-@media (max-height: 660px) {
+/* Адаптивная компактизация футера на коротких экранах:
+   - базово (iPhone-class, ≥720px высоты): 16/16/16, кнопка 52
+   - ≤720px (большинство Android, iPhone SE 2/3): 8/8/8, кнопка 48
+   - ≤600px (iPhone SE 1, бюджетные Android 360×640 и ниже): 5/5/5, кнопка 44
+   Симметрия сохраняется на всех брейкпоинтах. */
+@media (max-height: 720px) {
+  .u-wiz__footer { padding: 8px var(--wz-pad); }
+  .u-wiz__note { margin-top: 8px; }
+  .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 48px; }
+}
+@media (max-height: 600px) {
   .u-wiz__footer { padding: 5px var(--wz-pad); }
   .u-wiz__note { margin-top: 5px; }
-  .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 46px; }
+  .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 44px; }
 }
 [data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
 
