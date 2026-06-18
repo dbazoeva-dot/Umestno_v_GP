@@ -1038,6 +1038,7 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__kicker { font-size: max(11px, 0.6875em); margin-bottom: 0.6875em; }
   .u-wiz__preview, .u-wiz__measure { font-size: 0.8125em; }
   .u-wiz__preview { height: 2.75em; }
+  .u-wiz .u-calc__choice { font-size: 1em; padding: 0.5em 0.625em; }
   .u-wiz .u-calc__choice-t { font-size: 0.875em; }
   .u-wiz .u-calc__sz input { font-size: 1.25em; height: 2.5em; }
   .u-wiz .u-calc__sz > span { font-size: max(9px, 0.5625em); }
