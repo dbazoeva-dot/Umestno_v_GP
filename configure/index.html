@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="../landing_design/calc.css?v=4" />
 <link rel="stylesheet" href="../landing.css?v=8" />
 <link rel="stylesheet" href="../landing_design/legal.css?v=1" />
-<link rel="stylesheet" href="../landing_design/wizard.css?v=11" />
+<link rel="stylesheet" href="../landing_design/wizard.css?v=32" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -72,15 +72,19 @@
      работает без изменений. ══ -->
 <div class="u-wiz" data-wiz hidden>
   <div class="u-wiz__topbar">
-    <button type="button" class="u-wiz__back" data-wiz-back aria-label="Назад" disabled>‹</button>
-    <span class="u-wiz__brand">
-      <img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" />
-      <span class="u-wiz__brand-m">Конфигуратор</span>
-    </span>
-    <span class="u-wiz__topbar-label">Конфигуратор хранения</span>
+    <a href="../" class="u-wiz__brand" aria-label="На главную">
+      <span class="u-wiz__brand-crop">
+        <img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" />
+      </span>
+    </a>
+    <span class="u-wiz__topbar-label">Конфигуратор</span>
+    <button type="button" class="u-wiz__menu" data-wiz-menu aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 
   <div class="u-wiz__main">
+    <div class="u-wiz__left">
     <div class="u-wiz__col">
 
   <div class="u-wiz__progress">
@@ -103,7 +107,7 @@
         Как будет выглядеть результат
       </button>
 
-      <div class="u-wiz__spacer" style="height:14px"></div>
+      <div class="u-wiz__spacer" style="--mh:6px;--dh:20px;height:6px"></div>
       <div class="u-wiz__kicker">Тип пространства</div>
       <div class="u-calc__choices">
         <button type="button" class="u-calc__choice is-on" aria-pressed="true">
@@ -120,7 +124,7 @@
         </button>
       </div>
 
-      <div class="u-wiz__spacer" style="height:12px"></div>
+      <div class="u-wiz__spacer" style="--mh:12px;--dh:20px;height:12px"></div>
       <div class="u-wiz__kicker">Что храните</div>
       <div class="u-calc__choices">
         <button type="button" class="u-calc__choice is-on" aria-pressed="true">
@@ -137,7 +141,7 @@
         </button>
       </div>
 
-      <div class="u-wiz__grow" style="min-height:20px"></div>
+      <div class="u-wiz__grow" style="--dh:24px;min-height:36px"></div>
       <div class="u-wiz__kicker">Размеры, см</div>
       <button type="button" class="u-wiz__measure" data-wiz-measure>
         <img src="../landing_design/assets/measuring_tape.png" alt="" decoding="async" />
@@ -149,7 +153,7 @@
         <label class="u-calc__sz"><span>Глубина</span><input type="text" inputmode="numeric" data-dim="d" value="45" placeholder="45" /></label>
         <label class="u-calc__sz"><span>Высота</span><input type="text" inputmode="numeric" data-dim="h" value="15" placeholder="15" /></label>
       </div>
-      <div class="u-wiz__spacer" style="height:8px"></div>
+      <div class="u-wiz__spacer" style="--mh:8px;--dh:12px;height:8px"></div>
       <div class="u-calc__preset-row">
         <div class="u-calc__preset-label">Частые</div>
         <div class="u-calc__presets">
@@ -166,17 +170,21 @@
       <h1 class="u-wiz__title">Что лежит <em>в ящике</em>?</h1>
       <p class="u-wiz__lead">Тип вещи и примерный объём — до 4 категорий.</p>
 
-      <div class="u-wiz__itemhead"><span>Что хранить</span><span>Объём</span></div>
+      <div class="u-wiz__itemhead"><span>Что хранить</span><span>Объём</span><span aria-hidden="true"></span></div>
       <div class="u-calc__items" data-items></div>
       <p class="u-calc__dup-hint" data-items-dup-hint hidden></p>
-      <div class="u-wiz__spacer" style="height:9px"></div>
-      <button type="button" class="u-calc__add" data-add>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>
-        <span>Добавить ещё категорию</span>
-      </button>
+      <div class="u-wiz__spacer" style="--mh:9px;--dh:10px;height:9px"></div>
+      <div class="u-wiz__addcat">
+        <button type="button" class="u-calc__add" data-add>
+          <span class="plus" aria-hidden="true">＋</span>
+          <span class="lbl">Добавить ещё категорию</span>
+          <span class="count" data-wiz-add-count>2 / 4</span>
+        </button>
+        <span class="u-wiz__addcat-sub" data-wiz-add-sub>Не более 4 категорий на один ящик</span>
+      </div>
 
-      <div class="u-wiz__grow" style="min-height:18px"></div>
-      <div class="u-wiz__kicker">Что важнее в итоге
+      <div class="u-wiz__grow" style="--dh:22px;min-height:18px"></div>
+      <div class="u-wiz__kicker" style="margin-bottom:9px">Что важнее в итоге
         <button type="button" class="u-wiz__help" data-wiz-prio aria-label="Что значит важнее">?</button>
       </div>
       <div class="u-calc__priority">
@@ -206,7 +214,7 @@
         Как будет выглядеть результат
       </button>
 
-      <div class="u-wiz__grow" style="min-height:12px"></div>
+      <div class="u-wiz__spacer" style="--mh:12px;--dh:16px;height:12px"></div>
       <div class="u-wiz__summary" data-wiz-summary></div>
 
       <div class="u-promo" data-promo-block>
@@ -223,10 +231,10 @@
         </div>
       </div>
 
-      <div class="u-wiz__spacer" style="height:10px"></div>
+      <div class="u-wiz__spacer" style="--mh:10px;--dh:12px;height:10px"></div>
       <div class="u-consent">
         <input type="checkbox" id="u-consent-oferta" required />
-        <label for="u-consent-oferta">Я принимаю условия <a href="../oferta/" target="_blank" rel="noopener">Оферты</a> и понимаю, что схема формируется на основании введённых мной данных.</label>
+        <label for="u-consent-oferta">Я принимаю условия <a href="../oferta/" target="_blank" rel="noopener" data-wiz-oferta>Оферты</a> и понимаю, что схема формируется на основании введённых мной данных.</label>
       </div>
       <div class="u-wiz__grow"></div>
     </section>
@@ -234,7 +242,7 @@
 
   <!-- ── Липкий футер: «Далее»/«Назад» (шаги 1–2) → финальный CTA (шаг 3) ── -->
   <div class="u-wiz__footer">
-    <button type="button" class="u-wiz__back-d" data-wiz-back disabled>‹&nbsp;Назад</button>
+    <button type="button" class="u-wiz__back-d" data-wiz-back aria-label="Назад" disabled><span aria-hidden="true">‹</span></button>
     <button type="button" class="u-wiz__next" data-wiz-next>Далее</button>
     <div class="u-calc__actions" data-wiz-final hidden>
       <a href="../no-fit/" class="u-btn u-btn--accent u-btn--lg u-calc__cta" data-ym-goal="cta_configure_pay" style="background-color:rgb(125,140,114)">
@@ -242,10 +250,16 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
-    <p class="u-wiz__note" data-wiz-note>Полная схема и подбор органайзеров — 149&nbsp;₽ в конце</p>
+    <p class="u-wiz__note" data-wiz-note>Полная схема и подбор органайзеров за 149&nbsp;₽ в конце</p>
   </div>
 
     </div><!-- /.u-wiz__col -->
+
+      <div class="u-wiz__secure">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span>Оплата через ЮKassa. Введённые данные не теряются.</span>
+      </div>
+    </div><!-- /.u-wiz__left -->
 
     <!-- ── Правая панель ценности (десктоп) ──────────────────── -->
     <aside class="u-wiz__rail" aria-hidden="true">
@@ -263,25 +277,50 @@
         </ul>
       </div>
 
-      <div class="u-wiz__review">
+      <div class="u-wiz__review" data-reviews>
         <div class="u-wiz__review-top">
-          <span class="hist">История 01 / 5</span>
+          <span class="hist">История <span data-review-num>01</span> / <span data-review-total>5</span></span>
         </div>
-        <p class="u-wiz__review-quote">«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
-        <div class="u-wiz__review-pair">
-          <figure><img src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" /><figcaption class="is-before">До</figcaption></figure>
-          <figure><img src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" /><figcaption class="is-after">После</figcaption></figure>
+        <p class="u-wiz__review-quote" data-review-quote>«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
+        <div class="u-wiz__review-pair u-wiz__compare" data-compare>
+          <div class="u-wiz__compare-frame">
+            <img class="u-wiz__compare-img" data-review-after src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" />
+            <div class="u-wiz__compare-clip" aria-hidden="true">
+              <img class="u-wiz__compare-img" data-review-before src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" />
+            </div>
+            <span class="u-wiz__compare-cap is-after">После</span>
+            <span class="u-wiz__compare-cap is-before">До</span>
+            <button type="button" class="u-wiz__compare-handle" data-compare-handle
+              aria-label="Перетащите влево или вправо, чтобы сравнить До и После"
+              role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-orientation="horizontal">
+              <span class="u-wiz__compare-bar" aria-hidden="true"></span>
+              <span class="u-wiz__compare-knob" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg>
+              </span>
+            </button>
+          </div>
         </div>
         <div class="u-wiz__review-author">
-          <span class="av">А</span>
-          <span class="who"><b>Анна</b><span>Москва</span></span>
-          <span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+          <span class="u-wiz__review-author-l">
+            <span class="av" data-review-avatar>А</span>
+            <span class="who"><b data-review-name>Анна</b><span data-review-city>Москва</span></span>
+          </span>
+          <span class="dots" data-review-dots>
+            <button type="button" class="on" data-review-go="0" aria-label="Отзыв 1"></button>
+            <button type="button" data-review-go="1" aria-label="Отзыв 2"></button>
+            <button type="button" data-review-go="2" aria-label="Отзыв 3"></button>
+            <button type="button" data-review-go="3" aria-label="Отзыв 4"></button>
+            <button type="button" data-review-go="4" aria-label="Отзыв 5"></button>
+          </span>
+          <span class="u-wiz__review-arrs">
+            <button type="button" class="u-wiz__review-arr" data-review-prev aria-label="Предыдущий отзыв">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+            </button>
+            <button type="button" class="u-wiz__review-arr" data-review-next aria-label="Следующий отзыв">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </span>
         </div>
-      </div>
-
-      <div class="u-wiz__secure">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7D8C72" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <span>Оплата через ЮKassa. Введённые данные не теряются.</span>
       </div>
     </aside>
   </div><!-- /.u-wiz__main -->
@@ -618,7 +657,9 @@
       wiz.hidden = false;
       document.body.classList.add('u-wiz-active');
       if (old) old.parentNode.removeChild(old);
-      if (header) header.style.display = 'none';
+      // Шапку сайта оставляем — она нужна на десктопе вместо .u-wiz__topbar.
+      // На мобиле её прячет CSS (body.u-wiz-active .u-header), там визард
+      // живёт в fixed-обёртке со своим топбаром.
       if (footer) footer.style.display = 'none';
     } else if (wiz) {
       wiz.parentNode.removeChild(wiz);
@@ -632,7 +673,7 @@
 <script src="../app.js"></script>
 <script src="../landing_design/content-labels.js?v=10"></script>
 <script src="../calc.js?v=11"></script>
-<script src="../landing_design/wizard-nav.js?v=3"></script>
+<script src="../landing_design/wizard-nav.js?v=12"></script>
 <script src="../landing_design/metrika.js?v=2" defer></script>
 </body>
 </html>
