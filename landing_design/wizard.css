@@ -1126,13 +1126,21 @@ body.u-wiz-active .u-header { display: none; }
     border-top: none; padding: 2em 0 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em;
   }
-  /* Высоты back-d / next / CTA одинаковые (3.25em ≈ 52px на базе),
-     чтобы кнопки стояли ровно по нижней линии. */
-  .u-wiz__back-d { width: 3.25em; height: 3.25em; padding: 0; border-radius: 14px; font-size: 1.25em; }
-  .u-wiz__next { flex: 0 0 auto; width: auto; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
-  .u-wiz__next::after { content: "›"; font-size: 1.125em; margin-top: -2px; }
+  /* Высоты back-d / next / CTA одинаковые. Чтобы высота не «плыла»
+     от собственного font-size кнопки (em считается от своего шрифта,
+     поэтому при font:1.25em + height:3.25em квадрат раздувается), —
+     задаю одинаковый font-size 0.875em (Body) на все три кнопки, а
+     стрелку Back увеличиваю через child span. */
+  .u-wiz__back-d {
+    width: 3.25em; height: 3.25em; padding: 0;
+    border-radius: 14px; font-size: 0.875em;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .u-wiz__back-d > span { font-size: 1.5em; line-height: 1; }
+  .u-wiz__next { flex: 0 0 auto; width: auto; height: 3.25em; padding: 0 2em; }
+  .u-wiz__next::after { content: "›"; font-size: 1.25em; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
-  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; font-size: 0.9375em; }
+  .u-wiz__footer .u-calc__cta { width: auto; min-width: 0; height: 3.25em; padding: 0 2em; }
   .u-wiz__note { flex-basis: 100%; text-align: left; margin: 0.813em 0 0; max-width: 52ch; }
   .u-wiz .u-consent label { font-size: 0.719em; }
 
