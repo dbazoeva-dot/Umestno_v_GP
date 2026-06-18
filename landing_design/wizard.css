@@ -847,20 +847,64 @@ body.u-wiz-active .u-header { display: none; }
   font-family: var(--f-display, serif); font-style: italic; font-size: 18px;
   line-height: 1.32; color: var(--u-ink); margin: 0;
 }
-.u-wiz__review-pair { display: flex; flex-direction: column; gap: 8px; }
-.u-wiz__review-pair figure {
-  position: relative; margin: 0; border-radius: 12px; overflow: hidden;
-  border: 1px solid var(--u-line-2); aspect-ratio: 545 / 300;
+/* Вертикальный сравнитель «До / После» — одна рамка с двумя картинками,
+   верхний слой обрезается через clip-path по --y, ручка-перетаскивание
+   двигает разделитель. Экономит высоту: вместо двух фото 545×300 — одно. */
+.u-wiz__review-pair { display: block; }
+.u-wiz__compare-frame {
+  --y: 50%;
+  position: relative; aspect-ratio: 545 / 360;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--u-line-2);
+  background: var(--u-line-2);
+  touch-action: none;
+  user-select: none; -webkit-user-select: none;
 }
-.u-wiz__review-pair img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.u-wiz__review-pair figcaption {
-  position: absolute; top: 8px; left: 8px;
+.u-wiz__compare-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.u-wiz__compare-clip {
+  position: absolute; inset: 0;
+  clip-path: inset(0 0 calc(100% - var(--y)) 0);
+  -webkit-clip-path: inset(0 0 calc(100% - var(--y)) 0);
+  will-change: clip-path;
+}
+.u-wiz__compare-cap {
+  position: absolute; left: 8px; z-index: 2;
   font-family: var(--f-mono, monospace); font-size: 9px; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
   border-radius: 20px; padding: 3px 9px;
+  pointer-events: none;
 }
-.u-wiz__review-pair .is-before { background: rgba(46,46,46,0.82); }
-.u-wiz__review-pair .is-after  { background: var(--u-sage-d); }
+.u-wiz__compare-cap.is-after  { top: 8px; background: var(--u-sage-d); }
+.u-wiz__compare-cap.is-before { bottom: 8px; background: rgba(46,46,46,0.82); }
+.u-wiz__compare-handle {
+  position: absolute; left: 0; right: 0;
+  top: var(--y); transform: translateY(-50%);
+  height: 32px; padding: 0; margin: 0;
+  border: 0; background: transparent; cursor: ns-resize;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3;
+}
+.u-wiz__compare-handle:focus-visible { outline: none; }
+.u-wiz__compare-handle:focus-visible .u-wiz__compare-knob {
+  box-shadow: 0 0 0 3px rgba(125,140,114,0.35), 0 6px 18px rgba(0,0,0,0.25);
+}
+.u-wiz__compare-bar {
+  position: absolute; left: 0; right: 0; top: 50%;
+  height: 2px; background: rgba(255,255,255,0.92);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.18);
+  transform: translateY(-1px);
+}
+.u-wiz__compare-knob {
+  position: relative; z-index: 1;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #fff; color: var(--u-sage-d);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.06);
+  transition: box-shadow .15s ease;
+}
 .u-wiz__review-author { display: flex; align-items: center; gap: 8px; }
 .u-wiz__review-author .av {
   width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%;

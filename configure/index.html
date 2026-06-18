@@ -275,9 +275,23 @@
           <span class="hist">История 01 / 5</span>
         </div>
         <p class="u-wiz__review-quote">«Я бы сама долго собирала это по частям. Здесь сразу понятно, что покупать и как это должно встать внутри»</p>
-        <div class="u-wiz__review-pair">
-          <figure><img src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" /><figcaption class="is-before">До</figcaption></figure>
-          <figure><img src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" /><figcaption class="is-after">После</figcaption></figure>
+        <div class="u-wiz__review-pair u-wiz__compare" data-compare>
+          <div class="u-wiz__compare-frame">
+            <img class="u-wiz__compare-img" src="../landing_design/assets/review1-bfr.webp" alt="Ящик до" loading="lazy" decoding="async" />
+            <div class="u-wiz__compare-clip" aria-hidden="true">
+              <img class="u-wiz__compare-img" src="../landing_design/assets/review1-aftr.webp" alt="Ящик после" loading="lazy" decoding="async" />
+            </div>
+            <span class="u-wiz__compare-cap is-after">После</span>
+            <span class="u-wiz__compare-cap is-before">До</span>
+            <button type="button" class="u-wiz__compare-handle" data-compare-handle
+              aria-label="Перетащите вверх или вниз, чтобы сравнить До и После"
+              role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-orientation="vertical">
+              <span class="u-wiz__compare-bar" aria-hidden="true"></span>
+              <span class="u-wiz__compare-knob" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l5-5 5 5M7 15l5 5 5-5"/></svg>
+              </span>
+            </button>
+          </div>
         </div>
         <div class="u-wiz__review-author">
           <span class="av">А</span>
