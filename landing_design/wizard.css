@@ -799,8 +799,12 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
       внутренний скролл (.u-wiz__scroll) и липкий футер работали как раньше.
       Правая панель и десктопные элементы скрыты до брейкпоинта. ───────── */
 .u-wiz__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.u-wiz__left { display: contents; }
 .u-wiz__col  { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .u-wiz__rail { display: none; }
+/* На мобиле плашка про ЮКассу не нужна — там consent на шаге 3 уже
+   повторяет это сообщение. Показываем её только на десктопе. */
+.u-wiz__secure { display: none; }
 /* Мобильный fixed-визард со своим топбаром перекрывает шапку сайта —
    на мобиле прячем .u-header. На десктопе шапка сайта возвращается
    (см. @media 960+ ниже). */
@@ -977,14 +981,24 @@ body.u-wiz-active .u-header { display: none; }
   body.u-wiz-active .u-header { display: block; }
   .u-wiz__topbar { display: none; }
   /* Двухколоночник как у старого калькулятора (.u-calc__layout):
-     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px). */
+     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px).
+     align-items: stretch — колонки одной высоты (карточка слева растёт
+     до высоты правой колонки, или наоборот). */
   .u-wiz__main {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     gap: clamp(24px, 2.5vw, 40px);
-    align-items: start;
+    align-items: stretch;
     max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
   }
+  /* Левая колонка: форма в карточке + плашка ЮКассы под ней (вне
+     карточки). На десктопе .u-wiz__left становится flex-column,
+     карточка тянется по высоте, плашка прижата к низу. */
+  .u-wiz__left {
+    display: flex; flex-direction: column; gap: 16px;
+    min-width: 0;
+  }
+  .u-wiz__secure { display: flex; flex: 0 0 auto; }
   /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку */
   .u-wiz__col {
     min-width: 0; display: block;
@@ -994,8 +1008,14 @@ body.u-wiz-active .u-header { display: none; }
   }
   .u-wiz__rail {
     display: flex; flex-direction: column; gap: 16px;
-    position: sticky; top: 88px; align-self: start; min-width: 0;
+    min-width: 0;
+    justify-content: space-between;
   }
+  /* Правая колонка выровнена с левой по высоте (align-items: stretch
+     на грид-родителе). Внутри: offer прижат вверху, review — внизу,
+     между ними пустота, если правая колонка ниже левой. */
+  .u-wiz__offer  { flex: 0 0 auto; }
+  .u-wiz__review { flex: 0 0 auto; }
   /* карточный поток вместо мобильного fit-to-screen: шаг — обычный блок,
      контент заполняет карточку. Распорки дают «десктопный» ритм через
      CSS-переменную --dh на inline-style (если не задана — схлопываются). */
