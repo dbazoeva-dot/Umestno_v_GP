@@ -975,21 +975,24 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz {
     position: static; inset: auto; height: auto; min-height: 100vh;
     overflow: visible; display: block;
+    /* Масштаб контента визарда: на 1280 viewport = 1.0 (макет 1-в-1),
+       на ~1920 ≈ 1.2 (рост шрифтов/паддингов на 20%), выше — потолок.
+       Используется в font-size / padding ключевых блоков визарда. */
+    --wiz-scale: clamp(1, calc(1 + (100vw - 1280px) / 3200), 1.2);
   }
   /* На десктопе возвращаем шапку сайта (.u-header — sticky, навигация,
      бургер) и прячем внутренний топбар визарда — он там лишний. */
   body.u-wiz-active .u-header { display: block; }
   .u-wiz__topbar { display: none; }
-  /* Двухколоночник как у старого калькулятора (.u-calc__layout):
-     контейнер сайта, форма 1.35fr в карточке, панель 1fr (≈560px).
-     align-items: stretch — колонки одной высоты (карточка слева растёт
-     до высоты правой колонки, или наоборот). */
+  /* Контейнер визарда: ограничен 1480 (макет был 1280, +15% запаса
+     на рост шрифтов). На широких мониторах центрируется с полями. */
   .u-wiz__main {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     gap: clamp(24px, 2.5vw, 40px);
     align-items: stretch;
-    max-width: var(--container); margin: 0 auto; padding: 40px var(--gutter);
+    max-width: min(1480px, calc(100vw - 80px));
+    margin: 0 auto; padding: 40px var(--gutter);
   }
   /* Левая колонка: форма в карточке + плашка ЮКассы под ней (вне
      карточки). На десктопе .u-wiz__left становится flex-column,
@@ -999,12 +1002,13 @@ body.u-wiz-active .u-header { display: none; }
     min-width: 0;
   }
   .u-wiz__secure { display: flex; flex: 0 0 auto; }
-  /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку */
+  /* форма — в карточке (как .u-calc__form-card), чтобы заполняла колонку.
+     Padding растёт через --wiz-scale: 32/28 на 1280, до ~40/34 на 1920. */
   .u-wiz__col {
     min-width: 0; display: block;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 44px);
+    padding: calc(32px * var(--wiz-scale)) calc(28px * var(--wiz-scale));
   }
   .u-wiz__rail {
     display: flex; flex-direction: column; gap: 16px;
@@ -1014,8 +1018,17 @@ body.u-wiz-active .u-header { display: none; }
   /* Правая колонка выровнена с левой по высоте (align-items: stretch
      на грид-родителе). Внутри: offer прижат вверху, review — внизу,
      между ними пустота, если правая колонка ниже левой. */
-  .u-wiz__offer  { flex: 0 0 auto; }
-  .u-wiz__review { flex: 0 0 auto; }
+  .u-wiz__offer  { flex: 0 0 auto; padding: calc(20px * var(--wiz-scale)); gap: calc(14px * var(--wiz-scale)); }
+  .u-wiz__review { flex: 0 0 auto; padding: calc(16px * var(--wiz-scale)) calc(18px * var(--wiz-scale)); gap: calc(13px * var(--wiz-scale)); }
+  /* Шрифты в правой панели */
+  .u-wiz__offer-head .price { font-size: calc(34px * var(--wiz-scale)); }
+  .u-wiz__offer-head .lbl   { font-size: calc(10px * var(--wiz-scale)); }
+  .u-wiz__offer-list li     { font-size: calc(12.5px * var(--wiz-scale)); }
+  .u-wiz__review-quote      { font-size: calc(18px * var(--wiz-scale)); }
+  .u-wiz__review-author .who b    { font-size: calc(12.5px * var(--wiz-scale)); }
+  .u-wiz__review-author .who span { font-size: calc(10.5px * var(--wiz-scale)); }
+  .u-wiz__review-top .hist  { font-size: calc(10px * var(--wiz-scale)); }
+  .u-wiz__secure span       { font-size: calc(11.5px * var(--wiz-scale)); }
   /* карточный поток вместо мобильного fit-to-screen: шаг — обычный блок,
      контент заполняет карточку. Распорки дают «десктопный» ритм через
      CSS-переменную --dh на inline-style (если не задана — схлопываются). */
@@ -1024,18 +1037,23 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__step.is-on { display: block; animation: none; }
   .u-wiz__spacer { display: block; height: var(--dh, 0); }
   .u-wiz__grow { display: block; flex: none; min-height: 0; height: var(--dh, 0); }
-  .u-wiz__title { font-size: 34px; margin-top: 0; }
-  /* ритм-мелочи под макет визарда (Lead/Kicker/Stack/Row) */
+  /* Шрифты ключевых элементов растут через --wiz-scale.
+     База — макетная (1280): title 34, lead 15, kicker 11. */
+  .u-wiz__title  { font-size: calc(34px * var(--wiz-scale)); margin-top: 0; }
+  .u-wiz__lead   { font-size: calc(15px * var(--wiz-scale)); }
+  .u-wiz__kicker { font-size: calc(11px * var(--wiz-scale)); margin-bottom: 11px; }
+  /* ритм-мелочи под макет визарда (Lead/Stack/Row) */
   .u-wiz__step[data-wiz-step="1"] .u-wiz__lead { margin-bottom: 22px; }
-  .u-wiz__kicker { margin-bottom: 11px; }
   .u-wiz .u-calc__choices { gap: 8px; }
   .u-wiz .u-calc__items { gap: 9px; }
-  /* maxWidth-капы — чтобы элементы не растягивались на всю широкую колонку */
-  .u-wiz__preview { max-width: 360px; }
-  .u-wiz__measure { max-width: 440px; }
-  .u-wiz .u-calc__sizes { max-width: 440px; }
-  .u-wiz__summary { max-width: 480px; }
-  .u-wiz .u-promo { max-width: 480px; }
+  /* maxWidth-капы тоже растут с шрифтом, чтобы пропорции сохранялись */
+  .u-wiz__preview { max-width: calc(360px * var(--wiz-scale)); }
+  .u-wiz__measure { max-width: calc(440px * var(--wiz-scale)); }
+  .u-wiz .u-calc__sizes { max-width: calc(440px * var(--wiz-scale)); }
+  .u-wiz__summary { max-width: calc(480px * var(--wiz-scale)); }
+  .u-wiz .u-promo { max-width: calc(480px * var(--wiz-scale)); }
+  /* Текст внутри ключевых интерактивов формы */
+  .u-wiz__preview, .u-wiz__measure { font-size: calc(13px * var(--wiz-scale)); }
   /* футер — инлайн-ряд кнопок */
   .u-wiz__footer {
     position: static; background: none;
