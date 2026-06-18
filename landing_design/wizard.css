@@ -698,7 +698,7 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
    не уходя из визарда (форма остаётся заполненной). */
 .u-wiz-mp--oferta {
   display: flex; flex-direction: column; overflow: hidden;
-  height: calc(100% - 8px);
+  height: 70vh;
   background: var(--u-bg);
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -24px 60px rgba(0,0,0,0.3);
