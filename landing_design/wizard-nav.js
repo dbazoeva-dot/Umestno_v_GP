@@ -478,17 +478,6 @@
     var elDots   = reviewsRoot.querySelector('[data-review-dots]');
     var compareFrame = reviewsRoot.querySelector('.u-wiz__compare-frame');
 
-    // Прокидываем фактическую width frame в CSS-переменную --frame-w,
-    // чтобы img внутри clip-обёртки получал точный размер в px (container
-    // queries в проде ведут себя по-разному; ResizeObserver надёжнее).
-    if (compareFrame && typeof ResizeObserver !== 'undefined') {
-      new ResizeObserver(function (entries) {
-        entries.forEach(function (e) {
-          compareFrame.style.setProperty('--frame-w', e.contentRect.width + 'px');
-        });
-      }).observe(compareFrame);
-    }
-
     // Точки рендерим из массива — на случай, если в HTML или из-за чего-то
     // ещё пришло больше элементов: фиксируем количество = REVIEWS.length.
     if (elDots) {

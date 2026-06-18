@@ -868,7 +868,6 @@ body.u-wiz-active .u-header { display: none; }
    subpixel-смещений. */
 .u-wiz__compare-frame {
   --x: 50%;
-  --frame-w: 100%;
   position: relative;
   aspect-ratio: 1448 / 1024;
   border-radius: 12px;
@@ -883,15 +882,9 @@ body.u-wiz-active .u-header { display: none; }
   object-fit: cover; display: block;
 }
 .u-wiz__compare-clip {
-  position: absolute; top: 0; left: 0; bottom: 0;
-  width: var(--x);
-  overflow: hidden;
-}
-.u-wiz__compare-clip .u-wiz__compare-img {
-  position: absolute; top: 0; left: 0;
-  width: var(--frame-w);
-  height: 100%;
-  inset: auto;
+  position: absolute; inset: 0;
+  clip-path: inset(0 calc(100% - var(--x)) 0 0);
+  -webkit-clip-path: inset(0 calc(100% - var(--x)) 0 0);
 }
 .u-wiz__compare-cap {
   position: absolute; top: 8px; z-index: 2;
