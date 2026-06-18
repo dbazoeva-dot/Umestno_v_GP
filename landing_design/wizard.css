@@ -1111,7 +1111,8 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__offer-head .lbl { max-width: none; }
   .u-wiz .u-calc__choices { gap: 0.5em; }
   .u-wiz .u-calc__items { gap: 0.563em; }
-  .u-wiz__measure { gap: 0.5em; padding: 0.625em 0.875em; }
+  .u-wiz__measure { gap: 0.5em; padding: 0; width: auto; }
+  .u-wiz__measure .more { margin-left: 0.5em; }
   .u-wiz__measure img { width: 1.25em; height: 1.25em; }
   .u-wiz .u-calc__presets { gap: 0.813em; }
   .u-wiz .u-calc__add .plus { font-size: 1.25em; }
