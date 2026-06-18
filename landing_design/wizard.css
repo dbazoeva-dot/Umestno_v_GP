@@ -341,7 +341,9 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 
 /* ── Шаг 2: категории ───────────────────────────────────────── */
 .u-wiz__itemhead {
-  display: flex; gap: 7px; padding: 0 2px 6px;
+  /* по A2: padding 0 2px 1px, gap 7, и третий «пустой» span шириной
+     trash-кнопки — выравнивает заголовки колонок ровно над контентом строк */
+  display: flex; gap: 7px; padding: 0 2px 1px;
 }
 .u-wiz__itemhead span {
   font-family: var(--f-mono, monospace); font-size: 9.5px;
@@ -349,6 +351,7 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 }
 .u-wiz__itemhead span:nth-child(1) { flex: 1.2 1 0; }
 .u-wiz__itemhead span:nth-child(2) { flex: 1 1 0; }
+.u-wiz__itemhead span:nth-child(3) { width: 38px; flex: 0 0 auto; }
 .u-wiz .u-calc__items { display: flex; flex-direction: column; gap: 8px; }
 .u-wiz .u-calc__item-row { display: flex; gap: 7px; align-items: center; }
 .u-wiz .u-calc__field { flex: 1 1 0; min-width: 0; }
@@ -359,7 +362,8 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 .u-wiz .u-calc__select-wrap select {
   width: 100%; height: 44px; box-sizing: border-box;
   appearance: none; -webkit-appearance: none;
-  border: 1.5px solid var(--u-line-2); border-radius: 11px;
+  /* по A2 SelectMini — border solid var(--u-line) (не --u-line-2) */
+  border: 1.5px solid var(--u-line); border-radius: 11px;
   background: var(--u-card); color: var(--u-ink);
   font-family: inherit; font-size: 12px; font-weight: 600;
   padding: 0 28px 0 11px;
@@ -478,7 +482,32 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 }
 
 /* промокод и оферта внутри визарда — мягкая адаптация существующих блоков */
+/* PromoRow по A5: dashed-карточка вместо текстовой ссылки с пунктирным
+   подчёркиванием. Toggle превращаем в полный блок-кнопку: рамка dashed
+   var(--u-line), background var(--u-card), padding 11/13, radius 12, gap 10.
+   «Есть промокод?» 600 ink-2 слева, «Ввести» 600 accent справа (через ::after,
+   потому что SVG-«иконка билета» в HTML здесь не нужна по макету). При
+   открытой панели — «Ввести» меняем на крестик, скрываем подпись.
+   ВАЖНО: переопределяем поверх calc.css, не трогая calc.js. */
 .u-wiz .u-promo { margin: 0 0 10px; }
+.u-wiz .u-promo__toggle {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--u-line); background: var(--u-card);
+  text-decoration: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--u-ink-2);
+}
+.u-wiz .u-promo__toggle:hover { color: var(--u-ink-2); }
+.u-wiz .u-promo__toggle svg { display: none; }
+.u-wiz .u-promo__toggle::after {
+  content: "Ввести";
+  margin-left: auto;
+  font-size: 12px; font-weight: 600; color: var(--u-accent);
+}
+.u-wiz .u-promo__toggle[aria-expanded="true"]::after { content: "Закрыть"; }
 .u-wiz .u-consent { display: flex; gap: 10px; align-items: flex-start; padding: 2px 0; }
 .u-wiz .u-consent label { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); cursor: pointer; }
 .u-wiz .u-consent label a { color: var(--u-accent); font-weight: 600; text-decoration: none; }
