@@ -342,7 +342,7 @@
             '</div>' +
           '</div>' +
           '<div class="u-wiz-mp__oframe">' +
-            '<iframe src="../oferta/" title="Публичная оферта" loading="eager"></iframe>' +
+            '<iframe src="../oferta/?embed=1" title="Публичная оферта" loading="eager"></iframe>' +
           '</div>' +
           '<div class="u-wiz-mp__pvfoot">' +
             '<button type="button" class="u-wiz-mp__cta" data-wiz-mclose>Закрыть</button>' +
