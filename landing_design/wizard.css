@@ -372,6 +372,9 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 }
 .u-wiz .u-calc__item-rm {
   width: 38px; height: 44px; flex: 0 0 auto;
+  /* padding:0 — браузерный дефолт <button> 1px 6px + box-sizing:border-box
+     сжимали content area до ~23px и поджимали SVG. */
+  padding: 0;
   border: 1.5px solid var(--u-line-2); border-radius: 11px;
   background: var(--u-card); color: var(--u-ink-3);
   display: flex; align-items: center; justify-content: center; cursor: pointer;
