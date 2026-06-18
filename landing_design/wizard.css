@@ -541,13 +541,15 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 }
 /* «Назад» — компактная кнопка-стрелка слева от «Далее» (на мобиле и
    десктопе). На шаге 1 скрывается через [disabled]. */
+/* «Назад» — квадратная outline-иконка-кнопка со стрелкой «‹». Размер
+   привязан к высоте CTA, чтобы выглядеть равной кнопке «Далее». */
 .u-wiz__back-d {
   flex: 0 0 auto;
-  height: 52px; padding: 0 16px;
+  width: 52px; height: 52px; padding: 0;
   border-radius: 15px; cursor: pointer;
   border: 1.5px solid var(--u-line); background: var(--u-card); color: var(--u-ink-2);
-  font-family: inherit; font-size: 15px; font-weight: 600;
-  display: inline-flex; align-items: center; gap: 4px;
+  font-family: inherit; font-size: 22px; font-weight: 500; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
 }
 .u-wiz__back-d[disabled] { display: none; }
 .u-wiz__next {
@@ -587,11 +589,13 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   .u-wiz__footer { padding: 8px var(--wz-pad); }
   .u-wiz__note { margin-top: 8px; }
   .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 48px; }
+  .u-wiz__back-d { width: 48px; }
 }
 @media (max-height: 600px) {
   .u-wiz__footer { padding: 5px var(--wz-pad); }
   .u-wiz__note { margin-top: 5px; }
   .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 44px; }
+  .u-wiz__back-d { width: 44px; }
 }
 [data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
 
@@ -910,8 +914,8 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
     border-top: none; padding: 32px 0 0;
     display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
   }
-  /* десктопные подгонки .u-wiz__back-d (общие стили уже в base — см. выше) */
-  .u-wiz__back-d { height: 54px; padding: 0 22px; border-radius: 14px; gap: 6px; }
+  /* десктопные подгонки .u-wiz__back-d — квадрат 54×54 со стрелкой */
+  .u-wiz__back-d { width: 54px; height: 54px; padding: 0; border-radius: 14px; font-size: 24px; }
   .u-wiz__next { flex: 0 0 auto; width: auto; padding: 0 32px; }
   .u-wiz__next::after { content: "›"; font-size: 18px; margin-top: -2px; }
   .u-wiz__footer .u-calc__actions { width: auto; flex: 0 0 auto; }
