@@ -376,10 +376,12 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   background: var(--u-card); color: var(--u-ink-3);
   display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
-/* Иконка корзины — крупнее без увеличения самой кнопки. SVG из calc.js
-   рендерится с width/height=14 (атрибуты), CSS их перебивает. */
+/* Иконка корзины — крупнее без увеличения самой кнопки.
+   SVG из calc.js рендерится с width="14" height="14" атрибутами;
+   !important чтобы наверняка перебить и кэш-варианты. */
 .u-wiz .u-calc__item-rm svg {
-  width: 20px; height: 20px; display: block;
+  width: 24px !important; height: 24px !important;
+  display: block; stroke-width: 1.8;
 }
 .u-wiz .u-calc__dup-hint { font-size: 11px; color: var(--u-accent-d); margin: 8px 2px 0; line-height: 1.4; }
 .u-wiz .u-calc__add {
