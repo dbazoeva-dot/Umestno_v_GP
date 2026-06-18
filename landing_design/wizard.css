@@ -428,13 +428,13 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 .u-wiz .u-consent label { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
 
 /* ── Footer (липкий CTA-док) ────────────────────────────────────
-   Симметрия по вертикали: 16px разделитель → кнопка → подпись → safe-area.
-   row-gap у flex = 0, чтобы вертикальный отступ задавался ТОЛЬКО padding-top
-   футера и margin-top подписи (одинаковые 16). column-gap 10 — между «Назад»
-   и «Далее» в одной строке. */
+   Симметрия по вертикали: 16 разделитель → кнопка → подпись → низ.
+   safe-area-inset-bottom УБРАН — он добавлял на iPhone до 34px к низу
+   и ломал визуальное равенство. row-gap флекса = 0, чтобы вертикальный
+   отступ задавался ТОЛЬКО padding-top и margin-top подписи. */
 .u-wiz__footer {
   flex: 0 0 auto;
-  padding: 16px var(--wz-pad) calc(16px + env(safe-area-inset-bottom));
+  padding: 16px var(--wz-pad);
   background: rgba(255,253,249,0.92);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-top: 1px solid var(--u-line);
