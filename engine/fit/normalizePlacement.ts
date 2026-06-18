@@ -4,10 +4,14 @@ import { findFreeRectangles } from "./findFreeRectangles.js";
 
 type FreeRectangle = FitResult["free_rectangles"][number];
 
+// Тонкий хвост глубины у задней стенки (≤ порога) бесполезен как резерв —
+// поглощаем его в зону, чтобы не оставлять полоску. Аналог SLIVER_MAX_CM в alignColumns.
+const DEPTH_SLIVER_MAX_CM = 8;
+
 export function normalizePlacement({ fitResult, drawerSize }: { fitResult: FitResult; drawerSize: DrawerSize }): FitResult {
   const aligned = alignColumns(fitResult.placed_zones);
   const freeAfterAlign = findFreeRectangles(drawerSize, aligned);
-  const absorbed = absorbDepthReserve(aligned, freeAfterAlign);
+  const absorbed = absorbDepthReserve(aligned, freeAfterAlign, drawerSize.d_cm);
   const freeRectangles = findFreeRectangles(drawerSize, absorbed);
   return {
     ...fitResult,
@@ -21,7 +25,7 @@ export function normalizePlacement({ fitResult, drawerSize }: { fitResult: FitRe
   };
 }
 
-function absorbDepthReserve(zones: PlacedZone[], freeRectangles: FreeRectangle[]): PlacedZone[] {
+function absorbDepthReserve(zones: PlacedZone[], freeRectangles: FreeRectangle[], drawerDepth: number): PlacedZone[] {
   return zones.map((zone) => {
     const adjacent = freeRectangles.find(
       (rect) =>
@@ -29,7 +33,14 @@ function absorbDepthReserve(zones: PlacedZone[], freeRectangles: FreeRectangle[]
         nearlyEqual(zone.assigned_w_cm, rect.w_cm) &&
         nearlyEqual(zone.y_cm + zone.assigned_d_cm, rect.y_cm)
     );
-    return adjacent ? { ...zone, assigned_d_cm: zone.assigned_d_cm + adjacent.d_cm } : zone;
+    if (!adjacent) return zone;
+    // Хвост достаёт до задней стенки → это резерв, а не щель между зонами:
+    // раздуваем зону в него только если он тонкий слайвер. Иначе оставляем
+    // честным резервом (его при необходимости дозаберёт матчер под конкретный SKU).
+    // Внутренние щели (за ними снова контент) засыпаем как раньше — это выравнивание.
+    const reachesBackWall = nearlyEqual(adjacent.y_cm + adjacent.d_cm, drawerDepth);
+    if (reachesBackWall && adjacent.d_cm > DEPTH_SLIVER_MAX_CM) return zone;
+    return { ...zone, assigned_d_cm: zone.assigned_d_cm + adjacent.d_cm };
   });
 }
 
