@@ -175,6 +175,9 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   font-size: clamp(12.5px, 3.5vw, 14px); line-height: 1.5;
   color: var(--u-ink-2); margin: 0 0 8px; max-width: 42ch;
 }
+/* Per-step mb из макета: A1 mb=8 (дефолт), A2 mb=14, A5 mb=13. */
+.u-wiz__step[data-wiz-step="2"] .u-wiz__lead { margin-bottom: 14px; }
+.u-wiz__step[data-wiz-step="3"] .u-wiz__lead { margin-bottom: 13px; }
 /* Kicker — mono 10.5; отступ СВЕРХУ задаётся распоркой Spacer/Grow, поэтому
    margin-top:0 (как в макете) */
 .u-wiz__kicker {
@@ -211,6 +214,9 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .u-wiz__preview svg { flex: 0 0 auto; }
+/* На шаге 3 — это PreviewBtn (а не PreviewBanner): без margin-bottom,
+   отступ задаёт следующий Grow min=12 (см. HTML). */
+.u-wiz__step[data-wiz-step="3"] .u-wiz__preview { margin-bottom: 0; }
 
 /* ── Подсказка-рулетка над размерами ────────────────────────── */
 .u-wiz__measure {
@@ -379,42 +385,63 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer;
 }
 
-/* ── Приоритет (карточки) ───────────────────────────────────── */
-.u-wiz .u-calc__priority { display: flex; flex-direction: column; gap: 8px; }
+/* ── Приоритет — компактный Segmented control (как в A2) ─────────
+   Три опции 38px высоты в одной пилюле background:line-2, padding:3, gap:4.
+   Выбранная — белый фон с accent-границей, accentD-цветом текста и
+   галочкой. Подзаголовки .sub скрыты (на мобиле они не показываются —
+   они есть в попапе «Что значит важнее»). */
+.u-wiz .u-calc__priority {
+  display: flex; flex-direction: row; gap: 4px;
+  padding: 3px; background: var(--u-line-2); border-radius: 13px;
+}
 .u-wiz .u-calc__pri-btn {
-  display: flex; align-items: flex-start; gap: 11px;
-  padding: 13px 14px; border-radius: 14px; cursor: pointer; text-align: left;
-  border: 1.5px solid var(--u-line-2); background: var(--u-card);
+  flex: 1 1 0; min-width: 0;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  height: 38px; padding: 0;
+  background: transparent;
+  border: 1.5px solid transparent; border-radius: 10px;
+  color: var(--u-ink-3);
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  cursor: pointer;
 }
-.u-wiz .u-calc__pri-btn.is-on { border-color: var(--u-sage-d); background: var(--wz-sage-soft); }
+.u-wiz .u-calc__pri-btn.is-on {
+  background: var(--u-card);
+  border-color: var(--u-accent);
+  color: var(--u-accent-d);
+  box-shadow: 0 1px 3px rgba(80,70,55,0.05);
+}
 .u-wiz .u-calc__pri-check {
-  width: 22px; height: 22px; flex: 0 0 auto; margin-top: 1px;
-  border-radius: 50%; border: 1.5px solid var(--u-taupe);
-  display: flex; align-items: center; justify-content: center; color: #fff;
+  width: 13px; height: 13px; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--u-accent-d);
 }
-.u-wiz .u-calc__pri-btn.is-on .u-calc__pri-check { background: var(--u-sage-d); border-color: var(--u-sage-d); }
-.u-wiz .u-calc__pri-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.u-wiz .u-calc__pri-check svg { width: 13px; height: 13px; }
+.u-wiz .u-calc__pri-body { display: contents; }
 .u-wiz .u-calc__pri-body .ttl {
-  font-family: var(--f-display, serif); font-size: 18px; font-weight: 600; color: var(--u-ink); line-height: 1.1;
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.u-wiz .u-calc__pri-btn.is-on .u-calc__pri-body .ttl { color: var(--u-sage-dd); }
-.u-wiz .u-calc__pri-body .sub { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
+.u-wiz .u-calc__pri-btn.is-on .u-calc__pri-body .ttl { color: var(--u-accent-d); }
+.u-wiz .u-calc__pri-body .sub { display: none; }
 
-/* ── Шаг 3: сводка ──────────────────────────────────────────── */
+/* ── Шаг 3: сводка ──────────────────────────────────────────────
+   В макете A5: border 1.5px var(--u-line), radius 16, padding "2px 14px",
+   marginBottom 11. Отступ СВЕРХУ — задаёт Grow min=12 перед карточкой,
+   собственный margin-top = 0 (иначе двойной зазор). */
 .u-wiz__summary {
-  border: 1.5px solid var(--u-line-2); border-radius: 16px;
-  background: var(--u-card); padding: 2px 14px; margin: 12px 0 11px;
+  border: 1.5px solid var(--u-line); border-radius: 16px;
+  background: var(--u-card); padding: 2px 14px; margin: 0 0 11px;
   box-shadow: var(--sh-card, 0 1px 3px rgba(80,70,55,0.05));
 }
 .u-wiz__sumrow {
   display: flex; align-items: center; gap: 10px; padding: 11px 0;
-  border-bottom: 1px solid var(--u-line);
+  border-bottom: 1px solid var(--u-line-2);
 }
 .u-wiz__sumrow:last-child { border-bottom: none; }
 .u-wiz__sumrow .k {
   font-family: var(--f-mono, monospace); font-size: 10px;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--u-ink-3);
-  width: 76px; flex: 0 0 auto;
+  width: 78px; flex: 0 0 auto;
 }
 .u-wiz__sumrow .v { font-size: 13px; font-weight: 600; color: var(--u-ink); flex: 1 1 auto; min-width: 0; }
 .u-wiz__sumrow .edit {
@@ -424,8 +451,23 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
 
 /* промокод и оферта внутри визарда — мягкая адаптация существующих блоков */
 .u-wiz .u-promo { margin: 0 0 10px; }
-.u-wiz .u-consent { display: flex; gap: 10px; align-items: flex-start; }
-.u-wiz .u-consent label { font-size: 12px; line-height: 1.4; color: var(--u-ink-2); }
+.u-wiz .u-consent { display: flex; gap: 10px; align-items: flex-start; padding: 2px 0; }
+.u-wiz .u-consent label { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); cursor: pointer; }
+.u-wiz .u-consent label a { color: var(--u-accent); font-weight: 600; text-decoration: none; }
+/* Кастомный чекбокс 20×20 (как CheckRow в макете) — таupe-рамка по умолчанию,
+   sage-фон с белой галочкой при checked. */
+.u-wiz #u-consent-oferta {
+  appearance: none; -webkit-appearance: none;
+  width: 20px; height: 20px; flex: 0 0 auto; margin: 1px 0 0;
+  border: 1.5px solid var(--u-taupe); border-radius: 6px;
+  background: transparent; cursor: pointer;
+  position: relative; transition: background .12s, border-color .12s;
+}
+.u-wiz #u-consent-oferta:checked {
+  background: var(--u-sage-d); border-color: var(--u-sage-d);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 6 11 11.5 3.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: center; background-repeat: no-repeat; background-size: 13px;
+}
 
 /* ── Footer (липкий CTA-док) ────────────────────────────────────
    Симметрия по вертикали: 16 разделитель → кнопка → подпись → низ.
