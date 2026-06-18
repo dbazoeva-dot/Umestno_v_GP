@@ -872,7 +872,7 @@ body.u-wiz-active .u-header { display: none; }
   aspect-ratio: 1448 / 1024;
   border-radius: 12px;
   overflow: hidden;
-  container-type: size;
+  container-type: inline-size;
   background: var(--u-line-2);
   touch-action: none;
   user-select: none; -webkit-user-select: none;
@@ -890,7 +890,7 @@ body.u-wiz-active .u-header { display: none; }
 .u-wiz__compare-clip .u-wiz__compare-img {
   position: absolute; top: 0; left: 0;
   width: 100cqw;
-  height: 100cqh;
+  height: 100%;
   inset: auto;
 }
 .u-wiz__compare-cap {
