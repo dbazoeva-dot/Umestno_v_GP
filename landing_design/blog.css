@@ -790,6 +790,40 @@ image-slot::part(empty){
 .p-table tbody td:nth-child(2){ color: var(--u-sage-dd, #69785F); font-weight: 600; }
 .p-table tbody tr:hover td{ background: rgba(125,140,114,.045); }
 
+/* На узких экранах таблица не скроллится, а перестраивается в карточки:
+   каждая строка — отдельный блок, первая ячейка — заголовок, остальные —
+   подписанные строки (подпись берётся из data-label у <td>). */
+@media (max-width: 680px){
+  .p-tablewrap{ overflow-x: visible; border: 0; border-radius: 0; margin: 28px 0; }
+  .p-table{ min-width: 0; display: block; background: transparent; }
+  .p-table thead{ display: none; }
+  .p-table tbody{ display: block; }
+  .p-table tbody tr{
+    display: block; background: var(--u-card);
+    border: 1px solid var(--u-line-2); border-radius: var(--r-md);
+    padding: 18px 20px; margin-bottom: 14px;
+  }
+  .p-table tbody tr:last-child{ margin-bottom: 0; }
+  .p-table tbody td{
+    display: flex; gap: 16px; padding: 9px 0;
+    border-top: 1px solid var(--u-line); line-height: 1.45;
+  }
+  .p-table tbody td::before{
+    content: attr(data-label); flex: 0 0 38%; min-width: 0;
+    font-family: var(--f-mono); font-size: var(--fs-2xs);
+    letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
+  }
+  /* первая ячейка строки — заголовок карточки */
+  .p-table tbody tr td:first-child{
+    display: block; padding: 0 0 12px; margin-bottom: 4px;
+    border-top: 0; border-bottom: 1px solid var(--u-line);
+    font-family: var(--f-display); font-size: var(--fs-lg);
+    font-weight: 500; color: var(--u-ink);
+  }
+  .p-table tbody tr td:first-child::before{ content: none; }
+  .p-table tbody tr td:nth-child(2){ border-top: 0; }
+}
+
 /* ── divider-type cards ───────────────────────────────────────────── */
 .p-types{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 36px 0; }
 .p-type{
