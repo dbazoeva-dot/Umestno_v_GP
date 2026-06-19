@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ru" data-accent="sage">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="https://umestno-home.ru/blog/zony-hraneniya/" />
+
+<title>Почему вы не замечаете половину вещей в шкафу: наука о зонах хранения | Журнал Уместно</title>
+<meta name="description" content="Эргономика показывает: до половины пространства шкафа мы игнорируем. Разбираем зоны хранения через психологию и физику усталости — чтобы вещи сами просились в руки." />
+<meta name="theme-color" content="#FFFDF9" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Почему вы не замечаете половину вещей в шкафу" />
+<meta property="og:description" content="«Золотая зона», физика усталости и ABC-анализ гардероба: как распределить пространство шкафа так, чтобы нужное всегда было под рукой." />
+<meta property="og:image" content="https://umestno-home.ru/assets/images/blog/zony-hranenia.webp" />
+<meta property="og:url" content="https://umestno-home.ru/blog/zony-hraneniya/" />
+<meta property="og:site_name" content="Журнал «Уместно»" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="article:published_time" content="2026-06-19" />
+<meta property="article:section" content="Шкаф" />
+<meta property="article:tag" content="зоны хранения" />
+<meta property="article:tag" content="эргономика" />
+<meta property="article:tag" content="схема хранения" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../landing_design/styles.css" />
+<link rel="stylesheet" href="../../landing_design/fluid-core.css?v=1" />
+<link rel="stylesheet" href="../../landing.css?v=8" />
+<link rel="stylesheet" href="../../landing_design/blog.css?v=26" />
+<link rel="stylesheet" href="../../landing_design/blog-fluid.css?v=7" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Почему вы не замечаете половину вещей в шкафу: наука о зонах хранения",
+  "description": "«Золотая зона», физика усталости и ABC-анализ гардероба: как распределить пространство шкафа так, чтобы нужное всегда было под рукой.",
+  "image": "https://umestno-home.ru/assets/images/blog/zony-hranenia.webp",
+  "datePublished": "2026-06-19",
+  "dateModified": "2026-06-19",
+  "author": { "@type": "Organization", "name": "Уместно" },
+  "publisher": { "@type": "Organization", "name": "Уместно" },
+  "mainEntityOfPage": "https://umestno-home.ru/blog/zony-hraneniya/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Журнал", "item": "https://umestno-home.ru/blog/" },
+    { "@type": "ListItem", "position": 2, "name": "Шкаф", "item": "https://umestno-home.ru/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "Зоны хранения", "item": "https://umestno-home.ru/blog/zony-hraneniya/" }
+  ]
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="shortcut icon" href="/favicon.ico" />
+
+<style>
+/* ── article-local visuals — fluid (rem/tokens), matches blog system ── */
+
+/* stat trio (цифры, которые стоит знать) */
+.a-stats{
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  margin: 2.25rem 0;
+}
+.a-stat{
+  border: 1px solid var(--u-line-2); border-radius: var(--r-md);
+  background: var(--u-card); padding: 1.5rem 1.625rem;
+  display: flex; flex-direction: column;
+}
+.a-stat__n{
+  font-family: var(--f-display); font-weight: 500; font-size: 3rem;
+  line-height: 0.95; letter-spacing: -0.02em; color: var(--u-accent);
+  font-variant-numeric: tabular-nums;
+}
+.a-stat__c{
+  margin: 0.875rem 0 0; font-family: var(--f-sans);
+  font-size: var(--fs-sm); line-height: 1.5; color: var(--u-ink-2);
+}
+@media (max-width: 640px){ .a-stats{ grid-template-columns: 1fr; } }
+
+/* ABC distribution — proportion bars */
+.a-abc{
+  margin: 2.25rem 0; border: 1px solid var(--u-line-2);
+  border-radius: var(--r-md); background: var(--u-card); overflow: hidden;
+}
+.a-abc__row{
+  padding: 1.5rem 1.625rem; border-top: 1px solid var(--u-line);
+}
+.a-abc__row:first-child{ border-top: 0; }
+.a-abc__top{
+  display: flex; align-items: baseline; gap: 0.875rem;
+  margin-bottom: 0.875rem; flex-wrap: wrap;
+}
+.a-abc__tag{
+  font-family: var(--f-display); font-style: italic; font-weight: 500;
+  font-size: 1.875rem; line-height: 1; color: var(--u-accent); flex: 0 0 auto;
+}
+.a-abc__name{
+  font-family: var(--f-display); font-weight: 500; font-size: var(--fs-lg);
+  color: var(--u-ink); flex: 1 1 auto; min-width: 0;
+}
+.a-abc__zone{
+  font-family: var(--f-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-wide); text-transform: uppercase;
+  color: var(--u-ink-3); flex: 0 0 auto;
+}
+.a-abc__bar{
+  height: 0.625rem; border-radius: var(--r-pill);
+  background: var(--u-warm); overflow: hidden;
+}
+.a-abc__fill{
+  height: 100%; border-radius: var(--r-pill);
+  background: var(--u-sage-d);
+}
+.a-abc__fill--b{ background: #B7C2A6; }
+.a-abc__fill--c{ background: var(--u-taupe); }
+.a-abc__d{
+  margin: 0.875rem 0 0; font-family: var(--f-sans);
+  font-size: var(--fs-sm); line-height: 1.55; color: var(--u-ink-2);
+}
+
+/* lifehack cards — more breathing room, tighter tag→title gap */
+.p-types .p-type{ padding: 2.125rem 2rem 2.25rem; }
+.p-types .p-type__tag{ margin-bottom: 0.5rem; }
+@media (max-width: 560px){ .p-types .p-type{ padding: 1.75rem; } }
+</style>
+</head>
+<body>
+
+<!-- ── Shared header ──────────────────────────────────────── -->
+<header class="u-header u-header--sub">
+  <div class="u-header__inner" style="text-align:left">
+    <a href="../../" class="u-logo"><img src="/landing_design/assets/logo-wordmark.svg" alt="Уместно" class="u-logo__img" /></a>
+    <nav class="u-nav">
+      <div class="u-navgroup">
+        <a href="../../" class="u-navgroup__top">О сервисе<span class="u-navgroup__caret" aria-hidden="true"></span></a>
+        <div class="u-navgroup__sub">
+          <a href="../../#how">Как это работает</a>
+          <a href="../../#result">Результат</a>
+          <a href="../../#reviews">Отзывы</a>
+          <a href="../../#faq">FAQ</a>
+        </div>
+      </div>
+      <a href="../" class="u-navgroup__top u-nav-journal">Журнал</a>
+    </nav>
+    <button class="u-burger" aria-label="Меню" aria-expanded="false" aria-controls="u-mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="u-mobile-nav" id="u-mobile-nav" hidden>
+    <a href="../../" class="u-mnav-top">О сервисе</a>
+    <div class="u-mnav-sub">
+      <a href="../../#how">Как это работает</a>
+      <a href="../../#result">Результат</a>
+      <a href="../../#reviews">Отзывы</a>
+      <a href="../../#faq">FAQ</a>
+    </div>
+    <a href="../" class="u-mnav-top u-nav-journal">Журнал</a>
+  </nav>
+</header>
+
+<main class="p-wrap">
+  <!-- ── Head ───────────────────────────────────────────────────── -->
+  <section class="u-container">
+    <nav class="p-breadcrumb">
+      <a href="../">Журнал</a><span class="sep">→</span>
+      <a href="../">Шкаф</a><span class="sep">→</span>
+      <span class="cur">Зоны хранения</span>
+    </nav>
+
+    <div class="p-masthead">
+      <div class="p-masthead__text">
+        <span class="p-head__cat">Шкаф</span>
+        <h1>Почему вы не замечаете <em>половину</em> вещей в шкафу</h1>
+        <p class="p-lede">Полки заполнены, а вы снова надеваете одну и ту же футболку. Дело не в забывчивости — половина шкафа просто лежит вне досягаемости руки.</p>
+        <p class="p-masthead__preview">В мерчандайзинге это называют «горячей зоной» — местом, куда рука тянется сама. Дома работают те же законы эргономики и физики усталости. Разбираем, как распределить пространство так, чтобы нужные вещи всегда были под рукой, а система не разваливалась через неделю.</p>
+      </div>
+      <figure class="p-masthead__media"><img src="../../assets/images/blog/zony-hranenia.webp" alt="Открытый шкаф с одеждой, разложенной по зонам хранения" data-pin-url="https://umestno-home.ru/blog/zony-hraneniya/?utm_source=Pinterest&utm_medium=organic&utm_campaign=zony_hraneniya&utm_content=cover" data-pin-media="https://umestno-home.ru/assets/images/blog/zony-hranenia-pin.webp" loading="eager" decoding="async" /></figure>
+    </div>
+
+    <div class="p-byline">
+      <div class="p-author">
+        <span class="p-author__av">У</span>
+        <span class="p-author__meta"><b>Редакция «Уместно»</b>журнал о хранении</span>
+      </div>
+      <div class="p-meta-facts">
+        <span>19 июня 2026</span><span class="sep"></span><span>9 мин чтения</span>
+      </div>
+      <div class="p-share">
+        <span class="p-share__lbl">Поделиться</span>
+        <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+        <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        <a href="#" aria-label="Pinterest"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+        <a href="#" aria-label="Скопировать ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Body + TOC ─────────────────────────────────────────────── -->
+  <section class="u-container">
+    <div class="p-layout">
+      <!-- TOC -->
+      <aside class="p-toc" id="toc">
+        <div class="p-toc__lbl">Содержание</div>
+        <a href="#s1"><span class="n">01</span>Где находится «золотая зона»</a>
+        <a href="#s2"><span class="n">02</span>Физика усталости</a>
+        <a href="#s3"><span class="n">03</span>Три скоростные зоны</a>
+        <a href="#s4"><span class="n">04</span>ABC-анализ гардероба</a>
+        <a href="#s5"><span class="n">05</span>Неочевидные лайфхаки</a>
+        <a href="#s6"><span class="n">06</span>Проверьте свой шкаф</a>
+      </aside>
+
+      <!-- Prose -->
+      <article class="p-body">
+        <p>Шкаф стоит, полки заполнены, но вы снова надеваете одну и ту же футболку, а остальные будто растворились. Дело не в забывчивости и не в «недостатке места». Проблема глубже — в несоответствии между устройством шкафа и тем, как вы на самом деле двигаетесь и принимаете решения.</p>
+        <p>В мерчандайзинге есть понятие «горячей зоны» — места, куда рука тянется сама. В домашнем хранении работают те же законы: если вещь лежит вне этой зоны, она становится «невидимой». Разберём, как распределить пространство так, чтобы нужные вещи всегда были под рукой, а система не разваливалась через неделю.</p>
+
+        <div class="p-pull">
+          <p>Если вещь лежит вне зоны, куда тянется рука, мозг считает её слишком дорогой по усилию и просто перестаёт её замечать.</p>
+        </div>
+
+        <h2 id="s1"><span class="h2num">01 — Анатомия доступа</span>Где находится «золотая зона»</h2>
+        <p>Представьте, что вы стоите перед открытым шкафом. Куда проще всего дотянуться, не наклоняясь и не вставая на цыпочки? Это и есть зона максимальной эффективности.</p>
+        <ul>
+          <li><strong>Высота:</strong> от уровня бёдер до уровня глаз — примерно 80–140 см от пола.</li>
+          <li><strong>Глубина:</strong> первые 30–40 см полки.</li>
+        </ul>
+
+        <div class="a-stats">
+          <div class="a-stat">
+            <span class="a-stat__n">70 %</span>
+            <p class="a-stat__c">всех действий по поиску и взятию вещей приходится на зону от пояса до глаз (по стандарту эргономики ISO&nbsp;11064).</p>
+          </div>
+          <div class="a-stat">
+            <span class="a-stat__n">60–80 %</span>
+            <p class="a-stat__c">на столько падает вероятность регулярно пользоваться вещью, если она лежит выше 180 см или ниже 40 см.</p>
+          </div>
+          <div class="a-stat">
+            <span class="a-stat__n">×3</span>
+            <p class="a-stat__c">во столько раз реже берут вещи, до которых нужна стремянка или стул, чем доступные с пола.</p>
+          </div>
+        </div>
+
+        <p>Вывод простой и неожиданно строгий: не храните в «золотой зоне» то, что нужно раз в год. И наоборот — не прячьте ежедневную одежду в труднодоступные места.</p>
+
+        <h2 id="s2"><span class="h2num">02 — Физика усталости</span>Почему мы избегаем «глубин» и «вершин»</h2>
+        <p>Почему мы игнорируем верхние антресоли и дальние углы? Это не просто лень, а экономия энергии. Каждое лишнее движение снижает вероятность того, что вещью вообще воспользуются.</p>
+
+        <ul class="p-mistakes">
+          <li class="p-mistake">
+            <span class="p-mistake__num">01</span>
+            <h3 class="p-mistake__t">Эффект «чёрной дыры»</h3>
+            <p class="p-mistake__d">Когда полка глубже 50 см, вещи встают в два ряда. Вы берёте переднюю, а задняя остаётся забытой — мозг воспринимает это как «слишком много усилий».<br><strong>Решение:</strong> разделители или выдвижные корзины; глубина хранения для сложенной одежды не более 35–40 см.</p>
+          </li>
+          <li class="p-mistake">
+            <span class="p-mistake__num">02</span>
+            <h3 class="p-mistake__t">Гравитация и высота</h3>
+            <p class="p-mistake__d">Чтобы взять вещь с полки выше 200 см, нужно подойти, взять табуретку, встать, потянуться, слезть. Каждое действие снижает шанс использования. <strong>Статистика:</strong> вещи на верхних полках берут на 60 % реже, чем на средних.</p>
+          </li>
+          <li class="p-mistake">
+            <span class="p-mistake__num">03</span>
+            <h3 class="p-mistake__t">Глубина ящика</h3>
+            <p class="p-mistake__d">Ящики глубже 50 см заставляют «нырять» внутрь. После нескольких таких движений вы начнёте избегать этого ящика.<br><strong>Лайфхак:</strong> разделите его вертикальными перегородками на секции по 30–35 см. Так вы увидите всё сразу.</p>
+          </li>
+        </ul>
+
+        <h2 id="s3"><span class="h2num">03 — Скоростные зоны</span>Не «нужное / ненужное», а «быстро / медленно»</h2>
+        <p>Заменим скучные категории на скоростные — так вещи распределяются интуитивно. Чем быстрее доступ, тем чаще должна использоваться вещь.</p>
+        <div class="p-tablewrap">
+          <table class="p-table">
+            <thead>
+              <tr><th scope="col">Зона</th><th scope="col">Высота</th><th scope="col">Что хранить</th><th scope="col">Доля&nbsp;пространства</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>«Молния»</td><td>80–140 см (глаза–бёдра)</td><td>Повседневная одежда, бельё, базовые футболки</td><td>70 % — основная рабочая зона</td></tr>
+              <tr><td>«Планирование»</td><td>140–180 см и 40–80 см</td><td>Вещи текущего сезона, пижамы, полотенца</td><td>20 % — вспомогательная зона</td></tr>
+              <tr><td>«Архив»</td><td>выше 180 см и ниже 40 см</td><td>Чемоданы, гостевое бельё, декор, документы</td><td>10 % — зона редкого доступа</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-pull">
+          <p>Доступ мгновенный, «надо потянуться» или «надо подготовиться» — вот три честные категории, по которым вещь находит своё место.</p>
+        </div>
+
+        <h2 id="s4"><span class="h2num">04 — ABC-анализ</span>Сколько вещей помещается в «золотую зону»</h2>
+        <p>Представьте, что у вас 100 вещей. Распределим их по тому, как часто вы их реально надеваете, и сразу станет видно, кому где место.</p>
+
+        <div class="a-abc">
+          <div class="a-abc__row">
+            <div class="a-abc__top">
+              <span class="a-abc__tag">A</span>
+              <span class="a-abc__name">≈ 20 вещей носите постоянно</span>
+              <span class="a-abc__zone">Зона «Молния»</span>
+            </div>
+            <div class="a-abc__bar"><div class="a-abc__fill" style="width:70%"></div></div>
+            <p class="a-abc__d">Базовые джинсы, футболки, любимые свитера. Должны занимать до 70 % места в «золотой зоне» — это рабочая лошадка гардероба.</p>
+          </div>
+          <div class="a-abc__row">
+            <div class="a-abc__top">
+              <span class="a-abc__tag">B</span>
+              <span class="a-abc__name">≈ 30 вещей надеваете время от времени</span>
+              <span class="a-abc__zone">Зона «Планирование»</span>
+            </div>
+            <div class="a-abc__bar"><div class="a-abc__fill a-abc__fill--b" style="width:45%"></div></div>
+            <p class="a-abc__d">Свитер на прохладную погоду, нарядная блузка, спортивный костюм «выходного дня». Им место чуть выше или чуть ниже золотой зоны — потянуться или наклониться несложно.</p>
+          </div>
+          <div class="a-abc__row">
+            <div class="a-abc__top">
+              <span class="a-abc__tag">C</span>
+              <span class="a-abc__name">≈ 50 вещей достаёте 5–10 раз в год или «когда похудею»</span>
+              <span class="a-abc__zone">Зона «Архив»</span>
+            </div>
+            <div class="a-abc__bar"><div class="a-abc__fill a-abc__fill--c" style="width:22%"></div></div>
+            <p class="a-abc__d">Сезонное, гостевое, «на всякий случай». Отправляется на антресоли и в нижние ящики — туда, где редкий доступ не мешает. Не забывайте устраивать ревизию пару раз в сезон: возможно, настало время перенести те самые белые брюки в категорию A.</p>
+          </div>
+        </div>
+
+        <div class="p-note">
+          <span class="p-note__mark">!</span>
+          <p>Частая ошибка: запихнуть все 100 вещей в «золотую зону». В итоге там тесно, ничего не найти, и вы перестаёте пользоваться системой.</p>
+        </div>
+
+        <h2 id="s5"><span class="h2num">05 — Лайфхаки</span>Используем «слепые зоны» с умом</h2>
+        <p>Когда логика зон понятна, остаётся пара неочевидных приёмов — они высвобождают полки и держат мелочи под рукой.</p>
+        <div class="p-types">
+          <div class="p-type">
+            <span class="p-type__tag">Вертикаль</span>
+            <h3 class="p-type__name">Дверца шкафа</h3>
+            <p>Внутренняя сторона двери — идеальное место для «быстрых» вещей на выход: ремни, шарфы, ключи, маски. Освобождает полки и держит аксессуары на виду.</p>
+          </div>
+          <div class="p-type">
+            <span class="p-type__tag">Низ</span>
+            <h3 class="p-type__name">Нижняя зона — не для мелочей</h3>
+            <p>Низ (до 40 см) — для тяжёлого и объёмного: ежедневная обувь, пылесос, коробки с книгами. Лёгкие футболки сюда не кладут — постоянные наклоны утомляют спину.</p>
+          </div>
+          <div class="p-type">
+            <span class="p-type__tag">Уровень пояса</span>
+            <h3 class="p-type__name">Правило вытянутой руки</h3>
+            <p>Часы и украшения, которые вы носите каждый день, — в выдвижном ящике на уровне пояса, а не в коробке на верхней полке. Меньше действий — выше шанс надеть.</p>
+          </div>
+          <div class="p-type">
+            <span class="p-type__tag">Навигация</span>
+            <h3 class="p-type__name">Цвет и контраст</h3>
+            <p>Вещи в зоне «Молния» складывайте по цветам или фактурам. Так мозг быстрее находит нужное: белые футболки в одном углу, синие джинсы в другом.</p>
+          </div>
+        </div>
+
+        <aside class="p-cta">
+          <div>
+            <div class="p-cta__eyebrow">Схема под ваш ящик</div>
+            <h3>Ящик, где каждая вещь на своём месте</h3>
+            <p>«Уместно» рассчитает эргономичную схему хранения под ваш ящик: учтём объём вещей, частоту использования и приоритеты хранения.</p>
+          </div>
+          <div class="p-cta__action">
+            <span class="p-cta__price">149 ₽ <small>· полный результат</small></span>
+            <a class="u-btn u-btn--sage u-btn--lg" href="../../configure/" data-ym-goal="cta_blog_article">Рассчитать схему</a>
+          </div>
+        </aside>
+
+        <h2 id="s6"><span class="h2num">06 — Проверка</span>Проверьте свой шкаф</h2>
+        <p>Распределение зон — это не про то, чтобы убрать «ненужное» подальше. Это про то, чтобы нужное было максимально близко к точке принятия решения. Если вещь требует больше одного действия — встать на стул, отодвинуть стопку, открыть сложный замок, — мозг будет саботировать процесс.</p>
+
+        <div class="p-quiz" id="quiz">
+          <div class="p-quiz__head">
+            <span class="p-quiz__kicker">Мини-тест · 5 вопросов</span>
+            <h3>Ваш шкаф работает на вас?</h3>
+            <p>Нажмите на каждый пункт, который сейчас верен для вашего шкафа.</p>
+          </div>
+          <ol class="p-quiz__list">
+            <li><button type="button" class="p-quiz__q" aria-pressed="false"><span class="qz-n">01</span><span class="qz-t">Повседневная одежда лежит на уровне глаз и бёдер (80–140 см)</span><span class="qz-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></button></li>
+            <li><button type="button" class="p-quiz__q" aria-pressed="false"><span class="qz-n">02</span><span class="qz-t">В «золотой зоне» нет вещей, которые вы надеваете раз в год</span><span class="qz-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></button></li>
+            <li><button type="button" class="p-quiz__q" aria-pressed="false"><span class="qz-n">03</span><span class="qz-t">Полки не глубже 35–40 см, вещи не стоят в два ряда</span><span class="qz-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></button></li>
+            <li><button type="button" class="p-quiz__q" aria-pressed="false"><span class="qz-n">04</span><span class="qz-t">Тяжёлое и редкое убрано вниз и на антресоли, а не в центр</span><span class="qz-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></button></li>
+            <li><button type="button" class="p-quiz__q" aria-pressed="false"><span class="qz-n">05</span><span class="qz-t">Любую вещь можно взять одним движением, не двигая стопку</span><span class="qz-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></button></li>
+          </ol>
+          <div class="p-quiz__foot">
+            <div class="p-quiz__score"><b id="qScore">0</b><span>/&nbsp;5&nbsp;«да»</span></div>
+            <p class="p-quiz__verdict" id="qVerdict">Отметьте пункты выше, чтобы увидеть подсказку.</p>
+          </div>
+        </div>
+
+        <p>Пройдитесь по своему шкафу и честно ответьте: какая зона сейчас перегружена? Какие вещи вы игнорируете из-за неудобного расположения? Можно ли перераспределить их по принципу <strong>«Молния / Планирование / Архив»</strong>?</p>
+
+        <div class="p-pull">
+          <p>Хороший порядок начинается не с новых коробок, а с логики доступа. Сначала — куда тянется рука, и только потом — что туда положить.</p>
+        </div>
+
+        <!-- end -->
+        <div class="p-end">
+          <div class="p-end__tags">
+            <a class="p-tag" href="#">Шкаф</a>
+            <a class="p-tag" href="#">Зоны хранения</a>
+            <a class="p-tag" href="#">Эргономика</a>
+            <a class="p-tag" href="#">Золотая зона</a>
+            <a class="p-tag" href="#">ABC-анализ</a>
+            <a class="p-tag" href="#">Схема хранения</a>
+          </div>
+          <div class="p-share">
+            <span class="p-share__lbl">Поделиться</span>
+            <a href="#" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+            <a href="#" aria-label="ВКонтакте"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+            <a href="#" aria-label="Скопировать ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────────────── -->
+  <section class="u-container p-related">
+    <div class="p-related__head">
+      <h2>Читать дальше</h2>
+      <span class="num">Ещё в журнале</span>
+    </div>
+    <div class="j-grid">
+      <a class="j-card j-card--featured" href="../kak-navesti-poryadok-v-komode/" data-ym-goal="blog_article_open">
+        <div class="j-card__media"><img src="../../assets/images/blog/komod-hero.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Комод</div>
+        <h3 class="j-card__title">Как навести порядок в комоде: схема хранения для белья, носков и мелочей</h3>
+        <div class="j-card__meta"><span>Комод</span><span class="sep"></span><span>8 мин</span></div>
+      </a>
+      <a class="j-card" href="../razdeliteli-dlya-yashchikov/" data-ym-goal="blog_article_open">
+        <div class="j-card__media"><img src="../../assets/images/blog/razdelitely.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Разделители для ящиков: когда они помогают, а когда превращаются в «Тетрис»</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>5 мин</span></div>
+      </a>
+      <a class="j-card" href="../organayzer-dlya-belya-v-komod/" data-ym-goal="blog_article_open">
+        <div class="j-card__media"><img src="../../assets/images/blog/organayzer-belya.webp" alt="" loading="lazy" decoding="async" /></div>
+        <div class="j-card__cat">Органайзеры</div>
+        <h3 class="j-card__title">Органайзер для белья в комод: как выбрать размер, секции и высоту</h3>
+        <div class="j-card__meta"><span>Органайзеры</span><span class="sep"></span><span>6 мин</span></div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- ── Shared footer ──────────────────────────────────────── -->
+<footer class="u-footer">
+  <div class="u-container">
+    <div class="u-footer__grid">
+      <div class="u-footer__brand">
+        <a href="../../" class="u-logo"><img src="/landing_design/assets/logo-wordmark-tagline.svg" alt="Уместно — порядок, уют, спокойствие" class="u-logo__img u-logo__img--tagline" /></a>
+        <p>Красивый порядок начинается с удобного решения.</p>
+      </div>
+      <div class="u-footer__col">
+        <h6>Продукт</h6>
+        <a href="../../#how">Как это работает</a>
+        <a href="../../#result">Результат</a>
+        <a href="../../#reviews">Отзывы</a>
+        <a href="../../blog/">Журнал</a>      </div>
+      <div class="u-footer__col">
+        <h6>Помощь</h6>
+        <a href="../../#faq">FAQ</a>
+        <a href="mailto:help@umestno-home.ru">help@umestno-home.ru</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Документы</h6>
+        <a href="../../oferta/">Оферта</a>
+        <a href="../../privacy/">Политика конфиденциальности</a>
+        <a href="../../refunds/">Политика возвратов</a>
+        <a href="../../contacts/">Контакты</a>
+      </div>
+      <div class="u-footer__col">
+        <h6>Соцсети</h6>
+        <div class="u-footer__socials">
+          <a href="https://pin.it/hHrmtpWyE" target="_blank" rel="noopener" aria-label="Pinterest"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.3-5.6s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.8 1.5 1.7 0 1-.7 2.6-1 4-.3 1.2.6 2.1 1.7 2.1 2.1 0 3.6-2.6 3.6-5.7 0-2.4-1.6-4.1-4-4.1a4.2 4.2 0 00-4.3 4.3c0 .8.3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.2c-.1.3-.2.4-.5.2-1.3-.6-2.1-2.5-2.1-4 0-3.2 2.4-6.2 6.8-6.2 3.6 0 6.3 2.5 6.3 5.9 0 3.6-2.2 6.5-5.4 6.5-1 0-2-.6-2.4-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.7A10 10 0 1012 2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.2L2.8 11.4c-1.1.4-1.1 1 .2 1.4l4.7 1.4 1.8 5.7c.2.6.7.6 1.2.2l2.6-2.2 4.6 3.4c.9.5 1.5.2 1.7-.8L21.6 5c.2-1-.4-1.4-1.1-1.1zm-3.2 4l-7.7 7-.3 3-1.4-4.4 9.4-5.6z"/></svg></a>
+          <a href="#" aria-label="VK"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.7 17.2c-5.4 0-8.4-3.7-8.5-9.8h2.7c.1 4.5 2.1 6.4 3.6 6.8V7.4h2.6V11c1.5-.2 3.1-1.9 3.6-3.6h2.6c-.4 2.2-2 3.9-3.2 4.6 1.2.5 3 2 3.8 4.7h-2.8c-.6-1.9-2-3.4-4-3.6v3.6c-.2-.1-.3-.5-.4-1.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="u-footer__bottom">
+      <div>© Уместно, 2026 · ИП Базоева Д.А.</div>
+      <div>Сделано с заботой о порядке и пространстве.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../app.js"></script>
+<script src="../../landing_design/metrika.js?v=1" defer></script>
+<script>
+/* TOC scroll-spy — highlight the section currently in view */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.p-toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var heads = Array.prototype.slice.call(document.querySelectorAll('.p-body h2[id]'));
+  if(!('IntersectionObserver' in window) || !heads.length) return;
+  var current = null;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting) current = e.target.id;
+    });
+    links.forEach(function(a){ a.classList.remove('is-active'); });
+    if(current && map[current]) map[current].classList.add('is-active');
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  heads.forEach(function(h){ io.observe(h); });
+})();
+</script>
+<script>
+/* Кнопки «Поделиться» — проставляем ссылки шеринга из текущего URL */
+(function(){
+  var url = location.href.split('#')[0];
+  var title = (document.querySelector('meta[property="og:title"]')||{}).content || document.title;
+  var media = (document.querySelector('meta[property="og:image"]')||{}).content || '';
+  /* UTM на ссылку пина — чтобы переходы с Pinterest считались в Метрике */
+  var pinUrl = url + (url.indexOf('?') > -1 ? '&' : '?') + 'utm_source=Pinterest&utm_medium=organic&utm_campaign=zony_hraneniya&utm_content=cover';
+  var pinEl = document.querySelector('.p-masthead__media img[data-pin-media]');
+  var pinMedia = (pinEl && pinEl.getAttribute('data-pin-media')) || media;  /* вертикальная картинка для Pinterest */
+  var u = encodeURIComponent(url), t = encodeURIComponent(title), m = encodeURIComponent(media), pu = encodeURIComponent(pinUrl), pm = encodeURIComponent(pinMedia);
+  var intents = {
+    'Telegram':  'https://t.me/share/url?url=' + u + '&text=' + t,
+    'ВКонтакте': 'https://vk.com/share.php?url=' + u + '&title=' + t,
+    'Pinterest': 'https://pinterest.com/pin/create/button/?url=' + pu + '&description=' + t + (pinMedia ? '&media=' + pm : '')
+  };
+  document.querySelectorAll('.p-share a').forEach(function(a){
+    var label = a.getAttribute('aria-label') || '';
+    if (intents[label]) {
+      a.href = intents[label]; a.target = '_blank'; a.rel = 'noopener';
+    } else if (label.indexOf('Скопировать') === 0) {
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var feedback = function(){
+          var prev = a.getAttribute('aria-label');
+          a.setAttribute('aria-label', 'Ссылка скопирована');
+          a.classList.add('is-copied');
+          setTimeout(function(){ a.setAttribute('aria-label', prev); a.classList.remove('is-copied'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(feedback, feedback);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (_) {}
+          document.body.removeChild(ta); feedback();
+        }
+      });
+    }
+  });
+})();
+</script>
+<script>
+/* Пока фото не загружено — прячем «битую» картинку, остаётся чистая плашка */
+(function(){
+  var sel = '.j-feature__media img, .j-card__media img, .p-masthead__media img, .p-figure__media img';
+  document.querySelectorAll(sel).forEach(function(img){
+    var hide = function(){ img.style.display = 'none'; };
+    if (img.complete && img.naturalWidth === 0) hide();
+    img.addEventListener('error', hide);
+  });
+})();
+</script>
+<script>
+/* Мини-тест — считаем ответы «да» и обновляем вердикт */
+(function(){
+  var quiz = document.getElementById('quiz');
+  if(!quiz) return;
+  var btns = Array.prototype.slice.call(quiz.querySelectorAll('.p-quiz__q'));
+  var scoreEl = document.getElementById('qScore');
+  var verdictEl = document.getElementById('qVerdict');
+  function verdict(n){
+    if(n === 0) return 'Отметьте пункты выше, чтобы увидеть подсказку.';
+    if(n >= 4) return '<b>Шкаф работает на вас.</b> Зоны распределены по логике доступа — вещи сами просятся в руки. Осталось поддерживать систему.';
+    if(n >= 2) return '<b>Половина дела сделана.</b> Часть зон уже на месте, но что-то перегружено. Перераспределите по принципу «Молния — Планирование — Архив».';
+    return '<b>Шкаф работает против вас.</b> Похоже, нужное лежит далеко, а «золотая зона» занята архивом. Начните с того, что носите каждый день.';
+  }
+  function update(){
+    var n = btns.filter(function(b){ return b.getAttribute('aria-pressed') === 'true'; }).length;
+    scoreEl.textContent = n;
+    verdictEl.innerHTML = verdict(n);
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      update();
+    });
+  });
+})();
+</script>
+</body>
+</html>
