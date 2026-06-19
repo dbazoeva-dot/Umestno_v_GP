@@ -856,26 +856,35 @@ body.u-wiz-active .u-header { display: none; }
    через clip-path по --x. Ручка-перетаскивание двигает разделитель влево
    и вправо. Экономит высоту: вместо двух кадров 545×300 — один. */
 .u-wiz__review-pair { display: block; }
+/* Compare-слайдер «До / После» — переписан с нуля.
+   Раньше clip-path на верхнем слое создавал отдельный GPU-композитный
+   слой, на котором браузер слегка иначе масштабировал img (визуально
+   «приближение»). Теперь:
+     ─ frame — container с container-type: size
+     ─ нижний img абсолютно растянут на 100% frame (object-fit cover)
+     ─ верхний слой — обёртка с width: var(--x) + overflow:hidden,
+       внутри img в container query units (100cqw × 100cqh)
+   Оба img рендерятся по ОДНИМ И ТЕМ ЖЕ координатам родителя — никаких
+   subpixel-смещений. */
 .u-wiz__compare-frame {
   --x: 50%;
-  position: relative; aspect-ratio: 1448 / 1024;
-  border-radius: 12px; overflow: hidden;
-  /* box-shadow inset вместо border — border создавал 1px смещение между
-     нижним <img> и обрезаемым clip-слоем (border-box / content-box mix). */
-  box-shadow: inset 0 0 0 1px var(--u-line-2);
+  position: relative;
+  aspect-ratio: 1448 / 1024;
+  border-radius: 12px;
+  overflow: hidden;
   background: var(--u-line-2);
   touch-action: none;
   user-select: none; -webkit-user-select: none;
 }
 .u-wiz__compare-img {
   position: absolute; inset: 0;
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
 }
 .u-wiz__compare-clip {
   position: absolute; inset: 0;
   clip-path: inset(0 calc(100% - var(--x)) 0 0);
   -webkit-clip-path: inset(0 calc(100% - var(--x)) 0 0);
-  will-change: clip-path;
 }
 .u-wiz__compare-cap {
   position: absolute; top: 8px; z-index: 2;
@@ -1058,7 +1067,6 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__lead,
   .u-wiz__preview,
   .u-wiz__measure,
-  .u-wiz .u-calc__choice,
   .u-wiz__next,
   .u-wiz__footer .u-calc__cta,
   .u-wiz__offer-list li,
@@ -1068,14 +1076,17 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz .u-calc__add,
   .u-wiz .u-calc__pri-btn .ttl,
   .u-wiz .u-promo__toggle { font-size: 0.875em; }
-  /* Внутри chip body — text наследует 1em от родителя (= 0.875em корня) */
-  .u-wiz .u-calc__choice-t { font-size: 1em; }
+  /* Chip и pri-btn — родители 1em (от корня), чтобы дети 0.875em давали
+     ровно Body (14 на base 16), а не наследовались от 12.5px default. */
+  .u-wiz .u-calc__choice,
+  .u-wiz .u-calc__pri-btn { font-size: 1em; }
+  /* Текст внутри чипа наследует Body 0.875em от корня */
+  .u-wiz .u-calc__choice-t { font-size: 0.875em; }
 
   /* Small ───────────────────────────────────────────────────── */
   .u-wiz__measure .more,
   .u-wiz .u-calc__preset,
   .u-wiz .u-calc__check-txt,
-  .u-wiz .u-calc__pri-btn,
   .u-wiz .u-calc__pri-btn .sub,
   .u-wiz__addcat .count,
   .u-wiz__addcat-sub,
