@@ -86,6 +86,11 @@
 .p-body ul li, .p-body ol li{ padding-left: 1.875rem; margin-bottom: 0.75rem; }
 .p-body ul li::before{ left: 0.375rem; top: 0.75rem; width: 0.4375rem; height: 0.4375rem; }
 
+/* mistakes: текст описания — как у основного текста (fs-md), а не мельче;
+   вынос «Решение:/Статистика:/Лайфхак:» отдельным абзацем с отступом */
+.p-mistake__d{ font-size: var(--fs-md); }
+.p-mistake__d + .p-mistake__d{ margin-top: 0.625rem; }
+
 /* pull-quote */
 .p-pull{ margin: 2.5rem 0; padding: 0.5rem 0 0.5rem 2rem; }
 .p-pull p{ font-size: 2.125rem; }               /* было clamp(...34) */
