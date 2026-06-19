@@ -483,7 +483,7 @@
     if (elDots) {
       elDots.innerHTML = REVIEWS.map(function (_, i) {
         return '<button type="button"' + (i === 0 ? ' class="on"' : '') +
-               ' data-review-go="' + i + '" aria-label="Отзыв ' + (i + 1) + '"></button>';
+               ' data-review-go="' + i + '" tabindex="-1" aria-label="Отзыв ' + (i + 1) + '"></button>';
       }).join('');
     }
 
