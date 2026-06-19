@@ -400,6 +400,16 @@ image-slot::part(empty){
   .p-toc__lbl{ width: 100%; }
   .p-toc a{ border-left: 0; padding-left: 0; margin-left: 0; }
   .p-toc a.is-active{ border-left: 0; }
+
+  /* ── anti horizontal-scroll safety net (stacked layout) ───────────
+     Грид складывается в одну колонку уже на ≤940px, поэтому защита от
+     горизонтального выноса должна действовать на всём этом диапазоне,
+     а не только на телефоне. Любой широкий потомок (например, таблица
+     с min-width) скроллится внутри своей обёртки и не распирает колонку. */
+  html, body{ overflow-x: hidden; max-width: 100%; }
+  main{ max-width: 100%; overflow-x: clip; }
+  .u-container{ max-width: 100%; }
+  .p-masthead, .p-layout, .p-body{ min-width: 0; max-width: 100%; }
 }
 
 /* prose */
