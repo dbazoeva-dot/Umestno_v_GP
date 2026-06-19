@@ -113,9 +113,9 @@
 .p-quiz__q{ gap: 1rem; padding: 1.0625rem 0.625rem; font-size: var(--fs-md); }
 .p-quiz__q .qz-box{ width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; }
 .p-quiz__q .qz-box svg{ width: 0.9375rem; height: 0.9375rem; }
-.p-quiz__foot{ gap: 1.75rem; padding: 1.5rem 2rem; }
+.p-quiz__foot{ gap: 1.75rem; padding: 1.125rem 2rem; }   /* немного поджали по высоте */
 .p-quiz__score{ gap: 0.25rem; }
-.p-quiz__score b{ font-size: 2.875rem; }        /* было clamp(...46) */
+.p-quiz__score b{ font-size: 2.25rem; }         /* было 2.875rem — компактнее */
 .p-quiz__verdict{ font-size: var(--fs-md); }
 
 /* таблица */
