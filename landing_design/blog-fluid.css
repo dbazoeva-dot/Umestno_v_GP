@@ -116,6 +116,42 @@
 .p-table thead th{ padding: 1rem 1.375rem; }
 .p-table tbody td{ padding: 1rem 1.375rem; }
 
+/* На узких экранах таблица не скроллится по горизонтали, а перестраивается
+   в карточки: строка → блок, первая ячейка → заголовок, остальные → строки
+   с подписью из data-label у <td>. Порог 680px — выше таблица (35rem)
+   ещё помещается в колонку. Объявлено здесь (последний подключаемый файл),
+   чтобы перекрыть .p-table{min-width:35rem} выше. */
+@media (max-width: 680px){
+  .p-tablewrap{ overflow-x: visible; border: 0; border-radius: 0; margin: 1.75rem 0; }
+  .p-table{ min-width: 0; display: block; background: transparent; }
+  .p-table thead{ display: none; }
+  .p-table tbody{ display: block; }
+  .p-table tbody tr{
+    display: block; background: var(--u-card);
+    border: 1px solid var(--u-line-2); border-radius: var(--r-md);
+    padding: 1.125rem 1.25rem; margin-bottom: 0.875rem;
+  }
+  .p-table tbody tr:last-child{ margin-bottom: 0; }
+  .p-table tbody td{
+    display: flex; gap: 1rem; padding: 0.5625rem 0;
+    border-top: 1px solid var(--u-line); line-height: 1.45; min-width: 0;
+  }
+  .p-table tbody td::before{
+    content: attr(data-label); flex: 0 0 38%; min-width: 0;
+    font-family: var(--f-mono); font-size: var(--fs-2xs);
+    letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
+  }
+  /* первая ячейка строки — заголовок карточки */
+  .p-table tbody tr td:first-child{
+    display: block; padding: 0 0 0.75rem; margin-bottom: 0.25rem;
+    border-top: 0; border-bottom: 1px solid var(--u-line);
+    font-family: var(--f-display); font-size: var(--fs-lg);
+    font-weight: 500; color: var(--u-ink);
+  }
+  .p-table tbody tr td:first-child::before{ content: none; }
+  .p-table tbody tr td:nth-child(2){ border-top: 0; }
+}
+
 /* карточки видов */
 .p-types{ gap: 1rem; margin: 2.25rem 0; }
 .p-type{ padding: 1.5rem 1.625rem; }
