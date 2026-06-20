@@ -503,8 +503,15 @@
       // сбрасываем позицию compare-слайдера при смене карточки
       if (compareFrame) compareFrame.style.setProperty('--x', '50%');
     }
+    // Панель отзывов видна только на десктопе (wizard.css: .u-wiz__rail
+    // display:none ниже 960px). Автоплей запускаем ТОЛЬКО когда панель
+    // реально на экране и вкладка активна — иначе на мобиле таймер
+    // вхолостую крутит карусель и подгружает картинки, которых не видно.
+    var mqDesktop = window.matchMedia('(min-width: 960px)');
+    function autoAllowed() { return mqDesktop.matches && !document.hidden; }
     function startAuto() {
       stopAuto();
+      if (!autoAllowed()) return;
       autoTimer = setInterval(function () { renderReview(curR + 1); }, 5000);
     }
     function stopAuto() {
@@ -545,6 +552,15 @@
         if (e.key === 'ArrowRight') { renderReview(curR + 1); pauseAuto(); e.preventDefault(); }
       });
     });
+    // Вкладку свернули/ушли — глушим таймер; вернулись — пробуем снова
+    // (startAuto сам проверит, что мы на десктопе). Смена брейкпоинта
+    // (поворот/ресайз) тоже пересматривает автоплей.
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopAuto(); else startAuto();
+    });
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', startAuto);
+    else if (mqDesktop.addListener) mqDesktop.addListener(startAuto); // старый Safari
+
     startAuto();
   }
 
