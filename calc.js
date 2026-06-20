@@ -251,7 +251,13 @@
           if (btn) btn.click();
         }
       })
-      .catch(function (e) { console.warn('[prefill] failed', e); });
+      .catch(function (e) { console.warn('[prefill] failed', e); })
+      .then(function () {
+        // Сигнал визарду: prefill завершён (успех ИЛИ ошибка). Визард ждёт
+        // это событие, чтобы перейти на нужный шаг по уже заполненным полям,
+        // а не угадывать задержку таймером.
+        document.dispatchEvent(new CustomEvent('umestno:prefilled'));
+      });
   })();
 
   /* ── Submit: показать модалку email → POST /api/calculate → редирект ──

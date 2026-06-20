@@ -354,13 +354,24 @@
     });
   });
 
-  /* ── Если зашли с ?t=token (prefill) — начинаем с шага 3, чтобы юзер
-        сразу увидел сводку и пошёл на оплату. Иначе — с шага 1. ──── */
+  /* ── Если зашли с ?t=token (возврат из no-fit) — ведём на ШАГ 2, где
+        меняют объём вещей. Размеры (шаг 1) уже заполнены prefill'ом и
+        остаются нетронутыми. Переход делаем по сигналу umestno:prefilled
+        (calc.js шлёт его, когда реальные данные подставлены) — чтобы юзер
+        сразу видел СВОИ вещи, а не дефолтную болванку. Иначе — с шага 1. ─ */
   var params = new URLSearchParams(location.search);
   if (params.get('t') || params.get('token')) {
-    // calc.js асинхронно подтянет значения; сводку построим после небольшой
-    // задержки, чтобы поля успели заполниться.
-    setTimeout(function () { go(3); }, 400);
+    render(); // показываем шаг 1 сразу, без пустого экрана
+    var jumpedToEdit = false;
+    var goToEditStep = function () {
+      if (jumpedToEdit) return;
+      jumpedToEdit = true;
+      go(2);
+    };
+    document.addEventListener('umestno:prefilled', goToEditStep, { once: true });
+    // Страховка: если сигнал не придёт (calc.js упал/заблокирован), всё равно
+    // переводим на шаг 2 через 3 c, чтобы не застрять на шаге 1.
+    setTimeout(goToEditStep, 3000);
   } else {
     render();
   }
