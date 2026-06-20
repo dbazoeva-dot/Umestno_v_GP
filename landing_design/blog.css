@@ -400,6 +400,16 @@ image-slot::part(empty){
   .p-toc__lbl{ width: 100%; }
   .p-toc a{ border-left: 0; padding-left: 0; margin-left: 0; }
   .p-toc a.is-active{ border-left: 0; }
+
+  /* ── anti horizontal-scroll safety net (stacked layout) ───────────
+     Грид складывается в одну колонку уже на ≤940px, поэтому защита от
+     горизонтального выноса должна действовать на всём этом диапазоне,
+     а не только на телефоне. Любой широкий потомок (например, таблица
+     с min-width) скроллится внутри своей обёртки и не распирает колонку. */
+  html, body{ overflow-x: hidden; max-width: 100%; }
+  main{ max-width: 100%; overflow-x: clip; }
+  .u-container{ max-width: 100%; }
+  .p-masthead, .p-layout, .p-body{ min-width: 0; max-width: 100%; }
 }
 
 /* prose */
@@ -779,6 +789,9 @@ image-slot::part(empty){
 .p-table tbody td:first-child{ color: var(--u-ink); font-weight: 500; }
 .p-table tbody td:nth-child(2){ color: var(--u-sage-dd, #69785F); font-weight: 600; }
 .p-table tbody tr:hover td{ background: rgba(125,140,114,.045); }
+
+/* Перестроение таблицы в карточки на узких экранах — в blog-fluid.css
+   (он грузится последним и перекрывает .p-table{min-width} оттуда же). */
 
 /* ── divider-type cards ───────────────────────────────────────────── */
 .p-types{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 36px 0; }

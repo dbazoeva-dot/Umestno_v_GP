@@ -86,9 +86,17 @@
 .p-body ul li, .p-body ol li{ padding-left: 1.875rem; margin-bottom: 0.75rem; }
 .p-body ul li::before{ left: 0.375rem; top: 0.75rem; width: 0.4375rem; height: 0.4375rem; }
 
+/* mistakes: текст описания — как у основного текста (fs-md), а не мельче;
+   вынос «Решение:/Статистика:/Лайфхак:» отдельным абзацем с отступом.
+   Паддинг задаём селектором той же удельности, что и сброс
+   `.p-body ul.p-mistakes > li{padding:0}` в blog.css, иначе он перебивает. */
+.p-body ul.p-mistakes > li{ padding: 1.875rem 0; }  /* воздух до и после линии-разделителя */
+.p-mistake__d{ font-size: var(--fs-md); }
+.p-mistake__d + .p-mistake__d{ margin-top: 0.625rem; }
+
 /* pull-quote */
 .p-pull{ margin: 2.5rem 0; padding: 0.5rem 0 0.5rem 2rem; }
-.p-pull p{ font-size: 2.125rem; }               /* было clamp(...34) */
+.p-pull p{ font-size: 1.5rem; }                 /* было 2.125rem — крупновато, −~30% */
 
 /* note */
 .p-note{ grid-template-columns: 2.125rem 1fr; column-gap: 1rem; margin: 2rem 0; padding: 1.25rem 1.5rem; }
@@ -100,12 +108,13 @@
 .p-quiz__head{ padding: 1.875rem 2rem 1.25rem; }
 .p-quiz__kicker{ gap: 0.625rem; margin-bottom: 0.75rem; }
 .p-quiz__kicker::before{ width: 1.625rem; }
-.p-body .p-quiz__head h3{ font-size: 2rem; }    /* было clamp(...32) */
+.p-body .p-quiz__head h3{ font-size: 1.5rem; }    /* было 2rem — компактнее */
+.p-quiz__head p{ font-size: var(--fs-xs); }       /* подзаголовок мельче */
 .p-quiz__list{ padding: 0.875rem 1.375rem !important; }
 .p-quiz__q{ gap: 1rem; padding: 1.0625rem 0.625rem; font-size: var(--fs-md); }
 .p-quiz__q .qz-box{ width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; }
 .p-quiz__q .qz-box svg{ width: 0.9375rem; height: 0.9375rem; }
-.p-quiz__foot{ gap: 1.75rem; padding: 1.5rem 2rem; }
+.p-quiz__foot{ gap: 1.75rem; padding: 1.125rem 2rem; }   /* немного поджали по высоте */
 .p-quiz__score{ gap: 0.25rem; }
 .p-quiz__score b{ font-size: 2.875rem; }        /* было clamp(...46) */
 .p-quiz__verdict{ font-size: var(--fs-md); }
@@ -115,6 +124,42 @@
 .p-table{ min-width: 35rem; }                   /* 560 — порог гор. скролла */
 .p-table thead th{ padding: 1rem 1.375rem; }
 .p-table tbody td{ padding: 1rem 1.375rem; }
+
+/* На узких экранах таблица не скроллится по горизонтали, а перестраивается
+   в карточки: строка → блок, первая ячейка → заголовок, остальные → строки
+   с подписью из data-label у <td>. Порог 680px — выше таблица (35rem)
+   ещё помещается в колонку. Объявлено здесь (последний подключаемый файл),
+   чтобы перекрыть .p-table{min-width:35rem} выше. */
+@media (max-width: 680px){
+  .p-tablewrap{ overflow-x: visible; border: 0; border-radius: 0; margin: 1.75rem 0; }
+  .p-table{ min-width: 0; display: block; background: transparent; }
+  .p-table thead{ display: none; }
+  .p-table tbody{ display: block; }
+  .p-table tbody tr{
+    display: block; background: var(--u-card);
+    border: 1px solid var(--u-line-2); border-radius: var(--r-md);
+    padding: 1.125rem 1.25rem; margin-bottom: 0.875rem;
+  }
+  .p-table tbody tr:last-child{ margin-bottom: 0; }
+  .p-table tbody td{
+    display: flex; gap: 1rem; padding: 0.5625rem 0;
+    border-top: 1px solid var(--u-line); line-height: 1.45; min-width: 0;
+  }
+  .p-table tbody td::before{
+    content: attr(data-label); flex: 0 0 38%; min-width: 0;
+    font-family: var(--f-mono); font-size: var(--fs-2xs);
+    letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--u-ink-3);
+  }
+  /* первая ячейка строки — заголовок карточки */
+  .p-table tbody tr td:first-child{
+    display: block; padding: 0 0 0.75rem; margin-bottom: 0.25rem;
+    border-top: 0; border-bottom: 1px solid var(--u-line);
+    font-family: var(--f-display); font-size: var(--fs-lg);
+    font-weight: 500; color: var(--u-ink);
+  }
+  .p-table tbody tr td:first-child::before{ content: none; }
+  .p-table tbody tr td:nth-child(2){ border-top: 0; }
+}
 
 /* карточки видов */
 .p-types{ gap: 1rem; margin: 2.25rem 0; }
