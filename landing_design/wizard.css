@@ -862,21 +862,14 @@ body.u-wiz-active .u-header { display: none; }
   font-family: var(--f-display, serif); font-style: italic; font-size: 18px;
   line-height: 1.32; color: var(--u-ink); margin: 0;
 }
-/* Compare-слайдер «До / После» с вертикальной линией-разделителем.
-   Одна рамка с двумя картинками: «До» снизу полностью, «После» обрезается
-   через clip-path по --x. Ручка-перетаскивание двигает разделитель влево
-   и вправо. Экономит высоту: вместо двух кадров 545×300 — один. */
 .u-wiz__review-pair { display: block; }
-/* Compare-слайдер «До / После» — переписан с нуля.
-   Раньше clip-path на верхнем слое создавал отдельный GPU-композитный
-   слой, на котором браузер слегка иначе масштабировал img (визуально
-   «приближение»). Теперь:
-     ─ frame — container с container-type: size
-     ─ нижний img абсолютно растянут на 100% frame (object-fit cover)
-     ─ верхний слой — обёртка с width: var(--x) + overflow:hidden,
-       внутри img в container query units (100cqw × 100cqh)
-   Оба img рендерятся по ОДНИМ И ТЕМ ЖЕ координатам родителя — никаких
-   subpixel-смещений. */
+/* Compare-слайдер «До / После» с вертикальной линией-разделителем.
+   Одна рамка, два слоя по одним координатам:
+     ─ нижний (.u-wiz__compare-img[data-review-after]) — «После», на весь frame;
+     ─ верхний (.u-wiz__compare-clip с картинкой «До») обрезается clip-path
+       по --x: inset(0 calc(100% - var(--x)) 0 0) → слева видно «До», справа
+       «После». Ручку двигает wizard-nav.js (меняет --x).
+   Один кадр вместо двух — экономит высоту. */
 .u-wiz__compare-frame {
   --x: 50%;
   position: relative;
