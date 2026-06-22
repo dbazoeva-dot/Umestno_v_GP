@@ -975,7 +975,7 @@ body.u-wiz-active .u-header { display: none; }
 .u-wiz__review-author .dots button.on,
 .u-wiz__review-author .dots i.on { width: 16px; background: var(--u-accent); }
 .u-wiz__review-author .dots button:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
-.u-wiz__secure { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
+.u-wiz__secure { gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
 .u-wiz__secure svg { flex: 0 0 auto; margin-top: 1px; }
 .u-wiz__secure span { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); }
 
