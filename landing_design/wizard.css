@@ -1022,10 +1022,10 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__secure span { font-size: 0.719em; }
   /* Карточка-форма (.u-calc__form-card аналог). */
   .u-wiz__col {
-    min-width: 0; display: block;
+    min-width: 0; display: flex; flex-direction: column;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: 1.5em 1.75em 1em;
+    padding: 1.5em 1.75em 1.5em;
   }
   /* Правая колонка. */
   .u-wiz__rail {
@@ -1035,14 +1035,17 @@ body.u-wiz-active .u-header { display: none; }
   }
   .u-wiz__offer  { flex: 0 0 auto; padding: 1.25em; gap: 0.875em; }
   .u-wiz__review { flex: 0 0 auto; padding: 1em 1.125em; gap: 0.813em; }
-  /* Карточный поток вместо мобильного fit-to-screen. Spacer/Grow берут
-     высоту из inline-style --dh (px) и пересчитываются в em относительно
-     текущего font-size — так распорки сжимаются вместе со шрифтом. */
-  .u-wiz__progress { padding: 0 0 1em; }
-  .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
-  .u-wiz__step.is-on { display: block; animation: none; }
-  .u-wiz__spacer { display: block; height: calc(var(--dh, 0) * 1em / 16px); }
-  .u-wiz__grow   { display: block; flex: none; min-height: 0; height: calc(var(--dh, 0) * 1em / 16px); }
+  /* Карточка тянется до высоты правой панели (align-items:stretch). Чтобы
+     не было дыры внизу — гибкие распорки .u-wiz__grow распределяют лишний
+     воздух равномерно между секциями (как mobile fit-to-screen, но мягко:
+     min-height = заданная в макете высота, а flex:1 добирает остаток). */
+  .u-wiz__progress { padding: 0 0 1em; flex: 0 0 auto; }
+  .u-wiz__scroll { display: flex; flex-direction: column; flex: 1 1 auto; overflow: visible; padding: 0; }
+  .u-wiz__step.is-on { display: flex; flex-direction: column; flex: 1 1 auto; animation: none; }
+  .u-wiz__spacer { display: block; flex: 0 0 auto; height: calc(var(--dh, 0) * 1em / 16px); }
+  .u-wiz__grow   { display: block; flex: 1 1 0; min-height: calc(var(--dh, 0) * 1em / 16px); height: auto; }
+  /* Футер (Далее/Назад/CTA) — прижат к низу карточки. */
+  .u-wiz__footer { flex: 0 0 auto; }
   /* ══ ТИПОГРАФИЧЕСКАЯ ШКАЛА — 5 УРОВНЕЙ НА ВСЮ СТРАНИЦУ ══════════════
      Все размеры текста сведены к фиксированному набору, чтобы шкала
      была читаемой иерархией, а не хаосом из 15 близких полутонов.
