@@ -296,7 +296,10 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   border: 1.5px solid var(--u-line-2); border-radius: 12px;
   background: var(--u-card);
   text-align: center;
-  font-family: var(--f-display, serif); font-size: 24px; font-weight: 600; color: var(--u-ink);
+  /* Цифры размеров — тем же моношрифтом, что «Шаг X из 3» и подписи
+     «ШИРИНА» (был serif/display — лишний шрифт на экране). JetBrains Mono
+     грузится в весах 400/500, поэтому вес 500 (600 синтезировался бы). */
+  font-family: var(--f-mono, monospace); font-size: 23px; font-weight: 500; color: var(--u-ink);
   transition: border-color .15s, box-shadow .15s;
 }
 .u-wiz .u-calc__sz input:focus {
