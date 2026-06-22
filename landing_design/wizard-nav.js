@@ -298,10 +298,14 @@
   if (prioBtn) prioBtn.addEventListener('click', function () {
     track('priority_help_open');
     var modes = [
-      ['Удобно', 'видно каждую вещь, легко доставать'],
-      ['Вместительно', 'максимум объёма на каждом см²'],
-      ['Экономично', 'минимум органайзеров и трат'],
+      ['convenient', 'Удобно', 'видно каждую вещь, легко доставать'],
+      ['capacity', 'Вместительно', 'максимум объёма на каждом см²'],
+      ['budget', 'Экономично', 'минимум органайзеров и трат'],
     ];
+    // Галочку ставим на РЕАЛЬНО выбранный приоритет (а не жёстко на первый).
+    // Остальным режимам — их порядковый номер.
+    var selBtn = wiz.querySelector('.u-calc__pri-btn[aria-pressed="true"]');
+    var selPriority = selBtn ? selBtn.getAttribute('data-priority') : 'convenient';
     var checkSvg = '<svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11 11.5 3.5" fill="none" stroke="#7D8C72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     openModal(
       '<div class="u-wiz-mp u-wiz-mp--prio">' +
@@ -309,13 +313,14 @@
         '<p class="u-wiz-mp__intro">Под выбранный приоритет настроим плотность раскладки и число органайзеров.</p>' +
         '<div class="u-wiz-mp__priolist">' +
           modes.map(function (m, i) {
+            var isSel = m[0] === selPriority;
             return '<div class="u-wiz-mp__priorow">' +
-              '<span class="u-wiz-mp__prion' + (i === 0 ? ' is-on' : '') + '">' +
-                (i === 0 ? checkSvg : (i + 1)) +
+              '<span class="u-wiz-mp__prion' + (isSel ? ' is-on' : '') + '">' +
+                (isSel ? checkSvg : (i + 1)) +
               '</span>' +
               '<span class="u-wiz-mp__priotx">' +
-                '<span class="t">' + m[0] + '</span>' +
-                '<span class="d">' + m[1] + '</span>' +
+                '<span class="t">' + m[1] + '</span>' +
+                '<span class="d">' + m[2] + '</span>' +
               '</span>' +
             '</div>';
           }).join('') +
