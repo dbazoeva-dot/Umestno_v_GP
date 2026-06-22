@@ -81,20 +81,18 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   animation: u-wiz-menu-down .26s cubic-bezier(.2,.7,.3,1);
 }
 @keyframes u-wiz-menu-down { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
-/* Лого — обрезанная версия logo-wordmark.svg (только знак, без слова
-   «уместно»). Через overflow:hidden на узкой обёртке. В исходном SVG
-   (viewBox 594×76) знак занимает первые ~57px → при height:24 видимая
-   ширина = 57 × 24 / 76 ≈ 18px. */
+/* Лого в топбаре (моб/планшет) — отдельный знак logo-mark.svg (квадрат
+   710×710), без слова «уместно». Раньше обрезали wordmark по 18px, но
+   знак в нём не укладывался в расчётные «первые 57px» — вылезало слово. */
 .u-wiz__brand {
   display: flex; align-items: center; flex: 0 0 auto;
   text-decoration: none;
 }
 .u-wiz__brand-crop {
-  display: inline-block;
-  width: 18px; height: 24px;
-  overflow: hidden;
+  display: inline-flex;
+  width: 26px; height: 26px;
 }
-.u-wiz__brand-crop img { height: 24px; width: auto; display: block; }
+.u-wiz__brand-crop img { height: 26px; width: 26px; display: block; }
 /* Лейбл «Конфигуратор» — рядом с лого, отделён лёгким разделителем
    (вертикальная палочка, как в editorial-стиле). */
 .u-wiz__topbar-label {
