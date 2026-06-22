@@ -1237,3 +1237,24 @@ body.u-wiz-active .u-header { display: none; }
   /* OfertaPopup — iframe внутри центрированного диалога */
   .u-wiz-mp--oferta .u-wiz-mp__top { padding: 22px 30px; border-bottom: 1px solid var(--u-line); }
 }
+
+/* ── Телефоны ≤599: чиним обрезку текста в узких контролах ──────────
+   На планшете (560px колонка) и десктопе места хватает — поэтому
+   правки скоупим только на телефон. */
+@media (max-width: 599px) {
+  /* Объём: «Средне (9–16 пар)» не влезал и резался. Даём колонке объёма
+     больше места (тип короче — «Носки»/«Трусы»), чуть мельче шрифт и уже
+     внутренние отступы. */
+  .u-wiz .u-calc__field:nth-child(1) { flex: 1 1 0; }
+  .u-wiz .u-calc__field:nth-child(2) { flex: 1.3 1 0; }
+  .u-wiz .u-calc__select-wrap select { font-size: 11.5px; padding: 0 22px 0 9px; }
+  .u-wiz .u-calc__select-wrap svg { right: 7px; }
+
+  /* Приоритет: «Вместительно» резалось в равных колонках. Мельче шрифт,
+     уже отступы и кружок — три слова встают целиком. */
+  .u-wiz .u-calc__priority { gap: 3px; padding: 3px; }
+  .u-wiz .u-calc__pri-btn { gap: 3px; font-size: 11.5px; }
+  .u-wiz .u-calc__pri-body .ttl { font-size: 11.5px; }
+  .u-wiz .u-calc__pri-check { width: 11px; height: 11px; }
+  .u-wiz .u-calc__pri-check svg { width: 11px; height: 11px; }
+}
