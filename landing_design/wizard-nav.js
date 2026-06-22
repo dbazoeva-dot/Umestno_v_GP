@@ -79,7 +79,10 @@
       }
     });
     if (!labels.length) return '—';
-    if (labels.length <= 3) return labels.join(', ');
+    // На десктопе места достаточно — показываем ВСЕ выбранные категории.
+    // На мобиле экономим строку: первые 3 + «+N».
+    var isDesktop = window.matchMedia('(min-width: 960px)').matches;
+    if (isDesktop || labels.length <= 3) return labels.join(', ');
     return labels.slice(0, 3).join(', ') + ' +' + (labels.length - 3);
   }
   function priorityText() {
