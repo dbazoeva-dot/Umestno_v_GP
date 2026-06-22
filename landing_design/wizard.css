@@ -120,7 +120,15 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--u-ink-3);
 }
-.u-wiz__progress-head .l { font-size: 12.5px; font-weight: 700; color: var(--u-ink); }
+/* Лейбл шага — тем же моношрифтом, что и «Шаг X из 3» рядом (была sans —
+   разнобой на одной строке). Тот же регистр/трекинг, но темнее и жирнее,
+   чтобы читался как активный шаг. */
+.u-wiz__progress-head .l {
+  font-family: var(--f-mono, monospace);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--u-ink);
+}
 .u-wiz__bar {
   height: 6px; border-radius: 99px;
   background: var(--u-line);
