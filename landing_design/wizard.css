@@ -573,6 +573,11 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   width: 100%; height: 52px; box-sizing: border-box;
   display: flex; align-items: center; justify-content: center; gap: 9px;
   border-radius: 15px; font-size: 15px;
+  /* Тот же премиум-градиент и тень, что у кнопки «Далее» (.u-wiz__next),
+     чтобы главный CTA не выглядел плоским/дешевле второстепенной кнопки.
+     Раньше цвет был захардкожен инлайном в HTML (флэт sage). */
+  background: linear-gradient(180deg, var(--u-sage-d), var(--u-sage-dd));
+  box-shadow: 0 8px 22px -8px rgba(105,120,95,0.6);
 }
 /* Подпись — отдельной строкой ниже кнопок (flex-basis:100%), отступ сверху
    16px = padding-top футера = padding-bottom (без safe-area). Симметрия. */
@@ -970,7 +975,7 @@ body.u-wiz-active .u-header { display: none; }
 .u-wiz__review-author .dots button.on,
 .u-wiz__review-author .dots i.on { width: 16px; background: var(--u-accent); }
 .u-wiz__review-author .dots button:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
-.u-wiz__secure { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
+.u-wiz__secure { gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--u-warm); border-radius: 12px; }
 .u-wiz__secure svg { flex: 0 0 auto; margin-top: 1px; }
 .u-wiz__secure span { font-size: 11.5px; line-height: 1.45; color: var(--u-ink-2); }
 
@@ -1022,10 +1027,10 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__secure span { font-size: 0.719em; }
   /* Карточка-форма (.u-calc__form-card аналог). */
   .u-wiz__col {
-    min-width: 0; display: block;
+    min-width: 0; display: flex; flex-direction: column;
     background: var(--u-card); border: 1px solid var(--u-line);
     border-radius: 20px; box-shadow: var(--sh-card);
-    padding: 1.5em 1.75em 1em;
+    padding: 1.5em 1.75em 1.5em;
   }
   /* Правая колонка. */
   .u-wiz__rail {
@@ -1035,14 +1040,17 @@ body.u-wiz-active .u-header { display: none; }
   }
   .u-wiz__offer  { flex: 0 0 auto; padding: 1.25em; gap: 0.875em; }
   .u-wiz__review { flex: 0 0 auto; padding: 1em 1.125em; gap: 0.813em; }
-  /* Карточный поток вместо мобильного fit-to-screen. Spacer/Grow берут
-     высоту из inline-style --dh (px) и пересчитываются в em относительно
-     текущего font-size — так распорки сжимаются вместе со шрифтом. */
-  .u-wiz__progress { padding: 0 0 1em; }
-  .u-wiz__scroll { display: block; overflow: visible; padding: 0; flex: none; }
-  .u-wiz__step.is-on { display: block; animation: none; }
-  .u-wiz__spacer { display: block; height: calc(var(--dh, 0) * 1em / 16px); }
-  .u-wiz__grow   { display: block; flex: none; min-height: 0; height: calc(var(--dh, 0) * 1em / 16px); }
+  /* Карточка тянется до высоты правой панели (align-items:stretch). Чтобы
+     не было дыры внизу — гибкие распорки .u-wiz__grow распределяют лишний
+     воздух равномерно между секциями (как mobile fit-to-screen, но мягко:
+     min-height = заданная в макете высота, а flex:1 добирает остаток). */
+  .u-wiz__progress { padding: 0 0 1em; flex: 0 0 auto; }
+  .u-wiz__scroll { display: flex; flex-direction: column; flex: 1 1 auto; overflow: visible; padding: 0; }
+  .u-wiz__step.is-on { display: flex; flex-direction: column; flex: 1 1 auto; animation: none; }
+  .u-wiz__spacer { display: block; flex: 0 0 auto; height: calc(var(--dh, 0) * 1em / 16px); }
+  .u-wiz__grow   { display: block; flex: 1 1 0; min-height: calc(var(--dh, 0) * 1em / 16px); height: auto; }
+  /* Футер (Далее/Назад/CTA) — прижат к низу карточки. */
+  .u-wiz__footer { flex: 0 0 auto; }
   /* ══ ТИПОГРАФИЧЕСКАЯ ШКАЛА — 5 УРОВНЕЙ НА ВСЮ СТРАНИЦУ ══════════════
      Все размеры текста сведены к фиксированному набору, чтобы шкала
      была читаемой иерархией, а не хаосом из 15 близких полутонов.
@@ -1087,7 +1095,6 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz__measure .more,
   .u-wiz .u-calc__preset,
   .u-wiz .u-calc__check-txt,
-  .u-wiz .u-calc__pri-btn .sub,
   .u-wiz__addcat .count,
   .u-wiz__addcat-sub,
   .u-wiz .u-calc__dup-hint,
