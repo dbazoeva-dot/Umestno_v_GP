@@ -601,20 +601,12 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
   .u-wiz__note { margin-top: 8px; }
   .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 48px; }
   .u-wiz__back-d { width: 48px; }
-  /* На низком экране схлопываем МИНИМУМЫ гибких распорок (инлайн ~36/18px) —
-     иначе они держат высоту и выталкивают нижний контент (размеры) под
-     липкую кнопку. fit-to-screen остаётся: grow тянется flex-ом, но не
-     навязывает минимум, когда экрану тесно. Жёсткие spacer трогаем только
-     на совсем крошечных экранах (ниже). */
-  .u-wiz__grow { min-height: 0 !important; }
 }
 @media (max-height: 600px) {
   .u-wiz__footer { padding: 5px var(--wz-pad); }
   .u-wiz__note { margin-top: 5px; }
   .u-wiz__next, .u-wiz__back-d, .u-wiz__footer .u-calc__cta { height: 44px; }
   .u-wiz__back-d { width: 44px; }
-  /* Совсем тесно — убираем и фиксированные spacer-зазоры. */
-  .u-wiz__spacer { height: 0 !important; }
 }
 [data-cta-price-old] { text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-weight: 400; }
 
@@ -1271,6 +1263,18 @@ body.u-wiz-active .u-header { display: none; }
   .u-wiz .u-calc__pri-body .ttl { font-size: 11.5px; }
   .u-wiz .u-calc__pri-check { width: 11px; height: 11px; }
   .u-wiz .u-calc__pri-check svg { width: 11px; height: 11px; }
+
+  /* Чипы (тип/что хранить): на узком экране «Одежда/Детское/Текстиль»
+     переносились на 2 строки и съедали высоту. Делаем 3 равные колонки
+     в один ряд (без переноса) — короче и аккуратнее. Поджимаем padding
+     и «скоро», чтобы длинные слова влезли. */
+  .u-wiz .u-calc__choices { flex-wrap: nowrap; gap: 5px; }
+  .u-wiz .u-calc__choice {
+    flex: 1 1 0; min-width: 0; justify-content: center;
+    padding: 8px 5px; gap: 3px; font-size: 12px;
+  }
+  .u-wiz .u-calc__choice-t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .u-wiz .u-calc__choice-soon { flex: 0 0 auto; font-size: 8px; margin-left: 0; }
 }
 
 /* ── Мобайл/планшет ≤959: ограничить раздувание распорок ────────────
