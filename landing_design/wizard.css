@@ -125,7 +125,7 @@ body.u-wiz-active #u-mobile-nav:not([hidden]) {
    чтобы читался как активный шаг. */
 .u-wiz__progress-head .l {
   font-family: var(--f-mono, monospace);
-  font-size: 10px; font-weight: 700;
+  font-size: 10px; font-weight: 500;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--u-ink);
 }
