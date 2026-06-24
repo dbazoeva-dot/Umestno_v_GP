@@ -27,46 +27,57 @@
 
 ## 1. Резюме для основателя (без технического жаргона)
 
-**Что мы продаём и в чём разрыв.** Уместно продаёт не картинку и не список товаров, а
-**состояние ящика после раскладки**: ровные зоны, вещи на местах, понятный план покупки.
-Сегодня движок честно рисует красивую схему, но **подбор товаров под неё спотыкается**:
-он ищет один идеальный товар под уже зафиксированную, косметически раздутую зону и при
-малейшем расхождении формы отдаёт «ничего не нашли». В реальных заказах это даёт пустые
-и странные результаты при геометрически верной схеме.
+**Этот документ — независимая арбитрация, а не принятие одного из предложений.** Приложены
+несколько архитектурных предложений (v5, v3_1, memo/SkuMatchTarget), внутренний governing-док
+`REDESIGN.md` и эмпирическое `Zaklyuchenie` по реальным заказам. Я рассматриваю каждое как
+**голос**, а не как истину (включая v5), сверяю с фактическим кодом и реальными заказами и
+выношу собственное решение — в том числе **против** части v5 (раздел 2: «Взвешивание
+голосов» + конфликты C11–C13).
 
-**Что принимаем.** Один принцип: **первичен DesignIntent** — красивое, функционально
-правдивое, бытово удобное и реализуемое состояние ящика. Всё остальное (расчётная зона,
-назначенная зона, конкретный товар, текущая логика раздува D04b) — служебные механизмы,
-которые имеют право меняться ради этой цели. Движок и матчер начинают **разговаривать до
-финальной схемы**: движок считает потребность и предлагает красивую форму; матчер
-возвращает **ландшафт способов реализации зоны** (один товар, два-четыре одинаковых
-модуля, набор, разделители, открытый лоток или «рынок не закрывает»), а не один
-ближайший товар; движок в пределах **косметического бюджета** двигает только
-договороспособные размеры и выбирает лучшее решение. Всё рассмотренное — включая то,
-что было бы идеально без ограничений рынка, — пишется в **Design Demand Ledger**.
+**Точный диагноз (а не «нет диалога»).** Уместно продаёт **состояние ящика после раскладки**.
+Движок рисует красивую схему, но подбор спотыкается. Корень — не отсутствие диалога, а
+**неверная система отсчёта матчера**: он меряет товар против косметически раздутого
+`assigned` (`matchSkus.ts:47-48`), а не против истинной потребности `need` + честного
+резерва. Это одновременно объясняет «мало подбирается» (под раздутую полосу 31×32 товара
+нет) и «не тот органайзер» (LaDom 24 в зоне 31×32). Подтверждено разбором прод-заказов
+(`Zaklyuchenie` P1).
 
-**Почему это улучшит продукт.** (1) Меньше ложных «не нашли»: реальный кейс «зона 31 см,
-товар 32 см» решается сдвигом на 1 см, а не отказом. (2) Схема остаётся красивой —
-эстетика и удобство остаются жёстким полом, рынок не диктует дизайн. (3) Одна зона может
-честно собираться из 2–4 одинаковых модулей, и пользователь видит **одну** понятную
-схему и **один** план сборки, а не маркетплейсную простыню. (4) С первого реального
-расчёта копится чистая карта того, чего рынку не хватает.
+**Что принимаю (мой спайн, не v5).** Центр архитектуры — **не «co-design dialogue» и не
+многокандидатный генератор схем** (это самые дорогие и наименее доказанные части v5).
+Центр — пять конкретных сдвигов, в порядке отдачи:
+1. **Починить систему отсчёта:** матчер меряет внутреннюю пригодность от `need`, внешний
+   габарит — от зоны/ящика (разнести две проверки), допуски ячейки — асимметричные и
+   per-division, open — без cell-ворот.
+2. **Резерв как договороспособный бюджет:** косметический излишек (`assigned − need`) — не
+   пустота и не цель «заполнить колонку», а бюджет, который матчер **добирает под конкретный
+   SKU** (zone-negotiation), а не раздувает вслепую заранее.
+3. **Излишек — пользователю как бонус-ёмкость «до N»** (`Zaklyuchenie` В4): считать ёмкость
+   от итоговой зоны, обещать «поместится до N», а не констатировать пустоту.
+4. **Матчер отдаёт набор реализаций, не один SKU:** одна зона = один товар / 2–4 одинаковых
+   модуля / composed / open. Пользователь видит **одну** схему и **один** план сборки.
+5. **Маховик данных (Ledger), а не solver, двигает всё остальное:** идеал/варианты/компромисс
+   пишутся с первого расчёта и питают собственную линейку.
 
-**Что делать первым.** Не глобальный оптимизатор. Сначала — **корректность матчера**
-(раздельные ворота для ячеек/слотов/открытых/наборов, асимметричные допуски ячейки,
-разнесение «подходит вещи» и «влезает в ящик»), затем **probe-режим** (увидеть товар
-чуть больше зоны как «чинибельный overfill») и **один локальный переговорный проход**,
-и с самого начала — **журнал спроса**. Это малый, безопасный для текущего стека объём.
+**Что демотирую относительно v5.** Многокандидатный генератор (2–5 DesignCandidates +
+Pareto-селектор) и bounded global re-solve — **не ближний план, а data-gated лестница
+эскалации**: включаем, только если данные покажут, что одно-кандидатный need-anchored
+probe + reserve-negotiation оставляет ценность на столе. `REDESIGN.md` прямо предупреждает
+не начинать с solver — я следую этому голосу, а не v5.
 
-**Что будет через 6–12 месяцев.** Сервис, который (а) почти всегда выдаёт красивый
-реализуемый результат с честным уровнем уверенности, (б) накопил карту повторяющихся
-идеальных схем и настоящих дыр рынка, (в) на этой карте запускает **собственную линейку**
-органайзеров под наши частотные зоны и **premium-custom** под редкий дорогой спрос.
-Рынок перестаёт быть потолком красоты.
+**Что делать первым.** (1) Корректность матчера (раздельные ворота, асимметричные допуски,
+internal≠external) + **ёмкость «до N»** — дёшево, прямой ответ на «мало/странно». (2) Probe
+с repairable overfill (31→32 не пустота). (3) **Reserve-negotiation** — матчер добирает
+задний резерв под конкретный SKU (системный фикс «подбор-против-косметики», единичный
+кандидат). (4) Confidence + reconciliation «что видишь — то соберёшь». (5) Design Demand
+Ledger с первого расчёта.
 
-**Одной строкой.** Не схема без рынка и не рынок вместо схемы, а **со-проектирование**:
-движок проектирует, матчер описывает способы воплощения, данные хранят всё, чего рынку
-не хватило.
+**Через 6–12 месяцев.** Сервис почти всегда выдаёт реализуемый результат с честным
+confidence, накопил карту дыр рынка и запускает собственную линейку под частотные зоны +
+premium-custom. Рынок перестаёт быть потолком красоты.
+
+**Одной строкой.** Корень — система отсчёта, а не диалог. Чиним отсчёт, делаем резерв
+договороспособным бюджетом, отдаём набор реализаций и излишек пользователю, а дальше всё
+двигают **данные**, а не solver.
 
 ---
 
@@ -74,6 +85,23 @@
 
 Не усредняю. Для каждого существенного конфликта — позиции, эмпирика, **одно** решение,
 последствия, какие доки правим. Полная сводка решений — в decision-table (раздел 20).
+
+### 2.0. Взвешивание голосов (ни один не абсолют, включая v5)
+Каждое предложение — голос, проверяемый кодом и реальными заказами. Где adopt — беру; где
+reject — отвергаю с причиной; где temper — беру в урезанном виде.
+
+| Голос | Что предлагает | Вердикт | Что именно беру / отвергаю и почему |
+|---|---|---|---|
+| **REDESIGN.md** (in-repo) | need vs косметика как бюджет; «всегда что-то отдать» (soft degradation); FitPolicy A/B-песочница; скоринг по близости; **контур обратной связи** (матчер→зона); явно «не начинать с solver»; маховик данных | **ADOPT как спайн** | Самый эмпирически заземлённый голос и ближе всех к коду. Беру: need/cosmetic-бюджет, FitPolicy-песочница, reserve-negotiation (его «второй прогон»), запрет раннего solver, data-flywheel. |
+| **Zaklyuchenie** (разбор прод-заказов) | корень = матч против косметики (P1); ёмкость от assigned «до N» (В4); слайвер-потолок раздува; дыра трусов = каталог | **ADOPT как истину об as-is** | Беру весь диагноз и «до N» в Phase 1. Отвергаю его же гипотезу «матчить строго под need» — он сам показал тупик (В3): отсюда **need + reserve**, не need. |
+| **v5** (final_architecture) | DesignIntent-first; RealizationOptions; probe/final; Ledger; инварианты; **+ многокандидатный генератор (2–5) и Pareto-селектор; bounded global re-solve** | **TEMPER (частично reject)** | Беру: продуктовые принципы, RealizationOptions как форму ответа, probe/final, Ledger, инварианты, examples. **Отвергаю как ближний спайн:** multi-candidate generator + global re-solve (дорого, не доказано, противоречит REDESIGN) → data-gated эскалация. Сужаю «landscape» до 4 видов в MVP. |
+| **v3_1** (три правды + reconciliation) | reconciliation «экран=реальность»; инверсия цели «заполнить красивую колонку, функция — пол» | **TEMPER** | Беру reconciliation/free-edge (→ I9). **Отвергаю** наивную инверсию «цель = заполнить колонку»: эмпирика показала, что безлимитный fill — баг (носки 19×19→31×32). Функция — цель, не только пол; косметика — бюджет, не цель. |
+| **memo** (SkuMatchTarget, 5 правд) | явный 4-box SkuMatchTarget (functional_min/visual_assigned/market_target/future_manufacturing); VisualZone | **TEMPER** | Беру разнесение functional_min ↔ visual_assigned (это и есть фикс отсчёта) и VisualZone. **Отвергаю** тяжёлый 4-box в рантайме: market_target/future_manufacturing — аналитика, живут в Ledger, не в горячем пути. SkuMatchTarget остаётся тонкой производной. |
+
+**Итог взвешивания:** спайн — REDESIGN+Zaklyuchenie (reference-frame fix + reserve-budget +
+flywheel); v5 даёт продуктовую рамку и форму контрактов, но его solver-эскалация
+демотирована; v3_1/memo дают точечные инварианты. См. C11–C13 ниже — там, где я расхожусь
+с v5 предметно.
 
 | # | Конфликт | Позиции источников | Эмпирика / код | Финальное решение | Последствия | Доки к правке |
 |---|---|---|---|---|---|---|
@@ -85,8 +113,11 @@
 | C6 | `exact` — омоним | v3_1/v5: технический `exact` путается с пользовательским «точно» | `MatchStatus='exact'` (`matchSkus.ts:16`), таблица `configuration_skus.match_status` (`0001_init_schema.sql`) | **Technical: `exact`→`primary_match`. Public confidence — отдельный слой** (exact/compatible/acceptable/workaround/none) | Миграция enum + рефактор; апдейт SPEC | SPEC.md, data-model, миграция |
 | C7 | Раздув глубины (D04b) — истина или баг | README_ENGINE D04b: «открытый вопрос»; Заключение: безлимитный раздув — патология (носки 19×19→31×32) | `absorbDepthReserve` (в `normalizePlacement`) тянул до стенки; фикс есть на ветке `claude/vibrant-cori-5EmX4` (коммит 046b09f), **в main не смержен** | **D04b — источник косметического бюджета, не финальная истина.** Слайвер-потолок мержим; раздув «в пустоту» запрещён; позже — market-aware normalization | Мерж фикса; D04b становится переговорным slack | README_ENGINE.md, REDESIGN.md |
 | C8 | Ёмкость: от `count` или от `assigned` | Текущее: `cap_per_lane = count` (`matchSkus.ts:44`) | Заключение §В4: лишнее косметическое место — ресурс, не пустота | **Ёмкость считать от assigned-зоны, отдавать «поместится до N».** `need` остаётся полом потребности | Меняется выдача ёмкости и copy; не путать с раздуванием обещанной потребности | SPEC.md, README_ENGINE.md |
-| C9 | Сколько архитектурных memo принять | Три proposal: memo (SkuMatchTarget, 5 правд), v3_1 (три правды + reconciliation), v5 (DesignIntent + RealizationOptions + Ledger) | v5 — наиболее полный и поздний; явно надстраивает прочие | **Базис — v5.** `SkuMatchTarget` из memo = probe-контракт; reconciliation из v3_1 = инвариант I9 «экран=реальность» | Один документ-истина (этот) | ARCHITECTURE.md ссылается сюда |
-| C10 | Открытость алгоритма во `why_this_layout` | api-contract решение №1: тексты «почему» — фронтовый копирайт, сервер не шлёт | Фронт уже берёт из `content-labels.js` | **Подтверждаю: negotiation/probe/ideal — не в API.** Публичны только зоны, товары, confidence, note_code | Без изменений, фиксируем как инвариант I11 | — |
+| C9 | Какой голос — спайн архитектуры | v5 претендует на «итоговую модель»; REDESIGN — на governing-док связки движок↔матчер | v5 шире по продукту, но REDESIGN ближе к коду и эмпирике, явно против раннего solver | **Спайн — REDESIGN+Zaklyuchenie** (reference-frame fix); v5 даёт продуктовую рамку и форму контрактов, но **не** ближний план. `SkuMatchTarget`(memo)=тонкий probe-контракт; reconciliation(v3_1)=I9 | v5 — голос, не базис (см. 2.0) | ARCHITECTURE.md ссылается сюда |
+| C10 | Открытость алгоритма во `why_this_layout` | api-contract решение №1: тексты «почему» — фронтовый копирайт, сервер не шлёт | Фронт уже берёт из `content-labels.js` | **Подтверждаю: negotiation/probe/ideal — не в API.** Публичны только зоны, товары, confidence, note_code | Без изменений, фиксируем как инвариант I12 | — |
+| **C11** | Многокандидатный генератор схем — ближний спайн или эскалация? | **v5:** 2–5 DesignCandidates + Pareto-селектор как промежуточная архитектура. **REDESIGN/эмпирика:** реальные победы (отсчёт, repairable overfill, «до N») одно-кандидатны; solver рано и дорого | Ни один прод-кейс не требует нескольких полных схем; combinatorial surface, который REDESIGN просит не открывать до данных | **Reject как спайн.** Спайн — **одно-кандидатный need-anchored probe + bounded reserve-negotiation**. Multi-candidate — **data-gated**: включаем, лишь когда метрики покажут остаточную ценность (worst-zone confidence упирается в раскладку, а не в рынок) | Расхождение с v5; промежуточная фаза переописана | README_ENGINE, REDESIGN |
+| **C12** | Что делать с overfill-местом: snap-переговоры или бонус-ёмкость? | **v5:** repairable overfill лечится negotiation (31→32 сдвиг). **Zaklyuchenie В4:** излишек = ресурс, ёмкость от assigned, «до N» | Косметику отменять нельзя (В2), «строго под need» — тупик (В3); самый дешёвый ближний рычаг — отдать место как ёмкость | **И то, и другое, но раздельно и в правильном порядке.** **Phase 1:** ёмкость-от-assigned + «до N» (дёшево, без рефактора). **Позже:** reserve-negotiation добирает резерв под конкретный SKU. v5 недооценивает «до N» | Ёмкость и copy меняются рано; negotiation — отдельная фаза | SPEC.md, README_ENGINE |
+| **C13** | Центр тяжести архитектуры | **v5:** «bounded co-design dialogue». **Независимо:** reference-frame fix + reserve-budget + data-flywheel | Диалог реально нужен лишь как узкий механизм добора резерва под SKU, не как общая парадигма | **Центр — починка отсчёта + резерв-бюджет + маховик данных.** «Диалог» = одно действие (reserve-negotiation), а не каркас. Solver/мультикандидат — периферия, включаемая данными | Переписаны разделы 1, 6, 14–17, 22 | — |
 
 **Drift доков и кода (зафиксировать отдельно):**
 - `ARCHITECTURE.md:11` (income=affiliate) ↔ `docs/data-model.md` (paywall-first). → C5.
@@ -813,7 +844,9 @@ interface ResultResponse {            // расширение текущего �
 | Компоненты | `engine/orchestrate/` (фасад над текущим `runUmestnoEngine`), `matcher.probe`/`matcher.final`, `negotiate.local`, `ledger.write` |
 | Design candidates | текущий layout; опц. 1 compact-вариант (без агрессивной глубины) |
 | Realization modes | single, repeated_same (ограниченные паттерны), текущий composed, open |
-| Negotiation | один локальный pass; micro-snap 1–2 см за счёт явного slack/reserve |
+| **Capacity (C12)** | ёмкость от итоговой зоны + обещание «поместится до N» — дёшево, прямой ответ на «мало/странно»; `need` остаётся полом |
+| **Reserve-negotiation (C12/C13)** | матчер добирает **задний резерв** под конкретный SKU (footprint = need + доступный резерв), а не движок раздувает вслепую заранее; один проход, единичный кандидат |
+| Negotiation | greedy-local micro-snap 1–2 см за счёт явного slack/reserve (поверх reserve-negotiation) |
 | Matcher correctness | per-division gates, asymmetric tolerances, probe/final split, internal≠external |
 | Входы/выходы | in: input+libs+catalogSnapshot; out: result + scheme_payload + analytics_events |
 | Новые типы | `SkuMatchTarget`, `RealizationOption`, `NearestFitVector`, `NegotiationAction`, `RecommendationConfidence` |
@@ -831,23 +864,25 @@ interface ResultResponse {            // расширение текущего �
 
 ## 15. Промежуточная архитектура
 
-**Бизнес-цель:** красота воплощается чаще без компромисса; selection между несколькими
-схемами; полноценные tiling/dividers.
+**Бизнес-цель:** дозреть **одно-кандидатный** путь (reserve-negotiation, repeated/tiling,
+availability) — **прежде** чем включать многокандидатность. Multi-candidate здесь **не
+дефолт, а data-gated опция** (C11): включаем, только если метрики покажут, что worst-zone
+confidence упирается в раскладку, а не в рынок.
 
 | Аспект | Решение |
 |---|---|
-| Компоненты | `generateDesignCandidates` (2–5 детерминированных), `selectDesignSolution` (Pareto/lexicographic), `negotiate` (до 2 rounds), availability parser |
-| Candidates | full columns, compact aligned, market-snapped, composition-friendly, core+reserve |
+| Компоненты (основные) | зрелый `reserve-negotiation` (до 2 rounds), homogeneous tiling, `divider_set`, availability parser+scoring |
+| Multi-candidate (**gated**) | `generateDesignCandidates` (2–5) + `selectDesignSolution` (Pareto/lexicographic) — **за флагом, включается по метрике** (gate: `residual_worst_zone_value > порог` на накопленных данных) |
 | Realization modes | + homogeneous tiling, + divider_set как полноценные |
-| Новые типы | `DesignCandidate`/`CandidateZone` как первоклассные, `confidence_ceiling` от availability |
+| Новые типы | `confidence_ceiling` от availability; `DesignCandidate`/`CandidateZone` — только при включении gated-ветки |
 | Новые таблицы | нормализация ledger: `design_candidate_zones`, `sku_realization_options`, `layout_negotiation_events`; materialized views отчётов |
 | API impact | без изменений контракта (внутренние кандидаты не публичны) |
 | UX impact | выше доля exact/compatible; reconciliation полнее |
-| Scope | **L** |
-| Dependencies | стабильный MVP + накопленный ledger; parser наличия |
-| Риски | комбинаторика кандидатов; рост БД |
-| Rollback | flag `MULTI_CANDIDATE`: off → MVP single-candidate |
-| Acceptance | selection детерминирован и не ниже MVP по worst-zone confidence; tiling/dividers проходят регрессы; availability понижает confidence корректно |
+| Scope | **M** (reserve-negotiation+tiling) / **L** (если открыта gated multi-candidate) |
+| Dependencies | стабильный MVP + накопленный ledger; parser наличия; **данные для gate C11** |
+| Риски | комбинаторика кандидатов (только в gated-ветке); рост БД |
+| Rollback | flags `RESERVE_NEGOTIATION_V2`, `MULTI_CANDIDATE`(gated): off → MVP single-candidate |
+| Acceptance | reserve-negotiation не ниже MVP по worst-zone confidence; tiling/dividers проходят регрессы; multi-candidate **не** включается без выполнения gate-метрики |
 | Отложено | bounded global re-solve; market-size families; mixed composition по умолчанию |
 
 ---
@@ -890,11 +925,14 @@ interface ResultResponse {            // расширение текущего �
 - **Scope S. Exit:** доки согласованы, fixtures краснеют ожидаемо (документируют целевое
   поведение до фикса).
 
-### PHASE 1 — Matcher correctness (entry: PHASE 0)
-- **Goal:** убрать структурные баги фильтра; **User value:** меньше ложных no_match/«не тот».
+### PHASE 1 — Matcher correctness + ёмкость «до N» (entry: PHASE 0)
+- **Goal:** убрать структурные баги фильтра + перестать констатировать пустоту там, где есть
+  бонус-место; **User value:** меньше ложных no_match/«не тот» + честное «поместится до N».
 - **Arch:** per-division gates как раздельные функции; асимметричные cell tolerances из
   библиотеки (убрать глобальный `TOL` `matchSkus.ts:13`); разделить internal/external fit;
-  `exact→primary_match`; quality flags ограничивают confidence; near-match logging.
+  **ёмкость от итоговой зоны + «до N» (C12)** — `need` остаётся полом, но capacity и copy
+  считаются от assigned; `exact→primary_match`; quality flags ограничивают confidence;
+  near-match logging. **Dependency:** merge слайвер-фикса D04b (C7) до этого PR.
 - **Data:** расширить `configuration_skus.match_status` enum (миграция, CHECK +
   `primary_match`,`repeated_module`,`divider_workaround`); back-compat запись старых значений.
 - **API:** technical status не наружу (уже так). **Tests:** open без cell-ворот; асимметрия;
@@ -911,14 +949,18 @@ interface ResultResponse {            // расширение текущего �
 - **Rollback/Flag:** `PROBE_MODE`. **Scope M. Exit:** probe возвращает required_box+deltas для
   top options; final по-прежнему строго влезает.
 
-### PHASE 3 — MVP negotiation (entry: PHASE 2)
-- **Goal:** реально решать +1 см; **User value:** красивая схема + влезающий товар.
-- **Arch:** `negotiate.local` (greedy, один round, micro-snap), whole-drawer recheck (I5),
-  re-probe, final validation; reconciliation I9 (свободный край). **Data:** `negotiation` JSONB
-  в ledger; `selected/gap`. **API:** `free_edge`, `note_code` (аддитивно). **Tests:** non-overlap
-  после negotiation; functional minimum соседей; детерминизм; повтор. **Observability:**
-  repairable_overfill_resolution_rate. **Rollback/Flag:** `DIALOGUE_MVP` (off → one-way).
-- **Scope M. Exit:** носки/бра +1 см решаются без overlap и без сжатия соседей.
+### PHASE 3 — Reserve-negotiation (системный фикс, entry: PHASE 2)
+- **Goal:** закрыть «подбор-против-косметики» по корню (C13); **User value:** красивая схема +
+  влезающий товар + не пустая зона.
+- **Arch:** `negotiate.reserve` — матчер **добирает задний резерв под конкретный SKU**
+  (footprint = need + доступный резерв в пределах бюджета), вместо слепого предраздува; поверх
+  — greedy micro-snap (один round); whole-drawer recheck (I5); re-probe; final validation;
+  reconciliation I9 (свободный край). Единичный кандидат (не multi). **Data:** `negotiation`
+  JSONB в ledger; `selected/gap`. **API:** `free_edge`, `note_code` (аддитивно). **Tests:**
+  reserve добор не нарушает non-overlap; functional minimum соседей; детерминизм; повтор;
+  носки 31×32→need+reserve под реальный SKU. **Observability:** repairable_overfill_resolution_rate.
+  **Rollback/Flag:** `RESERVE_NEGOTIATION` (off → one-way). **Scope M. Exit:** носки/бра +1 см и
+  «зона >> товара» решаются без overlap и без сжатия соседей.
 
 ### PHASE 4 — Public confidence + UX (entry: PHASE 3)
 - **Goal:** честный уровень уверенности; **User value:** доверие, нет ложной точности.
@@ -936,10 +978,14 @@ interface ResultResponse {            // расширение текущего �
   **Tests:** ledger completeness (каждая candidate-zone пишет ideal/options/negotiation/
   selected/gap/versions). **Scope M. Exit:** отчёты строятся из ledger.
 
-### PHASE 6 — Candidate selection (intermediate)
-- 2–5 DesignCandidates; Pareto/lexicographic selector; homogeneous tiling + dividers;
-  availability parser+scoring; two-round bounded negotiation. **Flag** `MULTI_CANDIDATE`.
-  **Scope L. Exit:** selection детерминирован, не ниже worst-zone confidence MVP.
+### PHASE 6 — Tiling/dividers + multi-candidate (**DATA-GATED**, intermediate)
+- Безусловно: homogeneous tiling + dividers + availability parser/scoring + two-round
+  reserve-negotiation. **Gated (C11):** 2–5 DesignCandidates + Pareto/lexicographic selector
+  включаются **только** если на накопленных данных выполнен **gate**: доля результатов, где
+  worst-zone confidence ограничен раскладкой (а не рынком/каталогом), выше порога
+  `[ASSUMPTION] ≥ 15%`. Иначе multi-candidate **не строим** — деньги/сложность не оправданы.
+  **Flag** `MULTI_CANDIDATE`. **Scope L. Exit:** tiling/dividers зелёные; multi-candidate либо
+  включён по gate и детерминирован, либо явно отложен с числом из ledger.
 
 ### PHASE 7 — Assortment / manufacturing (target)
 - Кластеризация IdealDesignSpec; ManufacturingSignal; seller pipeline; own line; custom.
@@ -948,17 +994,17 @@ interface ResultResponse {            // расширение текущего �
 ### Порядок PR (не только roadmap)
 ```
 PR-0  docs: ARCHITECTURE/SPEC/README_ENGINE + regression fixtures 120×45         [PHASE 0]
-PR-1  per-division gates + asymmetric tolerances (TOL→library) + tests           [PHASE 1]
+PR-1  per-division gates + asymmetric tolerances (TOL→library) + ёмкость «до N»   [PHASE 1]
 PR-2  internal/external fit split + match_status rename (+migration enum)         [PHASE 1]
 PR-3  probe/final split + NearestFitVector + repairable_overfill                  [PHASE 2]
 PR-4  design_demand_log migration + ledger.write (options/vectors)               [PHASE 2/5]
-PR-5  local negotiation + whole-drawer validation + reconciliation free_edge     [PHASE 3]
+PR-5  reserve-negotiation (добор резерва под SKU) + whole-drawer + free_edge      [PHASE 3]
 PR-6  RecommendationConfidence + public contract/copy (api-contract first)        [PHASE 4]
 PR-7  VisualZone cells/slots/lanes (BL-08)                                        [PHASE 4]
 PR-8  repeated_same_sku realization + complexity scoring                         [PHASE 3/6]
 PR-9  ledger reports / materialized views                                        [PHASE 5]
 ── после трафика ──
-PR-10 multi-candidate generator + selector                                       [PHASE 6]
+PR-10 multi-candidate generator + selector  ⚑ DATA-GATED (gate C11)              [PHASE 6]
 PR-11 homogeneous tiling + dividers                                              [PHASE 6]
 PR-12 availability parser + scoring                                             [PHASE 6]
 PR-13 market-aware normalization (D04b replacement)                             [PHASE 6/7]
@@ -1134,41 +1180,50 @@ accommodation cost, rejected realizations, user intent. Именно сравн�
 
 ## 22. Финальная рекомендация
 
-Принять **DesignIntent-first архитектуру с bounded co-design и Design Demand Ledger** (базис
-— `umestno_final_architecture_v5`, с `SkuMatchTarget` из memo как probe-контрактом и
-reconciliation из v3_1 как инвариантом I9). Это **единственная** модель, которая
-одновременно: защищает функциональную правду вещей; сохраняет продаваемую эстетику и бытовое
-удобство; снимает ложные no_match на реальных +1 см кейсах; не превращает сервис в
-подборщик готовых наборов; учитывает, что одна зона реализуется одним, двумя или четырьмя
-модулями; не путает допустимый размер ячейки с внешним размером товара; собирает чистые
-рыночные дыры, а не шум алгоритма и каталога; даёт достижимый путь к собственной линейке и
-custom.
+Принять архитектуру с **починкой системы отсчёта матчера** в центре (`need` + договороспособный
+резерв вместо косметического `assigned`), **резервом как бюджетом, добираемым под конкретный
+SKU**, **бонус-ёмкостью «до N»**, **набором реализаций вместо одного SKU** и **маховиком
+данных (Ledger)** как двигателем всего остального. Это **синтез REDESIGN+Zaklyuchenie как
+спайна** и продуктовой рамки v5 (RealizationOptions, probe/final, инварианты, Ledger) —
+**но без** её solver-эскалации в ближнем плане. Многокандидатность и global re-solve —
+**data-gated** (C11), а не план. Эта модель одновременно: защищает функциональную правду;
+сохраняет эстетику и удобство; снимает ложные no_match на реальных кейсах (31/32 и «зона >>
+товара»); не превращает сервис в подборщик наборов; учитывает «одна зона = 1/2/4 модуля»;
+не путает размер ячейки с внешним размером товара; собирает чистые дыры рынка; даёт путь к
+собственной линейке и custom — **и не тратит бюджет на недоказанный solver**.
 
-**Делать сейчас, в порядке:** (1) matcher correctness — per-division gates, асимметричные
-допуски, разделение internal/external (PR-1, PR-2); (2) probe/final split + repairable
-overfill (PR-3); (3) один greedy-local negotiation pass с whole-drawer validation (PR-5); (4)
-RecommendationConfidence + публичный контракт (PR-6); (5) Design Demand Ledger с первого
-расчёта (PR-4). Параллельно — **PR-0: привести ARCHITECTURE.md/SPEC.md/README_ENGINE.md** к
-этому документу и закрыть drift (affiliate→paywall C5, D04b-фикс merge C7, `exact→primary_match`
-C6, matcher-target C2).
+**Делать сейчас, в порядке:** (1) matcher correctness + **ёмкость «до N»** — per-division
+gates, асимметричные допуски, internal/external (PR-1, PR-2); (2) probe/final split +
+repairable overfill (PR-3); (3) **reserve-negotiation** — добор резерва под конкретный SKU,
+единичный кандидат (PR-5); (4) RecommendationConfidence + публичный контракт (PR-6); (5)
+Design Demand Ledger с первого расчёта (PR-4). Параллельно — **PR-0:** привести
+ARCHITECTURE.md/SPEC.md/README_ENGINE.md к этому документу и закрыть drift (affiliate→paywall
+C5, D04b-фикс merge C7, `exact→primary_match` C6, matcher-target C2).
 
-**Не делать:** не начинать с глобального solver; не подгонять схему под первый SKU; не
-считать каждый no_match дырой; не показывать наборы A/B/C; не расширять допуски ради match
-rate; не выносить engine/каталог на фронт; не отдавать debug. После реальных данных —
-расширять candidate space, market-aware normalization, realization modes и запускать
-assortment intelligence.
+**Не делать:** не начинать с глобального solver и **не строить многокандидатный генератор до
+выполнения gate-метрики (C11)**; не подгонять схему под первый SKU; не считать каждый
+no_match дырой; не показывать наборы A/B/C; не расширять допуски ради match rate; не выносить
+engine/каталог на фронт; не отдавать debug. Эскалацию (multi-candidate, market-aware norm,
+global re-solve, assortment intelligence) включают **данные**, а не план.
 
-Коротко: **движок проектирует, матчер описывает способы воплощения, данные хранят всё, чего
-рынку не хватило.**
+Коротко: **корень — система отсчёта, а не диалог. Чиним отсчёт, делаем резерв бюджетом,
+отдаём набор реализаций и излишек пользователю — а дальше всё двигают данные, не solver.**
 
 ---
 
-### Приложение — соответствие исходным документам
-- `umestno_final_architecture_v5` → разделы 1, 5–9, 13–17 (базис).
-- `UMESTNO_ARCHITECTURE_v3_1` → I9 reconciliation, D04b-как-механизм (C7), three-truths.
-- `umestno_architectural_memo` → `SkuMatchTarget` (раздел 7.2), 5-truth онтология (раздел 5).
-- `Zaklyuchenie_matching_SKU` → раздел 4.6 эмпирика, C2/C7/C8, примеры 19.A/B.
+### Приложение — соответствие исходным документам (вклад каждого голоса)
+Ни один документ не базис; см. взвешивание в 2.0.
+- **`REDESIGN.md` + `Zaklyuchenie_matching_SKU` → СПАЙН:** reference-frame fix, need/cosmetic-
+  бюджет, reserve-negotiation, ёмкость «до N», запрет раннего solver, data-flywheel
+  (разделы 1, 8–10, 14, 17; C2/C7/C8/C11/C12/C13; эмпирика 4.6; примеры 19.A/B).
+- **`umestno_final_architecture_v5` → продуктовая рамка и форма контрактов** (RealizationOptions,
+  probe/final, инварианты, Ledger, examples — разделы 5–9, 13); **его solver-эскалация
+  демотирована** (C11, разделы 15–17).
+- **`UMESTNO_ARCHITECTURE_v3_1` → I9 reconciliation** принят; «инверсия — заполнить колонку»
+  отвергнута (2.0; C7).
+- **`umestno_architectural_memo` → разнесение functional_min↔visual_assigned, VisualZone**
+  приняты; тяжёлый 4-box SkuMatchTarget — в Ledger, не рантайм (2.0; раздел 7.2).
 - Design-бриф → брендовый тон результата (раздел 13).
-- Репозиторий (`ARCHITECTURE.md`, `README_ENGINE.md`, `SPEC.md`, `REDESIGN.md`,
-  `api-contract.md`, `data-model.md`, `db/migrations/*`, код) → разделы 2 (drift), 3.2, 4, 10, 12.
+- Репозиторий (`ARCHITECTURE.md`, `SPEC.md`, `api-contract.md`, `data-model.md`,
+  `db/migrations/*`, код) → разделы 2 (drift), 3.2, 4, 10, 12.
 
