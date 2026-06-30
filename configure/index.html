@@ -633,25 +633,23 @@
   </div>
 </footer>
 
-<!-- ══ Boot-флаг визарда. Должен отработать ДО calc.js: оставляет в DOM
-     ровно одну раскладку (старую форму ИЛИ визард), иначе calc.js
-     забиндит дублирующиеся хуки. Флаг: визард ТОЛЬКО при ?v=2 в URL;
-     без персистентности — чистый /configure/ всегда старая форма.
-     Fail-safe: при любой ошибке убираем визард и оставляем старую форму. ══ -->
+<!-- ══ Boot-флаг раскладки. Должен отработать ДО calc.js: оставляет в DOM
+     ровно одну раскладку (визард ИЛИ старую форму), иначе calc.js забиндит
+     дублирующиеся хуки. ВИЗАРД — ОСНОВНАЯ версия (дефолт для всех). Старая
+     форма сохранена как АРХИВ и доступна по ?v=1. ?v=2 тоже показывает
+     визард (обратная совместимость со старыми тест-ссылками).
+     Fail-safe: при любой ошибке оставляем старую форму (проверенная). ══ -->
 <script>
 (function () {
   var wiz = document.querySelector('[data-wiz]');
   try {
-    // Визард показываем ТОЛЬКО если ?v=2 прямо в URL. Без персистентности:
-    // чистый /configure/ — всегда старая форма (визард не «залипает» в
-    // localStorage и не утекает на реальный трафик).
-    var on = new URLSearchParams(location.search).get('v') === '2';
-    // Подчищаем флаг из прежней (localStorage) версии, чтобы браузеры,
-    // успевшие его сохранить во время теста, сами вернулись к старой форме.
+    // Визард по умолчанию. Старая форма — только при явном ?v=1 (архив).
+    var v = new URLSearchParams(location.search).get('v');
+    var on = v !== '1';
+    // Чистим возможный старый localStorage-флаг прежней схемы включения.
     try { localStorage.removeItem('umestno_wiz'); } catch (e) {}
 
     var old = document.querySelector('main.u-calc');
-    var header = document.querySelector('header.u-header');
     var footer = document.querySelector('footer.u-footer');
     if (on && wiz) {
       wiz.hidden = false;
@@ -662,6 +660,7 @@
       // живёт в fixed-обёртке со своим топбаром.
       if (footer) footer.style.display = 'none';
     } else if (wiz) {
+      // ?v=1 (архив) — оставляем старую форму, визард убираем из DOM.
       wiz.parentNode.removeChild(wiz);
     }
   } catch (e) {
